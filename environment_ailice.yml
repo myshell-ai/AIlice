@@ -1,0 +1,22 @@
+name: ailice
+channels:
+  - pytorch
+  - defaults
+dependencies:
+    - python=3.10.0
+    - pip
+    - pip:
+      - transformers>=4.0.0
+      - torch
+      - bitsandbytes
+      - docker
+      - gradio
+      - multiprocess
+      - openai
+      - pyparsing
+      - pyyaml
+      - zmq
+      - regex
+      - simplejson
+
+

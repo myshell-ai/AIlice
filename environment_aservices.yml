@@ -1,0 +1,13 @@
+name: aservices
+dependencies:
+    - python=3.10.0
+    - pip
+    - pip:
+        - arxiv
+        - requests
+        - googlesearch-python
+        - chromadb
+        - urlextract
+        - selenium
+        - html2text
+        - zmq

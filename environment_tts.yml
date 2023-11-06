@@ -1,0 +1,19 @@
+name: tts
+dependencies:
+    - python=3.10.0
+    - pip
+    - pip:
+        - speechrecognition
+        - simplejson
+        - numpy
+        - sounddevice
+        - torch
+        - librosa
+        - datasets
+        - transformers
+        - vosk
+        - espnet
+        - espnet-model-zoo
+        - espnet-tts-frontend
+        - fairseq
+        - zmq
