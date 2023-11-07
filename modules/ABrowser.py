@@ -102,22 +102,25 @@ class ABrowser():
         return ret
     
     def OpenPDF(self, loc: str) -> str:
-        filename = loc.split("/")[-1]
+        os.makedirs("temp/", exist_ok=True)
+        fullName = loc.split('/')[-1]
+        fileName = fullName[:fullName.rfind('.')]
+        pdfPath = f"temp/{fullName}"
         if os.path.exists(loc):
             shutil.copy(loc, "./")
         else:
             response = requests.get(loc)
             if response.status_code == 200:
-                with open(filename, "wb") as pdf_file:
+                with open(pdfPath, "wb") as pdf_file:
                     pdf_file.write(response.content)
             else:
                 print("can not download pdf file. HTTP err code:", response.status_code)
         
-        outfile = filename[:filename.rfind('.')]
-        cmd = f"nougat {filename} -o {outfile}"
+        outDir = f"temp/{fileName}"
+        cmd = f"nougat {pdfPath} -o {outDir}"
         result = subprocess.run([cmd], stdout=subprocess.PIPE, text=True, shell=True)
 
-        with open(outfile + "/" + outfile + ".mmd", mode='rt') as txt_file:
+        with open(f"{outDir}/{fileName}.mmd", mode='rt') as txt_file:
             self.sections = self.Split(txt_file.read())
         return self.sections[self.currentIdx] + self.prompt if 0 < len(self.sections) else "EOF"
 
