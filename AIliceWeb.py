@@ -43,6 +43,9 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     processor = AProcessor(modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))
     
     def bot(text, history):
+        if text is None:
+            yield None
+            return
         threadLLM = threading.Thread(target=processor, args=(text,))
         threadLLM.start()
         ret = ""
