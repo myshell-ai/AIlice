@@ -3,6 +3,9 @@ dependencies:
     - python=3.10.0
     - pip
     - pip:
+        - transformers
+        - torch
+        - datasets
         - arxiv
         - requests
         - googlesearch-python
@@ -11,3 +14,4 @@ dependencies:
         - selenium
         - html2text
         - zmq
+        - importlib-metadata

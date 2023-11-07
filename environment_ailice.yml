@@ -8,8 +8,12 @@ dependencies:
     - pip:
       - transformers>=4.0.0
       - torch
+      - termcolor
+      - peft
       - bitsandbytes
+      - requests
       - docker
+      - httpx==0.23.3
       - gradio
       - multiprocess
       - openai
@@ -18,5 +22,6 @@ dependencies:
       - zmq
       - regex
       - simplejson
+      - protobuf
 
 
