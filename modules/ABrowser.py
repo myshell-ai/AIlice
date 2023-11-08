@@ -12,6 +12,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import html2text
 
 from common.lightRPC import makeServer
+from modules.AScrollablePage import AScrollablePage
 
 class ABrowser():
     def __init__(self):
@@ -22,14 +23,7 @@ class ABrowser():
         self.options.add_argument("--disable-blink-features=AutomationControlled")
 
         self.driver = webdriver.Chrome(options=self.options)
-        self.prompt = """\n...TO BE CONTINUED.\n\nYou can use the following command to continue browsing the page.\n#Scroll down the current web page and return the text and url on the current screen. You can SCROLLDOWN multiple times until EOF is returned.\nSCROLLDOWN<!||!>"""
-        self.sections = []
-        self.currentIdx = 0
-        return
-    
-    def Reset(self):
-        self.sections = []
-        self.currentIdx = 0
+        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN<!||!>"})
         return
     
     def ParseURL(self, txt: str) -> str:
@@ -72,8 +66,8 @@ class ABrowser():
     def OpenWebpage(self, url: str) -> str:
         self.driver.get(url)
         res = self.ExtractTextURLs(self.driver.page_source)
-        self.sections = [res[i: i+1024] for i in range(0,len(res),1024)]
-        return self.sections[self.currentIdx] + self.prompt if 0 < len(self.sections) else "EOF"
+        self.page.LoadPage(res, "TOP")
+        return self.page()
     
     def ExtractTextURLs(self, html: str) -> str:
         h = html2text.HTML2Text()
@@ -121,8 +115,8 @@ class ABrowser():
         result = subprocess.run([cmd], stdout=subprocess.PIPE, text=True, shell=True)
 
         with open(f"{outDir}/{fileName}.mmd", mode='rt') as txt_file:
-            self.sections = self.Split(txt_file.read())
-        return self.sections[self.currentIdx] + self.prompt if 0 < len(self.sections) else "EOF"
+            self.page.LoadPage(txt_file.read(), "TOP")
+        return self.page()
 
     def URLIsPDF(self, url: str) -> bool:
         response = requests.get(url, allow_redirects=True)
@@ -137,7 +131,6 @@ class ABrowser():
     
     def Browse(self, url: str) -> str:
         try:
-            self.Reset()
             url, path = self.GetLocation(url)
             if url is not None:
                 if self.URLIsPDF(url):
@@ -157,14 +150,8 @@ class ABrowser():
             return "Browser Exception. please check your url input."
 
     def ScrollDown(self) -> str:
-        try:
-            self.currentIdx += 1
-            if len(self.sections) <= self.currentIdx:
-                return "EOF"
-            return self.sections[self.currentIdx] + self.prompt
-        except Exception as e:
-            print("Exception. e: ", str(e))
-            return "Browser Exception. ScrollDown FAILED."
+        self.page.ScrollDown()
+        return self.page()
     
 
 browser = ABrowser()
