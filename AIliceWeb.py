@@ -1,7 +1,6 @@
 import time
 import threading
 from common.AConfig import config
-from utils.AInitialize import Initialize
 from core.AProcessor import AProcessor
 from llm.ALLMPool import llmPool
 from utils.ALogger import ALogger
@@ -25,7 +24,7 @@ def GetInput() -> str:
     return inp
 
 def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool):
-    Initialize()
+    config.Initialize()
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
