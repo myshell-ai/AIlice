@@ -20,7 +20,8 @@ class ALLMPool():
                       "hf:HuggingFaceH4/zephyr-7b-beta": {"formatter": AFormatterZephyr},
                       "hf:THUDM/agentlm-13b": {"formatter": AFormatterLLAMA2},
                       "oai:gpt-3.5-turbo": {"formatter": AFormatterGPT},
-                      "oai:gpt-4": {"formatter": AFormatterGPT}}
+                      "oai:gpt-4": {"formatter": AFormatterGPT},
+                      "oai:gpt-4-1106-preview": {"formatter": AFormatterGPT}}
         return
     
     def ParseID(self, id):
