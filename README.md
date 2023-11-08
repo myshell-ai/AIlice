@@ -55,7 +55,7 @@ To use the automatic programming feature, we need a code execution environment r
 
 ```bash
 docker build -t env4scripter .
-docker run -d -p 127.0.0.1:2005:2005 -p 127.0.0.1:443:443 --name scripter env4scripter
+docker run -d -p 127.0.0.1:2005:2005 -p 127.0.0.1:2006:2006 --name scripter env4scripter
 ```
 
 Enter the main program execution environment
@@ -66,26 +66,48 @@ conda activate ailice
 
 You can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both
 are used in the same way.
---modelID specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method
+
+- --modelID specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method
 in the future.
---quantization is the quantization option, you can choose 4bit or 8bit. The default is not quantized.
---maxMemory is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".
---prompt specifies the prompt to be executed, which is the type of agent. The default is main, this agent will decide to call the appropriate agent type according to your
+- --quantization is the quantization option, you can choose 4bit or 8bit. The default is not quantized.
+- --maxMemory is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".
+- --prompt specifies the prompt to be executed, which is the type of agent. The default is main, this agent will decide to call the appropriate agent type according to your
 needs. You can also specify a special type of agent and interact with it directly.
---temperature sets the temperature parameter of LLM reasoning, the default is zero.
+- --temperature sets the temperature parameter of LLM reasoning, the default is zero.
 
 Below are a few typical use cases
 
 ```bash
 python3 AIliceWeb.py --modelID=oai:gpt-4 --prompt="main"
+python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher"
+python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="article-digest"
 python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main"
-python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --maxMemory={0:"23GiB", 1:"24GiB", "cpu": "64GiB"} --prompt="coder-proxy"
+python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit
 ```
+
+As a demonstration of the functionality, we list some typical tasks, and you can test it by typing in whatever you want it to do.
+
+- For academic purposes, I need to construct a data set. The data set requires physics tutorials in PDF format in various directions. Please help me collect PDF links to
+100 such tutorials on the Internet and make a list for me.
+
+- Please do a investigate on the opensource pdf OCR tools, especially the ones which can recognize math formulas into latex code, collate the results into a report.
+
+- Deploy a simple website on this machine, based on the flask solution, with the port 2006. The website has only one page, and the page content is "Hello from AIlice".
+
+
 
 # Choice of LLM
 AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, only gpt-4 can provide relatively stable results, but due to the long
 running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
-Gpt-3.5-turbo is not performing well due to some unknown prompt issues and needs to be improved.
+
+Whether it is gpt-3.5-turbo or gpt-4-1106-preview (gpt-4 Turbo), they seem to have the same problem: they have a rather rigid bias towards the format of function calls, which
+is difficult to correct. This may be caused by OpenAI fine-tuning them for their own function calling mechanism. For those who particularly want to try gpt-4 turbo, you can
+use researcher or article-digest directly. They both perform normally, but coder-proxy cannot run properly because it is based on multi-parameter function calls.
+
+The original intention of this project is to build agents based on open source LLM. Closed source models are not within the focus of support (so we bypass openai's function
+calling mechanism). It can be expected soon in the future, more powerful open source models suitable for agent applications will emerge to make up for this, so we will no longer
+invest energy in this issue.
+
 Among the open-source models, the ones that usually perform well include:
 
 - hf:Open-Orca/Mistral-7B-OpenOrca
