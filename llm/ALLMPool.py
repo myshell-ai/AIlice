@@ -18,10 +18,7 @@ class ALLMPool():
                       "hf:Open-Orca/Mistral-7B-OpenOrca": {"formatter": AFormatterChatML},
                       "hf:amazon/MistralLite": {"formatter": AFormatterAMAZON},
                       "hf:HuggingFaceH4/zephyr-7b-beta": {"formatter": AFormatterZephyr},
-                      "hf:THUDM/agentlm-13b": {"formatter": AFormatterLLAMA2},
-                      "oai:gpt-3.5-turbo": {"formatter": AFormatterGPT},
-                      "oai:gpt-4": {"formatter": AFormatterGPT},
-                      "oai:gpt-4-1106-preview": {"formatter": AFormatterGPT}}
+                      "hf:THUDM/agentlm-13b": {"formatter": AFormatterLLAMA2}}
         return
     
     def ParseID(self, id):
@@ -45,6 +42,13 @@ class ALLMPool():
         return self.pool[modelID]
     
     def GetFormatter(self, modelID: str):
-        return self.configs[modelID]["formatter"](tokenizer = self.pool[modelID].tokenizer, systemAsUser = True)
+        if modelID in self.configs:
+            Formatter = self.configs[modelID]['formatter']
+        elif "oai:gpt" in modelID:
+            Formatter = AFormatterGPT
+        else:
+            print(f"LLM {modelID} not supported yet.")
+            exit(-1)
+        return Formatter(tokenizer = self.pool[modelID].tokenizer, systemAsUser = True)
     
 llmPool = ALLMPool()
