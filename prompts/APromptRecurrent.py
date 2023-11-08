@@ -3,7 +3,7 @@ from utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
 
 class APromptRecurrent():
-    PROMPT_NAME = "recurrent"
+    PROMPT_NAME = "researcher"
     
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

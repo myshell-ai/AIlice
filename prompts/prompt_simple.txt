@@ -8,7 +8,7 @@ Use the following function to communicate with an AI agent:
 CALL<!|target: str, program: str, msg: str|!>
 'target' is the AI agent's name, and a new agent will be created the first time you use it.
 program: A string used to specify the type of AI agent. It can be one of the following options:
-    1. "recurrent", good at retrieving the information user need through long-term research and search on Internet or local files.
+    1. "researcher", good at retrieving the information user need through long-term research and search on Internet or local files.
     2. "article-digest": literature (local files or URLs on Internet) reading comprehension and related question answering.
     3. "coder-proxy", it's good at solving problems with code. You'd better leave it to problems that are easy to solve with programming.
     You need to choose the appropriate promgram according to your needs.
