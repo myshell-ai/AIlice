@@ -48,7 +48,7 @@ class AudioSourceSileroVAD():
         VADIterator,
         collect_chunks) = self.utils
         
-        chunk_samples = 8192
+        chunk_samples = 512
         vad_iterator = VADIterator(self.model)
 
         wav = []
