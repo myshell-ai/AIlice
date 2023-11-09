@@ -12,7 +12,6 @@ def strip(txt: str) -> str:
 
 class ASpeech():
     def __init__(self):
-        self.enabled = True
         self.textQue = queue.Queue(maxsize=100)
         self.audioQue = queue.Queue(maxsize=100)
         self.t2s = T2S_LJS()
@@ -27,21 +26,13 @@ class ASpeech():
         self.audioProcessor.start()
         return
     
-    def Enable(self, enable):
-        self.enabled = enable
-        return
-    
     def GetAudio(self):
-        if not self.enabled:
-            return ""
         self.inputDone = True
         with self.lock:
             ret = self.s2t()
         return ret
     
     def Play(self, txt: str):
-        if not self.enabled:
-            return
         print("Play(): ", txt)
         if (None == txt) or ("" == strip(txt)):
             return

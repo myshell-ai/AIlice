@@ -37,7 +37,6 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     config.speechOn = speechOn
     
     StartServices()
-    speech.Enable(config.speechOn)
     
     for promptCls in [APromptChat, APromptMain, APromptSystem, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)

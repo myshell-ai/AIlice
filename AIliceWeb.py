@@ -31,7 +31,6 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     config.flashAttention2 = flashAttention2
     
     StartServices()
-    speech.Enable(False)
 
     for promptCls in [APromptChat, APromptMain, APromptSystem, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
