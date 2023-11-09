@@ -18,3 +18,4 @@ dependencies:
         - fairseq
         - zmq
         - pydantic==1.9.1
+        - PyAudio
