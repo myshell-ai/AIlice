@@ -18,11 +18,8 @@ class ASpeech():
         self.t2s = T2S_LJS()
         self.s2t = S2T_WhisperLargeV2()
 
-        self.speaking = True
-        self.eventSpeaking = threading.Event()
-        self.eventListening = threading.Event()
-        self.eventListening.set()
-        self.eventSpeaking.clear()
+        self.inputDone = True
+        self.lock = threading.Lock()
         
         self.textProcessor = threading.Thread(target=self.ProcessText, daemon=True)
         self.textProcessor.start()
@@ -37,39 +34,36 @@ class ASpeech():
     def GetAudio(self):
         if not self.enabled:
             return ""
-        self.eventListening.wait()
-        ret = self.s2t()
-        self.eventListening.clear()
-        self.eventSpeaking.set()
+        self.inputDone = True
+        with self.lock:
+            ret = self.s2t()
         return ret
     
     def Play(self, txt: str):
         if not self.enabled:
             return
         print("Play(): ", txt)
-        if (None != txt) and ("" == strip(txt)):
+        if (None == txt) or ("" == strip(txt)):
             return
         self.textQue.put(txt)
+        self.inputDone = False
         return
     
     def ProcessText(self):
         while True:
             text = self.textQue.get()
             try:
-                self.audioQue.put(self.t2s(text) if None != text else (None,None))
+                self.audioQue.put(self.t2s(text))
             except Exception as e:
                 print('EXCEPTION in ProcessText(). continue. e: ',str(e))
                 continue
     
     def ProcessAudio(self):
         while True:
-            self.eventSpeaking.wait()
-            audio,sr = self.audioQue.get()
-            if audio is None:
-                self.eventSpeaking.clear()
-                self.eventListening.set()
-            else:
-                play(audio,sr)
+            with self.lock:
+                while not (self.inputDone and self.textQue.empty() and self.audioQue.empty()):
+                    audio,sr = self.audioQue.get()
+                    play(audio,sr)
 
 
 

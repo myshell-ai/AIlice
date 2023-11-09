@@ -22,15 +22,7 @@ class ALogger():
         return
     
     def SinkSpeech(self, channel: str, txt: str = None, action: str = ''):
-        if 'open' == action:
-            self.speech.Play(txt)
-        elif 'append' == action:
-            self.speech.Play(txt)
-        elif 'close' == action:
-            self.speech.Play(txt)
-            self.speech.Play(None)#end flag.
-        else:
-            self.speech.Play(txt)
+        self.speech.Play(txt)
         return
     
     def SinkQueue(self, channel: str, txt: str = None, action: str = ''):
