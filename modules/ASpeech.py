@@ -19,6 +19,7 @@ class ASpeech():
 
         self.inputDone = True
         self.lock = threading.Lock()
+        self.noTextLeft = True
         
         self.textProcessor = threading.Thread(target=self.ProcessText, daemon=True)
         self.textProcessor.start()
@@ -42,6 +43,8 @@ class ASpeech():
     
     def ProcessText(self):
         while True:
+            #The inter-thread synchronization issue here is more complex than it appears.
+            self.noTextLeft = (self.inputDone and self.textQue.empty())
             text = self.textQue.get()
             try:
                 self.audioQue.put(self.t2s(text))
@@ -52,7 +55,7 @@ class ASpeech():
     def ProcessAudio(self):
         while True:
             with self.lock:
-                while not (self.inputDone and self.textQue.empty() and self.audioQue.empty()):
+                while not (self.inputDone and self.noTextLeft and self.audioQue.empty()):
                     audio,sr = self.audioQue.get()
                     play(audio,sr)
 
