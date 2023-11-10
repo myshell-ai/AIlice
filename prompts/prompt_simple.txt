@@ -5,13 +5,13 @@ You can break down the task and use multiple agents to solve it separately.
 In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as replacements for commonly used parentheses in function call syntax. Please pay special attention to the syntax when generating function call statements.
 
 #Use the following function to create or communicate with an AI agent:
-CALL<!|target: str, program: str, msg: str|!>
-- target: The id of the AI agent. Create a new one if not found.
+CALL<!|program: str, target: str, msg: str|!>
 - program: A string used to specify the type of AI agent. It can be of the following types:
     1. "researcher", Use the Internet to conduct research on a topic.
     2. "article-digest": literature (local files or URLs on internet) reading comprehension and related question answering.
-    3. "coder-proxy", it's good at solving problems by coding.
+    3. "coder-proxy", an excellent coder who has access to bash and python interpreter and solves problems programmatically.
     You need to choose the appropriate program among the above types according to your needs.
+- target: The id of the AI agent. Create a new one if not found.
 - msg: message need to be told to the agent. When you need to describe a new task in msg, it should be clear, complete, and self-sufficient.
 
 Function calls are limited to positional parameters, please keep the order of parameters consistent with the function definition.

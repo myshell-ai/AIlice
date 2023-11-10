@@ -68,7 +68,7 @@ class AProcessor():
                 self.outputCB(">")
                 return self.result
 
-    def EvalCall(self, target: str, program: str, msg: str) -> str:
+    def EvalCall(self, program: str, target: str, msg: str) -> str:
         if program not in promptsManager:
             return f"CALL FAILED. specified program {program} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (target not in self.subProcessors) or (program != self.subProcessors[target].GetPromptName()):

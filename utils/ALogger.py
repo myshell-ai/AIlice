@@ -1,6 +1,8 @@
 from termcolor import colored
 import queue
 
+from common.AConfig import config
+
 class ALogger():
     def __init__(self, speech):
         self.colorMap = {'CONTEXT': 'blue', 'USER': 'green', 'ASSISTANT': 'green', 'SYSTEM': 'yellow', 'OUTPUT': 'green'}
@@ -45,7 +47,7 @@ class ALogger():
         
         if (channel in ["ASSISTANT", "SYSTEM"]):
             self.SinkPrint(channel=channel, txt=txt, action=action)
-        if ((channel in ["ASSISTANT"]) and (0 == self.depth)):
+        if config.speechOn and ((channel in ["ASSISTANT"]) and (0 == self.depth)):
             self.SinkSpeech(channel=channel, txt=txt, action=action)
         if ((channel in ["OUTPUT"]) and (1 == self.depth)) or\
            (((channel in ["ASSISTANT"]) and (0 == self.depth))):

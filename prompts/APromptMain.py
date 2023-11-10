@@ -12,7 +12,7 @@ class APromptMain():
         self.formatter = formatter
         self.outputCB = outputCB
         self.prompt0 = LoadTXTFile("prompts/prompt_simple.txt")
-        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|target: str, program: str, msg: str|!> -> str"), "isEntry": True}]}
+        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|program: str, target: str, msg: str|!> -> str"), "isEntry": True}]}
         self.ACTIONS= {}
         return
     

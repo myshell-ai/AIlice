@@ -16,7 +16,7 @@ class APromptRecurrent():
         self.taskSummary = "None."
         self.previousParagraph = "None."
         self.previousActions = deque(maxlen=5)
-        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|target: str, program: str, msg: str|!> -> str"), "isEntry": True}],
+        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|program: str, target: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "SEARCH": [{"re": GenerateRE4FunctionCalling("SEARCH<!|request: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],

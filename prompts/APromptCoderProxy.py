@@ -13,7 +13,7 @@ class APromptCoderProxy():
         self.formatter.systemAsUser = False
         self.outputCB = outputCB
         self.prompt0 = LoadTXTFile("prompts/prompt_coderproxy.txt")
-        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|target: str, program: str, msg: str|!> -> str"), "isEntry": True}],
+        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|program: str, target: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "BASH": [{"re": GenerateRE4FunctionCalling("BASH<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],

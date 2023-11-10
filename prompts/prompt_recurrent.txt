@@ -24,12 +24,12 @@ BROWSE<!|url: str|!>
 url: URL of webpage/pdf.
 
 #You can use divide and conquer strategy for complex tasks. Use this function to get an AI agent to execute subtasks and provide results.
-CALL<!|target: str, program: str, msg: str|!>
-target: The id of the AI agent. Create a new one if not found.
+CALL<!|program: str, target: str, msg: str|!>
 program: A string used to specify the type of AI agent. It can be of the following types:
     1. "researcher", good at summarizing the information users need through long-term research and search.
     2. "coder-proxy", it's good at solving problems with code. You'd better leave it to problems that are easy to solve with programming.
     3. "article-digest": literature reading comprehension and related question answering.
+target: The id of the AI agent. Create a new one if not found.
 msg: message need to be told to the agent. When you need to descrip a new task, it should be a stand-alone task description.
 
 #Execute a bash command such as pip install some package.

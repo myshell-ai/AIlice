@@ -9,9 +9,11 @@ COPY common/__init__.py /scripter/common/__init__.py
 COPY common/lightRPC.py /scripter/common/lightRPC.py
 COPY common/resourcePool.py /scripter/common/resourcePool.py
 COPY modules/AScripter.py /scripter/AScripter.py
+COPY modules/AScrollablePage.py /scripter/modules/AScrollablePage.py
 
 RUN pip3 install pyzmq
 
 EXPOSE 2005
+EXPOSE 2006
 
 CMD ["python3", "/scripter/AScripter.py", "--incontainer"]

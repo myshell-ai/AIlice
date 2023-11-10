@@ -10,11 +10,11 @@ Note that you need to use the "!" prefix to trigger the function call.
 
 Available Functions
 #Use this function to interact with an AI agent to execute subtasks and provide results.
-CALL<!|target: str, program: str, msg: str|!>
-target: The id of the AI agent. Create a new one if not found.
+CALL<!|program: str, target: str, msg: str|!>
 program: A string used to specify the type of AI agent. It can be of the following types:
     1. "coder". The coder is only responsible for writing code. It does not have the ability to access external information or install dependencies or execute code.
     2. "researcher". Suitable for technical problem search tasks such as library document search.
+target: The id of the AI agent. Create a new one if not found.
 msg: message need to be told to the agent. The agent cannot see content other than msg. Please provide complete content in msg.
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
@@ -27,7 +27,7 @@ BASH<!|code: str|!>
 PYTHON<!|code: str|!>
 
 EXAMPLE:
-!CALL<!|"clock_coder", "coder", "Build a program that can check CPU usage."|!>
+!CALL<!|"coder", "clock_coder", "Build a program that can check CPU usage."|!>
 !PYTHON<!|"""print('hello wolrd.')"""|!>
 
 As the proxy, your workflow follows these steps:
