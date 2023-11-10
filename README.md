@@ -80,30 +80,35 @@ Below are a few typical use cases
 ```bash
 python3 AIliceWeb.py --modelID=oai:gpt-4 --prompt="main"
 python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher"
-python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="article-digest"
 python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main"
 python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit
 ```
 
-As a demonstration of the functionality, we list some typical tasks, and you can test it by typing in whatever you want it to do.
+# COOL things we can do
+You can try the following inputs and interact with AIlice to see if you can produce interesting results (the results will vary due to changes in the development process and differences in the model).
 
-- For academic purposes, I need to construct a data set. The data set requires physics tutorials in PDF format in various directions. Please help me collect PDF links to
-100 such tutorials on the Internet and make a list for me.
+- **"For academic purposes, I need to construct a data set. The data set requires physics tutorials in PDF format in various directions. Please help me collect PDF links to 100 such tutorials on the Internet and make a list for me."**
 
-- Please do a investigate on the opensource pdf OCR tools, especially the ones which can recognize math formulas into latex code, collate the results into a report.
+- **"Please do a investigate on the opensource pdf OCR tools, especially the ones which can recognize math formulas into latex code, collate the results into a report."**
 
-- Deploy a simple website on this machine, based on the flask solution, with the port 2006. The website has only one page, and the page content is "Hello from AIlice".
+- **"Deploy a simple website on this machine, based on the flask solution, with the port 2006. The website has only one page, and the page content is 'Hello from AIlice'."**
+This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
+cp" command to see it. But you can let AIlice solve this problem by itself: iteratively deploy a website in the container (It is recommended to use the 2006 port that has been
+port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can
+also try to let her iterate to produce more complex functions.
 
-- Please use cadquery to implement a cup.
+- **Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the images directory.**
+If you successfully deployed the above website, you can now see the BTC price curve directly on the page.
+
+- **"Please use cadquery to implement a cup."**
+This is also a very interesting attempt. Cadquery is a python package that uses python programming for cad modeling. We try to use AIlice to automatically build 3D models! This
+can give us a glimpse of how mature geometric intuition can be in LLM's world view.
 
 
 # Choice of LLM
-AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, only gpt-4 can provide relatively stable results, but due to the long
-running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
+AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, only gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide relatively stable results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
-Whether it is gpt-3.5-turbo or gpt-4-1106-preview (gpt-4 Turbo), they seem to have the same problem: they have a rather rigid bias towards the format of function calls, which
-is difficult to correct. This may be caused by OpenAI fine-tuning them for their own function calling mechanism. 
-But fortunately, with some innocuous tweaks, we can currently run it normally on gpt-4 turbo, and its performance is second only to gpt-4.
+gpt-3.5-turbo still has problems. It has relatively high requirements for prompts, and we have never been able to find a stable prompt expression.
 
 The original intention of this project is to build agents based on open source LLM. Closed source models are not within the focus of support (so we bypass openai's function
 calling mechanism). It can be expected soon in the future, more powerful open source models suitable for agent applications will emerge to make up for this, so we will no
@@ -118,8 +123,9 @@ Among the open-source models, the ones that usually perform well include:
 
 # How Developers Should Get Started
 
-- For developing Agents, the best tutorials are undoubtedly the AIliceMain.py and AIliceWeb.py files. Each of these modules does not exceed seventy lines of Python code,
-but they are enough to understand the basic elements of writing an Agent based on AIlice.
+- For developing Agents, the main loop of AIlice is located in the AIliceMain.py or AIliceWeb.py files. Each of these modules does not exceed seventy lines of Python code.
+To further understand the construction of an agent, you need to read the code in the "prompts" folder, by reading these code you can understand how an agent's prompts are
+dynamically constructed.
 
 - For developers who want to understand the internal operation logic of AIlice, please read core/AProcessor.py and core/Interpreter.py. These two files do not exceed two
 hundred lines of code in total, but they contain the basic framework of AIlice.
