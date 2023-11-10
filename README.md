@@ -94,6 +94,7 @@ As a demonstration of the functionality, we list some typical tasks, and you can
 
 - Deploy a simple website on this machine, based on the flask solution, with the port 2006. The website has only one page, and the page content is "Hello from AIlice".
 
+- Please use cadquery to implement a cup.
 
 
 # Choice of LLM

@@ -33,7 +33,7 @@ REPORT:
 NOTEBOOK:
     This section should include the following:
     1. Task. This should be modified upon the user's new task specification.
-    2. Cumulative results.
+    2. Cumulative results. Keep it to around 200 words maximum.
     3. Other data.
 EXECUTE:
     Generate the function call with the "!" prefix here, such as:
