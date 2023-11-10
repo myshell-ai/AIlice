@@ -11,6 +11,7 @@ Available commands:
 QUERY<!|clues: str|!> #Use some clues to retrieve memory.
 ARXIV<!|keywords: str|!> #Use arxiv to search academic literatures.
 GOOGLE<!|keywords: str|!> #Use google to search internet content.
+DUCKDUCKGO<!|keywords: str|!> #Use duckduckgo to search internet content.
 
 Attention:
 Avoid using your own knowledge in your reply.

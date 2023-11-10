@@ -5,13 +5,12 @@ from modules.AScrollablePage import AScrollablePage
 
 class AGoogle():
     def __init__(self):
-        self.lastSearch = 0
         self.page = AScrollablePage(functions={"SCROLLDOWN": "!SCROLLDOWNGOOGLE<!||!>"})
         return
     
     def Google(self, keywords):
         try:
-            res = search(keywords, num_results=100, advanced=True, sleep_interval=2) #sleep_interval will work when num_results>100.
+            res = search(keywords, num_results=50, advanced=True, sleep_interval=5) #sleep_interval will work when num_results>100.
             ret = list(res)
         except Exception as e:
             print("google excetption: ", e)

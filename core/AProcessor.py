@@ -22,6 +22,8 @@ class AProcessor():
         self.interpreter.RegisterAction("ARXIV", self.EvalArxiv)
         self.interpreter.RegisterAction("GOOGLE", self.EvalGoogle)
         self.interpreter.RegisterAction("SCROLLDOWNGOOGLE", self.EvalScrollDownGoogle)
+        self.interpreter.RegisterAction("DUCKDUCKGO", self.EvalDuckDuckGo)
+        self.interpreter.RegisterAction("SCROLLDOWNDUCKDUCKGO", self.EvalScrollDownDuckDuckGo)
         self.interpreter.RegisterAction("BROWSE", self.EvalBrowse)
         self.interpreter.RegisterAction("SCROLLDOWN", self.EvalScrollDown)
         self.interpreter.RegisterAction("BASH", self.EvalBashCode)
@@ -104,6 +106,12 @@ class AProcessor():
     def EvalScrollDownGoogle(self) -> str:
         return google.ScrollDown()
 
+    def EvalDuckDuckGo(self, keywords: str) -> str:
+        return duckduckgo.DuckDuckGo(keywords)
+    
+    def EvalScrollDownDuckDuckGo(self) -> str:
+        return duckduckgo.ScrollDown()
+    
     def EvalBrowse(self, url: str) -> str:
         return f"BROWSE_RESULT=[{browser.Browse(url)}]"
     

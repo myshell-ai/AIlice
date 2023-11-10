@@ -5,6 +5,7 @@ services = {"storage": ("modules/AStorageChroma.py","aservices"),
             "web": ("modules/ABrowser.py","aservices"),
             "arxiv": ("modules/AArxiv.py","aservices"),
             "google": ("modules/AGoogle.py","aservices"),
+            "duckduckgo": ("modules/ADuckDuckGo.py","aservices"),
             #"scripter": ("modules/AScripter.py","aservices"),
             "speech": ("modules/ASpeech.py","tts")
             }

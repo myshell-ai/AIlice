@@ -13,6 +13,9 @@ class APromptSystem():
         self.PATTERNS = {"QUERY": [{"re": GenerateRE4FunctionCalling("QUERY<!|request: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "ARXIV": [{"re": GenerateRE4FunctionCalling("ARXIV<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "GOOGLE": [{"re": GenerateRE4FunctionCalling("GOOGLE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLDOWNGOOGLE": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNGOOGLE<!||!> -> str", faultTolerance = True), "isEntry": True}],
+                         "DUCKDUCKGO": [{"re": GenerateRE4FunctionCalling("DUCKDUCKGO<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLDOWNDUCKDUCKGO": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNDUCKDUCKGO<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str"), "isEntry": True}]}
         self.ACTIONS= {}
