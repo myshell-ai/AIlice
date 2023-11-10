@@ -13,7 +13,7 @@ The basic principles when designing AIlice are:
 
 - Enriching the behavior of LLM with highly dynamic prompt construction mechanisms;
 - Separating different computational tasks as much as possible, using recursion and divide-and-conquer from traditional computing to solve complex problems.
-- Agents should be able to interact. 
+- Agents should be able to interact in both directions.
 
 A natural idea is to let LLM solve certain problems (such as information retrieval, document understanding, etc.) through multi-round dialogues with external callers and
 peripheral modules in the simplest computational unit. We temporarily call this computational unit a "function". Then, by analogy with traditional computing, we allow 
@@ -101,12 +101,12 @@ AIlice is not yet fully developed, and prompts have not been optimized for each 
 running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
 Whether it is gpt-3.5-turbo or gpt-4-1106-preview (gpt-4 Turbo), they seem to have the same problem: they have a rather rigid bias towards the format of function calls, which
-is difficult to correct. This may be caused by OpenAI fine-tuning them for their own function calling mechanism. For those who particularly want to try gpt-4 turbo, you can
-use researcher or article-digest directly. They both perform normally, but coder-proxy cannot run properly because it is based on multi-parameter function calls.
+is difficult to correct. This may be caused by OpenAI fine-tuning them for their own function calling mechanism. 
+But fortunately, with some innocuous tweaks, we can currently run it normally on gpt-4 turbo, and its performance is second only to gpt-4.
 
 The original intention of this project is to build agents based on open source LLM. Closed source models are not within the focus of support (so we bypass openai's function
-calling mechanism). It can be expected soon in the future, more powerful open source models suitable for agent applications will emerge to make up for this, so we will no longer
-invest energy in this issue.
+calling mechanism). It can be expected soon in the future, more powerful open source models suitable for agent applications will emerge to make up for this, so we will no
+longer spend effort on gpt-3.5-turbo compatibility.
 
 Among the open-source models, the ones that usually perform well include:
 
