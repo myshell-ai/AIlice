@@ -11,9 +11,9 @@ Her features are briefly listed as follows:
 # COOL things we can do
 You can try the following inputs and interact with AIlice to see if you can produce interesting results (the results will vary due to changes in the development process and differences in the model).
 
-- **"For academic purposes, I need to construct a data set. The data set requires physics tutorials in PDF format in various directions. Please help me collect PDF links to 100 such tutorials on the Internet and make a list for me."**
+- **"For academic purposes, I need to compile a dataset consisting of physics tutorials in PDF format covering various topics. Kindly assist me in gathering links to 100 such tutorials from the internet and provide a list."**
 
-- **"Please do a investigate on the opensource pdf OCR tools, especially the ones which can recognize math formulas into latex code, collate the results into a report."**
+- **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
 
 - **"Deploy a simple website on this machine, based on the flask solution, with the port 2006. The website has only one page, and the page content is 'Hello from AIlice'."**
 This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
