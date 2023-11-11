@@ -11,12 +11,11 @@ services = {"storage": ("modules/AStorageChroma.py","aservices"),
             #"scripter": ("modules/AScripter.py","aservices"),
             }
 
-if config.speechOn:
-    services['speech'] = ("modules/ASpeech.py","tts")
-
 processes = []
 
 def StartServices():
+    if config.speechOn:
+        services['speech'] = ("modules/ASpeech.py","tts")
     for serviceName in services:
         pyFile, env = services[serviceName]
         cmd = f"conda run -n {env} python3 {pyFile}"
