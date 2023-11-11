@@ -4,6 +4,7 @@ import speech_recognition as sr
 import simplejson
 import numpy as np
 import sounddevice as sd
+from collections import deque
 
 import torch
 import librosa
@@ -39,6 +40,7 @@ class AudioSourceSileroVAD():
                                       force_reload=False,
                                       onnx=False)
         self.sr = sr
+        self.buffer = deque(maxlen=self.sr * 60)
         return
     
     def get(self):
@@ -53,22 +55,30 @@ class AudioSourceSileroVAD():
 
         wav = []
         with sd.InputStream(samplerate=self.sr, channels=1, blocksize=chunk_samples, dtype=np.int16) as stream:
+            currentTime = 0.0
             while(True):
                 audio_chunk, overflowed = stream.read(chunk_samples)
                 audio_chunk = audio_chunk.reshape((chunk_samples,))
+                self.buffer.append(list(audio_chunk))
+                currentTime += (float(len(audio_chunk))/float(self.sr))
+                
+                startTime, endTime = 0.0, 0.0
                 speech_dict = vad_iterator(audio_chunk, return_seconds=True)
                 if speech_dict:
                     if "start" in speech_dict:
                         print("<---", flush=True)
-                        iFrom = int(speech_dict["start"] * self.sr) % chunk_samples
-                        wav = list(audio_chunk[iFrom:])
+                        startTime = speech_dict["start"]
                     elif "end" in speech_dict:
                         print("--->")
-                        iTo = int(speech_dict["end"] * self.sr) % chunk_samples
-                        wav += list(audio_chunk[:iTo])
+                        endTime = speech_dict["end"]
+                        frm = -int(((currentTime - startTime) * self.sr) // chunk_samples) - 3
+                        to = -int(((currentTime - endTime) * self.sr) // chunk_samples)
+                        wav = sum(list(self.buffer)[frm:to], [])
+                        #sd.play(wav,16000)
+                        #sd.wait()
+                        vad_iterator.reset_states()
+                        self.buffer.clear()
                         return np.array(wav),self.sr
-                else:
-                    wav += list(audio_chunk)
 
 class S2T_SpeechRecognition():
     def __init__(self):
@@ -129,11 +139,11 @@ class S2T_Wave2Vec2():
 
         return said
 
-class S2T_WhisperLargeV2():
+class S2T_WhisperLarge():
     def __init__(self):
         self.device = "cpu"
-        self.processor = WhisperProcessor.from_pretrained("openai/whisper-large-v2")
-        self.model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-large-v2").to(self.device)
+        self.processor = WhisperProcessor.from_pretrained("openai/whisper-large-v3")
+        self.model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-large-v3").to(self.device)
         self.model.config.forced_decoder_ids = None
         self.audio = AudioSourceSileroVAD()
         return

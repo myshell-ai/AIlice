@@ -2,7 +2,7 @@ import queue
 import string
 import threading
 from modules.AText2speech import T2S_LJS,T2S_Transformer,play
-from modules.ASpeech2text import S2T_SpeechRecognition,S2T_Wave2Vec2,S2T_WhisperLargeV2
+from modules.ASpeech2text import S2T_SpeechRecognition,S2T_Wave2Vec2,S2T_WhisperLarge
 
 from common.lightRPC import makeServer
 
@@ -15,7 +15,7 @@ class ASpeech():
         self.textQue = queue.Queue(maxsize=100)
         self.audioQue = queue.Queue(maxsize=100)
         self.t2s = T2S_LJS()
-        self.s2t = S2T_WhisperLargeV2()
+        self.s2t = S2T_WhisperLarge()
 
         self.inputDone = True
         self.lock = threading.Lock()
