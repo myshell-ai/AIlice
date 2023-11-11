@@ -44,4 +44,4 @@ Relevant Information:
 {self.Recall(context)}
 """
         #prompt += "\nConversations:"
-        return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = 0))
+        return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -4))
