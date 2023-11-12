@@ -16,7 +16,7 @@ class AArxiv():
             print("arxiv excetption: ", e)
             ret = f"arxiv excetption: {str(e)}"
         self.page.LoadPage(str(ret), "TOP")
-        return self.page(ret)
+        return self.page()
 
     def ScrollDown(self):
         self.page.ScrollDown()
