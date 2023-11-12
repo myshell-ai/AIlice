@@ -20,6 +20,7 @@ class AProcessor():
         self.interpreter.RegisterAction("STORE", self.EvalStore)
         self.interpreter.RegisterAction("QUERY", self.EvalQuery)
         self.interpreter.RegisterAction("ARXIV", self.EvalArxiv)
+        self.interpreter.RegisterAction("SCROLLDOWNARXIV", self.EvalScrollDownArxiv)
         self.interpreter.RegisterAction("GOOGLE", self.EvalGoogle)
         self.interpreter.RegisterAction("SCROLLDOWNGOOGLE", self.EvalScrollDownGoogle)
         self.interpreter.RegisterAction("DUCKDUCKGO", self.EvalDuckDuckGo)
@@ -99,6 +100,9 @@ class AProcessor():
     
     def EvalArxiv(self, keywords: str) -> str:
         return arxiv.ArxivSearch(keywords)
+    
+    def EvalScrollDownArxiv(self) -> str:
+        return arxiv.ScrollDown()
     
     def EvalGoogle(self, keywords: str) -> str:
         return google.Google(keywords)

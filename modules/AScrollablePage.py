@@ -9,7 +9,7 @@ class AScrollablePage():
         return
     
     def ConstructPrompt(self) -> str:
-        ret = "This is a page of the results. To browse more results, please use the following functions.\n"
+        ret = "This is a page of the results. To browse more results, you can use the following functions.\n"
         if 'SCROLLDOWN' in self.functions:
             ret += f"#scroll down the page: \n{self.functions['SCROLLDOWN']}\n"
         if 'SCROLLUP' in self.functions:
