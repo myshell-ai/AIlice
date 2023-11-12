@@ -85,6 +85,9 @@ class S2T_SpeechRecognition():
         self.audio = AudioSourceSR()
         return
     
+    def To(self, device: str):
+        return
+    
     def __call__(self):
         r = sr.Recognizer()
         said = ""
@@ -114,6 +117,9 @@ class S2T_Wave2Vec2():
         self.audio = AudioSourceSileroVAD()
         return
 
+    def To(self, device: str):
+        return
+    
     def recognize_wav2vec2(self, wav):
         inputs = self.processor(wav, sampling_rate=16000, return_tensors="pt", padding=True)
         with torch.no_grad():
@@ -146,6 +152,11 @@ class S2T_WhisperLarge():
         self.model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-large-v3").to(self.device)
         self.model.config.forced_decoder_ids = None
         self.audio = AudioSourceSileroVAD()
+        return
+    
+    def To(self, device: str):
+        self.model = self.model.to(device)
+        self.device = device
         return
     
     def __call__(self):

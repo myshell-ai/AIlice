@@ -28,7 +28,7 @@ def GetInput() -> str:
         inp = input(colored("USER: ", "green"))
     return inp
 
-def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool):
+def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str):
     config.Initialize()
     config.quantization = quantization
     config.maxMemory = maxMemory
@@ -37,6 +37,13 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     config.speechOn = speechOn
     
     StartServices()
+
+    if speechOn:
+        if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
+            print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
+            exit(-1)
+        else:
+            speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
     
     for promptCls in [APromptChat, APromptMain, APromptSystem, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
@@ -60,5 +67,7 @@ if __name__ == '__main__':
     parser.add_argument('--temperature',type=float,default=0.0)
     parser.add_argument('--flashAttention2',action='store_true')
     parser.add_argument('--speechOn',action='store_true')
+    parser.add_argument('--ttsDevice',type=str,default='cpu',help="cpu or cuda, the default is cpu.")
+    parser.add_argument('--sttDevice',type=str,default='cpu',help="cpu or cuda, the default is cpu.")
     kwargs = vars(parser.parse_args())
     main(**kwargs)

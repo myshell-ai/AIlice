@@ -27,6 +27,13 @@ class ASpeech():
         self.audioProcessor.start()
         return
     
+    def SetDevices(self, deviceMap: dict[str,str]):
+        if "stt" in deviceMap:
+            self.s2t.To(deviceMap['stt'])
+        elif "tts" in deviceMap:
+            self.t2s.To(deviceMap['tts'])
+        return
+    
     def GetAudio(self):
         self.inputDone = True
         with self.lock:
