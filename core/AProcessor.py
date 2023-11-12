@@ -16,7 +16,6 @@ class AProcessor():
         
         self.interpreter.RegisterAction("CALL", self.EvalCall)
         self.interpreter.RegisterAction("RESPOND", self.EvalRespond)
-        self.interpreter.RegisterAction("SEARCH", self.EvalSearch)
         self.interpreter.RegisterAction("STORE", self.EvalStore)
         self.interpreter.RegisterAction("QUERY", self.EvalQuery)
         self.interpreter.RegisterAction("ARXIV", self.EvalArxiv)
@@ -82,10 +81,6 @@ class AProcessor():
     def EvalRespond(self, message: str):
         self.result = message
         return
-    
-    def EvalSearch(self, request: str) -> str:
-        resp = AProcessor(modelID=self.modelID, promptName="system", outputCB=self.outputCB, collection=self.collection)(request)
-        return resp
     
     def EvalStore(self, txt: str):
         if not storage.Store(self.collection, txt):

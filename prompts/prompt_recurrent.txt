@@ -15,10 +15,6 @@ Reject unclear user instructions.
 
 
 Available functions:
-#Retrieve data from sources like Google, arXiv, long-term memory. Calling with the same parameters repeatly will result in duplicate results, please try changing the keywords to avoid this.
-SEARCH<!|request: str|!>
-request: A brief summary of the search subject.
-
 #Open a webpage/PDF and obtain the visible content.
 BROWSE<!|url: str|!>
 url: URL of webpage/pdf.
@@ -29,6 +25,7 @@ program: A string used to specify the type of AI agent. It can be of the followi
     1. "researcher", good at summarizing the information users need through long-term research and search.
     2. "coder-proxy", it's good at solving problems with code. You'd better leave it to problems that are easy to solve with programming.
     3. "article-digest": literature reading comprehension and related question answering.
+    4. "search-engine": search for information from sources like Google, arXiv, long-term memory.
 target: The id of the AI agent. Create a new one if not found.
 msg: message need to be told to the agent. When you need to descrip a new task, it should be a stand-alone task description.
 
@@ -70,4 +67,4 @@ Update:
         c. Task-solving strategy: Use natural language to list the task solution steps in detail. The strategy should be dynamically adjusted during the solution process to take full advantage of new information.
 Execute:
     1. Rational for Execute: Explain what action you should take based on your current strategy and execution trajectory, then generate the "Function Call" entry. Function call cannot be empty. Note that you need to use the "!" prefix to trigger the function call.
-    2. Function Call: !SEARCH<!|...|!> etc.
+    2. Function Call: !CALL<!|"...","...","..."|!> etc.

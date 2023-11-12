@@ -2,7 +2,7 @@ from utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
 
 class APromptSystem():
-    PROMPT_NAME = "system"
+    PROMPT_NAME = "search-engine"
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor
@@ -38,4 +38,4 @@ End of general instructions.
 
 """
         #prompt += "Conversations:"
-        return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = 0))
+        return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -4))
