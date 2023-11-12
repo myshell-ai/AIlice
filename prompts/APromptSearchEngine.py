@@ -1,7 +1,7 @@
 from utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
 
-class APromptSystem():
+class APromptSearchEngine():
     PROMPT_NAME = "search-engine"
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
@@ -9,7 +9,7 @@ class APromptSystem():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
-        self.prompt0 = LoadTXTFile("prompts/prompt_system.txt")
+        self.prompt0 = LoadTXTFile("prompts/prompt_searchengine.txt")
         self.PATTERNS = {"QUERY": [{"re": GenerateRE4FunctionCalling("QUERY<!|request: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "ARXIV": [{"re": GenerateRE4FunctionCalling("ARXIV<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "GOOGLE": [{"re": GenerateRE4FunctionCalling("GOOGLE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],

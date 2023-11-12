@@ -11,7 +11,7 @@ from AServices import StartServices
 from prompts.APrompts import promptsManager
 from prompts.APromptChat import APromptChat
 from prompts.APromptMain import APromptMain
-from prompts.APromptSystem import APromptSystem
+from prompts.APromptSearchEngine import APromptSearchEngine
 from prompts.APromptRecurrent import APromptRecurrent
 from prompts.APromptCoder import APromptCoder
 from prompts.APromptCoderProxy import APromptCoderProxy
@@ -45,7 +45,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
         else:
             speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
     
-    for promptCls in [APromptChat, APromptMain, APromptSystem, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
+    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
     llmPool.Init([modelID, "oai:gpt-3.5-turbo", "oai:gpt-4"])
