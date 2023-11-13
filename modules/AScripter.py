@@ -31,8 +31,8 @@ class AScripter():
             with tempfile.NamedTemporaryFile(mode='w', delete=True) as temp:
                 temp.write(code)
                 temp.flush()
-                result = subprocess.run(['python3', temp.name], capture_output=True, text=True)
-                res = result.stdout if 0 == result.returncode else result.stderr
+                result = subprocess.run(['python3', temp.name], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                res = result.stdout
         except Exception as e:
             res = f"Exception: {str(e)}\n"
         finally:
