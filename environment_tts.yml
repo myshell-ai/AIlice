@@ -3,19 +3,13 @@ dependencies:
     - python=3.10.0
     - pip
     - pip:
-        - speechrecognition
-        - simplejson
+        - zmq
         - numpy
         - sounddevice
         - torch
+        - torchaudio
         - librosa
-        - datasets
         - transformers
-        - vosk
         - espnet
         - espnet-model-zoo
         - espnet-tts-frontend
-        - fairseq
-        - zmq
-        - pydantic==1.9.1
-        - PyAudio
