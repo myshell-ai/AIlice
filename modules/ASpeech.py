@@ -1,8 +1,9 @@
 import queue
 import string
 import threading
-from modules.AText2speech import T2S_LJS,T2S_Transformer,play
-from modules.ASpeech2text import S2T_SpeechRecognition,S2T_Wave2Vec2,S2T_WhisperLarge
+import sounddevice as sd
+from modules.speech.ATTS_LJS import T2S_LJS
+from modules.speech.ASTT_Whisper import S2T_WhisperLarge
 
 from common.lightRPC import makeServer
 
@@ -64,9 +65,8 @@ class ASpeech():
             with self.lock:
                 while not (self.inputDone and self.noTextLeft and self.audioQue.empty()):
                     audio,sr = self.audioQue.get()
-                    play(audio,sr)
-
-
+                    sd.play(audio, sr)
+                    sd.wait()
 
 speech = ASpeech()
 makeServer(speech, "ipc:///tmp/ASpeech.ipc").Run()
