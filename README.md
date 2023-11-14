@@ -15,13 +15,13 @@ You can try the following inputs and interact with AIlice to see if you can prod
 
 - **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
 
-- **"Deploy a simple website on this machine, based on the flask solution, with the port 2006. The website has only one page, and the page content is 'Hello from AIlice'."**
+- **"Deploy a simple website on this machine, based on the flask solution. Ensure it is accessible at 0.0.0.0:2006. The website should consist of a single page with the content 'Hello from AIlice.'"**
 This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
 cp" command to see it. But you can let AIlice solve this problem by itself: iteratively deploy a website in the container (It is recommended to use the 2006 port that has been
 port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can
 also try to let her iterate to produce more complex functions.
 
-- **Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the images directory.**
+- **"Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the images directory."**
 If you successfully deployed the above website, you can now see the BTC price curve directly on the page.
 
 - **"Please use cadquery to implement a cup."**
