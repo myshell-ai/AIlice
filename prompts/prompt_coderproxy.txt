@@ -31,10 +31,10 @@ msg: message need to be told to the agent. The agent cannot see content other th
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!>
 
-#Execute bash script.
+#Execute bash script. A timeout error will occur for programs that have not been completed for a long time.
 BASH<!|code: str|!>
 
-#Execute python code.
+#Execute python code. Please note that you need to copy the complete code here, and you must not use references.
 PYTHON<!|code: str|!>
 
 EXAMPLE:
