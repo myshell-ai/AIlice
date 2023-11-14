@@ -16,7 +16,7 @@ class APromptRecurrent():
         self.taskSummary = "None."
         self.previousParagraph = "None."
         self.previousActions = deque(maxlen=5)
-        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|program: str, target: str, msg: str|!> -> str"), "isEntry": True}],
+        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str", faultTolerance = True), "isEntry": True}],
@@ -72,7 +72,7 @@ class APromptRecurrent():
 
 End of general instructions.
 
-Active Agents: {[k+": program "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
+Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
 Previous Working Memory: {self.taskSummary.strip()}
 Previous Paragraph: {self.previousParagraph.strip()}
 Previous Function Call Sequence: {[a.strip() for a in self.previousActions]}

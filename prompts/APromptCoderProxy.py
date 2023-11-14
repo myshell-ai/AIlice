@@ -13,7 +13,7 @@ class APromptCoderProxy():
         self.formatter.systemAsUser = False
         self.outputCB = outputCB
         self.prompt0 = LoadTXTFile("prompts/prompt_coderproxy.txt")
-        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|program: str, target: str, msg: str|!> -> str"), "isEntry": True}],
+        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "BASH": [{"re": GenerateRE4FunctionCalling("BASH<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
@@ -41,7 +41,7 @@ class APromptCoderProxy():
 
 End of general instructions.
 
-Active Agents: {[k+": program "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
+Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
 """
         #prompt += "\nConversations:"
         return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -4))

@@ -12,7 +12,7 @@ class APromptMain():
         self.formatter = formatter
         self.outputCB = outputCB
         self.prompt0 = LoadTXTFile("prompts/prompt_simple.txt")
-        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|program: str, target: str, msg: str|!> -> str"), "isEntry": True}]}
+        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}]}
         self.ACTIONS= {}
         return
     
@@ -39,7 +39,7 @@ class APromptMain():
 
 End of general instructions.
 
-Active Agents: {[k+": program "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
+Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
 Relevant Information:
 {self.Recall(context)}
 """
