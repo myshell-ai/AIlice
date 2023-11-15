@@ -66,4 +66,4 @@ Update:
         c. Task-solving strategy: Use natural language to list the task solution steps in detail. The strategy should be dynamically adjusted during the solution process to take full advantage of new information.
 Execute:
     1. Rational for Execute: Explain what action you should take based on your current strategy and execution trajectory, then generate the "Function Call" entry. Function call cannot be empty. Note that you need to use the "!" prefix to trigger the function call.
-    2. Function Call: !CALL<!|"...","...","..."|!> or BROWSE<!|"..."|!> etc.
+    2. Function Call: !CALL<!|"...","...","..."|!> or !BROWSE<!|"..."|!> etc.
