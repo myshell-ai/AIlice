@@ -58,9 +58,19 @@ class AInterpreter():
     
 
     def ParseEntries(self, txt_input: str) -> list[str]:
-        ret = []
+        matches = []
         for nodeType, pattern in self.GetEntryPatterns():
             for match in re.finditer(pattern, txt_input, re.DOTALL):
+                matches.append(match)
+            
+        ret = []
+        #Here we assume that a match will not appear multiple times in matches. This is reasonable.
+        for match in matches:
+            isSubstring = any(
+                (m.start() <= match.start()) and (m.end() >= match.end()) and (m is not match)
+                for m in matches
+            )
+            if not isSubstring:
                 ret.append(match.group(0))
         return ret
 
