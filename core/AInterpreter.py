@@ -37,7 +37,7 @@ class AInterpreter():
                 m = re.fullmatch(p['re'], txt, re.DOTALL)
                 if m:
                     return (nodeType, m.groupdict())
-        return ()
+        return (None, None)
 
     def CallWithTextArgs(self, func, txtArgs):
         signature = inspect.signature(func)
@@ -45,6 +45,7 @@ class AInterpreter():
             return "The function call failed because the arguments did not match. txtArgs.keys(): " + str(txtArgs.keys()) + ". func params: " + str(signature.parameters.keys())
         paras = dict()
         for k,v in txtArgs.items():
+            v = self.Eval(v)
             if str == signature.parameters[k].annotation:
                 paras[k] = str(v.strip('"\'')) if (len(v) > 0) and (v[0] == v[-1]) and (v[0] in ["'",'"']) else str(v)
             else:
@@ -53,8 +54,11 @@ class AInterpreter():
     
     def Eval(self, txt: str) -> str:
         nodeType, paras = self.Parse(txt)
-        r = self.CallWithTextArgs(self.actions[nodeType]['func'], paras)
-        return r if r is not None else ""
+        if None == nodeType:
+            return txt
+        else:
+            r = self.CallWithTextArgs(self.actions[nodeType]['func'], paras)
+            return r if r is not None else ""
     
 
     def ParseEntries(self, txt_input: str) -> list[str]:
