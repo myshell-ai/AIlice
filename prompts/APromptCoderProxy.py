@@ -21,11 +21,9 @@ class APromptCoderProxy():
                          "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "UpdateMemory": [{"re": r"UPDATED MEMORY(?P<newState>.*?)", "isEntry": True}],
                          "SetVar": [{"re": r"(?P<varName>[a-zA-Z0-9_-]+)[ ]*=[ ]*<!\|(?P<varValue>.*?)\|!>", "isEntry": True}],
-                         "GetVar": [{"re": r"\$(?P<varName>[a-zA-Z0-9_-]+)", "isEntry": False}],
                          "PrintVar": [{"re": GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS= {"UpdateMemory": {"func": self.UpdateMemory},
                        "SetVar": {"func": self.SetVar},
-                       "GetVar": {"func": self.GetVar},
                        "PrintVar": {"func": self.GetVar}}
         self.memory = ""
         self.vars = {}

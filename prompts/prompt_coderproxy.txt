@@ -23,8 +23,6 @@ Your workflow follows these steps (The details of functions such as CALL/PYTHON/
 
 You can define variables using the following syntax, replace VAR_NAME with your custom variable name:
 VAR_NAME=<!|some text content|!>
-You can reference the contents of a variable when you pass it into a function as a parameter:
-$VAR_NAME
 
 Available Functions:
 #Use this function to interact with an AI agent.
