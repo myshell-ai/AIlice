@@ -29,4 +29,4 @@ class ADuckDuckGo():
         return self.page()
 
 duckduckgo = ADuckDuckGo()
-makeServer(duckduckgo, "ipc:///tmp/ADuckDuckGo.ipc").Run()
+makeServer(duckduckgo, "ipc:///tmp/ADuckDuckGo.ipc", ["DuckDuckGo", "ScrollDown"]).Run()

@@ -34,7 +34,13 @@ class AProcessor():
         
         self.outputCB = outputCB
         self.collection = "ailice" + str(time.time()) if collection is None else collection
-        self.prompt = promptsManager[promptName](processor=self, storage=storage, collection=self.collection, conversations=self.conversation, formatter=llmPool.GetFormatter(modelID), outputCB=self.outputCB)
+        self.storage = makeClient(Storage)
+        self.browser = makeClient(Browser)
+        self.arxiv = makeClient(Arxiv)
+        self.google = makeClient(Google)
+        self.duckduckgo = makeClient(Duckduckgo)
+        self.scripter = makeClient(Scripter)
+        self.prompt = promptsManager[promptName](processor=self, storage=self.storage, collection=self.collection, conversations=self.conversation, formatter=llmPool.GetFormatter(modelID), outputCB=self.outputCB)
         for nodeType, func in self.prompt.GetActions().items():
             self.interpreter.RegisterAction(nodeType, func['func'])
         for nodeType, patterns in self.prompt.GetPatterns().items():
@@ -83,51 +89,51 @@ class AProcessor():
         return
     
     def EvalStore(self, txt: str):
-        if not storage.Store(self.collection, txt):
+        if not self.storage.Store(self.collection, txt):
             return "STORE FAILED, please check your input."
         return
     
     def EvalQuery(self, keywords: str) -> str:
-        res = storage.Query(self.collection, keywords)
+        res = self.storage.Query(self.collection, keywords)
         if (0 == len(res)) or (res[0][1] > 0.5):
             return "Nothing found."
         return "QUERY_RESULT={" + res[0][0] +"}"
     
     def EvalArxiv(self, keywords: str) -> str:
-        return arxiv.ArxivSearch(keywords)
+        return self.arxiv.ArxivSearch(keywords)
     
     def EvalScrollDownArxiv(self) -> str:
-        return arxiv.ScrollDown()
+        return self.arxiv.ScrollDown()
     
     def EvalGoogle(self, keywords: str) -> str:
-        return google.Google(keywords)
+        return self.google.Google(keywords)
     
     def EvalScrollDownGoogle(self) -> str:
-        return google.ScrollDown()
+        return self.google.ScrollDown()
 
     def EvalDuckDuckGo(self, keywords: str) -> str:
-        return duckduckgo.DuckDuckGo(keywords)
+        return self.duckduckgo.DuckDuckGo(keywords)
     
     def EvalScrollDownDuckDuckGo(self) -> str:
-        return duckduckgo.ScrollDown()
+        return self.duckduckgo.ScrollDown()
     
     def EvalBrowse(self, url: str) -> str:
-        return f"BROWSE_RESULT=[{browser.Browse(url)}]"
+        return f"BROWSE_RESULT=[{self.browser.Browse(url)}]"
     
     def EvalScrollDown(self) -> str:
-        return f"SCROLLDOWN_RESULT=[{browser.ScrollDown()}]"
+        return f"SCROLLDOWN_RESULT=[{self.browser.ScrollDown()}]"
     
     def EvalBashCode(self, code: str) -> str:
-        return f"SH_EXEC_RESULT=[{scripter.RunBash(code)}]"
+        return f"SH_EXEC_RESULT=[{self.scripter.RunBash(code)}]"
 
     def EvalScrollUpBash(self) -> str:
-        return f"SH_EXEC_RESULT=[{scripter.ScrollUpBash()}]"
+        return f"SH_EXEC_RESULT=[{self.scripter.ScrollUpBash()}]"
     
     def EvalPythonCode(self, code: str) -> str:
-        return f"PYTHON_EXEC_RESULT=[{scripter.RunPython(code)}]"
+        return f"PYTHON_EXEC_RESULT=[{self.scripter.RunPython(code)}]"
     
     def EvalScrollUpPy(self) -> str:
-        return f"PYTHON_EXEC_RESULT=[{scripter.ScrollUpPy()}]"
+        return f"PYTHON_EXEC_RESULT=[{self.scripter.ScrollUpPy()}]"
     
     def EvalComplete(self, result: str):
         self.result = result

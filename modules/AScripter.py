@@ -51,4 +51,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     addr = "tcp://0.0.0.0:2005" if args.incontainer else "tcp://127.0.0.1:2005"
     py = AScripter()
-    makeServer(py, addr).Run()
+    makeServer(py, addr, ["RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()

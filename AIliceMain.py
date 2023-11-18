@@ -5,7 +5,7 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from llm.ALLMPool import llmPool
 from utils.ALogger import ALogger
-from modules.ARemoteAccessors import *
+from modules.ARemoteAccessors import makeClient, Speech
 from AServices import StartServices
 
 from prompts.APrompts import promptsManager
@@ -18,7 +18,7 @@ from prompts.APromptCoderProxy import APromptCoderProxy
 from prompts.APromptArticleDigest import APromptArticleDigest
 
 
-def GetInput() -> str:
+def GetInput(speech) -> str:
     if config.speechOn:
         print(colored("USER: ", "green"), end="", flush=True)
         inp = speech.GetAudio()
@@ -39,11 +39,14 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     StartServices()
 
     if speechOn:
+        speech = makeClient(Speech)
         if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
             print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
             exit(-1)
         else:
             speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
+    else:
+        speech = None
     
     for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
@@ -53,7 +56,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     logger = ALogger(speech=speech)
     processor = AProcessor(modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))
     while True:
-        inpt = GetInput()
+        inpt = GetInput(speech)
         processor(inpt)
     return
 

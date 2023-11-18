@@ -23,4 +23,4 @@ class AGoogle():
         return self.page()
 
 google = AGoogle()
-makeServer(google, "ipc:///tmp/AGoogle.ipc").Run()
+makeServer(google, "ipc:///tmp/AGoogle.ipc", ["Google", "ScrollDown"]).Run()

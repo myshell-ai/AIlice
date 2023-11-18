@@ -23,4 +23,4 @@ class AArxiv():
         return self.page()
 
 ar = AArxiv()
-makeServer(ar, "ipc:///tmp/AArxiv.ipc").Run()
+makeServer(ar, "ipc:///tmp/AArxiv.ipc", ["ArxivSearch", "ScrollDown"]).Run()

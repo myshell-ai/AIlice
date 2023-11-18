@@ -24,9 +24,10 @@ def ReciveMsg(conn):
   return pickle.loads(conn.recv())
 
 class GenesisRPCServer(object):
-  def __init__(self,obj,url):
+  def __init__(self,obj,url,APIList):
     self.url=url
     self.obj=obj
+    self.APIList=APIList
     self.context=zmq.Context()
     self.receiver = self.context.socket(zmq.ROUTER)
     self.receiver.bind(url)
@@ -57,7 +58,10 @@ class GenesisRPCServer(object):
       msg=ReciveMsg(socket)
       ret=None
       try:
-        ret={'ret':(getattr(self.obj,msg['function'])(*msg['args'], **msg['kwargs']))}
+        if "GET_META" in msg:
+          ret={"META":{"methods": [method for method in self.APIList]}}
+        else:
+          ret={'ret':(getattr(self.obj,msg['function'])(*msg['args'], **msg['kwargs']))}
       except Exception as e:
         ret={'exception':e}
         traceback.print_tb(e.__traceback__)
@@ -66,15 +70,15 @@ class GenesisRPCServer(object):
     return
 
 
-def makeServer(obj,url):
-  return GenesisRPCServer(obj,url)
+def makeServer(obj,url,APIList):
+  return GenesisRPCServer(obj,url,APIList)
 
 def AddMethod(kls,methodName):
   def methodTemplate(self,*args,**kwargs):
     return self.RemoteCall(methodName,args,kwargs)
   setattr(kls,methodName,methodTemplate)
 
-def makeClient(url,apiList,returnClass=False):
+def makeClient(url,returnClass=False):
   class GenesisRPCClientTemplate(object):
     def __init__(self):
       self.url=url
@@ -95,6 +99,13 @@ def makeClient(url,apiList,returnClass=False):
         raise ret['exception']
       return ret['ret']
   
-  for funcName in apiList:
+  context=zmq.Context()
+  socket = context.socket(zmq.REQ)
+  socket.connect(url)
+  SendMsg(socket,{'GET_META':''})
+  ret=ReciveMsg(socket)
+  socket.close()
+  context.term()
+  for funcName in ret['META']['methods']:
     AddMethod(GenesisRPCClientTemplate,funcName)
   return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()

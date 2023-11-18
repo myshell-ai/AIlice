@@ -4,7 +4,6 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from llm.ALLMPool import llmPool
 from utils.ALogger import ALogger
-from modules.ARemoteAccessors import *
 from AServices import StartServices
 
 from prompts.APrompts import promptsManager
@@ -18,10 +17,6 @@ from prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 
-
-def GetInput() -> str:
-    inp = speech.GetAudio()
-    return inp
 
 def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool):
     config.Initialize()
@@ -37,7 +32,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     
     llmPool.Init([modelID, "oai:gpt-3.5-turbo", "oai:gpt-4"])
     
-    logger = ALogger(speech=speech)
+    logger = ALogger(speech=None)
     processor = AProcessor(modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))
     
     def bot(text, history):

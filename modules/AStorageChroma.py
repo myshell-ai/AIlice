@@ -37,4 +37,4 @@ class AStorageChromaDB():
 
 
 storage = AStorageChromaDB()
-makeServer(storage, "ipc:///tmp/AIliceStorage.ipc").Run()
+makeServer(storage, "ipc:///tmp/AIliceStorage.ipc", ["Store", "Query"]).Run()

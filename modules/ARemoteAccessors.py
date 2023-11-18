@@ -1,9 +1,9 @@
 from common.lightRPC import makeClient
 
-storage = makeClient("ipc:///tmp/AIliceStorage.ipc", ['Store', 'Query'], returnClass=True)()
-browser = makeClient("ipc:///tmp/ABrowser.ipc", ['Browse', 'ScrollDown'], returnClass=True)()
-arxiv = makeClient("ipc:///tmp/AArxiv.ipc", ['ArxivSearch', 'ScrollDown'], returnClass=True)()
-google = makeClient("ipc:///tmp/AGoogle.ipc", ['Google', 'ScrollDown'], returnClass=True)()
-duckduckgo = makeClient("ipc:///tmp/ADuckDuckGo.ipc", ['DuckDuckGo', 'ScrollDown'], returnClass=True)()
-speech = makeClient("ipc:///tmp/ASpeech.ipc", ['GetAudio', 'Play', 'SetDevices'], returnClass=True)()
-scripter = makeClient("tcp://127.0.0.1:2005", ['RunBash', 'ScrollUpBash', 'RunPython', 'ScrollUpPy'], returnClass=True)()
+Storage = "ipc:///tmp/AIliceStorage.ipc"
+Browser = "ipc:///tmp/ABrowser.ipc"
+Arxiv = "ipc:///tmp/AArxiv.ipc"
+Google = "ipc:///tmp/AGoogle.ipc"
+Duckduckgo = "ipc:///tmp/ADuckDuckGo.ipc"
+Speech = "ipc:///tmp/ASpeech.ipc"
+Scripter = "tcp://127.0.0.1:2005"

@@ -155,4 +155,4 @@ class ABrowser():
     
 
 browser = ABrowser()
-makeServer(browser, "ipc:///tmp/ABrowser.ipc").Run()
+makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["Browse", "ScrollDown"]).Run()
