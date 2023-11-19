@@ -1,4 +1,14 @@
+
+# Why create another agent?
+This is due to two reasons. 
+
+First, we need **a simple framework that is easy to understand and sufficiently controllable** to test various new ideas about agents. This requires building a fully functional agent framework within a few thousand lines of code.
+
+Second, despite the current strength of OpenAI's products, we place hope in the open-source community for the future. This is not only because of the idealistic desire to break the monopoly on AGI but also for technical reasons. We anticipate that **future agents will run for extended periods on local machines, performing various complex tasks from local data analysis to information investigations on the internet**. Many of these tasks require good reasoning abilities rather than vast amounts of knowledge. We hope that in the future, a lightweight, high-reasoning-capacity open-source LLM (Lightweight Language Model) will emerge to realize this ideal.
+
+
 # Introduction
+
 AIlice is a lightweight AI Agent under development, which also serves as a simple development framework for quickly building and experimenting with various AI Agent ideas.
 Her features are briefly listed as follows:
 
