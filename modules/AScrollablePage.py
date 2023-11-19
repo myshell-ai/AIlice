@@ -35,4 +35,6 @@ class AScrollablePage():
         elif ((self.currentIdx + STEP) <= 0):
             return "FILE HEADER REACHED."
         else:
-            return self.txt[self.currentIdx: self.currentIdx + STEP] + "\n\n" + self.ConstructPrompt()
+            start = self.currentIdx if self.currentIdx >= 0 else 0
+            end = (self.currentIdx + STEP) if (self.currentIdx + STEP) >= 0 else 0
+            return self.txt[start:end] + "\n\n" + self.ConstructPrompt()
