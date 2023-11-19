@@ -5,7 +5,7 @@ Her features are briefly listed as follows:
 - **Natural multi-Agent invocation and interaction mechanism.**
 - **Parsing LLM output in the most flexible way possible, supporting more varied function call mechanisms.**
 - **Support for various open-source LLMs and commercial models like gpt-4.**
-- **Support for peripheral modules such as web page, pdf browsing, searching, sh, Python code execution, voice dialogue, etc. which run as RPC services in a separable runtime environment.**
+- **Support for peripheral modules such as web page, pdf browsing, searching, bash, Python code execution, voice dialogue, etc. which run as RPC services in a separable runtime environment.**
 
 
 # COOL things we can do
@@ -130,3 +130,12 @@ dynamically constructed.
 hundred lines of code in total, but they contain the basic framework of AIlice.
 
 
+# FAQs:
+- **Why does AIlice get stuck on startup after updating the code?**
+This is because the code in the docker container has not been updated and is incompatible with the new code. Use the following command to update the code in the docker container:
+cd AIlice
+docker cp modules/AScripter.py scripter:scripter/AScripter.py
+docker cp common/lightRPC.py scripter:scripter/common/lightRPC.py
+docker cp common/resourcePool.py scripter:scripter/common/resourcePool.py
+docker cp modules/AScrollablePage.py scripter:scripter/modules/AScrollablePage.py
+docker restart scripter
