@@ -26,11 +26,11 @@ class APromptRecurrent():
                          "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "Memory": [{"re": r"Updated Working Memory:(?P<newState>.*?)Execute:", "isEntry": True}],
                          "Output": [{"re": r"New Paragraph:(?P<txt>.*?)Update:", "isEntry": True}],
-                         "Action": [{"re": r"Function Call:(?P<newAction>.*)", "isEntry": True}],
+                         "Action": [{"re": r"Function Call:(?P<newAction>(?:.*(?=\|!>))\|!>)", "isEntry": True}],
                          "COMPLETE": [{"re": GenerateRE4FunctionCalling("COMPLETE<!|result: str|!> -> None", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS = {"Memory": {"func": self.UpdateState},
                         "Output": {"func": self.Output},
-                        "Action": {"func": self.UpdateAction}}
+                        "Action": {"func": self.Action}}
         return
     
     def Reset(self):
@@ -43,9 +43,9 @@ class APromptRecurrent():
         self.taskSummary = newState
         return
     
-    def UpdateAction(self, newAction: str):
+    def Action(self, newAction: str) -> str:
         self.previousActions.append(newAction)
-        return
+        return self.processor.interpreter.Eval(newAction.strip())
 
     def Output(self, txt: str):
         txt = txt.strip()
