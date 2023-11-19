@@ -133,9 +133,12 @@ hundred lines of code in total, but they contain the basic framework of AIlice.
 # FAQs:
 - **Why does AIlice get stuck on startup after updating the code?**
 This is because the code in the docker container has not been updated and is incompatible with the new code. Use the following command to update the code in the docker container:
+
+```bash
 cd AIlice
 docker cp modules/AScripter.py scripter:scripter/AScripter.py
 docker cp common/lightRPC.py scripter:scripter/common/lightRPC.py
 docker cp common/resourcePool.py scripter:scripter/common/resourcePool.py
 docker cp modules/AScrollablePage.py scripter:scripter/modules/AScrollablePage.py
 docker restart scripter
+```
