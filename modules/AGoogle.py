@@ -8,6 +8,9 @@ class AGoogle():
         self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNGOOGLE<!||!>"})
         return
     
+    def ModuleInfo(self):
+        return {"NAME": "google", "ACTIONS": {"GOOGLE": "Google(keywords:str)->str", "SCROLLDOWNGOOGLE": "ScrollDown()->str"}}
+    
     def Google(self, keywords):
         try:
             res = search(keywords, num_results=20, advanced=True, sleep_interval=5) #sleep_interval will work when num_results>100.
@@ -23,4 +26,4 @@ class AGoogle():
         return self.page()
 
 google = AGoogle()
-makeServer(google, "ipc:///tmp/AGoogle.ipc", ["Google", "ScrollDown"]).Run()
+makeServer(google, "ipc:///tmp/AGoogle.ipc", ["ModuleInfo", "Google", "ScrollDown"]).Run()

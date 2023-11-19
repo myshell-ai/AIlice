@@ -9,9 +9,12 @@ class ADuckDuckGo():
         self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNDUCKDUCKGO<!||!>"})
         return
     
-    def DuckDuckGo(self, query: str) -> str:
+    def ModuleInfo(self):
+        return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": "DuckDuckGo(keywords:str)->str", "SCROLLDOWNDUCKDUCKGO": "ScrollDown()->str"}}
+    
+    def DuckDuckGo(self, keywords: str) -> str:
         params = {
-            'q': query,
+            'q': keywords,
             'format': 'json',
         }
 
@@ -29,4 +32,4 @@ class ADuckDuckGo():
         return self.page()
 
 duckduckgo = ADuckDuckGo()
-makeServer(duckduckgo, "ipc:///tmp/ADuckDuckGo.ipc", ["DuckDuckGo", "ScrollDown"]).Run()
+makeServer(duckduckgo, "ipc:///tmp/ADuckDuckGo.ipc", ["ModuleInfo", "DuckDuckGo", "ScrollDown"]).Run()

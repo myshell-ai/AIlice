@@ -11,9 +11,12 @@ class AScripter():
         self.pagePy = AScrollablePage({"SCROLLUP": "SCROLLUPPY<!||!>"})
         return
     
-    def RunBash(self, cmd: str) -> str:
+    def ModuleInfo(self):
+        return {"NAME": "scripter", "ACTIONS": {"BASH": "RunBash(code:str)->str", "SCROLLUPBASH": "ScrollUpBash()->str", "PYTHON": "RunPython(code:str)->str", "SCROLLUPPY": "ScrollUpPy()->str"}}
+    
+    def RunBash(self, code: str) -> str:
         try:
-            res = subprocess.check_output(cmd, shell=True, executable="/bin/bash", universal_newlines=True, timeout=60)
+            res = subprocess.check_output(code, shell=True, executable="/bin/bash", universal_newlines=True, timeout=60)
         except subprocess.CalledProcessError as e:
             res = str(e)
         except subprocess.TimeoutExpired as e:
@@ -51,4 +54,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     addr = "tcp://0.0.0.0:2005" if args.incontainer else "tcp://127.0.0.1:2005"
     py = AScripter()
-    makeServer(py, addr, ["RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()
+    makeServer(py, addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()

@@ -26,6 +26,9 @@ class ABrowser():
         self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN<!||!>"})
         return
     
+    def ModuleInfo(self):
+        return {"NAME": "browser", "ACTIONS": {"BROWSE": "Browse(url:str)->str", "SCROLLDOWN": "ScrollDown()->str"}}
+    
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()
         urls = extractor.find_urls(txt)
@@ -155,4 +158,4 @@ class ABrowser():
     
 
 browser = ABrowser()
-makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["Browse", "ScrollDown"]).Run()
+makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown"]).Run()

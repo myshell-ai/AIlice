@@ -9,6 +9,9 @@ class AStorageChromaDB():
         self.collections = dict()
         return
 
+    def ModuleInfo(self):
+        return {"NAME": "storage", "ACTIONS": {}}
+    
     def Store(self, collection: str, txt: str) -> bool:
         try:
             print("collection: ", collection,". store: ", txt)
@@ -37,4 +40,4 @@ class AStorageChromaDB():
 
 
 storage = AStorageChromaDB()
-makeServer(storage, "ipc:///tmp/AIliceStorage.ipc", ["Store", "Query"]).Run()
+makeServer(storage, "ipc:///tmp/AIliceStorage.ipc", ["ModuleInfo", "Store", "Query"]).Run()

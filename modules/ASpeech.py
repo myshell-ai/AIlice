@@ -28,6 +28,9 @@ class ASpeech():
         self.audioProcessor.start()
         return
     
+    def ModuleInfo(self):
+        return {"NAME": "speech", "ACTIONS": {"GETAUDIO": "GetAudio()->str", "PLAY": "Play(txt:str)->None"}}
+    
     def SetDevices(self, deviceMap: dict[str,str]):
         if "stt" in deviceMap:
             self.s2t.To(deviceMap['stt'])
@@ -69,4 +72,4 @@ class ASpeech():
                     sd.wait()
 
 speech = ASpeech()
-makeServer(speech, "ipc:///tmp/ASpeech.ipc", ["GetAudio", "Play", "SetDevices"]).Run()
+makeServer(speech, "ipc:///tmp/ASpeech.ipc", ["ModuleInfo", "GetAudio", "Play", "SetDevices"]).Run()

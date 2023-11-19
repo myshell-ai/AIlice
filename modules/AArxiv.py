@@ -9,9 +9,12 @@ class AArxiv():
         self.page = AScrollablePage({"SCROLLDOWNARXIV": "SCROLLDOWNARXIV<!||!>"})
         return
     
-    def ArxivSearch(self, query):
+    def ModuleInfo(self):
+        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": "ArxivSearch(keywords:str)->str", "SCROLLDOWNARXIV": "ScrollDown()->str"}}
+    
+    def ArxivSearch(self, keywords):
         try:
-            ret = str(list(arxiv.Search(query=query, max_results=40).results()))
+            ret = str(list(arxiv.Search(query=keywords, max_results=40).results()))
         except Exception as e:
             print("arxiv excetption: ", e)
             ret = f"arxiv excetption: {str(e)}"
@@ -23,4 +26,4 @@ class AArxiv():
         return self.page()
 
 ar = AArxiv()
-makeServer(ar, "ipc:///tmp/AArxiv.ipc", ["ArxivSearch", "ScrollDown"]).Run()
+makeServer(ar, "ipc:///tmp/AArxiv.ipc", ["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run()
