@@ -9,7 +9,7 @@ ARegexMap = {"str": r"(?<!\\)'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|'''(?:\\.|[^
              "path": r"(?:\/|(?:[A-Za-z]:)?[\\|\/])?(?:[\w\-\s\.]+[\|\/]?)*"}
 
 def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> str:
-    #signature: "FUNC(ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...) -> RETURN_TYPE"
+    #signature: "FUNC<!|ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...|!> -> RETURN_TYPE"
     pattern = r"(\w+)<!\|((?:\w+[ ]*:[ ]*[\w, ]+)*)\|!>(?:[ ]*->[ ]*)(\w+)"
     matches = re.search(pattern, signature)
     if matches is None:
@@ -24,3 +24,15 @@ def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> 
     reMap["str"] = r"(?:.*(?=\|!>))" if faultTolerance else ARegexMap['str']
     patternArgs = '[ ]*,[ ]*'.join([f"(?:({arg}|\"{arg}\"|\'{arg}\')[ ]*[:=][ ]*)?(?P<{arg}>({reMap[tp]}))" for arg,tp in typePairs])
     return rf"!{funcName}<!\|[ ]*{patternArgs}[ ]*\|!>"
+
+def ParseSignatureExpr(signature: str):
+    #signature: "FUNC(ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...) -> RETURN_TYPE"
+    pattern = r"(\w+)\(((?:\w+[ ]*:[ ]*[\w, ]+)*)\)(?:[ ]*->[ ]*)(\w+)"
+    matches = re.search(pattern, signature)
+    if matches is None:
+        print("signature invalid. exit. ", signature)
+        exit()
+    funcName, args, retType = matches[1], matches[2], matches[3]
+    pattern = r"(\w+)[ ]*:[ ]*(\w+)"
+    typePairs = re.findall(pattern, args)
+    return funcName, typePairs, retType

@@ -2,7 +2,7 @@ import time
 from common.AConfig import config
 from llm.ALLMPool import llmPool
 from prompts.APrompts import promptsManager
-from modules.ARemoteAccessors import *
+from modules.ARemoteAccessors import makeClient, Storage
 from core.AConversation import AConversations
 from core.AInterpreter import AInterpreter
 
@@ -13,46 +13,53 @@ class AProcessor():
         self.interpreter = AInterpreter()
         self.conversation = AConversations()
         self.subProcessors = dict()
+        self.modules = {}
         
-        self.interpreter.RegisterAction("CALL", self.EvalCall)
-        self.interpreter.RegisterAction("RESPOND", self.EvalRespond)
-        self.interpreter.RegisterAction("STORE", self.EvalStore)
-        self.interpreter.RegisterAction("QUERY", self.EvalQuery)
-        self.interpreter.RegisterAction("ARXIV", self.EvalArxiv)
-        self.interpreter.RegisterAction("SCROLLDOWNARXIV", self.EvalScrollDownArxiv)
-        self.interpreter.RegisterAction("GOOGLE", self.EvalGoogle)
-        self.interpreter.RegisterAction("SCROLLDOWNGOOGLE", self.EvalScrollDownGoogle)
-        self.interpreter.RegisterAction("DUCKDUCKGO", self.EvalDuckDuckGo)
-        self.interpreter.RegisterAction("SCROLLDOWNDUCKDUCKGO", self.EvalScrollDownDuckDuckGo)
-        self.interpreter.RegisterAction("BROWSE", self.EvalBrowse)
-        self.interpreter.RegisterAction("SCROLLDOWN", self.EvalScrollDown)
-        self.interpreter.RegisterAction("BASH", self.EvalBashCode)
-        self.interpreter.RegisterAction("SCROLLUPBASH", self.EvalScrollUpBash)
-        self.interpreter.RegisterAction("PYTHON", self.EvalPythonCode)
-        self.interpreter.RegisterAction("SCROLLUPPY", self.EvalScrollUpPy)
-        self.interpreter.RegisterAction("COMPLETE", self.EvalComplete)
+        self.RegisterModules([Storage])
+        self.interpreter.RegisterAction("CALL", {"func": self.EvalCall})
+        self.interpreter.RegisterAction("RESPOND", {"func": self.EvalRespond})
+        self.interpreter.RegisterAction("COMPLETE", {"func": self.EvalComplete})
+        self.interpreter.RegisterAction("STORE", {"func": self.EvalStore})
+        self.interpreter.RegisterAction("QUERY", {"func": self.EvalQuery})
         
         self.outputCB = outputCB
         self.collection = "ailice" + str(time.time()) if collection is None else collection
-        self.storage = makeClient(Storage)
-        self.browser = makeClient(Browser)
-        self.arxiv = makeClient(Arxiv)
-        self.google = makeClient(Google)
-        self.duckduckgo = makeClient(Duckduckgo)
-        self.scripter = makeClient(Scripter)
-        self.prompt = promptsManager[promptName](processor=self, storage=self.storage, collection=self.collection, conversations=self.conversation, formatter=llmPool.GetFormatter(modelID), outputCB=self.outputCB)
-        for nodeType, func in self.prompt.GetActions().items():
-            self.interpreter.RegisterAction(nodeType, func['func'])
+        self.prompt = promptsManager[promptName](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=llmPool.GetFormatter(modelID), outputCB=self.outputCB)
+        for nodeType, action in self.prompt.GetActions().items():
+            self.interpreter.RegisterAction(nodeType, action)
         for nodeType, patterns in self.prompt.GetPatterns().items():
             for p in patterns:
                 self.interpreter.RegisterPattern(nodeType, p["re"], p["isEntry"])
         self.result = "None."
         return
     
-    def RegisterAction(self, nodeType: str, func: dict):
-        self.interpreter.RegisterAction(nodeType, func)
+    def RegisterAction(self, nodeType: str, action: dict):
+        self.interpreter.RegisterAction(nodeType, action)
         return
     
+    def RegisterModules(self, moduleAddrs):
+        for moduleAddr in moduleAddrs:
+            module = makeClient(moduleAddr)
+            if (not hasattr(module, "ModuleInfo")) or (not callable(getattr(module, "ModuleInfo"))):
+                raise Exception("EXCEPTION: ModuleInfo() not found in module.")
+            info = module.ModuleInfo()
+            if "NAME" not in info:
+                raise Exception("EXCEPTION: 'NAME' is not found in module info.")
+            if "ACTIONS" not in info:
+                raise Exception("EXCEPTION: 'ACTIONS' is not found in module info.")
+            
+            self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
+            for actionName, actionSig in info["ACTIONS"].items():
+                actionFunc = actionSig[:actionSig.find("(")]
+                self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionFunc),
+                                                                 "signatureExpr": actionSig})
+        return
+    
+    def CreateActionCB(self, actionName, module, actionFunc):
+        def callback(*args,**kwargs):
+            return f"{actionName}_RESULT=[{getattr(module, actionFunc)(*args,**kwargs)}]"
+        return callback
+        
     def GetPromptName(self) -> str:
         return self.prompt.PROMPT_NAME
     
@@ -81,6 +88,7 @@ class AProcessor():
             return f"CALL FAILED. specified agentType {agentType} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
             self.subProcessors[agentName] = AProcessor(modelID=self.modelID, promptName=agentType, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg)}"
         return resp
     
@@ -89,51 +97,15 @@ class AProcessor():
         return
     
     def EvalStore(self, txt: str):
-        if not self.storage.Store(self.collection, txt):
+        if not self.modules['storage']['module'].Store(self.collection, txt):
             return "STORE FAILED, please check your input."
         return
     
     def EvalQuery(self, keywords: str) -> str:
-        res = self.storage.Query(self.collection, keywords)
+        res = self.modules['storage']['module'].Query(self.collection, keywords)
         if (0 == len(res)) or (res[0][1] > 0.5):
             return "Nothing found."
         return "QUERY_RESULT={" + res[0][0] +"}"
-    
-    def EvalArxiv(self, keywords: str) -> str:
-        return self.arxiv.ArxivSearch(keywords)
-    
-    def EvalScrollDownArxiv(self) -> str:
-        return self.arxiv.ScrollDown()
-    
-    def EvalGoogle(self, keywords: str) -> str:
-        return self.google.Google(keywords)
-    
-    def EvalScrollDownGoogle(self) -> str:
-        return self.google.ScrollDown()
-
-    def EvalDuckDuckGo(self, keywords: str) -> str:
-        return self.duckduckgo.DuckDuckGo(keywords)
-    
-    def EvalScrollDownDuckDuckGo(self) -> str:
-        return self.duckduckgo.ScrollDown()
-    
-    def EvalBrowse(self, url: str) -> str:
-        return f"BROWSE_RESULT=[{self.browser.Browse(url)}]"
-    
-    def EvalScrollDown(self) -> str:
-        return f"SCROLLDOWN_RESULT=[{self.browser.ScrollDown()}]"
-    
-    def EvalBashCode(self, code: str) -> str:
-        return f"SH_EXEC_RESULT=[{self.scripter.RunBash(code)}]"
-
-    def EvalScrollUpBash(self) -> str:
-        return f"SH_EXEC_RESULT=[{self.scripter.ScrollUpBash()}]"
-    
-    def EvalPythonCode(self, code: str) -> str:
-        return f"PYTHON_EXEC_RESULT=[{self.scripter.RunPython(code)}]"
-    
-    def EvalScrollUpPy(self) -> str:
-        return f"PYTHON_EXEC_RESULT=[{self.scripter.ScrollUpPy()}]"
     
     def EvalComplete(self, result: str):
         self.result = result

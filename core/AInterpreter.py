@@ -1,21 +1,38 @@
 import re
 import inspect
+from inspect import Parameter, Signature
+from prompts.ARegex import ParseSignatureExpr
 
-def HasReturnValue(func):
-    return inspect.signature(func).return_annotation != inspect.Parameter.empty
+def HasReturnValue(action):
+    return action['signature'].return_annotation != inspect.Parameter.empty
 
 class AInterpreter():
     def __init__(self):
         self.actions = {}#nodeType: {"func": func}
         self.patterns = {}#nodeType: [(pattern,isEntry)]
+        self.TypeMap = {"str": str,
+                        "int": int,
+                        "float": float,
+                        "bool": bool}
         return
     
-    def RegisterAction(self, nodeType: str, func):
-        signature = inspect.signature(func)
-        if not all([param.annotation != inspect.Parameter.empty for param in signature.parameters.values()]):
-            print("Need annotations in registered function. node type: ", nodeType)
-            exit()
-        self.actions[nodeType] = {"func": func}
+    def RegisterAction(self, nodeType: str, action: dict):
+        if "signatureExpr" in action:
+            funcName, argPairs, retType = ParseSignatureExpr(action['signatureExpr'])
+            parameters = [Parameter(name=argName,
+                                    kind=Parameter.POSITIONAL_OR_KEYWORD,
+                                    annotation=self.TypeMap[argType]) for argName, argType in argPairs]
+            retAnnotation = inspect.Signature.empty if "None" == retType else self.TypeMap[retType]
+            signature = Signature(parameters=parameters, return_annotation=retAnnotation)
+            self.actions[nodeType] = {k:v for k,v in action.items()}
+            self.actions[nodeType]["signature"] = signature
+        else:
+            signature = inspect.signature(action["func"])
+            if not all([param.annotation != inspect.Parameter.empty for param in signature.parameters.values()]):
+                print("Need annotations in registered function. node type: ", nodeType)
+                exit()
+            self.actions[nodeType] = {k:v for k,v in action.items()}
+            self.actions[nodeType]["signature"] = signature
         return
     
     def RegisterPattern(self, nodeType: str, pattern: str, isEntry: bool):
@@ -25,7 +42,7 @@ class AInterpreter():
         return
     
     def EndChecker(self, txt: str) -> bool:
-        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if HasReturnValue(self.actions[nodeType]['func'])]
+        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if HasReturnValue(self.actions[nodeType])]
         return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns])
     
     def GetEntryPatterns(self) -> dict[str,str]:
@@ -39,8 +56,9 @@ class AInterpreter():
                     return (nodeType, m.groupdict())
         return (None, None)
 
-    def CallWithTextArgs(self, func, txtArgs):
-        signature = inspect.signature(func)
+    def CallWithTextArgs(self, action, txtArgs):
+        #print(f"action: {action}, {txtArgs}")
+        signature = action["signature"]
         if set(txtArgs.keys()) != set(signature.parameters.keys()):
             return "The function call failed because the arguments did not match. txtArgs.keys(): " + str(txtArgs.keys()) + ". func params: " + str(signature.parameters.keys())
         paras = dict()
@@ -50,14 +68,14 @@ class AInterpreter():
                 paras[k] = str(v.strip('"\'')) if (len(v) > 0) and (v[0] == v[-1]) and (v[0] in ["'",'"']) else str(v)
             else:
                 paras[k] = signature.parameters[k].annotation(v)
-        return func(**paras)
+        return action['func'](**paras)
     
     def Eval(self, txt: str) -> str:
         nodeType, paras = self.Parse(txt)
         if None == nodeType:
             return txt
         else:
-            r = self.CallWithTextArgs(self.actions[nodeType]['func'], paras)
+            r = self.CallWithTextArgs(self.actions[nodeType], paras)
             return r if r is not None else ""
     
 

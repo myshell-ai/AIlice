@@ -4,6 +4,7 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from llm.ALLMPool import llmPool
 from utils.ALogger import ALogger
+from modules.ARemoteAccessors import Browser, Arxiv, Google, Duckduckgo, Scripter
 from AServices import StartServices
 
 from prompts.APrompts import promptsManager
@@ -34,7 +35,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     
     logger = ALogger(speech=None)
     processor = AProcessor(modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))
-    
+    processor.RegisterModules([Browser, Arxiv, Google, Duckduckgo, Scripter])
     def bot(text, history):
         if text is None:
             yield None
