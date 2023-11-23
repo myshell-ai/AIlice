@@ -24,7 +24,7 @@ class AProcessor():
         
         self.outputCB = outputCB
         self.collection = "ailice" + str(time.time()) if collection is None else collection
-        self.prompt = promptsManager[promptName](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=llmPool.GetFormatter(modelID), outputCB=self.outputCB)
+        self.prompt = promptsManager[promptName](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
         for nodeType, action in self.prompt.GetActions().items():
             self.interpreter.RegisterAction(nodeType, action)
         for nodeType, patterns in self.prompt.GetPatterns().items():

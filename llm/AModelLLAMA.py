@@ -5,6 +5,7 @@ from peft import PeftConfig, PeftModel
 
 from common.AConfig import config
 from utils.ATextSpliter import sentences_split
+from llm.ALLMMeta import ALLMMeta
 
 
 class AModelLLAMA():
@@ -12,6 +13,13 @@ class AModelLLAMA():
         self.tokenizer = None
         self.model = None
         self.LoadModel(modelLocation)
+        
+        modelID = "hf:" + modelLocation
+        if modelID not in ALLMMeta:
+            print(f"LLM {modelID} not supported yet.")
+            exit(-1)
+        self.formatter = ALLMMeta[modelID]['formatter'](tokenizer = self.tokenizer, systemAsUser = True)
+        self.contextWindow = ALLMMeta[modelID]['contextWindow']
         return
 
     def LoadModel(self, modelLocation: str):
