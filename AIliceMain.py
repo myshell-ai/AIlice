@@ -28,13 +28,14 @@ def GetInput(speech) -> str:
         inp = input(colored("USER: ", "green"))
     return inp
 
-def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str):
+def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float):
     config.Initialize()
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
     config.flashAttention2 = flashAttention2
     config.speechOn = speechOn
+    config.contextWindowRatio = contextWindowRatio
     
     StartServices()
 
@@ -70,6 +71,7 @@ if __name__ == '__main__':
     parser.add_argument('--prompt',type=str,default='main')
     parser.add_argument('--temperature',type=float,default=0.0)
     parser.add_argument('--flashAttention2',action='store_true')
+    parser.add_argument('--contextWindowRatio',type=float,default=0.6)
     parser.add_argument('--speechOn',action='store_true')
     parser.add_argument('--ttsDevice',type=str,default='cpu',help="cpu or cuda, the default is cpu.")
     parser.add_argument('--sttDevice',type=str,default='cpu',help="cpu or cuda, the default is cpu.")

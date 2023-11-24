@@ -1,3 +1,4 @@
+from common.AConfig import config
 from utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
 from prompts.ATools import ConstructOptPrompt
@@ -64,7 +65,7 @@ Variables: {[k for k in self.vars]}
         return ret, self.formatter.Len(ret)
     
     def BuildPrompt(self):
-        prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow*0.8))
+        prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
         if prompt is None:
             prompt = self.ParameterizedBuildPrompt(1)
         return prompt

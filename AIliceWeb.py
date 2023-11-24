@@ -19,12 +19,13 @@ from prompts.APromptArticleDigest import APromptArticleDigest
 import gradio as gr
 
 
-def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool):
+def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float):
     config.Initialize()
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
     config.flashAttention2 = flashAttention2
+    config.contextWindowRatio = contextWindowRatio
     
     StartServices()
 
@@ -65,5 +66,6 @@ if __name__ == '__main__':
     parser.add_argument('--prompt',type=str,default='main')
     parser.add_argument('--temperature',type=float,default=0.0)
     parser.add_argument('--flashAttention2',action='store_true')
+    parser.add_argument('--contextWindowRatio',type=float,default=0.6)
     kwargs = vars(parser.parse_args())
     main(**kwargs)
