@@ -12,6 +12,9 @@ class AFormatterVicuna():
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
     
+    def Len(self, prompt) -> int:
+        return len(prompt)
+    
 class AFormatterLLAMA2():
     def __init__(self, tokenizer=None, systemAsUser = False):
         self.tokenizer = tokenizer
@@ -47,6 +50,9 @@ class AFormatterLLAMA2():
             ret += f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}"
             #print("\n prompt: ", ret)
         return ret
+
+    def Len(self, prompt) -> int:
+        return len(prompt)
     
 class AFormatterSimple():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -60,6 +66,9 @@ class AFormatterSimple():
         ret = prompt0 + "\n" + "".join([f"### {roleMap[c['role']]}:\n{c['msg']}{seps[c['role']]}" for c in conversations]) + f"### {roleMap['ASSISTANT']}:\n"
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
+
+    def Len(self, prompt) -> int:
+        return len(prompt)
 
 class AFormatterChatML():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -81,6 +90,9 @@ class AFormatterChatML():
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
 
+    def Len(self, prompt) -> int:
+        return len(prompt)
+
 class AFormatterAMAZON():
     def __init__(self, tokenizer=None, systemAsUser = False):
         #self.roles={'USER': 'user', 'ASSISTANT': 'assistant', 'SYSTEM': 'system'}
@@ -98,6 +110,9 @@ class AFormatterAMAZON():
         ret = f"{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + f"<|assistant|>"
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
+
+    def Len(self, prompt) -> int:
+        return len(prompt)
 
 class AFormatterZephyr():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -117,6 +132,9 @@ class AFormatterZephyr():
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
 
+    def Len(self, prompt) -> int:
+        return len(prompt)
+
 class AFormatterGPT():
     def __init__(self, tokenizer=None, systemAsUser = False):
         self.systemAsUser = systemAsUser
@@ -127,3 +145,6 @@ class AFormatterGPT():
         ret = [{"role": "system", "content": prompt0}] + [{"role": roleMap[c['role']], "content": c['msg']} for c in conversations]
         #print("prompt: ", ret)
         return ret
+
+    def Len(self, prompt) -> int:
+        return len(str(prompt)) // 4

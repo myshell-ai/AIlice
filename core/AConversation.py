@@ -10,3 +10,6 @@ class AConversations():
     def GetConversations(self, frm=0):
         s = (2*frm) if (frm >= 0) or ('ASSISTANT' == self.conversations[-1]['role']) else (2*frm+1)
         return self.conversations[s:]
+    
+    def __len__(self):
+        return (len(self.conversations)+1) // 2

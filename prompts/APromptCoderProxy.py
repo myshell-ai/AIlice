@@ -1,5 +1,6 @@
 from utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
+from prompts.ATools import ConstructOptPrompt
 
 class APromptCoderProxy():
     PROMPT_NAME = "coder-proxy"
@@ -49,7 +50,7 @@ class APromptCoderProxy():
     def GetVar(self, varName: str) -> str:
         return self.vars.get(varName, "")
     
-    def BuildPrompt(self):
+    def ParameterizedBuildPrompt(self, n: int):
         prompt = f"""
 {self.prompt0}
 
@@ -59,4 +60,11 @@ Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.su
 Variables: {[k for k in self.vars]}
 """
         #prompt += "\nConversations:"
-        return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -4))
+        ret = self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
+        return ret, self.formatter.Len(ret)
+    
+    def BuildPrompt(self):
+        prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow*0.8))
+        if prompt is None:
+            prompt = self.ParameterizedBuildPrompt(1)
+        return prompt
