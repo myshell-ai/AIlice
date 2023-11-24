@@ -1,5 +1,7 @@
+from common.AConfig import config
 from utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
+from prompts.ATools import ConstructOptPrompt
 
 class APromptMain():
     PROMPT_NAME = "main"
@@ -32,7 +34,7 @@ class APromptMain():
     def GetActions(self):
         return self.ACTIONS
     
-    def BuildPrompt(self):
+    def ParameterizedBuildPrompt(self, n: int):
         context = str(self.formatter(prompt0 = "", conversations = self.conversations.GetConversations(frm = -1), encode = False))
         prompt = f"""
 {self.prompt0}
@@ -44,4 +46,11 @@ Relevant Information:
 {self.Recall(context)}
 """
         #prompt += "\nConversations:"
-        return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -4))
+        ret = self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
+        return ret, self.formatter.Len(ret)
+    
+    def BuildPrompt(self):
+        prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
+        if prompt is None:
+            prompt = self.ParameterizedBuildPrompt(1)
+        return prompt
