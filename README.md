@@ -95,15 +95,20 @@ conda activate ailice
 ```
 
 You can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both
-are used in the same way.
+are used in the same way except that AIliceWeb does not support voice conversations currently.
 
 - --**modelID** specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method
 in the future.
 - --**quantization** is the quantization option, you can choose 4bit or 8bit. The default is not quantized.
 - --**maxMemory** is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".
-- --**prompt** specifies the prompt to be executed, which is the type of agent. The default is main, this agent will decide to call the appropriate agent type according to your
+- --**prompt** specifies the prompt to be executed, which is the type of agent. The default is 'main', this agent will decide to call the appropriate agent type according to your
 needs. You can also specify a special type of agent and interact with it directly.
 - --**temperature** sets the temperature parameter of LLM reasoning, the default is zero.
+- --**flashAttention2** is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality.
+- --**contextWindowRatio** is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. The default value is 0.6.
+- --**speechOn** is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.
+- --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
+- --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 
 Below are a few typical use cases
 
