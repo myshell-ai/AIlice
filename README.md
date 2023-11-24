@@ -131,6 +131,33 @@ Among the open-source models, the ones that usually perform well include:
 - hf:lmsys/vicuna-33b-v1.3
 - hf:Xwin-LM/Xwin-LM-70B-V0.1
 
+## How to add LLM support
+For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
+
+For openai models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "api:" prefix.
+
+For open source models on Huggingface, you only need to know the following information to add support for new models: The huggingface address of the model, the prompt format of the model, and the context window length.
+Usually one line of code is enough to add a new model, but occasionally you are unlucky and you need about a dozen lines of code.
+
+Here is the complete method of adding new LLM support:
+
+Open llm/ALLMMeta.py, you should add the config of new LLM into the dict named ALLMMeta, which looks like the following:
+
+```python
+ALLMMeta={"hf:meta-llama/Llama-2-13b-chat-hf": {"formatter": AFormatterLLAMA2, "contextWindow": 4096},
+          "hf:meta-llama/Llama-2-70b-chat-hf": {"formatter": AFormatterLLAMA2, "contextWindow": 4096},
+          ...
+         }
+```
+
+- The "hf:" in the address means this is a model from huggingface, you need to append the address of the model to it to form a modelID as a key in the dict. 
+
+- "formatter" is a class that defines LLM's prompt format. You can find their definitions in llm/AFormatter. You can read these codes to determine which format is required for the model you want to add. In case you don't find it, You need to write one yourself. Fortunately, Formatter is a very simple thing and can be completed in more than a dozen lines of code. I believe you will understand how to do it after reading a few Formatter source codes.
+
+- The context window is a property that the LLM of the Transformer architecture usually has. It determines the length of text that the model can process at one time. You need to set the context window of the new model to the "contextWindow" key.
+
+Everything is done! Use the modelID of the new model as the command parameter to start AIlice!
+
 
 # How Developers Should Get Started
 
