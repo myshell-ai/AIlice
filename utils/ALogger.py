@@ -11,16 +11,22 @@ class ALogger():
         self.queue = queue.Queue()
         return
     
+    def ParseChannel(self, channel: str) -> tuple[str]:
+        l = channel.find("_")
+        channelType, agentName = channel[:l], channel[l+1:]
+        return channelType, agentName
+    
     def SinkPrint(self, channel: str, txt: str = None, action: str = ''):
+        channelType, agentName = self.ParseChannel(channel)
         if 'open' == action:
-            print(colored(channel + ": ", self.colorMap[channel]), txt, end="", flush=True)
+            print(colored(channel + ": ", self.colorMap[channelType]), txt, end="", flush=True)
         elif 'append' == action:
             print(txt, end="", flush=True)
         elif 'close' == action:
             print(txt, end="", flush=True)
             print("")
         else:
-            print(colored(channel + ": ", self.colorMap[channel]), txt)
+            print(colored(channel + ": ", self.colorMap[channelType]), txt)
         return
     
     def SinkSpeech(self, channel: str, txt: str = None, action: str = ''):
@@ -45,12 +51,13 @@ class ALogger():
         braketMap = {"<": 1, ">": -1}
         self.depth += (braketMap[channel] if channel in braketMap else 0)
         
-        if (channel in ["ASSISTANT", "SYSTEM"]):
+        channelType, _ = self.ParseChannel(channel)
+        if (channelType in ["ASSISTANT", "SYSTEM"]):
             self.SinkPrint(channel=channel, txt=txt, action=action)
-        if config.speechOn and ((channel in ["ASSISTANT"]) and (0 == self.depth)):
+        if config.speechOn and ((channelType in ["ASSISTANT"]) and (0 == self.depth)):
             self.SinkSpeech(channel=channel, txt=txt, action=action)
-        if ((channel in ["OUTPUT"]) and (1 == self.depth)) or\
-           (((channel in ["ASSISTANT"]) and (0 == self.depth))):
+        if ((channelType in ["OUTPUT"]) and (1 == self.depth)) or\
+           (((channelType in ["ASSISTANT"]) and (0 == self.depth))):
             self.SinkQueue(channel=channel, txt=txt, action=action)
         if (channel in [">"]) and (-1 == self.depth):
             self.SinkQueue(channel=channel, txt=None, action=None)

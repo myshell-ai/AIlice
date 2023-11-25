@@ -55,7 +55,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     llmPool.Init([modelID, "oai:gpt-3.5-turbo", "oai:gpt-4"])
     
     logger = ALogger(speech=speech)
-    processor = AProcessor(modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))
+    processor = AProcessor(name='AIlice', modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))
     processor.RegisterModules([Browser, Arxiv, Google, Duckduckgo, Scripter] + ([Speech] if config.speechOn else []))
     while True:
         inpt = GetInput(speech)

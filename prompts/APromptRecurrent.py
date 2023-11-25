@@ -51,7 +51,7 @@ class APromptRecurrent():
         txt = txt.strip()
         self.storage.Store(self.collection, txt)
         self.previousParagraph = txt
-        self.outputCB("OUTPUT", txt)
+        self.outputCB(f"OUTPUT_{self.processor.name}", txt)
         return
     
     def Recall(self, key: str):

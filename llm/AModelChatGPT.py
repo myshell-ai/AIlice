@@ -25,7 +25,7 @@ class AModelChatGPT():
         return
     
     def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float = 0.2) -> str:
-        proc(channel='ASSISTANT', txt='', action='open')
+        proc(txt='', action='open')
         currentPosition = 0
         text = ""
         for chunk in self.client.chat.completions.create(model=self.modelName,
@@ -39,7 +39,7 @@ class AModelChatGPT():
             
             sentences = [x for x in sentences_split(text[currentPosition:])]
             if (2 <= len(sentences)) and ("" != sentences[0].strip()):
-                proc(channel='ASSISTANT', txt=sentences[0], action='append')
+                proc(txt=sentences[0], action='append')
                 currentPosition += len(sentences[0])
-        proc(channel='ASSISTANT', txt=text[currentPosition:], action='close')
+        proc(txt=text[currentPosition:], action='close')
         return text

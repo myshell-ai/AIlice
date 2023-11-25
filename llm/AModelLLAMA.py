@@ -53,7 +53,7 @@ class AModelLLAMA():
         return
     
     def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float = 0.2) -> str:
-        proc(channel='ASSISTANT', txt='', action='open')
+        proc(txt='', action='open')
 
         predictedIDs = torch.tensor([prompt]).cuda() #(b, seq)
 
@@ -86,8 +86,8 @@ class AModelLLAMA():
 
             sentences = [x for x in sentences_split(text[currentPosition:])]
             if (2 <= len(sentences)) and ("" != sentences[0].strip()):
-                proc(channel='ASSISTANT', txt=sentences[0], action='append')
+                proc(txt=sentences[0], action='append')
                 currentPosition += len(sentences[0])
 
-        proc(channel='ASSISTANT', txt=text[currentPosition:], action='close')
+        proc(txt=text[currentPosition:], action='close')
         return text

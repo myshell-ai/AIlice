@@ -1,4 +1,5 @@
 import time
+from functools import partial
 from common.AConfig import config
 from llm.ALLMPool import llmPool
 from prompts.APrompts import promptsManager
@@ -7,7 +8,8 @@ from core.AConversation import AConversations
 from core.AInterpreter import AInterpreter
 
 class AProcessor():
-    def __init__(self, modelID, promptName, outputCB, collection = None):
+    def __init__(self, name, modelID, promptName, outputCB, collection = None):
+        self.name = name
         self.modelID = modelID
         self.llm = llmPool.GetModel(modelID)
         self.interpreter = AInterpreter()
@@ -66,11 +68,11 @@ class AProcessor():
     def __call__(self, txt: str) -> str:
         self.conversation.Add(role = "USER", msg = txt)
         self.outputCB("<")
-        self.outputCB("USER", txt)
+        self.outputCB(f"USER_{self.name}", txt)
 
         while True:
             prompt = self.prompt.BuildPrompt()
-            ret = self.llm.Generate(prompt, proc=self.outputCB, endchecker=self.interpreter.EndChecker, temperature = config.temperature)
+            ret = self.llm.Generate(prompt, proc=partial(self.outputCB, "ASSISTANT_" + self.name), endchecker=self.interpreter.EndChecker, temperature = config.temperature)
             self.conversation.Add(role = "ASSISTANT", msg = ret)
             self.result = ret
             
@@ -78,7 +80,7 @@ class AProcessor():
             
             if "" != resp:
                 self.conversation.Add(role = "SYSTEM", msg = "Function returned: {" + resp + "}")
-                self.outputCB("SYSTEM", resp)
+                self.outputCB(f"SYSTEM_{self.name}", resp)
             else:
                 self.outputCB(">")
                 return self.result
@@ -87,7 +89,7 @@ class AProcessor():
         if agentType not in promptsManager:
             return f"CALL FAILED. specified agentType {agentType} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
-            self.subProcessors[agentName] = AProcessor(modelID=self.modelID, promptName=agentType, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg)}"
         return resp
