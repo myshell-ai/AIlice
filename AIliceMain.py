@@ -5,7 +5,7 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from llm.ALLMPool import llmPool
 from utils.ALogger import ALogger
-from modules.ARemoteAccessors import makeClient, Browser, Arxiv, Google, Duckduckgo, Speech, Scripter
+from modules.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Speech, Scripter
 from AServices import StartServices
 
 from prompts.APrompts import promptsManager
@@ -38,9 +38,10 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     config.contextWindowRatio = contextWindowRatio
     
     StartServices()
-
+    clientPool.Init()
+    
     if speechOn:
-        speech = makeClient(Speech)
+        speech = clientPool.GetClient(Speech)
         if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
             print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
             exit(-1)

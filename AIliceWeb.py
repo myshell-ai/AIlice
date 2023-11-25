@@ -4,7 +4,7 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from llm.ALLMPool import llmPool
 from utils.ALogger import ALogger
-from modules.ARemoteAccessors import Browser, Arxiv, Google, Duckduckgo, Scripter
+from modules.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Scripter
 from AServices import StartServices
 
 from prompts.APrompts import promptsManager
@@ -28,6 +28,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     config.contextWindowRatio = contextWindowRatio
     
     StartServices()
+    clientPool.Init()
 
     for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)

@@ -3,7 +3,7 @@ from functools import partial
 from common.AConfig import config
 from llm.ALLMPool import llmPool
 from prompts.APrompts import promptsManager
-from modules.ARemoteAccessors import makeClient, Storage
+from modules.ARemoteAccessors import clientPool, Storage
 from core.AConversation import AConversations
 from core.AInterpreter import AInterpreter
 
@@ -41,7 +41,7 @@ class AProcessor():
     
     def RegisterModules(self, moduleAddrs):
         for moduleAddr in moduleAddrs:
-            module = makeClient(moduleAddr)
+            module = clientPool.GetClient(moduleAddr)
             if (not hasattr(module, "ModuleInfo")) or (not callable(getattr(module, "ModuleInfo"))):
                 raise Exception("EXCEPTION: ModuleInfo() not found in module.")
             info = module.ModuleInfo()
