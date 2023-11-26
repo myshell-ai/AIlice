@@ -109,6 +109,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**speechOn** is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
+- --**localExecution** controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.
 
 Below are a few typical use cases
 

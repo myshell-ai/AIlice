@@ -3,23 +3,29 @@ import signal
 
 from common.AConfig import config
 
-services = {"storage": ("modules/AStorageChroma.py","aservices"),
-            "web": ("modules/ABrowser.py","aservices"),
-            "arxiv": ("modules/AArxiv.py","aservices"),
-            "google": ("modules/AGoogle.py","aservices"),
-            "duckduckgo": ("modules/ADuckDuckGo.py","aservices"),
-            #"scripter": ("modules/AScripter.py","aservices"),
+services = {"storage": ("modules.AStorageChroma","aservices"),
+            "web": ("modules.ABrowser","aservices"),
+            "arxiv": ("modules.AArxiv","aservices"),
+            "google": ("modules.AGoogle","aservices"),
+            "duckduckgo": ("modules.ADuckDuckGo","aservices")
             }
 
 processes = []
 
 def StartServices():
-    subprocess.run("docker start scripter", shell=True, check=True)
+    if config.localExecution:
+        try:
+            subprocess.run("docker stop scripter", shell=True, check=True)
+        except Exception:
+            pass
+        services['scripter'] = ("modules.AScripter","aservices")
+    else:
+        subprocess.run("docker start scripter", shell=True, check=True)
     if config.speechOn:
-        services['speech'] = ("modules/ASpeech.py","tts")
+        services['speech'] = ("modules.ASpeech","tts")
     for serviceName in services:
         pyFile, env = services[serviceName]
-        cmd = f"conda run -n {env} python3 {pyFile}"
+        cmd = f"conda run -n {env} python3 -m {pyFile}"
         p = subprocess.Popen(cmd, shell=True, cwd=None)
         processes.append(p)
         print(serviceName," started.")

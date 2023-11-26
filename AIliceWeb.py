@@ -19,13 +19,14 @@ from prompts.APromptArticleDigest import APromptArticleDigest
 import gradio as gr
 
 
-def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float):
+def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float, localExecution: bool):
     config.Initialize()
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
     config.flashAttention2 = flashAttention2
     config.contextWindowRatio = contextWindowRatio
+    config.localExecution = localExecution
     
     StartServices()
     clientPool.Init()
@@ -68,5 +69,6 @@ if __name__ == '__main__':
     parser.add_argument('--temperature',type=float,default=0.0, help="temperature sets the temperature parameter of LLM reasoning, the default is zero.")
     parser.add_argument('--flashAttention2',action='store_true', help="flashAttention2 is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality.")
     parser.add_argument('--contextWindowRatio',type=float,default=0.6, help="contextWindowRatio is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. The default value is 0.6.")
+    parser.add_argument('--localExecution',action='store_true', help="localExecution controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.")
     kwargs = vars(parser.parse_args())
     main(**kwargs)

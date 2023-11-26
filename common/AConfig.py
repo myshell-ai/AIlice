@@ -3,14 +3,15 @@ import json
 from termcolor import colored
 
 class AConfig():
-    def __init__(self, maxMemory = {}, quantization = None, openaiGPTKey = None, temperature = 0.0, flashAttention2 = False, speechOn = False, contextWindowRatio = 0.6):
+    def __init__(self):
         self.maxMemory = {}
         self.quantization = None
         self.openaiGPTKey = None
-        self.temperature = temperature
-        self.flashAttention2 = flashAttention2
+        self.temperature = 0.0
+        self.flashAttention2 = False
         self.speechOn = False
-        self.contextWindowRatio = contextWindowRatio
+        self.localExecution = False
+        self.contextWindowRatio = 0.6
         return
 
     def Initialize(self):
