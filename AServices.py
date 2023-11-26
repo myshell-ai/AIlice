@@ -14,6 +14,7 @@ services = {"storage": ("modules/AStorageChroma.py","aservices"),
 processes = []
 
 def StartServices():
+    subprocess.run("docker start scripter", shell=True, check=True)
     if config.speechOn:
         services['speech'] = ("modules/ASpeech.py","tts")
     for serviceName in services:
