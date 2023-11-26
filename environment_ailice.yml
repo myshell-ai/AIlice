@@ -9,6 +9,7 @@ dependencies:
       - transformers>=4.0.0
       - torch
       - termcolor
+      - scipy
       - peft
       - bitsandbytes
       - requests
