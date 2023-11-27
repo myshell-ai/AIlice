@@ -140,7 +140,7 @@ Among the open-source models, the ones that usually perform well include:
 ## How to add LLM support
 For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
 
-For openai models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "api:" prefix.
+For openai models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:" prefix.
 
 For open source models on Huggingface, you only need to know the following information to add support for new models: The huggingface address of the model, the prompt format of the model, and the context window length.
 Usually one line of code is enough to add a new model, but occasionally you are unlucky and you need about a dozen lines of code.
