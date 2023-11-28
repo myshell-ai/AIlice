@@ -25,7 +25,7 @@ class APromptRecurrent():
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "Memory": [{"re": r"Updated Working Memory:(?P<newState>.*?)Execute:", "isEntry": True}],
-                         "Output": [{"re": r"New Paragraph:(?P<txt>.*?)Update:", "isEntry": True}],
+                         "Output": [{"re": r"Report:(?P<txt>.*?)Update:", "isEntry": True}],
                          "Action": [{"re": r"Function Call:(?P<newAction>(?:.*(?=\|!>))\|!>)", "isEntry": True}],
                          "COMPLETE": [{"re": GenerateRE4FunctionCalling("COMPLETE<!|result: str|!> -> None", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS = {"Memory": {"func": self.UpdateState},

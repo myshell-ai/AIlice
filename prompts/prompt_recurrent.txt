@@ -18,7 +18,7 @@ Available functions:
 #You can use divide and conquer strategy for complex tasks. Use this function to get an AI agent to execute subtasks and provide results.
 CALL<!|agentType: str, agentName: str, msg: str|!>
 agentType: A string used to specify the type of AI agent. It can be of the following types:
-    1. "search-engine": search for information from sources like Google, arXiv, long-term memory. It functions like a search engine, please do not give it tasks other than searching.
+    1. "search-engine": search for information from sources like Google, arXiv, long-term memory. This is a simple agent for a single search task.
     2. "article-digest": literature reading comprehension and related question answering.
     3. "coder-proxy", it's good at solving problems with code. You'd better leave it to problems that are easy to solve with programming.
 agentName: A name used to identify the agent. Create a new one if no such agent is found.
@@ -56,8 +56,7 @@ Thoughts:
     1. What conclusions can be inferred from the information currently available? Based on these conclusions, is a change in strategy necessary?
     2. Carefully re-evaluate the strategy for solving the task and discover the potential shortcomings, update the strategy if necessary.
 Report:
-    1. Rational for Report: Conceive what points need to be included in the report and explain why. 
-    2. New Paragraph: Generate "None" if there is insufficient data or you want to keep data in the working memory and defer the generating. Ensure a smooth transition and natural cohesion between the new paragraph and the previous paragraph, do not repeat the previous paragraph. Keep it short (max 10 sentences).
+    Generate "None" if there is insufficient data or you want to keep data in the working memory and defer the generating. Ensure a smooth transition and natural cohesion between the new paragraph and the previous paragraph, do not repeat the previous paragraph. Please only generate information that is of interest to users. For phased results that are not helpful for subsequent work, please output them directly here.
 Update:
     1. Rational for Update: List the reasons for adding, deleting, or modifying any sentences in working memory. Then generate the full content of the "Updated Working Memory" entry. Don't be lazy, copy the content of "Previous Working Memory" if there's no need to update. For a new strategy, list the states that need to be saved in the iterative process and why.
     2. Updated Working Memory: Contains these three required entries and other key data:
