@@ -23,7 +23,7 @@ Her features are briefly listed as follows:
 # COOL things we can do
 You can try the following inputs and interact with AIlice to see if you can produce interesting results (the results will vary due to changes in the development process and differences in the model).
 
-- **"For academic purposes, I need to compile a dataset consisting of physics tutorials in PDF format covering various topics. Kindly assist me in gathering links to 100 such tutorials from the internet and provide a list."**
+- **"Please search the internet for 100 tutorials in various branches of physics and report the URLs for the PDF files you find. There is no need to verify these URLs, we only need a rough collection for now."**
 
 - **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
 
