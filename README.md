@@ -179,6 +179,24 @@ dynamically constructed.
 hundred lines of code in total, but they contain the basic framework of AIlice.
 
 
+# Future Development Roadmap
+
+If you are interested in the development of AIlice itself, you may consider the following directions:
+
+- Explore improved **long and short-term memory mechanisms** to enhance the capabilities of each Agent.
+
+- **Multimodal** support.
+
+- **Self-expanding** support. Currently, we have partially implemented the dynamic loading of peripheral modules. Our goal is to further enhance dynamism, allowing the Language Model to **autonomously code and implement new peripheral modules and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities.
+
+- **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
+
+- **Simpler installation process**. Ideally, AIlice's installation should be accomplished with just one 'pip install' command, enabling users to avoid intricate technical details.
+
+- **Improved Voice Conversation Feature**, currently, there are frequent instances of failure in detecting the endpoint of user speech in voice conversations. Addressing this issue is crucial for enhancing the overall functionality.
+
+- **Develop Agents** with various functionalities based on the current framework.
+
 # FAQs:
 - **Why does AIlice get stuck on startup after updating the code?**
 This is because the code in the docker container has not been updated and is incompatible with the new code. Use the following command to update the code in the docker container:
