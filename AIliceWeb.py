@@ -34,7 +34,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptRecurrent, APromptCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
-    llmPool.Init([modelID, "oai:gpt-3.5-turbo", "oai:gpt-4"])
+    llmPool.Init([modelID])
     
     logger = ALogger(speech=None)
     processor = AProcessor(name="AIlice", modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))

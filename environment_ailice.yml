@@ -24,5 +24,6 @@ dependencies:
       - regex
       - simplejson
       - protobuf
+      - sentencepiece
 
 

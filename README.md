@@ -116,10 +116,12 @@ Below are a few typical use cases
 ```bash
 python3 AIliceWeb.py --modelID=oai:gpt-4 --prompt="main"
 python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher"
-python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main"
-python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit
+python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
+python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ```
 
+When you run it for the first time, you will be asked to enter the api-key of openai. If you only want to use open source LLM, you do not need to enter it. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
 
 # Choice of LLM
 AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, only gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide relatively stable results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.

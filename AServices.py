@@ -20,7 +20,11 @@ def StartServices():
             pass
         services['scripter'] = ("modules.AScripter","aservices")
     else:
-        subprocess.run("docker start scripter", shell=True, check=True)
+        try:
+            subprocess.run("docker start scripter", shell=True, check=True)
+        except Exception:
+            print("The attempt to run the docker container (docker start scripter) failed. Please confirm whether you have installed docker. If you want to run the scripter locally, please use the --localExecution option.")
+            exit(1)
     if config.speechOn:
         services['speech'] = ("modules.ASpeech","tts")
     for serviceName in services:
