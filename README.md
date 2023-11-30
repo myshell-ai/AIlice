@@ -72,6 +72,8 @@ completed by LLM and the interpreter, their outputs are each other's inputs, for
 
 
 # Environment Configuration and Running
+Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. We will gradually reduce the complexity of environment configuration in future developments. To run AIlice, you need to ensure that **Anaconda** and **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
+
 Since the Agent depends on many peripheral modules, we separate the runtime environment into multiple independent environments to reduce the possibility of dependency
 conflicts. You can also decide how to configure the runtime environment yourself, and the conda environment names of each peripheral module are configured in AServices.py.
 
