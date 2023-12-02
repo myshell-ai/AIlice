@@ -13,7 +13,7 @@ COPY modules/AScrollablePage.py /scripter/modules/AScrollablePage.py
 
 RUN pip3 install pyzmq
 
-EXPOSE 2005
-EXPOSE 2006
+EXPOSE 2005-2016
+
 
 CMD ["python3", "/scripter/AScripter.py", "--incontainer"]
