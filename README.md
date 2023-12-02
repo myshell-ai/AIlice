@@ -99,7 +99,7 @@ conda activate ailice
 You can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both
 are used in the same way except that AIliceWeb does not support voice conversations currently.
 
-- --**modelID** specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method
+- --**modelID** specifies the model. The currently supported models can be seen in llm/ALLMMeta.py, just copy it directly. We will implement a simpler model specification method
 in the future.
 - --**quantization** is the quantization option, you can choose 4bit or 8bit. The default is not quantized.
 - --**maxMemory** is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".
