@@ -27,6 +27,8 @@ class AClientPool():
         return
     
     def GetClient(self, moduleAddr: str):
+        if moduleAddr not in self.pool:
+            self.pool[moduleAddr] = makeClient(moduleAddr)
         return self.pool[moduleAddr]
     
 clientPool = AClientPool()
