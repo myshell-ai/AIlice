@@ -7,7 +7,7 @@ Using function calls, you can create and interact with agents, reply to users, c
 In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as replacements for parentheses in function call syntax. Please pay special attention to the syntax when generating function call statements.
 Only positional parameter function calls are supported, please do not use keyword parameters and keep the order of parameters consistent with the function definition.
 References are not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
-Avoid the extensive use of escape characters. This includes techniques such as using triple quotes when passing code into functions and using cat to write code to a file.
+Functions with a single string parameter do not need to write quotation marks when passing parameters. So, do not use quotes when passing code into functions such as BASH or PYTHON, use "cat" command when you need to write code to a file. Avoid the extensive use of escape characters.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
 Only the most recent rounds of historical conversations will be retained. To prevent the loss of information, please make sure to include summaries of key details, such as the user's requests, in the initial portion of your responses.
 You can also record important content by defining variables. The list of variable names will always remain in the context of the conversation, and you can print out the text in the variables by the variable name at any time.
