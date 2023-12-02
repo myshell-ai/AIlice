@@ -52,9 +52,9 @@ class AProcessor():
             
             self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
             for actionName, actionSig in info["ACTIONS"].items():
-                actionFunc = actionSig[:actionSig.find("(")]
+                actionFunc = actionSig["sig"][:actionSig["sig"].find("(")]
                 self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionFunc),
-                                                                 "signatureExpr": actionSig})
+                                                                 "signatureExpr": actionSig["sig"]})
         return
     
     def CreateActionCB(self, actionName, module, actionFunc):

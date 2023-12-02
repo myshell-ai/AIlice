@@ -12,7 +12,10 @@ class AScripter():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "scripter", "ACTIONS": {"BASH": "RunBash(code:str)->str", "SCROLLUPBASH": "ScrollUpBash()->str", "PYTHON": "RunPython(code:str)->str", "SCROLLUPPY": "ScrollUpPy()->str"}}
+        return {"NAME": "scripter", "ACTIONS": {"BASH": {"sig": "RunBash(code:str)->str", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time."},
+                                                "SCROLLUPBASH": {"sig": "ScrollUpBash()->str", "prompt": "Scroll up the results."},
+                                                "PYTHON": {"sig": "RunPython(code:str)->str", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references."},
+                                                "SCROLLUPPY": {"sig": "ScrollUpPy()->str", "prompt": "Scroll up the results."}}}
     
     def Run(self, session: str, cmd: list[str], timeout: int = None) -> str:
         try:

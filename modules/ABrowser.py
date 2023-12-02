@@ -27,7 +27,8 @@ class ABrowser():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "browser", "ACTIONS": {"BROWSE": "Browse(url:str)->str", "SCROLLDOWN": "ScrollDown()->str"}}
+        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"sig": "Browse(url:str)->str", "prompt": "Open a webpage/PDF and obtain the visible content."},
+                                               "SCROLLDOWN": {"sig": "ScrollDown()->str", "prompt": "Scroll down the page."}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()
