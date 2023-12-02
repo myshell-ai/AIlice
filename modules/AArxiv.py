@@ -6,7 +6,7 @@ from modules.AScrollablePage import AScrollablePage
 
 class AArxiv():
     def __init__(self):
-        self.page = AScrollablePage({"SCROLLDOWNARXIV": "SCROLLDOWNARXIV<!||!>"})
+        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWNARXIV<!||!>"})
         return
     
     def ModuleInfo(self):
