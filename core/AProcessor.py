@@ -40,6 +40,7 @@ class AProcessor():
         return
     
     def RegisterModules(self, moduleAddrs):
+        ret = []
         for moduleAddr in moduleAddrs:
             module = clientPool.GetClient(moduleAddr)
             if (not hasattr(module, "ModuleInfo")) or (not callable(getattr(module, "ModuleInfo"))):
@@ -51,11 +52,12 @@ class AProcessor():
                 raise Exception("EXCEPTION: 'ACTIONS' is not found in module info.")
             
             self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
-            for actionName, actionSig in info["ACTIONS"].items():
-                actionFunc = actionSig["sig"][:actionSig["sig"].find("(")]
+            for actionName, actionMeta in info["ACTIONS"].items():
+                ret.append(f'{actionMeta["sig"]}: {actionMeta["prompt"]}')
+                actionFunc = actionMeta["sig"][:actionMeta["sig"].find("(")]
                 self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionFunc),
-                                                                 "signatureExpr": actionSig["sig"]})
-        return
+                                                                 "signatureExpr": actionMeta["sig"]})
+        return "\n".join(ret)
     
     def CreateActionCB(self, actionName, module, actionFunc):
         def callback(*args,**kwargs):
