@@ -7,8 +7,8 @@ from modules.AScrollablePage import AScrollablePage
 
 class AScripter():
     def __init__(self):
-        self.pages = {"bash": AScrollablePage({"SCROLLUP": "SCROLLUPBASH<!||!>"}),
-                      "py": AScrollablePage({"SCROLLUP": "SCROLLUPPY<!||!>"})}
+        self.pages = {"bash": AScrollablePage({"SCROLLUP": "SCROLLUPBASH"}),
+                      "py": AScrollablePage({"SCROLLUP": "SCROLLUPPY"})}
         return
     
     def ModuleInfo(self):

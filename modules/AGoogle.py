@@ -5,7 +5,7 @@ from modules.AScrollablePage import AScrollablePage
 
 class AGoogle():
     def __init__(self):
-        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNGOOGLE<!||!>"})
+        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNGOOGLE"})
         return
     
     def ModuleInfo(self):

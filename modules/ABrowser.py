@@ -23,7 +23,7 @@ class ABrowser():
         self.options.add_argument("--disable-blink-features=AutomationControlled")
 
         self.driver = webdriver.Chrome(options=self.options)
-        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN<!||!>"})
+        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN"})
         return
     
     def ModuleInfo(self):
