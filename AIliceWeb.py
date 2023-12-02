@@ -14,6 +14,7 @@ from prompts.APromptSearchEngine import APromptSearchEngine
 from prompts.APromptRecurrent import APromptRecurrent
 from prompts.APromptCoder import APromptCoder
 from prompts.APromptModuleCoder import APromptModuleCoder
+from prompts.APromptModuleLoader import APromptModuleLoader
 from prompts.APromptCoderProxy import APromptCoderProxy
 from prompts.APromptArticleDigest import APromptArticleDigest
 
@@ -32,7 +33,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     StartServices()
     clientPool.Init()
 
-    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptRecurrent, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
+    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptRecurrent, APromptCoder, APromptModuleCoder, APromptModuleLoader, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
     llmPool.Init([modelID])

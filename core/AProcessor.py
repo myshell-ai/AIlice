@@ -53,11 +53,11 @@ class AProcessor():
             
             self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
             for actionName, actionMeta in info["ACTIONS"].items():
-                ret.append(f'{actionMeta["sig"]}: {actionMeta["prompt"]}')
+                ret.append({"action": actionName, "signature": actionMeta["sig"], "prompt": actionMeta["prompt"]})
                 actionFunc = actionMeta["sig"][:actionMeta["sig"].find("(")]
                 self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionFunc),
                                                                  "signatureExpr": actionMeta["sig"]})
-        return "\n".join(ret)
+        return ret
     
     def CreateActionCB(self, actionName, module, actionFunc):
         def callback(*args,**kwargs):
