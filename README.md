@@ -14,10 +14,12 @@ Second, despite the current strength of OpenAI's products, we place hope in the 
 AIlice is a lightweight AI Agent under development, which also serves as a simple development framework for quickly building and experimenting with various AI Agent ideas.
 Her features are briefly listed as follows:
 
-- **Natural multi-Agent invocation and interaction mechanism.**
+- **Natural and highly fault-tolerant Interactive Agents Calling Tree architecture.**
 - **Parsing LLM output in the most flexible way possible, supporting more varied function call mechanisms.**
-- **Support for various open-source LLMs and commercial models like gpt-4.**
-- **Support for peripheral modules such as web page, pdf browsing, searching, bash, Python code execution, voice dialogue, etc. which run as RPC services in a separable runtime environment.**
+- **Self-constructing and dynamically loading environment interaction modules, offering limitless potential for feature expansion.**
+- **Designed for open-source models but seamlessly supports commercial models like GPT-4.**
+- **Supports in-depth investigations on specific topics.**
+- **Automation programming and script execution. It serves as an all-encompassing coder and a proficient system management tool, mastering all system commands—akin to an AI operating system.**
 
 
 # COOL things we can do
@@ -39,6 +41,10 @@ This is also a very interesting attempt. Cadquery is a python package that uses 
 can give us a glimpse of how mature geometric intuition can be in LLM's world view.
 
 
+- **"Please write an external interactive module. The function of the module is to obtain the content of related pages on the wiki through keywords."** AIlice can construct external interaction modules on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Naturally, the newly built modules can be immediately loaded for AIlice to use.
+
+
+
 # Design
 The basic principles when designing AIlice are:
 
@@ -46,6 +52,7 @@ The basic principles when designing AIlice are:
 - **Separating different computational tasks as much as possible, using recursion and divide-and-conquer from traditional computing to solve complex problems.**
 - **Agents should be able to interact in both directions.**
 
+## Computational Model: Interactive Agents Calling Tree
 A natural idea is to let LLM solve certain problems (such as information retrieval, document understanding, etc.) through multi-round dialogues with external callers and
 peripheral modules in the simplest computational unit. We temporarily call this computational unit a "function". Then, by analogy with traditional computing, we allow 
 functions to call each other, and finally add the concept of threads to implement multi-agent interaction. However, we can have a **much simpler and more elegant computational
@@ -58,6 +65,7 @@ process by passing in the supplementary information. It can be seen that this "f
 The high intelligence of LLM makes this interesting property possible. You can also see it as **agents strung together by calling relationships, where each agent can create and call more sub-agents, and can also dialogue with its caller to obtain supplementary information or report its progress**. In AIlice, we call this computational unit
 **"AProcessor"**. Its code is located in core/AProcessor.py.
 
+## Basic Computing Unit: Tai Chi Diagram of LLM and Interpreter
 Next, we will elaborate on the structure inside AProcessor. The interior of AProcessor is a multi-round dialogue. The "program" that defines the function of AProcessor
 is a prompt generation mechanism, which generates the prompt for each round of dialogue from the dialogue history. The dialogue is one-to-many. After the external caller
 inputs the request, LLM will have multiple rounds of dialogue with the peripheral modules (we call them SYSTEM), LLM outputs function calls in various grammatical forms,
