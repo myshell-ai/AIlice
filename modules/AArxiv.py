@@ -6,11 +6,12 @@ from modules.AScrollablePage import AScrollablePage
 
 class AArxiv():
     def __init__(self):
-        self.page = AScrollablePage({"SCROLLDOWNARXIV": "SCROLLDOWNARXIV<!||!>"})
+        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWNARXIV"})
         return
     
     def ModuleInfo(self):
-        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": "ArxivSearch(keywords:str)->str", "SCROLLDOWNARXIV": "ScrollDown()->str"}}
+        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"sig": "ArxivSearch(keywords:str)->str", "prompt": "Use arxiv to search academic literatures."},
+                                             "SCROLLDOWNARXIV": {"sig": "ScrollDown()->str", "prompt": "Scroll down the results."}}}
     
     def ArxivSearch(self, keywords):
         try:

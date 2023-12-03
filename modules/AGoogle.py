@@ -5,11 +5,12 @@ from modules.AScrollablePage import AScrollablePage
 
 class AGoogle():
     def __init__(self):
-        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNGOOGLE<!||!>"})
+        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNGOOGLE"})
         return
     
     def ModuleInfo(self):
-        return {"NAME": "google", "ACTIONS": {"GOOGLE": "Google(keywords:str)->str", "SCROLLDOWNGOOGLE": "ScrollDown()->str"}}
+        return {"NAME": "google", "ACTIONS": {"GOOGLE": {"sig": "Google(keywords:str)->str", "prompt": "Use google to search internet content."},
+                                              "SCROLLDOWNGOOGLE": {"sig": "ScrollDown()->str", "prompt": "Scroll down the results."}}}
     
     def Google(self, keywords):
         try:

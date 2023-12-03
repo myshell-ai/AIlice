@@ -6,11 +6,12 @@ from modules.AScrollablePage import AScrollablePage
 class ADuckDuckGo():
     def __init__(self):
         self.baseURL = "https://api.duckduckgo.com/"
-        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNDUCKDUCKGO<!||!>"})
+        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNDUCKDUCKGO"})
         return
     
     def ModuleInfo(self):
-        return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": "DuckDuckGo(keywords:str)->str", "SCROLLDOWNDUCKDUCKGO": "ScrollDown()->str"}}
+        return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": {"sig": "DuckDuckGo(keywords:str)->str", "prompt": "Use duckduckgo to search internet content."},
+                                                  "SCROLLDOWNDUCKDUCKGO": {"sig": "ScrollDown()->str", "prompt": "Scrolldown the results."}}}
     
     def DuckDuckGo(self, keywords: str) -> str:
         params = {

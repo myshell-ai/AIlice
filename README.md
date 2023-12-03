@@ -87,7 +87,7 @@ To use the automatic programming feature, we need a code execution environment r
 
 ```bash
 docker build -t env4scripter .
-docker run -d -p 127.0.0.1:2005:2005 -p 127.0.0.1:2006:2006 --name scripter env4scripter
+docker run -d -p 127.0.0.1:2005-2016:2005-2016 --name scripter env4scripter
 ```
 
 Enter the main program execution environment

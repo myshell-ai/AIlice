@@ -29,7 +29,8 @@ class ASpeech():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "speech", "ACTIONS": {"GETAUDIO": "GetAudio()->str", "PLAY": "Play(txt:str)->None"}}
+        return {"NAME": "speech", "ACTIONS": {"GETAUDIO": {"sig": "GetAudio()->str", "prompt": "Get text input from microphone."},
+                                              "PLAY": {"sig": "Play(txt:str)->None", "prompt": "Synthesize input text fragments into audio and play."}}}
     
     def SetDevices(self, deviceMap: dict[str,str]):
         if "stt" in deviceMap:
