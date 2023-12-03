@@ -195,7 +195,9 @@ If you are interested in the development of AIlice itself, you may consider the 
 
 - **Multimodal** support.
 
-- **Self-expanding** support. Currently, we have partially implemented the dynamic loading of peripheral modules. Our goal is to further enhance dynamism, allowing the Language Model to **autonomously code and implement new peripheral modules and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities.
+- **Self-expanding** support. Our goal is to enable language models to **autonomously code and implement new peripheral modules and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities. It has been implemented, but it still needs to be improved so that various agents can easily use dynamically loaded modules.
+
+- **Introducing more script language features beyond function calls, unleashing LLM's text manipulation capabilities.** For example, one of the most pressing needs is for LLM to have the ability to define and reference text variables. This grants it a named-access storage mechanism, expanding the context window, while also allowing it to avoid unnecessary copying when transmitting large code segments.
 
 - **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
 
