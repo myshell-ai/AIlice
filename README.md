@@ -6,7 +6,7 @@ This is due to two reasons.
 
 First, we need **a simple framework that is easy to understand and sufficiently controllable** to test various new ideas about agents. This requires building a fully functional agent framework within a few thousand lines of code.
 
-Second, despite the current strength of OpenAI's products, we place hope in the open-source community for the future. This is not only because of the idealistic desire to break the monopoly on AGI but also for technical reasons. We anticipate that **future agents will run for extended periods on local machines, performing various complex tasks from local data analysis to information investigations on the internet**. Many of these tasks require good reasoning abilities rather than vast amounts of knowledge. We hope that in the future, a lightweight, high-reasoning-capacity open-source LLM (Lightweight Language Model) will emerge to realize this ideal.
+Second, despite the current strength of OpenAI's products, we place hope in the open-source community for the future. This is not only because of the idealistic desire to break the monopoly on AGI but also for technical reasons. We anticipate that **future agents will run for extended periods on local machines, performing various complex tasks from local data analysis to information investigations on the internet**. Many of these tasks require good reasoning abilities rather than vast amounts of knowledge. We hope that in the future, a lightweight, high-reasoning-capacity open-source LLM will emerge to realize this ideal.
 
 
 # Introduction
@@ -23,7 +23,9 @@ Her features are briefly listed as follows:
 
 
 # COOL things we can do
-You can try the following inputs and interact with AIlice to see if you can produce interesting results (the results will vary due to changes in the development process and differences in the model).
+Let's list some typical use cases. I frequently employ these examples to test AIlice during development, ensuring stable performance. However, even with these tests, the execution results are influenced by the chosen model, code version, and even the testing time. (GPT-4 may experience a decrease in performance under high loads, while open-source models, of course, don't have this issue; they don't have much room for degradation) Additionally, AIlice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when AIlice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success. Furthermore, if the task execution falls short, you can guide her in the right direction, and she will rectify her approach.
+
+The last point to note is that AIlice currently lacks a runtime control mechanism, so she might get stuck in a loop or run for an extended period. When using a commercial LLM runtime, you need to monitor her operation closely.
 
 - **"Please search the internet for 100 tutorials in various branches of physics and report the URLs for the PDF files you find. There is no need to verify these URLs, we only need a rough collection for now."**
 
@@ -31,18 +33,16 @@ You can try the following inputs and interact with AIlice to see if you can prod
 
 - **"Deploy a straightforward website on this machine using the Flask framework. Ensure accessibility at 0.0.0.0:2006. The website should have a single page capable of displaying all images located in the 'images' directory."**
 This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
-cp" command to see it. But you can let AIlice solve this problem by itself: deploy a website in the container according to the above prompt(It is recommended to use the 2006 port that has been port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can also try to let her iterate to produce more complex functions.
+cp" command to see it. But you can let AIlice solve this problem by itself: deploy a website in the container according to the above prompt(It is recommended to use the 2006 port that has been port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can also try to let her iterate to produce more complex functions. If you don't see any images on the page, please check whether the "images" folder of the website is different from the "images" folder here (for example, it might be under "static/images").
 
 - **"Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the 'images' directory."**
 If you successfully deployed the above website, you can now see the BTC price curve directly on the page.
 
 - **"Please use cadquery to implement a cup."**
 This is also a very interesting attempt. Cadquery is a python package that uses python programming for cad modeling. We try to use AIlice to automatically build 3D models! This
-can give us a glimpse of how mature geometric intuition can be in LLM's world view.
+can give us a glimpse of how mature geometric intuition can be in LLM's world view. Of course, after implementing multimodal support, we can enable AIlice to see the models she creates, allowing for further adjustments and establishing a highly effective feedback loop. This way, it might be possible to achieve truly usable language-controlled 3D modeling.
 
-
-- **"Please write an external interactive module. The function of the module is to obtain the content of related pages on the wiki through keywords."** AIlice can construct external interaction modules on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Naturally, the newly built modules can be immediately loaded for AIlice to use.
-
+- **"Please write an external interactive module. The function of the module is to obtain the content of related pages on the wiki through keywords."** AIlice can construct external interaction modules on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Once the module is constructed, you can instruct AIlice by saying, "Please load the newly implemented wiki module and utilize it to query the entry on relativity."
 
 
 # Design
@@ -52,7 +52,26 @@ The basic principles when designing AIlice are:
 - **Separating different computational tasks as much as possible, using recursion and divide-and-conquer from traditional computing to solve complex problems.**
 - **Agents should be able to interact in both directions.**
 
+Let's briefly explain these fundamental principles.
+
+Starting from the most obvious level, a highly dynamic prompt construction makes it less likely for an agent to fall into a loop. The influx of new variables from the external environment continuously impacts the LLM, helping it to avoid that pitfall. Furthermore, feeding the LLM with all the currently available information can greatly improve its output. For example, in automated programming, error messages from interpreters or command lines assist the LLM in continuously modifying the code until the correct result is achieved. Lastly, in dynamic prompt construction, new information in the prompts may also come from other agents, which acts as a form of linked inference computation, making the system's computational mechanisms more complex, varied, and capable of producing richer behaviors.
+
+Separating computational tasks is, from a practical standpoint, due to our limited context window. We cannot expect to complete a complex task within a window of a few thousand tokens. If we can decompose a complex task so that each subtask is solved within limited resources, that would be an ideal outcome. In traditional computing models, we have always taken advantage of this, but in new computing centered around LLMs, this is not easy to achieve. The issue is that if one subtask fails, the entire task is at risk of failure. Recursion is even more challenging: how do you ensure that with each call, the LLM solves a part of the subproblem rather than passing the entire burden to the next level of the call? We have solved the first problem with the IACT architecture in AIlice, and the second problem is theoretically not difficult to solve, but it likely requires a smarter LLM.
+
+The third principle is what everyone is currently working on: having multiple intelligent agents interact and cooperate to complete more complex tasks. The implementation of this principle actually addresses the aforementioned issue of subtask failure. Multi-agent collaboration is crucial for the fault tolerance of agents in operation. In fact, this may be one of the biggest differences between the new computational paradigm and traditional computing: traditional computing is precise and error-free, assigning subtasks only through unidirectional communication (function calls), whereas the new computational paradigm is error-prone and requires bidirectional communication between computing units to correct errors. This will be explained in detail in the following section on the IACT framework.
+
+
 ## Computational Model: Interactive Agents Calling Tree
+AIlice can be regarded as **a computer powered by a LLM**, and its features include:
+
+- Representing input, output, programs, and data in text form.
+
+- Using LLM as the processor.
+
+- Breaking down computational tasks through successive calls to basic computing units (analogous to functions in traditional computing), which are essentially various functional agents.
+
+Therefore, **user-input text commands are executed as a kind of program, decomposed into various "subprograms", and addressed by different agents**, forming the fundamental architecture of AIlice. In the following, we will provide a detailed explanation of the nature of these basic computing units.
+
 A natural idea is to let LLM solve certain problems (such as information retrieval, document understanding, etc.) through multi-round dialogues with external callers and
 peripheral modules in the simplest computational unit. We temporarily call this computational unit a "function". Then, by analogy with traditional computing, we allow 
 functions to call each other, and finally add the concept of threads to implement multi-agent interaction. However, we can have a **much simpler and more elegant computational
@@ -63,14 +82,16 @@ return a query statement to its caller when it encounters unclear requirements d
 higher level caller. This process can even go all the way to the final user's chat window. When new information is added, the caller will reactivate the coder's execution
 process by passing in the supplementary information. It can be seen that this "function" is not a traditional function, but an object that can be called multiple times. 
 The high intelligence of LLM makes this interesting property possible. You can also see it as **agents strung together by calling relationships, where each agent can create and call more sub-agents, and can also dialogue with its caller to obtain supplementary information or report its progress**. In AIlice, we call this computational unit
-**"AProcessor"**. Its code is located in core/AProcessor.py.
+**"AProcessor"**(essentially what we referred to as an agent). Its code is located in core/AProcessor.py.
 
 ## Basic Computing Unit: Tai Chi Diagram of LLM and Interpreter
 Next, we will elaborate on the structure inside AProcessor. The interior of AProcessor is a multi-round dialogue. The "program" that defines the function of AProcessor
 is a prompt generation mechanism, which generates the prompt for each round of dialogue from the dialogue history. The dialogue is one-to-many. After the external caller
 inputs the request, LLM will have multiple rounds of dialogue with the peripheral modules (we call them SYSTEM), LLM outputs function calls in various grammatical forms,
 and the system calls the peripheral modules to generate results and puts the results in the reply message. LLM finally gets the answer and responds to the external caller,
-ending this call. But because the dialogue history is still preserved, the caller can call in again to continue executing more tasks. The last part we want to introduce
+ending this call. But because the dialogue history is still preserved, the caller can call in again to continue executing more tasks. 
+
+The last part we want to introduce
 is the parsing module for LLM output. In fact, **we regard the output text of LLM as a "script" of semi-natural language and semi-formal language, and use a simple interpreter to execute it**. We can use regular expressions to express a carefully designed grammatical structure, parse it into a function call and execute it. Under this design, we
 can design more flexible function call grammar forms, such as a section with a certain fixed title (such as "UPDATE MEMORY"), which can also be directly parsed out and
 trigger the execution of an action. This implicit function call does not need to make LLM aware of its existence, but only needs to make it strictly follow a certain format
