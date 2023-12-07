@@ -22,7 +22,7 @@ import gradio as gr
 
 
 def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float, localExecution: bool):
-    config.Initialize()
+    config.Initialize(forceInit = (("oai:" in modelID) and (config.openaiGPTKey is None)))
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
