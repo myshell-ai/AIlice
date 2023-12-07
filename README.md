@@ -210,9 +210,11 @@ hundred lines of code in total, but they contain the basic framework of AIlice.
 
 # Future Development Roadmap
 
+Alice's fundamental tasks are twofold: **one is to fully unleash the capabilities of LLM based on text into the real world; the other is to explore better mechanisms for long-term memory and forming a coherent understanding of vast amounts of text**. Our development efforts revolve around these two focal points.
+
 If you are interested in the development of AIlice itself, you may consider the following directions:
 
-- Explore improved **long and short-term memory mechanisms** to enhance the capabilities of each Agent.
+- Explore improved **long-term memory mechanisms** to enhance the capabilities of each Agent.
 
 - **Multimodal** support.
 
@@ -227,6 +229,8 @@ If you are interested in the development of AIlice itself, you may consider the 
 - **Improved Voice Conversation Feature**, currently, there are frequent instances of failure in detecting the endpoint of user speech in voice conversations. Addressing this issue is crucial for enhancing the overall functionality.
 
 - **Develop Agents** with various functionalities based on the current framework.
+
+In addition to the tasks mentioned above, we should also start actively contemplating the possibility of **creating a smaller LLM that possesses lower knowledge content but higher reasoning abilities**.
 
 # FAQs:
 - **Why does AIlice get stuck on startup after updating the code?**
