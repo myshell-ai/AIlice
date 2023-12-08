@@ -14,13 +14,15 @@ class AConfig():
         self.contextWindowRatio = 0.6
         return
 
-    def Initialize(self, forceInit = False):
+    def Initialize(self, needOpenaiGPTKey = False):
         oldDict = self.Load("config.json")
         needUpdate = (set(oldDict.keys()) != set(self.__dict__))
         self.__dict__ = {k: oldDict[k] if k in oldDict else v for k,v in self.__dict__.items()}
         
-        if needUpdate or forceInit:
-            print("config.json does not match the code version, an update operation will be performed.")
+        needUpdate = needUpdate or (needOpenaiGPTKey and (self.openaiGPTKey is None))
+        
+        if needUpdate:
+            print("config.json need to be updated.")
             print(colored("********************** Initialize *****************************", "yellow"))
             if self.openaiGPTKey is None:
                 key = input(colored("Your openai chatgpt key (press Enter if not): ", "green"))

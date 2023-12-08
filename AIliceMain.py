@@ -31,7 +31,7 @@ def GetInput(speech) -> str:
     return inp
 
 def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, localExecution: bool):
-    config.Initialize(forceInit = (("oai:" in modelID) and (config.openaiGPTKey is None)))
+    config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
