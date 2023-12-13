@@ -21,7 +21,7 @@ agentType: A string used to specify the type of AI agent. It can be of the follo
     1. "search-engine": search for information from sources like Google, arXiv, long-term memory. This is a simple agent for a single search task.
     2. "article-digest": literature reading comprehension and related question answering.
     3. "coder-proxy", it's good at solving problems with code. You'd better leave it to problems that are easy to solve with programming.
-agentName: A name used to identify the agent. Create a new one if no such agent is found.
+agentName: A name used to identify the agent. Create a new one if no such agent is found. Please use a concise name that reflects the agent’s responsibilities.
 msg: message need to be told to the agent. When you need to describe a new task in msg, it should be clear, complete, and self-sufficient.
 
 #Open a webpage/PDF and obtain the visible content.

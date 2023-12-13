@@ -16,4 +16,5 @@ ALLMMeta={"hf:meta-llama/Llama-2-13b-chat-hf": {"formatter": AFormatterLLAMA2, "
           "hf:HuggingFaceH4/zephyr-7b-beta": {"formatter": AFormatterZephyr, "contextWindow": 8192},
           "hf:THUDM/agentlm-13b": {"formatter": AFormatterLLAMA2, "contextWindow": 4096},
           "hf:microsoft/Orca-2-13b": {"formatter": AFormatterChatML, "contextWindow": 4096},
-          "hf:01-ai/Yi-34B-Chat": {"formatter": AFormatterChatML, "contextWindow": 32000}}
+          "hf:01-ai/Yi-34B-Chat": {"formatter": AFormatterChatML, "contextWindow": 32000},
+          "hf:mistralai/Mixtral-8x7B-Instruct-v0.1": {"formatter": AFormatterSimple, "contextWindow": 32000}}

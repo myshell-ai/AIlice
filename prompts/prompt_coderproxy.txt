@@ -34,7 +34,7 @@ agentType: A string used to specify the type of AI agent. It can be of the follo
     2. "module-coder". A coder dedicated to building external interaction modules. He has special knowledge about the module structure and interfaces. Please leave all module programming tasks to him.
     3. "module-loader". An agent that can help you load and use modules. Please pass in the address of the module when creating the agent, and then you can let it help you interact with the module.
     4. "researcher". Suitable for technical problem search tasks such as library document search.
-agentName: The id of the AI agent. Create a new one if not found.
+agentName: The name of the AI agent instance. Create a new one if not found. Please use a concise name that reflects the agent’s responsibilities.
 msg: message need to be told to the agent. The agent cannot see content other than msg. Please provide complete content in msg.
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
