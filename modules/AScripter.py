@@ -2,6 +2,7 @@ import subprocess
 import os
 import time
 import tempfile
+import traceback
 
 from common.lightRPC import makeServer
 from modules.AScrollablePage import AScrollablePage
@@ -57,14 +58,14 @@ class AScripter():
             try:
                 self.RunCMD('bash', ["bash", "-c", code])
             except Exception as e:
-                res += f"Exception: {str(e)}\n"
+                res += f"Exception: {str(e)}\n {traceback.format_exc()}"
         
         try:
             output, completed = self.CheckOutput(session='bash')
             res += output
             res += "\nThe bash script takes longer to complete. You can pass an empty string to the BASH function to get new output." if not completed else "\nExecution completed."
         except Exception as e:
-            res += f"Exception when check the output of bash execution: {str(e)}"
+            res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
         finally:
             self.sessions['bash']['pages'].LoadPage(res, "BOTTOM")
@@ -83,14 +84,14 @@ class AScripter():
                 try:
                     self.RunCMD('py', ['python3', '-u', temp.name])
                 except Exception as e:
-                    res += f"Exception: {str(e)}\n"
+                    res += f"Exception: {str(e)}\n {traceback.format_exc()}"
         
         try:
             output, completed = self.CheckOutput(session='py')
             res += output
             res += "\nThe python script takes longer to complete. You can pass an empty string to the PYTHON function to get new output." if not completed else "\nExecution completed."
         except Exception as e:
-            res += f"Exception when check the output of python execution: {str(e)}"
+            res += f"Exception when check the output of python execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
         finally:
             self.sessions['py']['pages'].LoadPage(res, "BOTTOM")
