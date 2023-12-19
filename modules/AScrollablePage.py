@@ -10,11 +10,12 @@ class AScrollablePage():
     
     def ConstructPrompt(self) -> str:
         ret = "This is a page of the results. To browse more results, you can use the following functions.\n"
-        if 'SCROLLDOWN' in self.functions:
-            ret += f"#scroll down the page: \n{self.functions['SCROLLDOWN']}<!||!>\n"
-        if 'SCROLLUP' in self.functions:
-            ret += f"#scroll up the page: \n{self.functions['SCROLLUP']}<!||!>\n"
-        return ret
+        funcs = []
+        if ('SCROLLDOWN' in self.functions) and (self.currentIdx + STEP < len(self.txt)):
+            funcs.append(f"#scroll down the page: \n{self.functions['SCROLLDOWN']}<!||!>\n")
+        if ('SCROLLUP' in self.functions) and (self.currentIdx > 0):
+            funcs.append(f"#scroll up the page: \n{self.functions['SCROLLUP']}<!||!>\n")
+        return ret + "".join(funcs) if len(funcs) > 0 else ""
     
     def LoadPage(self, txt: str, initPosition: str):
         self.txt = txt

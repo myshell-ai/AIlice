@@ -13,7 +13,7 @@ Here is an example of an external interaction module that retrieves documents th
 import arxiv
 
 from common.lightRPC import makeServer
-from modules.AScrollablePage import AScrollablePage #lightRPC and AScrollablePage already exist locally.
+from modules.AScrollablePage import AScrollablePage #lightRPC and AScrollablePage are python packages that already exist in the local running environment, please do not try to install or build them.
 
 class AArxiv():
     def __init__(self):
