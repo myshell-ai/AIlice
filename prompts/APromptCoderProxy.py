@@ -49,7 +49,7 @@ class APromptCoderProxy():
         return
     
     def GetVar(self, varName: str) -> str:
-        return self.vars.get(varName, "")
+        return self.vars.get(varName, f"Variable {varName} NOT DEFINED. Only defined variable names are legal, this includes: {[k for k in self.vars]}")
     
     def ParameterizedBuildPrompt(self, n: int):
         prompt = f"""
