@@ -12,7 +12,7 @@ import zmq
 import pickle
 import traceback
 
-TIMEOUT_MS=10000
+TIMEOUT_MS=180000
 WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
 
