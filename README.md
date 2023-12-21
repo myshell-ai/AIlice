@@ -240,7 +240,6 @@ This is because the code in the docker container has not been updated and is inc
 cd AIlice
 docker cp modules/AScripter.py scripter:scripter/AScripter.py
 docker cp common/lightRPC.py scripter:scripter/common/lightRPC.py
-docker cp common/resourcePool.py scripter:scripter/common/resourcePool.py
 docker cp modules/AScrollablePage.py scripter:scripter/modules/AScrollablePage.py
 docker restart scripter
 ```

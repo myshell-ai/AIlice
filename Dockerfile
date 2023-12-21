@@ -7,7 +7,6 @@ WORKDIR /scripter
 COPY __init__.py /scripter/__init__.py
 COPY common/__init__.py /scripter/common/__init__.py
 COPY common/lightRPC.py /scripter/common/lightRPC.py
-COPY common/resourcePool.py /scripter/common/resourcePool.py
 COPY modules/AScripter.py /scripter/AScripter.py
 COPY modules/AScrollablePage.py /scripter/modules/AScrollablePage.py
 

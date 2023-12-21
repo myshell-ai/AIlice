@@ -12,9 +12,9 @@ import zmq
 import pickle
 import traceback
 
-from common.resourcePool import ResourcePool
-
+TIMEOUT_MS=10000
 WORKERS_ADDR="inproc://workers"
+context=zmq.Context()
 
 def SendMsg(conn,msg):
   conn.send(pickle.dumps(msg))
@@ -28,7 +28,7 @@ class GenesisRPCServer(object):
     self.url=url
     self.obj=obj
     self.APIList=APIList
-    self.context=zmq.Context()
+    self.context=context
     self.receiver = self.context.socket(zmq.ROUTER)
     self.receiver.bind(url)
     self.dealer = self.context.socket(zmq.DEALER)
@@ -82,30 +82,26 @@ def makeClient(url,returnClass=False):
   class GenesisRPCClientTemplate(object):
     def __init__(self):
       self.url=url
-      self.context=zmq.Context()
-      sockets=[]
-      for i in range(64):
-        socket = self.context.socket(zmq.REQ)
-        socket.connect(url)
-        sockets.append(socket)
-      self.socketPool=ResourcePool(sockets)
+      self.context=context
+      return
     
     def RemoteCall(self,funcName,args,kwargs):
-      with self.socketPool.get() as socket:
+      with self.context.socket(zmq.REQ) as socket:
+        socket.setsockopt(zmq.SNDTIMEO, TIMEOUT_MS) 
+        socket.setsockopt(zmq.RCVTIMEO, TIMEOUT_MS)
+        socket.connect(url)
         SendMsg(socket,{'function':funcName,'args':args, "kwargs": kwargs})
         ret=ReciveMsg(socket)
-      
       if 'exception' in ret:
         raise ret['exception']
       return ret['ret']
   
-  context=zmq.Context()
-  socket = context.socket(zmq.REQ)
-  socket.connect(url)
-  SendMsg(socket,{'GET_META':''})
-  ret=ReciveMsg(socket)
-  socket.close()
-  context.term()
+  with context.socket(zmq.REQ) as socket:
+    socket.setsockopt(zmq.SNDTIMEO, TIMEOUT_MS) 
+    socket.setsockopt(zmq.RCVTIMEO, TIMEOUT_MS)
+    socket.connect(url)
+    SendMsg(socket,{'GET_META':''})
+    ret=ReciveMsg(socket)
   for funcName in ret['META']['methods']:
     AddMethod(GenesisRPCClientTemplate,funcName)
   return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()
