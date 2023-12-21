@@ -151,7 +151,7 @@ class ABrowser():
 
         except Exception as e:
             print("EXCEPTION. e: ", str(e))
-            return "Browser Exception. please check your url input."
+            return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}"
 
     def ScrollDown(self) -> str:
         self.page.ScrollDown()

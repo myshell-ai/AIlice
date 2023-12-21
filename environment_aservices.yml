@@ -15,4 +15,6 @@ dependencies:
         - html2text
         - zmq
         - importlib-metadata
+        - scipy
+        - scikit-learn
         - nougat-ocr
