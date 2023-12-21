@@ -135,6 +135,26 @@ class AFormatterZephyr():
     def Len(self, prompt) -> int:
         return len(prompt)
 
+class AFormatterOpenChat():
+    def __init__(self, tokenizer=None, systemAsUser = False):
+        self.left={'USER': "GPT4 User:", 'ASSISTANT': "GPT4 Assistant:", 'SYSTEM': "GPT4 System:"}
+        self.right={'USER': "<|end_of_turn|>", 'ASSISTANT': "<|end_of_turn|>", 'SYSTEM': "<|end_of_turn|>"}
+        self.tokenizer = tokenizer
+        self.systemAsUser = systemAsUser
+    
+    def BuildMsg(self, role: str, msg: str):
+        if self.systemAsUser and "SYSTEM" == role:
+            role = "USER"
+        return f"{self.left[role]}{msg}{self.right[role]}"
+    
+    def __call__(self, prompt0, conversations, encode = True):
+        ret = f"{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + f"{self.left['ASSISTANT']}"
+        #print("prompt: ", ret)
+        return self.tokenizer.encode(ret) if encode else ret
+
+    def Len(self, prompt) -> int:
+        return len(prompt)
+
 class AFormatterGPT():
     def __init__(self, tokenizer=None, systemAsUser = False):
         self.systemAsUser = systemAsUser
