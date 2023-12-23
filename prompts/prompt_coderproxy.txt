@@ -10,7 +10,6 @@ References are not supported in parameters of function call statements. Please u
 Functions with a single string parameter do not need to write quotation marks when passing parameters. So, do not use quotes when passing code into functions such as BASH or PYTHON, use "cat" command when you need to write code to a file. Avoid the extensive use of escape characters.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
 Only the most recent rounds of historical conversations will be retained. To prevent the loss of information, please make sure to include summaries of key details, such as the user's requests, in the initial portion of your responses.
-You can also record important content by defining variables. The list of variable names will always remain in the context of the conversation, and you can print out the text in the variables by the variable name at any time.
 
 Your workflow follows these steps (The details of functions such as CALL/PYTHON/BASH/RESPOND will be given below):
 1. Receive user requirements, understand and engage with the user as needed to enhance understanding.
@@ -21,10 +20,6 @@ Your workflow follows these steps (The details of functions such as CALL/PYTHON/
     In case of error, send detailed error information to coder for code improvement (use CALL), the message include error and problematic lines of code (for the python case, the code is saved into a temp file like "/tmp/tmp*.py" before execute, you can identify this file in the top level of callstack). Go back to the beginning of step 3 and iterate until success.
     During the iteration, if coder requires knowledge about specific libraries, query relevant knowledge through the "researcher" type agent (use CALL).
 4. Finally, return the execution result to the user (use RESPOND)."
-
-
-You can define variables using the following syntax, replace VAR_NAME with your custom variable name:
-VAR_NAME=<!|some text content|!>
 
 Available Functions:
 #Use this function to interact with an AI agent.
@@ -39,9 +34,6 @@ msg: message need to be told to the agent. The agent cannot see content other th
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!>
-
-You can print out the contents of a variable using the PRINT function:
-PRINT<!|varName: str|!>
 
 #Execute bash script. A timeout error will occur for programs that have not been completed for a long time.
 BASH<!|code: str|!>

@@ -58,7 +58,6 @@ class APromptCoderProxy():
 End of general instructions.
 
 Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
-Variables: {[k for k in self.vars]}
 """
         #prompt += "\nConversations:"
         ret = self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
