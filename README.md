@@ -141,14 +141,17 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**localExecution** controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.
+- --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
 Below are a few typical use cases
 
 ```bash
-python3 AIliceWeb.py --modelID=oai:gpt-4 --prompt="main"
-python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher"
+python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="main"
+python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=trace/
 python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
 python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+python3 AIliceWeb.py --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+python3 AIliceWeb.py --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ```
 
@@ -166,9 +169,9 @@ longer spend effort on gpt-3.5-turbo compatibility.
 Among the open-source models, the ones that usually perform well include:
 
 - hf:Open-Orca/Mistral-7B-OpenOrca
+- hf:openchat/openchat_3.5
+- hf:ehartford/dolphin-2.5-mixtral-8x7b
 - hf:Phind/Phind-CodeLlama-34B-v2
-- hf:lmsys/vicuna-33b-v1.3
-- hf:Xwin-LM/Xwin-LM-70B-V0.1
 
 ## How to add LLM support
 For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
