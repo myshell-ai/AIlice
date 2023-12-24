@@ -68,7 +68,11 @@ class AInterpreter():
                 paras[k] = str(v.strip('"\'')) if (len(v) > 0) and (v[0] == v[-1]) and (v[0] in ["'",'"']) else str(v)
             else:
                 paras[k] = signature.parameters[k].annotation(v)
-        return action['func'](**paras)
+        try:
+            ret = action['func'](**paras)
+        except Exception as e:
+            ret = str(e)
+        return ret
     
     def Eval(self, txt: str) -> str:
         nodeType, paras = self.Parse(txt)
