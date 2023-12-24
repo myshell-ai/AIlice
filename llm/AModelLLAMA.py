@@ -9,12 +9,12 @@ from llm.ALLMMeta import ALLMMeta
 
 
 class AModelLLAMA():
-    def __init__(self, modelLocation: str):
+    def __init__(self, locType: str, modelLocation: str):
         self.tokenizer = None
         self.model = None
         self.LoadModel(modelLocation)
         
-        modelID = "hf:" + modelLocation
+        modelID = locType + ":" + modelLocation
         if modelID not in ALLMMeta:
             print(f"LLM {modelID} not supported yet.")
             exit(-1)

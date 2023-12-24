@@ -16,13 +16,10 @@ class ALLMPool():
         for id in llmIDs:
             locType, location = self.ParseID(id)
             
-            if "hf" == locType:
-                self.pool[id] = AModelLLAMA(modelLocation=location)
-            elif "oai" == locType:
+            if "oai" == locType:
                 self.pool[id] = AModelChatGPT(location)
             else:
-                print("LLM id not in config list. id: ", id)
-                continue
+                self.pool[id] = AModelLLAMA(locType=locType, modelLocation=location)
         return
     
     def GetModel(self, modelID: str):
