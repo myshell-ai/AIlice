@@ -13,3 +13,6 @@ class AConversations():
     
     def __len__(self):
         return (len(self.conversations)+1) // 2
+    
+    def ToJson(self) -> str:
+        return self.conversations

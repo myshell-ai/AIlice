@@ -115,3 +115,11 @@ class AProcessor():
         self.result = result
         self.prompt.Reset()
         return
+    
+    def ToJson(self) -> str:
+        return {"name": self.name,
+                "modelID": self.modelID,
+                "conversations": self.conversation.ToJson(),
+                "subProcessors": {k: p.ToJson() for k, p in self.subProcessors.items()},
+                "modules": {k:{'addr': m['addr']} for k, m in self.modules.items()},
+                "collection": self.collection}

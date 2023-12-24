@@ -1,4 +1,5 @@
 import time
+import simplejson as json
 from termcolor import colored
 
 from common.AConfig import config
@@ -30,7 +31,7 @@ def GetInput(speech) -> str:
         inp = input(colored("USER: ", "green"))
     return inp
 
-def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, localExecution: bool):
+def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, localExecution: bool, trace: str):
     config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
     config.quantization = quantization
     config.maxMemory = maxMemory
@@ -59,9 +60,13 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     llmPool.Init([modelID])
     
     logger = ALogger(speech=speech)
-    processor = AProcessor(name='AIlice', modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + str(time.time()))
+    timestamp = str(time.time())
+    processor = AProcessor(name='AIlice', modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + timestamp)
     processor.RegisterModules([Browser, Arxiv, Google, Duckduckgo, Scripter] + ([Speech] if config.speechOn else []))
     while True:
+        if "" != trace.strip():
+            with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
+                json.dump(processor.ToJson(), f)
         inpt = GetInput(speech)
         processor(inpt)
     return
@@ -80,5 +85,6 @@ if __name__ == '__main__':
     parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--localExecution',action='store_true', help="localExecution controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.")
+    parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
     kwargs = vars(parser.parse_args())
     main(**kwargs)
