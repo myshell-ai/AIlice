@@ -10,6 +10,7 @@ from llm.ALLMMeta import ALLMMeta
 
 class AModelLLAMA():
     def __init__(self, locType: str, modelLocation: str):
+        self.locType = locType
         self.tokenizer = None
         self.model = None
         self.LoadModel(modelLocation)
@@ -23,6 +24,13 @@ class AModelLLAMA():
         return
 
     def LoadModel(self, modelLocation: str):
+        if "peft" == self.locType:
+            self.LoadModel_PEFT(modelLocation=modelLocation)
+        else:
+            self.LoadModel_Default(modelLocation=modelLocation)
+        return
+    
+    def LoadModel_Default(self, modelLocation: str):
         quantizationConfig = transformers.BitsAndBytesConfig(llm_int4_enable_fp32_cpu_offload=True)
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(modelLocation, use_fast=False, legacy=False, force_download=False, resume_download=True)
         self.model = transformers.AutoModelForCausalLM.from_pretrained(modelLocation,
@@ -38,14 +46,15 @@ class AModelLLAMA():
                                                     )
         return
 
-    def LoadModel_LoRA(self, modelLocation: str):
-        config = PeftConfig.from_pretrained(modelLocation)
-        self.tokenizer = transformers.AutoTokenizer.from_pretrained(config.base_model_name_or_path, use_fast=False)
-        self.model = transformers.AutoModelForCausalLM.from_pretrained(config.base_model_name_or_path,
+    def LoadModel_PEFT(self, modelLocation: str):
+        peftConfig = PeftConfig.from_pretrained(modelLocation)
+        self.tokenizer = transformers.AutoTokenizer.from_pretrained(peftConfig.base_model_name_or_path, use_fast=False)
+        self.model = transformers.AutoModelForCausalLM.from_pretrained(peftConfig.base_model_name_or_path,
                                                     device_map="auto",
                                                     low_cpu_mem_usage=True,
                                                     load_in_4bit=("4bit" == config.quantization),
                                                     load_in_8bit=("8bit" == config.quantization),
+                                                    use_flash_attention_2=config.flashAttention2,
                                                     max_memory=config.maxMemory,
                                                     offload_folder="offload"
                                                     )
