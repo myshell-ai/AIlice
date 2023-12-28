@@ -12,6 +12,20 @@ from peft import (
 
 from llm.AFormatter import AFormatterChatML
 
+
+#DATASET = "Open-Orca/OpenOrca"
+DATASET = "finetuning/ADatasetTrace.py"
+DATA_DIR = "trace/"
+OUTPUT_DIR = "model/"
+LOG_DIR = "log/tensorboard"
+
+BATCH_SIZE = 128
+MICRO_BATCH_SIZE = 2
+GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
+LEARNING_RATE = 3e-4
+TRAIN_STEPS = 4
+MAX_WINDOW = 8192
+
 LORA_R = 64
 LORA_ALPHA = 16
 LORA_DROPOUT= 0.1
@@ -22,15 +36,6 @@ LORA_TARGET_MODULES = [
     "o_proj",
     "gate_proj"
 ]
- 
-BATCH_SIZE = 128
-MICRO_BATCH_SIZE = 2
-GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
-LEARNING_RATE = 3e-4
-TRAIN_STEPS = 4
-OUTPUT_DIR = "/media/clouds/SSD/models/Mistral-7B-OpenOrca_finetuned"
-MAX_WINDOW = 8192
-
 
 class MyDataCollatorWithPadding(transformers.DataCollatorWithPadding):
     def __init__(self, tokenizer, padding=True, return_tensors="pt"):
@@ -48,8 +53,7 @@ class MyDataCollatorWithPadding(transformers.DataCollatorWithPadding):
 
     
 def finetune(modelDir):
-    #ds = load_dataset("Open-Orca/OpenOrca","default")
-    ds = load_dataset('/home/clouds/code/AIlice-github/AIlice/finetuning/ADatasetTrace.py')
+    ds = load_dataset(DATASET, data_dir=DATA_DIR)
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(modelDir, truncation=True, max_length=MAX_WINDOW, add_special_tokens=True, add_bos_token=False, add_eos_token=False, legacy=False)
     tokenizer.pad_token = tokenizer.unk_token
@@ -127,7 +131,7 @@ def finetune(modelDir):
         save_total_limit=3,
         load_best_model_at_end=False,
         report_to="tensorboard",
-        logging_dir="/media/clouds/Datasets/log/tensorboard"
+        logging_dir=LOG_DIR
         #remove_unused_columns=False
     )
 

@@ -22,7 +22,7 @@ class MyDataset(GeneratorBasedBuilder):
     
     def _split_generators(self, dl_manager):
         return [
-            SplitGenerator(name=Split.TRAIN, gen_kwargs={"datasetDir": "/home/clouds/code/AIlice-github/AIlice/trace"}),
+            SplitGenerator(name=Split.TRAIN, gen_kwargs={"datasetDir": dl_manager.manual_dir}),
         ]
     
     def _generate_examples(self, datasetDir):
@@ -40,6 +40,6 @@ class MyDataset(GeneratorBasedBuilder):
         agentTrace = trace
         convs.append(agentTrace['conversations'])
         if 'subProcessors' in agentTrace:
-            for agentTrace in agentTrace['subProcessors']:
-                convs += self.ExtractConversations(agentTrace, convs)
+            for subAgent in agentTrace['subProcessors']:
+                convs += self.ExtractConversations(agentTrace['subProcessors'][subAgent])
         return convs
