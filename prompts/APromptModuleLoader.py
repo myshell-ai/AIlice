@@ -1,5 +1,5 @@
 from common.AConfig import config
-from utils.AFileUtils import LoadTXTFile
+from common.utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
 from prompts.ATools import ConstructOptPrompt
 

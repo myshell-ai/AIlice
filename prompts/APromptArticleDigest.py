@@ -1,4 +1,4 @@
-from utils.AFileUtils import LoadTXTFile
+from common.utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
 
 class APromptArticleDigest():

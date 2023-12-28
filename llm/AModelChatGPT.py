@@ -1,6 +1,6 @@
 import openai
 
-from utils.ATextSpliter import sentences_split
+from common.utils.ATextSpliter import sentences_split
 from common.AConfig import config
 from llm.AFormatter import AFormatterGPT
 

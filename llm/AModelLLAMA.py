@@ -4,7 +4,7 @@ import transformers
 from peft import PeftConfig, PeftModel
 
 from common.AConfig import config
-from utils.ATextSpliter import sentences_split
+from common.utils.ATextSpliter import sentences_split
 from llm.ALLMMeta import ALLMMeta
 
 

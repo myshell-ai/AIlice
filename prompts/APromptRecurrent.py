@@ -1,5 +1,5 @@
 from collections import deque
-from utils.AFileUtils import LoadTXTFile
+from common.utils.AFileUtils import LoadTXTFile
 from prompts.ARegex import GenerateRE4FunctionCalling
 
 class APromptRecurrent():
