@@ -5,10 +5,10 @@ class AFormatterVicuna():
         self.tokenizer = tokenizer
         self.systemAsUser = systemAsUser
     
-    def __call__(self, prompt0, conversations, encode = True):
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         sep = {"USER": " ", "ASSISTANT": "</s>", "SYSTEM": " "}
         roleMap = {"USER": "USER", "ASSISTANT": "ASSISTANT", "SYSTEM": "SYSTEM" if not self.systemAsUser else "USER"}
-        ret = prompt0 + "\n" + "".join([roleMap[c['role']] + ": " + c['msg'] + sep[roleMap[c['role']]] for c in conversations]) + " ASSISTANT:"
+        ret = prompt0 + "\n" + "".join([roleMap[c['role']] + ": " + c['msg'] + sep[roleMap[c['role']]] for c in conversations]) + (" ASSISTANT:" if assistTag else "")
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
     
@@ -20,7 +20,7 @@ class AFormatterLLAMA2():
         self.tokenizer = tokenizer
         self.systemAsUser = systemAsUser
     
-    def __call__(self, prompt0, conversations, encode = True):
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         B_INST="[INST]"
         E_INST="[/INST]"
         B_SYS="<<SYS>>\n"
@@ -40,14 +40,16 @@ class AFormatterLLAMA2():
             
             ret = sum([self.tokenizer.encode(f"{B_INST} {prompt['msg'].strip()} {E_INST} {answer['msg'].strip()} ") for prompt,answer in zip(conv[0::2], conv[1::2])],
                         [])
-            self.tokenizer.add_bos_token=True
-            self.tokenizer.add_eos_token=False
-            ret += self.tokenizer.encode(f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}")
+            if assistTag and (1 == (len(conv) % 2)):
+                self.tokenizer.add_bos_token=True
+                self.tokenizer.add_eos_token=False
+                ret += self.tokenizer.encode(f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}")
             #print("\n prompt: ", self.tokenizer.decode(ret))
         else:
             ret = sum([f"{B_INST} {prompt['msg'].strip()} {E_INST} {answer['msg'].strip()} " for prompt,answer in zip(conv[0::2], conv[1::2])],
                         [])
-            ret += f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}"
+            if assistTag and (1 == (len(conv) % 2)):
+                ret += f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}"
             #print("\n prompt: ", ret)
         return ret
 
@@ -59,11 +61,11 @@ class AFormatterSimple():
         self.tokenizer = tokenizer
         self.systemAsUser = systemAsUser
 
-    def __call__(self, prompt0, conversations, encode = True):
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         roleMap={'USER': 'User', 'ASSISTANT': 'Assistant', 'SYSTEM': 'System' if not self.systemAsUser else "User"}
         seps={'USER': "\n", 'ASSISTANT': "\n", 'SYSTEM': "\n"}
 
-        ret = prompt0 + "\n" + "".join([f"### {roleMap[c['role']]}:\n{c['msg']}{seps[c['role']]}" for c in conversations]) + f"### {roleMap['ASSISTANT']}:\n"
+        ret = prompt0 + "\n" + "".join([f"### {roleMap[c['role']]}:\n{c['msg']}{seps[c['role']]}" for c in conversations]) + (f"### {roleMap['ASSISTANT']}:\n" if assistTag else "")
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
 
@@ -85,8 +87,8 @@ class AFormatterChatML():
             role = "USER"
         return f"{self.left[role]}{self.roles[role]}\n{msg}{self.right[role]}"
     
-    def __call__(self, prompt0, conversations, encode = True):
-        ret = f"{self.START}system\n{prompt0}\n{self.END}\n" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + f"{self.START}assistant\n"
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = f"{self.START}system\n{prompt0}\n{self.END}\n" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"{self.START}assistant\n" if assistTag else "")
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
 
@@ -106,8 +108,8 @@ class AFormatterAMAZON():
             role = "USER"
         return f"{self.left[role]}{msg}{self.right[role]}"
     
-    def __call__(self, prompt0, conversations, encode = True):
-        ret = f"{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + f"<|assistant|>"
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = f"{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"<|assistant|>" if assistTag else "")
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
 
@@ -127,8 +129,8 @@ class AFormatterZephyr():
             role = "USER"
         return f"{self.left[role]}{msg}{self.right[role]}"
     
-    def __call__(self, prompt0, conversations, encode = True):
-        ret = f"{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + f"<|assistant|>"
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = f"{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"<|assistant|>" if assistTag else "")
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
 
@@ -147,8 +149,8 @@ class AFormatterOpenChat():
             role = "USER"
         return f"{self.left[role]}{msg}{self.right[role]}"
     
-    def __call__(self, prompt0, conversations, encode = True):
-        ret = f"{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + f"{self.left['ASSISTANT']}"
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = f"{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"{self.left['ASSISTANT']}" if assistTag else "")
         #print("prompt: ", ret)
         return self.tokenizer.encode(ret) if encode else ret
 
@@ -160,7 +162,7 @@ class AFormatterGPT():
         self.systemAsUser = systemAsUser
         return
     
-    def __call__(self, prompt0, conversations, encode = True):
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         roleMap = {"SYSTEM": "system" if not self.systemAsUser else "user", "USER": "user", "ASSISTANT": "assistant"}
         ret = [{"role": "system", "content": prompt0}] + [{"role": roleMap[c['role']], "content": c['msg']} for c in conversations]
         #print("prompt: ", ret)
