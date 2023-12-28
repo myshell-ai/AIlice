@@ -41,7 +41,7 @@ class AModelLLAMA():
                                                     use_flash_attention_2=config.flashAttention2,
                                                     #quantization_config=quantizationConfig,
                                                     max_memory=config.maxMemory,
-                                                    offload_folder="offload",
+                                                    #offload_folder="offload",
                                                     force_download=False, resume_download=True
                                                     )
         return
@@ -56,7 +56,7 @@ class AModelLLAMA():
                                                     load_in_8bit=("8bit" == config.quantization),
                                                     use_flash_attention_2=config.flashAttention2,
                                                     max_memory=config.maxMemory,
-                                                    offload_folder="offload"
+                                                    #offload_folder="offload"
                                                     )
         self.model = PeftModel.from_pretrained(self.model, modelLocation)
         return

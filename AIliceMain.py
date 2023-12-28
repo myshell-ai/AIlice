@@ -6,10 +6,10 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from llm.ALLMPool import llmPool
 from utils.ALogger import ALogger
-from modules.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Speech, Scripter
+from common.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Speech, Scripter
 from AServices import StartServices
 
-from prompts.APrompts import promptsManager
+from common.APrompts import promptsManager
 from prompts.APromptChat import APromptChat
 from prompts.APromptMain import APromptMain
 from prompts.APromptSearchEngine import APromptSearchEngine
