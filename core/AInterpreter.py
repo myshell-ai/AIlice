@@ -1,10 +1,21 @@
 import re
 import inspect
 from inspect import Parameter, Signature
-from prompts.ARegex import ParseSignatureExpr
 
 def HasReturnValue(action):
     return action['signature'].return_annotation != inspect.Parameter.empty
+
+def ParseSignatureExpr(signature: str):
+    #signature: "FUNC(ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...) -> RETURN_TYPE"
+    pattern = r"(\w+)\(((?:\w+[ ]*:[ ]*[\w, ]+)*)\)(?:[ ]*->[ ]*)(\w+)"
+    matches = re.search(pattern, signature)
+    if matches is None:
+        print("signature invalid. exit. ", signature)
+        exit()
+    funcName, args, retType = matches[1], matches[2], matches[3]
+    pattern = r"(\w+)[ ]*:[ ]*(\w+)"
+    typePairs = re.findall(pattern, args)
+    return funcName, typePairs, retType
 
 class AInterpreter():
     def __init__(self):
