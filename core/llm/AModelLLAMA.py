@@ -5,7 +5,7 @@ from peft import PeftConfig, PeftModel
 
 from common.AConfig import config
 from common.utils.ATextSpliter import sentences_split
-from llm.ALLMMeta import ALLMMeta
+from core.llm.ALLMMeta import ALLMMeta
 
 
 class AModelLLAMA():

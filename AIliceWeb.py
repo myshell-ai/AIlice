@@ -3,7 +3,7 @@ import simplejson as json
 import threading
 from common.AConfig import config
 from core.AProcessor import AProcessor
-from llm.ALLMPool import llmPool
+from core.llm.ALLMPool import llmPool
 from common.utils.ALogger import ALogger
 from common.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Scripter
 from AServices import StartServices

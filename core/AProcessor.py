@@ -1,7 +1,7 @@
 import time
 from functools import partial
 from common.AConfig import config
-from llm.ALLMPool import llmPool
+from core.llm.ALLMPool import llmPool
 from common.APrompts import promptsManager
 from common.ARemoteAccessors import clientPool, Storage
 from core.AConversation import AConversations

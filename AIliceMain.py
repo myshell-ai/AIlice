@@ -4,7 +4,7 @@ from termcolor import colored
 
 from common.AConfig import config
 from core.AProcessor import AProcessor
-from llm.ALLMPool import llmPool
+from core.llm.ALLMPool import llmPool
 from common.utils.ALogger import ALogger
 from common.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Speech, Scripter
 from AServices import StartServices
