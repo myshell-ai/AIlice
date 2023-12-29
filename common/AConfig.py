@@ -40,7 +40,7 @@ class AConfig():
     
     def Store(self, configFile: str = "config.json"):
         with open(configFile, "w") as f:
-            json.dump(self.__dict__, f)
+            json.dump(self.__dict__, f, indent=2)
         return
     
     

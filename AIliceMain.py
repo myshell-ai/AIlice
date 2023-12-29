@@ -66,7 +66,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     while True:
         if "" != trace.strip():
             with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
-                json.dump(processor.ToJson(), f)
+                json.dump(processor.ToJson(), f, indent=2)
         inpt = GetInput(speech)
         processor(inpt)
     return

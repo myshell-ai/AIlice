@@ -50,7 +50,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
         
         if "" != trace.strip():
             with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
-                json.dump(processor.ToJson(), f)
+                json.dump(processor.ToJson(), f, indent=2)
         
         threadLLM = threading.Thread(target=processor, args=(text,))
         threadLLM.start()
