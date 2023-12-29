@@ -12,8 +12,7 @@ def StartServices():
         try:
             subprocess.run("docker -v", shell=True, check=True)
         except Exception:
-            print("It looks like docker is not installed correctly. Please confirm whether you have installed docker. If you want to run the scripter locally, please use the --localExecution option.")
-            exit(1)
+            print("It looks like docker is not installed correctly. If you do not plan to use other virtual environments to execute scripts, please ensure that docker is installed correctly or use --localExecution to execute locally.")
     
     for serviceName, cfg in config.services.items():
         if ("speech" == serviceName) and not config.speechOn:
