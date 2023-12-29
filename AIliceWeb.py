@@ -5,7 +5,7 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from core.llm.ALLMPool import llmPool
 from common.utils.ALogger import ALogger
-from common.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Scripter
+from common.ARemoteAccessors import clientPool
 from AServices import StartServices
 
 from common.APrompts import promptsManager
@@ -42,7 +42,11 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     logger = ALogger(speech=None)
     timestamp = str(time.time())
     processor = AProcessor(name="AIlice", modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + timestamp)
-    processor.RegisterModules([Browser, Arxiv, Google, Duckduckgo, Scripter])
+    processor.RegisterModules([config.services['browser']['addr'],
+                               config.services['arxiv']['addr'],
+                               config.services['google']['addr'],
+                               config.services['duckduckgo']['addr'],
+                               config.services['scripter']['addr']])
     def bot(text, history):
         if text is None:
             yield None

@@ -17,6 +17,9 @@ def StartServices():
     for serviceName, cfg in config.services.items():
         if ("speech" == serviceName) and not config.speechOn:
             continue
+        if ("cmd" not in cfg) or ("" == cfg['cmd'].strip()):
+            print(f"{serviceName}'s cmd is not configured and will attempt to connect {cfg['addr']} directly.")
+            continue
         p = subprocess.Popen(cfg['cmd'], shell=True, cwd=None)
         processes.append(p)
         print(serviceName," started.")

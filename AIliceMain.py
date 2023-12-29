@@ -6,7 +6,7 @@ from common.AConfig import config
 from core.AProcessor import AProcessor
 from core.llm.ALLMPool import llmPool
 from common.utils.ALogger import ALogger
-from common.ARemoteAccessors import clientPool, Browser, Arxiv, Google, Duckduckgo, Speech, Scripter
+from common.ARemoteAccessors import clientPool
 from AServices import StartServices
 
 from common.APrompts import promptsManager
@@ -45,7 +45,7 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     clientPool.Init()
     
     if speechOn:
-        speech = clientPool.GetClient(Speech)
+        speech = clientPool.GetClient(config.services['speech']['addr'])
         if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
             print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
             exit(-1)
@@ -62,7 +62,11 @@ def main(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperat
     logger = ALogger(speech=speech)
     timestamp = str(time.time())
     processor = AProcessor(name='AIlice', modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + timestamp)
-    processor.RegisterModules([Browser, Arxiv, Google, Duckduckgo, Scripter] + ([Speech] if config.speechOn else []))
+    processor.RegisterModules([config.services['browser']['addr'],
+                               config.services['arxiv']['addr'],
+                               config.services['google']['addr'],
+                               config.services['duckduckgo']['addr'],
+                               config.services['scripter']['addr']] + ([config.services['speech']['addr']] if config.speechOn else []))
     while True:
         if "" != trace.strip():
             with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:

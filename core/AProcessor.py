@@ -3,7 +3,7 @@ from functools import partial
 from common.AConfig import config
 from core.llm.ALLMPool import llmPool
 from common.APrompts import promptsManager
-from common.ARemoteAccessors import clientPool, Storage
+from common.ARemoteAccessors import clientPool
 from core.AConversation import AConversations
 from core.AInterpreter import AInterpreter
 
@@ -17,7 +17,7 @@ class AProcessor():
         self.subProcessors = dict()
         self.modules = {}
         
-        self.RegisterModules([Storage])
+        self.RegisterModules([config.services['storage']['addr']])
         self.interpreter.RegisterAction("CALL", {"func": self.EvalCall})
         self.interpreter.RegisterAction("RESPOND", {"func": self.EvalRespond})
         self.interpreter.RegisterAction("COMPLETE", {"func": self.EvalComplete})
