@@ -10,6 +10,8 @@ setup(
         'simplejson',
         'transformers>=4.0.0',
         'torch',
+        'accelerate',
+        'bitsandbytes',
         'peft',
         'openai',
         'importlib-metadata',
