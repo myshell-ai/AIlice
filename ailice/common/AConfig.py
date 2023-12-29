@@ -13,13 +13,13 @@ class AConfig():
         self.localExecution = False
         self.contextWindowRatio = 0.6
         self.services = {
-            "storage": {"cmd": "conda run -n aservices python3 -m modules.AStorageChroma", "addr": "ipc:///tmp/AIliceStorage.ipc"},
-            "browser": {"cmd": "conda run -n aservices python3 -m modules.ABrowser", "addr": "ipc:///tmp/ABrowser.ipc"},
-            "arxiv": {"cmd": "conda run -n aservices python3 -m modules.AArxiv", "addr": "ipc:///tmp/AArxiv.ipc"},
-            "google": {"cmd": "conda run -n aservices python3 -m modules.AGoogle", "addr": "ipc:///tmp/AGoogle.ipc"},
-            "duckduckgo": {"cmd": "conda run -n aservices python3 -m modules.ADuckDuckGo", "addr": "ipc:///tmp/ADuckDuckGo.ipc"},
+            "storage": {"cmd": "python3 -m ailice.modules.AStorageChroma", "addr": "ipc:///tmp/AIliceStorage.ipc"},
+            "browser": {"cmd": "python3 -m ailice.modules.ABrowser", "addr": "ipc:///tmp/ABrowser.ipc"},
+            "arxiv": {"cmd": "python3 -m ailice.modules.AArxiv", "addr": "ipc:///tmp/AArxiv.ipc"},
+            "google": {"cmd": "python3 -m ailice.modules.AGoogle", "addr": "ipc:///tmp/AGoogle.ipc"},
+            "duckduckgo": {"cmd": "python3 -m ailice.modules.ADuckDuckGo", "addr": "ipc:///tmp/ADuckDuckGo.ipc"},
             "scripter": {"cmd": "docker start scripter", "addr": "tcp://127.0.0.1:2005"},
-            "speech": {"cmd": "conda run -n tts python3 -m modules.ASpeech", "addr": "ipc:///tmp/ASpeech.ipc"},
+            "speech": {"cmd": "python3 -m ailice.modules.ASpeech", "addr": "ipc:///tmp/ASpeech.ipc"},
         }
         return
 

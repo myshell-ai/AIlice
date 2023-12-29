@@ -1,5 +1,5 @@
-from common.lightRPC import makeClient
-from common.AConfig import config
+from ailice.common.lightRPC import makeClient
+from ailice.common.AConfig import config
 
 class AClientPool():
     def __init__(self):

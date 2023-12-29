@@ -2,10 +2,10 @@ import queue
 import string
 import threading
 import sounddevice as sd
-from modules.speech.ATTS_LJS import T2S_LJS
-from modules.speech.ASTT_Whisper import S2T_WhisperLarge
+from ailice.modules.speech.ATTS_LJS import T2S_LJS
+from ailice.modules.speech.ASTT_Whisper import S2T_WhisperLarge
 
-from common.lightRPC import makeServer
+from ailice.common.lightRPC import makeServer
 
 def strip(txt: str) -> str:
     translation_table = str.maketrans("", "", string.whitespace)

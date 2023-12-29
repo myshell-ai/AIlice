@@ -1,7 +1,7 @@
-from common.AConfig import config
-from common.utils.AFileUtils import LoadTXTFile
-from prompts.ARegex import GenerateRE4FunctionCalling
-from prompts.ATools import ConstructOptPrompt
+from ailice.common.AConfig import config
+from ailice.common.utils.AFileUtils import LoadTXTFile
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling
+from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptCoderProxy():
     PROMPT_NAME = "coder-proxy"

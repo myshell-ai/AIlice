@@ -1,7 +1,7 @@
 from termcolor import colored
 import queue
 
-from common.AConfig import config
+from ailice.common.AConfig import config
 
 class ALogger():
     def __init__(self, speech):

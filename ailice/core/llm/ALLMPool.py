@@ -1,6 +1,6 @@
 
-from core.llm.AModelLLAMA import AModelLLAMA
-from core.llm.AModelChatGPT import AModelChatGPT
+from ailice.core.llm.AModelLLAMA import AModelLLAMA
+from ailice.core.llm.AModelChatGPT import AModelChatGPT
 
 
 class ALLMPool():

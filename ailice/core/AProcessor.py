@@ -1,11 +1,11 @@
 import time
 from functools import partial
-from common.AConfig import config
-from core.llm.ALLMPool import llmPool
-from common.APrompts import promptsManager
-from common.ARemoteAccessors import clientPool
-from core.AConversation import AConversations
-from core.AInterpreter import AInterpreter
+from ailice.common.AConfig import config
+from ailice.core.llm.ALLMPool import llmPool
+from ailice.common.APrompts import promptsManager
+from ailice.common.ARemoteAccessors import clientPool
+from ailice.core.AConversation import AConversations
+from ailice.core.AInterpreter import AInterpreter
 
 class AProcessor():
     def __init__(self, name, modelID, promptName, outputCB, collection = None):

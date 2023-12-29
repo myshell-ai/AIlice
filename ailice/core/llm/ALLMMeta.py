@@ -1,4 +1,4 @@
-from core.llm.AFormatter import AFormatterSimple,AFormatterLLAMA2,AFormatterVicuna,AFormatterChatML,AFormatterAMAZON,AFormatterZephyr,AFormatterOpenChat
+from ailice.core.llm.AFormatter import AFormatterSimple,AFormatterLLAMA2,AFormatterVicuna,AFormatterChatML,AFormatterAMAZON,AFormatterZephyr,AFormatterOpenChat
 
 
 ALLMMeta={"hf:meta-llama/Llama-2-13b-chat-hf": {"formatter": AFormatterLLAMA2, "contextWindow": 4096},

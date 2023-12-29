@@ -1,7 +1,7 @@
 import chromadb
 import uuid
 
-from common.lightRPC import makeServer
+from ailice.common.lightRPC import makeServer
 
 class AStorageChromaDB():
     def __init__(self):

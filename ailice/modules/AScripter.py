@@ -4,8 +4,8 @@ import time
 import tempfile
 import traceback
 
-from common.lightRPC import makeServer
-from modules.AScrollablePage import AScrollablePage
+from ailice.common.lightRPC import makeServer
+from ailice.modules.AScrollablePage import AScrollablePage
 
 
 class AScripter():

@@ -1,8 +1,8 @@
 import openai
 
-from common.utils.ATextSpliter import sentences_split
-from common.AConfig import config
-from core.llm.AFormatter import AFormatterGPT
+from ailice.common.utils.ATextSpliter import sentences_split
+from ailice.common.AConfig import config
+from ailice.core.llm.AFormatter import AFormatterGPT
 
 
 class AModelChatGPT():

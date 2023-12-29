@@ -1,7 +1,7 @@
 from googlesearch import search
 
-from common.lightRPC import makeServer
-from modules.AScrollablePage import AScrollablePage
+from ailice.common.lightRPC import makeServer
+from ailice.modules.AScrollablePage import AScrollablePage
 
 class AGoogle():
     def __init__(self):

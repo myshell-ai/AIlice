@@ -10,7 +10,7 @@ from peft import (
     prepare_model_for_int8_training,
 )
 
-from core.llm.AFormatter import AFormatterChatML
+from ailice.core.llm.AFormatter import AFormatterChatML
 
 
 #DATASET = "Open-Orca/OpenOrca"

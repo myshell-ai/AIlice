@@ -1,5 +1,5 @@
-from common.utils.AFileUtils import LoadTXTFile
-from prompts.ARegex import GenerateRE4FunctionCalling
+from ailice.common.utils.AFileUtils import LoadTXTFile
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 
 class APromptArticleDigest():
     PROMPT_NAME = "article-digest"

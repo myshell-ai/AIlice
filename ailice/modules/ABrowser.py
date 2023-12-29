@@ -11,8 +11,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import html2text
 
-from common.lightRPC import makeServer
-from modules.AScrollablePage import AScrollablePage
+from ailice.common.lightRPC import makeServer
+from ailice.modules.AScrollablePage import AScrollablePage
 
 class ABrowser():
     def __init__(self):

@@ -1,23 +1,23 @@
 import time
 import simplejson as json
 import threading
-from common.AConfig import config
-from core.AProcessor import AProcessor
-from core.llm.ALLMPool import llmPool
-from common.utils.ALogger import ALogger
-from common.ARemoteAccessors import clientPool
-from AServices import StartServices
+from ailice.common.AConfig import config
+from ailice.core.AProcessor import AProcessor
+from ailice.core.llm.ALLMPool import llmPool
+from ailice.common.utils.ALogger import ALogger
+from ailice.common.ARemoteAccessors import clientPool
+from ailice.AServices import StartServices
 
-from common.APrompts import promptsManager
-from prompts.APromptChat import APromptChat
-from prompts.APromptMain import APromptMain
-from prompts.APromptSearchEngine import APromptSearchEngine
-from prompts.APromptRecurrent import APromptRecurrent
-from prompts.APromptCoder import APromptCoder
-from prompts.APromptModuleCoder import APromptModuleCoder
-from prompts.APromptModuleLoader import APromptModuleLoader
-from prompts.APromptCoderProxy import APromptCoderProxy
-from prompts.APromptArticleDigest import APromptArticleDigest
+from ailice.common.APrompts import promptsManager
+from ailice.prompts.APromptChat import APromptChat
+from ailice.prompts.APromptMain import APromptMain
+from ailice.prompts.APromptSearchEngine import APromptSearchEngine
+from ailice.prompts.APromptRecurrent import APromptRecurrent
+from ailice.prompts.APromptCoder import APromptCoder
+from ailice.prompts.APromptModuleCoder import APromptModuleCoder
+from ailice.prompts.APromptModuleLoader import APromptModuleLoader
+from ailice.prompts.APromptCoderProxy import APromptCoderProxy
+from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 

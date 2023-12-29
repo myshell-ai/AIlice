@@ -3,9 +3,9 @@ from termcolor import colored
 import transformers
 from peft import PeftConfig, PeftModel
 
-from common.AConfig import config
-from common.utils.ATextSpliter import sentences_split
-from core.llm.ALLMMeta import ALLMMeta
+from ailice.common.AConfig import config
+from ailice.common.utils.ATextSpliter import sentences_split
+from ailice.core.llm.ALLMMeta import ALLMMeta
 
 
 class AModelLLAMA():
