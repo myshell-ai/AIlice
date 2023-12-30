@@ -128,13 +128,13 @@ docker run -d -p 127.0.0.1:2005-2016:2005-2016 --name scripter env4scripter
 Now that the environment configuration has been done, you can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
-python3 AIliceMain.py --modelID=oai:gpt-4-1106-preview --prompt="main"
-python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=trace/
-python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
-python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
-python3 AIliceWeb.py --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
-python3 AIliceWeb.py --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
-python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
+ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
+ailice_web --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./trace
+ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
+ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+ailice_web --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
+ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ```
 
 When you run it for the first time, you will be asked to enter the api-key of openai. If you only want to use open source LLM, you do not need to enter it. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
