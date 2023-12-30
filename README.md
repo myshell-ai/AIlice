@@ -241,8 +241,11 @@ This is because the code in the docker container has not been updated and is inc
 
 ```bash
 cd AIlice
-docker cp modules/AScripter.py scripter:scripter/AScripter.py
-docker cp common/lightRPC.py scripter:scripter/common/lightRPC.py
-docker cp modules/AScrollablePage.py scripter:scripter/modules/AScrollablePage.py
+docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
+docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
+docker cp ailice/common/lightRPC.py scripter:scripter/ailice/common/lightRPC.py
+docker cp ailice/modules/__init__.py scripter:scripter/ailice/modules/__init__.py
+docker cp ailice/modules/AScripter.py scripter:scripter/ailice/modules/AScripter.py
+docker cp ailice/modules/AScrollablePage.py scripter:scripter/ailice/modules/AScrollablePage.py
 docker restart scripter
 ```
