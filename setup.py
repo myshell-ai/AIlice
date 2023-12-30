@@ -17,6 +17,7 @@ setup(
         'bitsandbytes',
         'peft',
         'openai',
+        'gradio',
         'importlib-metadata',
         'chromadb',
         'googlesearch-python',

@@ -20,7 +20,7 @@ def StartServices():
         if ("cmd" not in cfg) or ("" == cfg['cmd'].strip()):
             print(f"{serviceName}'s cmd is not configured and will attempt to connect {cfg['addr']} directly.")
             continue
-        p = subprocess.Popen(cfg['cmd'], shell=True, cwd=None)
+        p = subprocess.Popen(cfg['cmd'], shell=True, cwd=None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         processes.append(p)
         print(serviceName," started.")
     signal.signal(signal.SIGINT, TerminateSubprocess)
