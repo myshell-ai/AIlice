@@ -7,6 +7,12 @@ setup(
     package_data={
         'ailice': ['prompts/*.txt'],
     },
+    entry_points={
+        'console_scripts': [
+            'ailice_main = ailice.AIliceMain:main',
+            'ailice_web = ailice.AIliceWeb:main',
+        ],
+    },
     install_requires=[
         'zmq',
         'termcolor',
