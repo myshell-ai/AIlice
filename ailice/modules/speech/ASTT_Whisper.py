@@ -1,6 +1,6 @@
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
-from modules.speech.AAudioSource import audio_data_to_numpy, AudioSourceSileroVAD
+from ailice.modules.speech.AAudioSource import audio_data_to_numpy, AudioSourceSileroVAD
 
 
 class S2T_WhisperLarge():

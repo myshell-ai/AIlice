@@ -2,7 +2,7 @@ import torch
 from datasets import load_dataset
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 
-from modules.speech.AAudioSource import audio_data_to_numpy, AudioSourceSileroVAD
+from ailice.modules.speech.AAudioSource import audio_data_to_numpy, AudioSourceSileroVAD
 
 
 class S2T_Wave2Vec2():

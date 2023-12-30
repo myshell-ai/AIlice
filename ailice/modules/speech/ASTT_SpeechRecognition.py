@@ -2,7 +2,7 @@ import speech_recognition as sr
 from vosk import SetLogLevel
 SetLogLevel(-1)
 
-from modules.speech.AAudioSource import AudioSourceSR
+from ailice.modules.speech.AAudioSource import AudioSourceSR
 
 
 class S2T_SpeechRecognition():
