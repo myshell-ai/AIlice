@@ -45,8 +45,8 @@ class AConfig():
                 key = input(colored("Your openai chatgpt key (press Enter if not): ", "green"))
                 self.openaiGPTKey = key if 1 < len(key) else None
             self.Store(configFile)
-            print(f"config.json is located at {configFile}.")
             print(colored("********************** End of Initialization *****************************", "yellow"))
+        print(f"config.json is located at {configFile}")
         return
 
     def Load(self, configFile: str) -> dict:
