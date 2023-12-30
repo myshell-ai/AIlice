@@ -101,15 +101,21 @@ completed by LLM and the interpreter, their outputs are each other's inputs, for
 
 
 # Environment Configuration and Running
-Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. We will gradually reduce the complexity of environment configuration in future developments. To run AIlice, you need to ensure that **Anaconda** and **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
+Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. It may take us a long time to install the dependencies, but fortunately, this is basically done automatically.
 
-Since the Agent depends on many peripheral modules, we separate the runtime environment into multiple independent environments to reduce the possibility of dependency
-conflicts. You can also decide how to configure the runtime environment yourself, and the conda environment names of each peripheral module are configured in AServices.py.
+To run AIlice, you need to ensure that **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
+
+You can use the following command to install AIlice (It is strongly recommended to use tools such as conda to create a new virtual environment to install AIlice, so as to avoid dependency conflicts):
 
 ```bash
-conda env create -f environment_ailice.yml
-conda env create -f environment_aservices.yml
-conda env create -f environment_tts.yml
+pip install -e .
+```
+
+For users who need to use the voice dialogue or model fine-tuning function, you can use one of the following command:
+
+```bash
+pip install -e .[speech]
+pip install -e .[finetuning]
 ```
 
 To use the automatic programming feature, we need a code execution environment running in a docker container. It can be built with the following command:
@@ -119,14 +125,21 @@ docker build -t env4scripter .
 docker run -d -p 127.0.0.1:2005-2016:2005-2016 --name scripter env4scripter
 ```
 
-Enter the main program execution environment
+Now that the environment configuration has been done, you can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
-conda activate ailice
+python3 AIliceMain.py --modelID=oai:gpt-4-1106-preview --prompt="main"
+python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=trace/
+python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
+python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+python3 AIliceWeb.py --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+python3 AIliceWeb.py --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
+python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ```
 
-You can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both
-are used in the same way except that AIliceWeb does not support voice conversations currently.
+When you run it for the first time, you will be asked to enter the api-key of openai. If you only want to use open source LLM, you do not need to enter it. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
+
+As shown in the examples, you can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both are used in the same way except that AIliceWeb does not support voice conversations currently.
 
 - --**modelID** specifies the model. The currently supported models can be seen in core/llm/ALLMMeta.py, just copy it directly. We will implement a simpler model specification method
 in the future.
@@ -143,19 +156,6 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**localExecution** controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
-Below are a few typical use cases
-
-```bash
-python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="main"
-python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=trace/
-python3 AIliceWeb.py --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
-python3 AIliceWeb.py --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
-python3 AIliceWeb.py --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
-python3 AIliceWeb.py --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
-python3 AIliceWeb.py --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
-```
-
-When you run it for the first time, you will be asked to enter the api-key of openai. If you only want to use open source LLM, you do not need to enter it. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
 
 # Choice of LLM
 AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, only gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide relatively stable results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
@@ -226,8 +226,6 @@ If you are interested in the development of AIlice itself, you may consider the 
 - **Introducing more script language features beyond function calls, unleashing LLM's text manipulation capabilities.** For example, one of the most pressing needs is for LLM to have the ability to define and reference text variables. This grants it a named-access storage mechanism, expanding the context window, while also allowing it to avoid unnecessary copying when transmitting large code segments.
 
 - **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
-
-- **Simpler installation process**. Ideally, AIlice's installation should be accomplished with just one 'pip install' command, enabling users to avoid intricate technical details.
 
 - **Improved Voice Conversation Feature**, currently, there are frequent instances of failure in detecting the endpoint of user speech in voice conversations. Addressing this issue is crucial for enhancing the overall functionality.
 
