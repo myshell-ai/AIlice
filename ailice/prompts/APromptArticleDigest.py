@@ -1,4 +1,4 @@
-from ailice.common.utils.AFileUtils import LoadTXTFile
+from importlib.resources import read_text
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 
 class APromptArticleDigest():
@@ -11,7 +11,7 @@ class APromptArticleDigest():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
-        self.prompt0 = LoadTXTFile("prompts/prompt_article_digest.txt")
+        self.prompt0 = read_text('ailice.prompts', 'prompt_article_digest.txt')
         self.PATTERNS = {"BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "Output": [{"re": r"REPORT:(?P<txt>.*?)NOTEBOOK:", "isEntry": True}],

@@ -1,5 +1,5 @@
+from importlib.resources import read_text
 from ailice.common.AConfig import config
-from ailice.common.utils.AFileUtils import LoadTXTFile
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
 
@@ -14,7 +14,7 @@ class APromptCoderProxy():
         self.formatter = formatter
         self.formatter.systemAsUser = False
         self.outputCB = outputCB
-        self.prompt0 = LoadTXTFile("prompts/prompt_coderproxy.txt")
+        self.prompt0 = read_text("ailice.prompts", "prompt_coderproxy.txt")
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "BASH": [{"re": GenerateRE4FunctionCalling("BASH<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],

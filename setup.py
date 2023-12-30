@@ -4,6 +4,9 @@ setup(
     name='ailice',
     version='0.2.0',
     packages=find_packages(),
+    package_data={
+        'ailice': ['prompts/*.txt'],
+    },
     install_requires=[
         'zmq',
         'termcolor',

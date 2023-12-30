@@ -1,5 +1,5 @@
+from importlib.resources import read_text
 from collections import deque
-from ailice.common.utils.AFileUtils import LoadTXTFile
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 
 class APromptRecurrent():
@@ -12,7 +12,7 @@ class APromptRecurrent():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
-        self.prompt0 = LoadTXTFile("prompts/prompt_recurrent.txt")
+        self.prompt0 = read_text("ailice.prompts", "prompt_recurrent.txt")
         self.taskSummary = "None."
         self.previousParagraph = "None."
         self.previousActions = deque(maxlen=5)

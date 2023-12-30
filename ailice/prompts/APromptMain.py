@@ -1,5 +1,5 @@
+from importlib.resources import read_text
 from ailice.common.AConfig import config
-from ailice.common.utils.AFileUtils import LoadTXTFile
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
 
@@ -13,7 +13,7 @@ class APromptMain():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
-        self.prompt0 = LoadTXTFile("prompts/prompt_simple.txt")
+        self.prompt0 = read_text("ailice.prompts", "prompt_simple.txt")
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}]}
         self.ACTIONS= {}
         return

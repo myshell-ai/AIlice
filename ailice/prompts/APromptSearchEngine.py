@@ -1,5 +1,5 @@
+from importlib.resources import read_text
 from ailice.common.AConfig import config
-from ailice.common.utils.AFileUtils import LoadTXTFile
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
 
@@ -11,7 +11,7 @@ class APromptSearchEngine():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
-        self.prompt0 = LoadTXTFile("prompts/prompt_searchengine.txt")
+        self.prompt0 = read_text("ailice.prompts", "prompt_searchengine.txt")
         self.PATTERNS = {"QUERY": [{"re": GenerateRE4FunctionCalling("QUERY<!|request: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "ARXIV": [{"re": GenerateRE4FunctionCalling("ARXIV<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "GOOGLE": [{"re": GenerateRE4FunctionCalling("GOOGLE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],

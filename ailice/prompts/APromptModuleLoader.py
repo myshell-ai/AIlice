@@ -1,5 +1,5 @@
+from importlib.resources import read_text
 from ailice.common.AConfig import config
-from ailice.common.utils.AFileUtils import LoadTXTFile
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
 
@@ -14,7 +14,7 @@ class APromptModuleLoader():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
-        self.prompt0 = LoadTXTFile("prompts/prompt_module_loader.txt")
+        self.prompt0 = read_text("ailice.prompts", "prompt_module_loader.txt")
         self.memory = ""
         self.PATTERNS = {"LOADMODULE": [{"re": GenerateRE4FunctionCalling("LOADMODULE<!|addr: str|!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS= {"LOADMODULE": {"func": self.LoadModule}}
