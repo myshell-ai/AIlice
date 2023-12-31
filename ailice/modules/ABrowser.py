@@ -3,6 +3,7 @@ import re
 import shutil
 import subprocess
 import requests
+import tempfile
 
 from urllib.parse import urlparse, urlunparse
 from urlextract import URLExtract
@@ -15,7 +16,8 @@ from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
 class ABrowser():
-    def __init__(self):
+    def __init__(self, pdfOutputDir: str):
+        self.pdfOutputDir = pdfOutputDir
         self.options = webdriver.ChromeOptions()
         self.options.add_argument('--headless')
         self.options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36")
@@ -114,7 +116,7 @@ class ABrowser():
             else:
                 print("can not download pdf file. HTTP err code:", response.status_code)
         
-        outDir = f"temp/{fileName}"
+        outDir = f"{self.pdfOutputDir}/{fileName}"
         cmd = f"nougat {pdfPath} -o {outDir}"
         result = subprocess.run([cmd], stdout=subprocess.PIPE, text=True, shell=True)
 
@@ -158,5 +160,12 @@ class ABrowser():
         return self.page()
     
 
-browser = ABrowser()
-makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown"]).Run()
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--pdfOutputDir',type=str,default="", help="You can set it as a directory to store the OCR results of PDF files to avoid repeated OCR computation.")
+    args = parser.parse_args()
+    
+    with tempfile.TemporaryDirectory() as tmpdir:
+        browser = ABrowser(pdfOutputDir=args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)
+        makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown"]).Run()
