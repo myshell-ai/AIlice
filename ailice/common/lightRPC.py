@@ -12,7 +12,6 @@ import zmq
 import pickle
 import traceback
 
-TIMEOUT_MS=180000
 WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
 
@@ -52,6 +51,8 @@ class GenesisRPCServer(object):
   
   def Worker(self):
     socket = self.context.socket(zmq.REP)
+    socket.setsockopt(zmq.HEARTBEAT_IVL, 2000)
+    socket.setsockopt(zmq.HEARTBEAT_TIMEOUT, 10000)
     socket.connect(WORKERS_ADDR)
 
     while True:
@@ -87,8 +88,10 @@ def makeClient(url,returnClass=False):
     
     def RemoteCall(self,funcName,args,kwargs):
       with self.context.socket(zmq.REQ) as socket:
-        socket.setsockopt(zmq.SNDTIMEO, TIMEOUT_MS) 
-        socket.setsockopt(zmq.RCVTIMEO, TIMEOUT_MS)
+        socket.setsockopt(zmq.CONNECT_TIMEOUT, 10000)
+        socket.setsockopt(zmq.HEARTBEAT_IVL, 2000)
+        socket.setsockopt(zmq.HEARTBEAT_TIMEOUT, 10000)
+
         socket.connect(url)
         SendMsg(socket,{'function':funcName,'args':args, "kwargs": kwargs})
         ret=ReceiveMsg(socket)
@@ -97,8 +100,9 @@ def makeClient(url,returnClass=False):
       return ret['ret']
   
   with context.socket(zmq.REQ) as socket:
-    socket.setsockopt(zmq.SNDTIMEO, TIMEOUT_MS) 
-    socket.setsockopt(zmq.RCVTIMEO, TIMEOUT_MS)
+    socket.setsockopt(zmq.CONNECT_TIMEOUT, 10000)
+    socket.setsockopt(zmq.SNDTIMEO, 10000) 
+    socket.setsockopt(zmq.RCVTIMEO, 10000)
     socket.connect(url)
     SendMsg(socket,{'GET_META':''})
     ret=ReceiveMsg(socket)
