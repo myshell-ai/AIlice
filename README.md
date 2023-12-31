@@ -108,6 +108,8 @@ To run AIlice, you need to ensure that **Chrome** are correctly installed. If yo
 You can use the following command to install AIlice (It is strongly recommended to use tools such as conda to create a new virtual environment to install AIlice, so as to avoid dependency conflicts):
 
 ```bash
+git clone https://github.com/myshell-ai/AIlice.git
+cd AIlice
 pip install -e .
 ```
 
@@ -156,6 +158,18 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**localExecution** controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
+AIlice may get stuck after the code is updated. This is because the code in the docker container has not been updated. Please execute the following command to update the docker container.
+
+```bash
+cd AIlice
+docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
+docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
+docker cp ailice/common/lightRPC.py scripter:scripter/ailice/common/lightRPC.py
+docker cp ailice/modules/__init__.py scripter:scripter/ailice/modules/__init__.py
+docker cp ailice/modules/AScripter.py scripter:scripter/ailice/modules/AScripter.py
+docker cp ailice/modules/AScrollablePage.py scripter:scripter/ailice/modules/AScrollablePage.py
+docker restart scripter
+```
 
 # Choice of LLM
 AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, only gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide relatively stable results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
@@ -232,18 +246,3 @@ If you are interested in the development of AIlice itself, you may consider the 
 - **Develop Agents** with various functionalities based on the current framework.
 
 In addition to the tasks mentioned above, we should also start actively contemplating the possibility of **creating a smaller LLM that possesses lower knowledge content but higher reasoning abilities**.
-
-# FAQs:
-- **Why does AIlice get stuck on startup after updating the code?**
-This is because the code in the docker container has not been updated and is incompatible with the new code. Use the following command to update the code in the docker container:
-
-```bash
-cd AIlice
-docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
-docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
-docker cp ailice/common/lightRPC.py scripter:scripter/ailice/common/lightRPC.py
-docker cp ailice/modules/__init__.py scripter:scripter/ailice/modules/__init__.py
-docker cp ailice/modules/AScripter.py scripter:scripter/ailice/modules/AScripter.py
-docker cp ailice/modules/AScrollablePage.py scripter:scripter/ailice/modules/AScrollablePage.py
-docker restart scripter
-```
