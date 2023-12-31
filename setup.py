@@ -5,6 +5,7 @@ setup(
     version='0.2.0',
     packages=find_packages(),
     package_data={
+        '': ['LICENSE'],
         'ailice': ['prompts/*.txt'],
     },
     entry_points={
