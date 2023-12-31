@@ -6,7 +6,7 @@ Created on Mon Feb 15 11:39:09 2021
 @author: Steven Lu
 """
 
-import os
+import sys
 import threading
 import zmq
 import pickle
@@ -20,7 +20,7 @@ def SendMsg(conn,msg):
   conn.send(pickle.dumps(msg))
   return
   
-def ReciveMsg(conn):
+def ReceiveMsg(conn):
   return pickle.loads(conn.recv())
 
 class GenesisRPCServer(object):
@@ -45,7 +45,7 @@ class GenesisRPCServer(object):
       zmq.device(zmq.QUEUE, self.receiver, self.dealer)
     except Exception as e:
       print('GenesisRPCServer:Run() FATAL EXCEPTION. ',self.url,', ',str(e))
-      os._exit(1)
+      sys.exit(1)
     finally:
       self.receiver.close()
       self.dealer.close()
@@ -55,7 +55,7 @@ class GenesisRPCServer(object):
     socket.connect(WORKERS_ADDR)
 
     while True:
-      msg=ReciveMsg(socket)
+      msg=ReceiveMsg(socket)
       ret=None
       try:
         if "GET_META" in msg:
@@ -91,7 +91,7 @@ def makeClient(url,returnClass=False):
         socket.setsockopt(zmq.RCVTIMEO, TIMEOUT_MS)
         socket.connect(url)
         SendMsg(socket,{'function':funcName,'args':args, "kwargs": kwargs})
-        ret=ReciveMsg(socket)
+        ret=ReceiveMsg(socket)
       if 'exception' in ret:
         raise ret['exception']
       return ret['ret']
@@ -101,7 +101,7 @@ def makeClient(url,returnClass=False):
     socket.setsockopt(zmq.RCVTIMEO, TIMEOUT_MS)
     socket.connect(url)
     SendMsg(socket,{'GET_META':''})
-    ret=ReciveMsg(socket)
+    ret=ReceiveMsg(socket)
   for funcName in ret['META']['methods']:
     AddMethod(GenesisRPCClientTemplate,funcName)
   return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()

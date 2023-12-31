@@ -14,7 +14,7 @@ setup(
         ],
     },
     install_requires=[
-        'zmq',
+        'pyzmq',
         'termcolor',
         'simplejson',
         'transformers>=4.0.0',
