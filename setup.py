@@ -33,7 +33,7 @@ setup(
         'arxiv'
     ],
     extras_require={
-        'finetuning': ['bitsandbytes', 'datasets',],
+        'finetuning': ['datasets', 'tensorboard', ],
         'speech': ['typeguard==2.13.3', 'sounddevice', 'numpy', 'librosa', 'datasets', 'SpeechRecognition', 'espnet', 'espnet-model-zoo', 'espnet-tts-frontend', 'torchaudio',],
     },
     author='Steven Lu',

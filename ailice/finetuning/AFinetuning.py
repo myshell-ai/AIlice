@@ -1,4 +1,5 @@
 from datasets import load_dataset
+import os
 import torch
 import torch.nn.functional as F
 import transformers
@@ -7,17 +8,11 @@ from peft import (
     LoraConfig,
     get_peft_model,
     get_peft_model_state_dict,
-    prepare_model_for_int8_training,
+    prepare_model_for_kbit_training,
 )
 
 from ailice.core.llm.AFormatter import AFormatterChatML
 
-
-#DATASET = "Open-Orca/OpenOrca"
-DATASET = "finetuning/ADatasetTrace.py"
-DATA_DIR = "trace/"
-OUTPUT_DIR = "model/"
-LOG_DIR = "log/tensorboard"
 
 BATCH_SIZE = 128
 MICRO_BATCH_SIZE = 2
@@ -52,18 +47,24 @@ class MyDataCollatorWithPadding(transformers.DataCollatorWithPadding):
         return batch
 
     
-def finetune(modelDir):
-    ds = load_dataset(DATASET, data_dir=DATA_DIR)
+def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str):
+    ds = load_dataset(dataset, data_dir=dataDir)
 
-    tokenizer = transformers.AutoTokenizer.from_pretrained(modelDir, truncation=True, max_length=MAX_WINDOW, add_special_tokens=True, add_bos_token=False, add_eos_token=False, legacy=False)
+    tokenizer = transformers.AutoTokenizer.from_pretrained(modelLocation, truncation=True, max_length=MAX_WINDOW, add_special_tokens=True, add_bos_token=False, add_eos_token=False, legacy=False)
     tokenizer.pad_token = tokenizer.unk_token
     #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-    model = transformers.AutoModelForCausalLM.from_pretrained(modelDir,
-                                                device_map="auto",
-                                                torch_dtype=torch.float16,
-                                                load_in_8bit=True
-                                                )
-    model = prepare_model_for_int8_training(model)
+    quant_config = transformers.BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.bfloat16
+    )
+
+    model = transformers.AutoModelForCausalLM.from_pretrained(modelLocation,
+                                                              quantization_config=quant_config,
+                                                              device_map="auto"
+                                                            )
+    model = prepare_model_for_kbit_training(model)
 
     def tokenizeOpenorca(batch):
         concatenatedSamples = [
@@ -127,11 +128,11 @@ def finetune(modelDir):
         save_strategy="steps",
         eval_steps=50,
         save_steps=50,
-        output_dir=OUTPUT_DIR,
+        output_dir=outDir,
         save_total_limit=3,
         load_best_model_at_end=False,
         report_to="tensorboard",
-        logging_dir=LOG_DIR
+        logging_dir=logDir
         #remove_unused_columns=False
     )
 
@@ -147,8 +148,21 @@ def finetune(modelDir):
     model.config.use_cache = False
     model = torch.compile(model)
     trainer.train()
-    model.save_pretrained(OUTPUT_DIR)
+    model.save_pretrained(outDir)
 
-#finetune("openchat/openchat_3.5")
-#finetune("meta-llama/Llama-2-13b-chat-hf")
-finetune("Open-Orca/Mistral-7B-OpenOrca")
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model',type=str,default='openchat/openchat_3.5',help="")
+    parser.add_argument('--dataset',type=str,default=f'{os.path.dirname(os.path.abspath(__file__))}/ADatasetTrace.py',help="")
+    parser.add_argument('--datadir',type=str,default=None,help="")
+    parser.add_argument('--outdir',type=str,default=None,required=True,help="")
+    parser.add_argument('--logdir',type=str,default=None,help="")
+    args = parser.parse_args()
+    
+    if ('ailice.finetuning.ADatasetTrace' == args.dataset) and (None == args.datadir):
+        print("--datadir is required when using ADatasetTrace.")
+        exit(0)
+    
+    finetune(modelLocation=args.model, dataset=args.dataset, dataDir=args.datadir, outDir=args.outdir, logDir=args.logdir)
