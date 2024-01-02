@@ -62,6 +62,9 @@ The third principle is what everyone is currently working on: having multiple in
 
 
 ## Computational Model: Interactive Agents Calling Tree
+![IACT](./IACT.jpg)
+*IACT Architecture Diagram. A user requirement to build a page for image collection and display is dynamically decomposed into two tasks: coder_spider and coder_website. When coder_spider encounters difficulties, it proactively seeks assistance from its caller, proxy_cat_gallery. Proxy_cat_gallery then creates another agent, researcher_api, and employs it to address the issue.*
+
 AIlice can be regarded as **a computer powered by a LLM**, and its features include:
 
 - Representing input, output, programs, and data in text form.
