@@ -15,15 +15,15 @@ from ailice.core.llm.AFormatter import AFormatterChatML
 
 
 BATCH_SIZE = 128
-MICRO_BATCH_SIZE = 2
+MICRO_BATCH_SIZE = 1
 GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
 LEARNING_RATE = 3e-4
 TRAIN_STEPS = 4
 MAX_WINDOW = 8192
 
-LORA_R = 64
-LORA_ALPHA = 16
-LORA_DROPOUT= 0.1
+LORA_R = 8
+LORA_ALPHA = 32
+LORA_DROPOUT= 0.05
 LORA_TARGET_MODULES = [
     "q_proj",
     "v_proj",
@@ -64,6 +64,8 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
                                                               quantization_config=quant_config,
                                                               device_map="auto"
                                                             )
+    model.gradient_checkpointing_enable()
+
     model = prepare_model_for_kbit_training(model)
 
     def tokenizeOpenorca(batch):
@@ -123,7 +125,7 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
         learning_rate=LEARNING_RATE,
         fp16=True,
         logging_steps=10,
-        optim="adamw_torch",
+        optim="paged_adamw_8bit",
         evaluation_strategy="no",
         save_strategy="steps",
         eval_steps=50,
