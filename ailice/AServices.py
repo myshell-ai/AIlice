@@ -7,7 +7,7 @@ processes = []
 
 def StartServices():
     if config.localExecution:
-        config.services['scripter'] = {"cmd": "docker stop scripter; python3 -m ailice.modules.AScripter", "addr": "tcp://127.0.0.1:2005"}
+        config.services['scripter'] = {"cmd": "docker stop scripter; python3 -m ailice.modules.AScripter", "addr": "tcp://127.0.0.1:59000"}
     else:
         try:
             subprocess.run("docker -v", shell=True, check=True)

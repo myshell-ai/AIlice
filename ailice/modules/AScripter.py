@@ -107,6 +107,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--incontainer',action="store_true",help="Run in container. Please DO NOT turn on this switch on non-virtual machines, otherwise it will cause serious security risks.")
     args = parser.parse_args()
-    addr = "tcp://0.0.0.0:2005" if args.incontainer else "tcp://127.0.0.1:2005"
+    addr = "tcp://0.0.0.0:59000" if args.incontainer else "tcp://127.0.0.1:59000"
     py = AScripter(incontainer=args.incontainer)
     makeServer(py, addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()

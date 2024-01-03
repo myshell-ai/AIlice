@@ -13,7 +13,7 @@ COPY ailice/modules/AScrollablePage.py /scripter/ailice/modules/AScrollablePage.
 
 RUN pip3 install pyzmq
 
-EXPOSE 2005-2016
+EXPOSE 59000-59200
 
 
 CMD ["python3", "-m", "ailice.modules.AScripter", "--incontainer"]

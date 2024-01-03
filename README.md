@@ -68,9 +68,9 @@ The last point to note is that AIlice currently lacks a runtime control mechanis
 
 - **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
 
-- **"Deploy a straightforward website on this machine using the Flask framework. Ensure accessibility at 0.0.0.0:2006. The website should have a single page capable of displaying all images located in the 'images' directory."**
+- **"Deploy a straightforward website on this machine using the Flask framework. Ensure accessibility at 0.0.0.0:59001. The website should have a single page capable of displaying all images located in the 'images' directory."**
 This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
-cp" command to see it. But you can let AIlice solve this problem by itself: deploy a website in the container according to the above prompt(It is recommended to use the 2006 port that has been port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can also try to let her iterate to produce more complex functions. If you don't see any images on the page, please check whether the "images" folder of the website is different from the "images" folder here (for example, it might be under "static/images").
+cp" command to see it. But you can let AIlice solve this problem by itself: deploy a website in the container according to the above prompt(It is recommended to use ports between 59001 and 59200 that has been port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can also try to let her iterate to produce more complex functions. If you don't see any images on the page, please check whether the "images" folder of the website is different from the "images" folder here (for example, it might be under "static/images").
 
 - **"Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the 'images' directory."**
 If you successfully deployed the above website, you can now see the BTC price curve directly on the page.
@@ -164,7 +164,7 @@ To use the automatic programming feature, we need a code execution environment r
 
 ```bash
 docker build -t env4scripter .
-docker run -d -p 127.0.0.1:2005-2016:2005-2016 --name scripter env4scripter
+docker run -d -p 127.0.0.1:59000-59200:59000-59200 --name scripter env4scripter
 ```
 
 Now that the environment configuration has been done, you can directly copy a command from the typical use cases below to run AIlice.

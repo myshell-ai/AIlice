@@ -1,5 +1,7 @@
 import time
 import simplejson as json
+from termcolor import colored
+
 import threading
 from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
@@ -31,6 +33,8 @@ def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temp
     config.contextWindowRatio = contextWindowRatio
     config.localExecution = localExecution
     
+    print(colored("The port range of the external interaction module has been changed from 2005-2016 to 59000-59200. If you are using an old version, startup failure will occur after updating the code. Please modify the port number in config.json and rebuild the docker image.", "yellow"))
+
     StartServices()
     clientPool.Init()
 
