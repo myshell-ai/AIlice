@@ -8,6 +8,43 @@ First, we need **a simple framework that is easy to understand and sufficiently 
 
 Second, despite the current strength of OpenAI's products, we place hope in the open-source community for the future. This is not only because of the idealistic desire to break the monopoly on AGI but also for technical reasons. We anticipate that **future agents will run for extended periods on local machines, performing various complex tasks from local data analysis to information investigations on the internet**. Many of these tasks require good reasoning abilities rather than vast amounts of knowledge. We hope that in the future, a lightweight, high-reasoning-capacity open-source LLM will emerge to realize this ideal.
 
+# Comparison
+
+We have designed several dimensions to compare AIlice with mainstream AI agents. These include:
+
+- **Multi-agents**:
+Whether problems are addressed through multi-agent dialogues. This can enhance fault tolerance.
+
+- **Dynamic Creation**:
+The ability to dynamically create agents during task execution. This helps to break down tasks into subtasks, reducing context consumption within agents.
+
+- **Interactive Calling**:
+Whether dynamically created agents can interact with their creators (callers). This improves fault tolerance for subtask failures and allows users to naturally participate as collaborators.
+
+- **Long Term Memory**:
+The technical solutions used for long-term memory. Enabling LLM to surpass its context window constraints and accomplish more complex tasks.
+
+- **Function Call Syntax**:
+The syntax for function calls. Diverse syntax supports provide LLM with more flexible ways of external interaction.
+
+- **Self-expansion**:
+Modules for self-expansion. Allowing the agent to build more functionalities for itself, avoiding the manual development of numerous external interaction modules.
+
+- **Multimodal**:
+Support for multimodal models. The support for multimodal models will enable the agent to have a broader range of applications.
+
+- **Code Size**:
+The number of lines of code. A smaller codebase enables developers to better understand its internal logic and exert stronger control over the code. Ultimately, simple code implementation makes self-reflection and self-expansion for the agent simpler.
+
+Please note that this is an ongoing research, and the data in the table may be inaccurate due to oversights in my investigation or rapid progress in these projects. If any errors are identified, please point them out.
+
+|  | Multi-agents | Dynamic Creation | Interactive Calling | Long Term Memory | Function Call Syntax | Self-expansion | Multimodal | Code Size |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
+| AutoGen | Y | Y | N | RAG and more | JSON | N | Y | 20851 |
+| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | in dev | 2772 |
+
+The number of lines of code is calculated in the latest code base via the "git ls-files "*.py" | xargs wc -l" command.
+
 
 # Introduction
 
