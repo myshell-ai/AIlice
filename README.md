@@ -64,9 +64,7 @@ Let's list some typical use cases. I frequently employ these examples to test AI
 
 The last point to note is that AIlice currently lacks a runtime control mechanism, so she might get stuck in a loop or run for an extended period. When using a commercial LLM runtime, you need to monitor her operation closely.
 
-- **"Please search the internet for 100 tutorials in various branches of physics and report the URLs for the PDF files you find. There is no need to verify these URLs, we only need a rough collection for now."**
-
-- **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
+- **"Please list the contents of the current directory."**
 
 - **"Deploy a straightforward website on this machine using the Flask framework. Ensure accessibility at 0.0.0.0:59001. The website should have a single page capable of displaying all images located in the 'images' directory."**
 This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
@@ -75,9 +73,17 @@ cp" command to see it. But you can let AIlice solve this problem by itself: depl
 - **"Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the 'images' directory."**
 If you successfully deployed the above website, you can now see the BTC price curve directly on the page.
 
+
+- **"Find the process on port 59001 and terminate it."**
+This will terminate the website service program that was just established.
+
 - **"Please use cadquery to implement a cup."**
 This is also a very interesting attempt. Cadquery is a python package that uses python programming for cad modeling. We try to use AIlice to automatically build 3D models! This
 can give us a glimpse of how mature geometric intuition can be in LLM's world view. Of course, after implementing multimodal support, we can enable AIlice to see the models she creates, allowing for further adjustments and establishing a highly effective feedback loop. This way, it might be possible to achieve truly usable language-controlled 3D modeling.
+
+- **"Please search the internet for 100 tutorials in various branches of physics and report the URLs for the PDF files you find. There is no need to verify these URLs, we only need a rough collection for now."** Utilizing AIlice to achieve automatic data set collection and construction is one of our ongoing objectives. Currently, the researcher employed for this functionality still has some deficiencies, but it is already capable of providing some intriguing results.
+
+- **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
 
 - **"Please write an external interactive module. The function of the module is to obtain the content of related pages on the wiki through keywords."** AIlice can construct external interaction modules on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Once the module is constructed, you can instruct AIlice by saying, "Please load the newly implemented wiki module and utilize it to query the entry on relativity."
 
@@ -282,6 +288,8 @@ If you are interested in the development of AIlice itself, you may consider the 
 - **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
 
 - **Improved Voice Conversation Feature**, currently, there are frequent instances of failure in detecting the endpoint of user speech in voice conversations. Addressing this issue is crucial for enhancing the overall functionality.
+
+- **Re-implement the researcher.** The current researcher was designed on the llama 13b model, and its performance is not satisfactory. We need a new design based on conversation history, multi-agent collaboration, and the ability to return results incrementally at different stages. The new design should seamlessly integrate with the coder-proxy to achieve a hybrid programming-investigation task.
 
 - **Develop Agents** with various functionalities based on the current framework.
 
