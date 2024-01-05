@@ -83,7 +83,7 @@ This will terminate the website service program that was just established.
 This is also a very interesting attempt. Cadquery is a python package that uses python programming for cad modeling. We try to use AIlice to automatically build 3D models! This
 can give us a glimpse of how mature geometric intuition can be in LLM's world view. Of course, after implementing multimodal support, we can enable AIlice to see the models she creates, allowing for further adjustments and establishing a highly effective feedback loop. This way, it might be possible to achieve truly usable language-controlled 3D modeling.
 
-- **"Please search the internet for 100 tutorials in various branches of physics and download the PDF files you find to a folder named "physics". There is no need to verify the content of pdfs, we only need a rough collection for now."** Utilizing AIlice to achieve automatic data set collection and construction is one of our ongoing objectives. Currently, the researcher employed for this functionality still has some deficiencies, but it is already capable of providing some intriguing results.
+- **"Please search the internet for 100 tutorials in various branches of physics and download the PDF files you find to a folder named 'physics'. There is no need to verify the content of pdfs, we only need a rough collection for now."** Utilizing AIlice to achieve automatic data set collection and construction is one of our ongoing objectives. Currently, the researcher employed for this functionality still has some deficiencies, but it is already capable of providing some intriguing results.
 
 - **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
 
@@ -179,9 +179,9 @@ Now that the environment configuration has been done, you can directly copy a co
 
 ```bash
 ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
-ailice_web --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./trace
-ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
-ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+ailice_main --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./trace
+ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
+ailice_main --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
@@ -290,6 +290,8 @@ If you are interested in the development of AIlice itself, you may consider the 
 - **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
 
 - **Improved Voice Conversation Feature**, currently, there are frequent instances of failure in detecting the endpoint of user speech in voice conversations. Addressing this issue is crucial for enhancing the overall functionality.
+
+- **Considering using a simple implementation of a vector database as a replacement for ChromaDB.** it introduces too many additional dependencies.
 
 - **Re-implement the researcher.** The current researcher was designed on the llama 13b model, and its performance is not satisfactory. We need a new design based on conversation history, multi-agent collaboration, and the ability to return results incrementally at different stages. The new design should seamlessly integrate with the coder-proxy to achieve a hybrid programming-investigation task.
 
