@@ -8,7 +8,7 @@ The agent can only see the information you send to it through "CALL" function, t
 #Use the following function to create or communicate with an AI agent:
 CALL<!|agentType: str, agentName: str, msg: str|!>
 - agentType: A string used to specify the type of AI agent. It can be of the following types:
-    1. "researcher", Use the Internet to conduct research on a topic.
+    1. "researcher", Conduct an internet investigation on a particular topic or gather data. It also has the capability to execute simple scripts.
     2. "article-digest": literature (local files or URLs on internet) reading comprehension and related question answering.
     3. "coder-proxy", an excellent coder who also has access to bash and python interpreter, he can solve problems programmatically.
     You need to choose the appropriate agentType among the above types according to your needs.
