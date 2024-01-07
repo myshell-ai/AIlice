@@ -30,7 +30,8 @@ setup(
         'chromadb',
         'googlesearch-python',
         'urlextract', 'selenium>=4.10.0', 'html2text', 'nougat-ocr', 'scipy', 'scikit-learn',
-        'arxiv'
+        'arxiv',
+        'chardet'
     ],
     extras_require={
         'finetuning': ['datasets', 'tensorboard', ],
