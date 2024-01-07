@@ -293,8 +293,6 @@ If you are interested in the development of AIlice itself, you may consider the 
 
 - **Considering using a simple implementation of a vector database as a replacement for ChromaDB.** it introduces too many additional dependencies.
 
-- **Re-implement the researcher.** The current researcher was designed on the llama 13b model, and its performance is not satisfactory. We need a new design based on conversation history, multi-agent collaboration, and the ability to return results incrementally at different stages. The new design should seamlessly integrate with the coder-proxy to achieve a hybrid programming-investigation task.
-
 - **Develop Agents** with various functionalities based on the current framework.
 
 In addition to the tasks mentioned above, we should also start actively contemplating the possibility of **creating a smaller LLM that possesses lower knowledge content but higher reasoning abilities**.
