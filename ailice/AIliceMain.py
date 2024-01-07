@@ -13,7 +13,7 @@ from ailice.common.APrompts import promptsManager
 from ailice.prompts.APromptChat import APromptChat
 from ailice.prompts.APromptMain import APromptMain
 from ailice.prompts.APromptSearchEngine import APromptSearchEngine
-from ailice.prompts.APromptRecurrent import APromptRecurrent
+from ailice.prompts.APromptResearcher import APromptResearcher
 from ailice.prompts.APromptCoder import APromptCoder
 from ailice.prompts.APromptModuleCoder import APromptModuleCoder
 from ailice.prompts.APromptModuleLoader import APromptModuleLoader
@@ -56,7 +56,7 @@ def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temp
     else:
         speech = None
     
-    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptRecurrent, APromptCoder, APromptModuleCoder, APromptModuleLoader, APromptCoderProxy, APromptArticleDigest]:
+    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptModuleLoader, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
     llmPool.Init([modelID])
