@@ -19,7 +19,7 @@ MICRO_BATCH_SIZE = 1
 GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
 LEARNING_RATE = 3e-4
 TRAIN_STEPS = 4
-MAX_WINDOW = 8192
+MAX_WINDOW = 4096
 
 LORA_R = 8
 LORA_ALPHA = 32
@@ -120,7 +120,7 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
         gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,
         warmup_ratio=0.1,
         #warmup_steps=100,
-        num_train_epochs=1,
+        num_train_epochs=10,
         #max_steps=TRAIN_STEPS,
         learning_rate=LEARNING_RATE,
         fp16=True,
@@ -156,7 +156,7 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model',type=str,default='openchat/openchat_3.5',help="")
+    parser.add_argument('--model',type=str,default='Open-Orca/Mistral-7B-OpenOrca',help="")
     parser.add_argument('--dataset',type=str,default=f'{os.path.dirname(os.path.abspath(__file__))}/ADatasetTrace.py',help="")
     parser.add_argument('--datadir',type=str,default=None,help="")
     parser.add_argument('--outdir',type=str,default=None,required=True,help="")
