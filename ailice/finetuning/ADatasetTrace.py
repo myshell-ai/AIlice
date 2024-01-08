@@ -8,6 +8,11 @@ import simplejson as json
 class MyDataset(GeneratorBasedBuilder):
     VERSION = datasets.Version("1.0.0")
     
+    def __init__(self, maxWindow: int, **kwargs):
+        super().__init__(**kwargs)
+        self.maxWindow = maxWindow
+        return
+    
     def _info(self):
         return DatasetInfo(
             description="AIlice trace dataset",
@@ -50,7 +55,7 @@ class MyDataset(GeneratorBasedBuilder):
         currentLen = 0
         for c in conv:
             currentLen += len(f"{c['role']}: {c['msg']}")
-            if (currentLen // 4) >= 4096:
+            if (currentLen // 4) >= self.maxWindow:
                 ret.append([c])
                 currentLen = 0
             else:

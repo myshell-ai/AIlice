@@ -11,7 +11,7 @@ from peft import (
     prepare_model_for_kbit_training,
 )
 
-from ailice.core.llm.AFormatter import AFormatterChatML
+from ailice.core.llm.ALLMMeta import ALLMMeta
 
 
 BATCH_SIZE = 128
@@ -19,7 +19,6 @@ MICRO_BATCH_SIZE = 1
 GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
 LEARNING_RATE = 3e-4
 TRAIN_STEPS = 4
-MAX_WINDOW = 4096
 
 LORA_R = 8
 LORA_ALPHA = 32
@@ -47,10 +46,12 @@ class MyDataCollatorWithPadding(transformers.DataCollatorWithPadding):
         return batch
 
     
-def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str):
-    ds = load_dataset(dataset, data_dir=dataDir)
+def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, outDir: str, logDir: str):
+    locType, modelLocation = modelID[:modelID.find(":")], modelID[modelID.find(":")+1:]
+    
+    ds = load_dataset(dataset, maxWindow=maxWindow, data_dir=dataDir)
 
-    tokenizer = transformers.AutoTokenizer.from_pretrained(modelLocation, truncation=True, max_length=MAX_WINDOW, add_special_tokens=True, add_bos_token=False, add_eos_token=False, legacy=False)
+    tokenizer = transformers.AutoTokenizer.from_pretrained(modelLocation, truncation=True, max_length=maxWindow, add_special_tokens=True, add_bos_token=False, add_eos_token=False, legacy=False)
     tokenizer.pad_token = tokenizer.unk_token
     #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
     quant_config = transformers.BitsAndBytesConfig(
@@ -77,13 +78,13 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
             concatenatedSamples,
             padding=True,
             truncation=True,
-            max_length=MAX_WINDOW,
+            max_length=maxWindow,
             return_tensors='pt'
         )
         return tokenizedInputs
 
     def tokenizeAIlice(batch):
-        formatter = AFormatterChatML(tokenizer=None, systemAsUser=False)
+        formatter = ALLMMeta[modelID]['formatter'](tokenizer=None, systemAsUser=True)
         concatenatedSamples = [
             formatter(prompt0="",conversations=[{"role": role, "msg": msg} for role,msg in zip(conv['role'], conv['msg'])], encode=False, assistTag=False)
             for conv in batch['conversations']
@@ -92,7 +93,7 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
             concatenatedSamples,
             padding=True,
             truncation=True,
-            max_length=MAX_WINDOW,
+            max_length=maxWindow,
             return_tensors='pt'
         )
         return tokenizedInputs
@@ -120,7 +121,7 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
         gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,
         warmup_ratio=0.1,
         #warmup_steps=100,
-        num_train_epochs=10,
+        num_train_epochs=epochs,
         #max_steps=TRAIN_STEPS,
         learning_rate=LEARNING_RATE,
         fp16=True,
@@ -156,9 +157,11 @@ def finetune(modelLocation, dataset: str, dataDir: str, outDir: str, logDir: str
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model',type=str,default='Open-Orca/Mistral-7B-OpenOrca',help="")
+    parser.add_argument('--modelID',type=str,default='hf:Open-Orca/Mistral-7B-OpenOrca',help="")
     parser.add_argument('--dataset',type=str,default=f'{os.path.dirname(os.path.abspath(__file__))}/ADatasetTrace.py',help="")
     parser.add_argument('--datadir',type=str,default=None,help="")
+    parser.add_argument('--epochs',type=int,default=10,help="")
+    parser.add_argument('--maxWindow',type=int,default=4096,help="")
     parser.add_argument('--outdir',type=str,default=None,required=True,help="")
     parser.add_argument('--logdir',type=str,default=None,help="")
     args = parser.parse_args()
@@ -167,4 +170,4 @@ if __name__ == '__main__':
         print("--datadir is required when using ADatasetTrace.")
         exit(0)
     
-    finetune(modelLocation=args.model, dataset=args.dataset, dataDir=args.datadir, outDir=args.outdir, logDir=args.logdir)
+    finetune(modelID=args.modelID, dataset=args.dataset, dataDir=args.datadir, epochs=args.epochs, maxWindow=args.maxWindow, outDir=args.outdir, logDir=args.logdir)
