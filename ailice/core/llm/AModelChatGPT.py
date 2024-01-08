@@ -11,7 +11,7 @@ class AModelChatGPT():
         self.modelName = modelName
         self.client = openai.OpenAI(api_key = config.openaiGPTKey)
 
-        self.formatter = AFormatterGPT(tokenizer = self.tokenizer, systemAsUser = True)
+        self.formatter = AFormatterGPT(tokenizer = self.tokenizer, systemAsUser = False)
         self.contextWindow = {
             "gpt-4-1106-preview": 128000,
             "gpt-4-vision-preview": 128000,

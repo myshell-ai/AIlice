@@ -19,7 +19,7 @@ class AModelLLAMA():
         if modelID not in ALLMMeta:
             print(f"LLM {modelID} not supported yet.")
             exit(-1)
-        self.formatter = ALLMMeta[modelID]['formatter'](tokenizer = self.tokenizer, systemAsUser = True)
+        self.formatter = ALLMMeta[modelID]['formatter'](tokenizer = self.tokenizer, systemAsUser = False)
         self.contextWindow = ALLMMeta[modelID]['contextWindow']
         return
 

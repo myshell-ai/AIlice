@@ -12,7 +12,6 @@ class APromptCoderProxy():
         self.collection = collection
         self.conversations = conversations
         self.formatter = formatter
-        self.formatter.systemAsUser = False
         self.outputCB = outputCB
         self.prompt0 = read_text("ailice.prompts", "prompt_coderproxy.txt")
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
