@@ -84,7 +84,7 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
         return tokenizedInputs
 
     def tokenizeAIlice(batch):
-        formatter = ALLMMeta[modelID]['formatter'](tokenizer=None, systemAsUser=False)
+        formatter = ALLMMeta[modelID]['formatter'](tokenizer=None, systemAsUser = ALLMMeta[modelID]['systemAsUser'])
         concatenatedSamples = [
             formatter(prompt0="",conversations=[{"role": role, "msg": msg} for role,msg in zip(conv['role'], conv['msg'])], encode=False, assistTag=False)
             for conv in batch['conversations']
