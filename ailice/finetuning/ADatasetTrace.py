@@ -32,8 +32,9 @@ class MyDataset(GeneratorBasedBuilder):
             with jsonFile.open('r', encoding='utf-8') as f:
                 data = json.load(f)
                 for conv in self.ExtractConversations(data):
-                    idx += 1
-                    yield idx, {'conversations': conv}
+                    for convPiece in self.Split(conv):
+                        idx += 1
+                        yield idx, {'conversations': convPiece}
 
     def ExtractConversations(self, trace):
         convs = []
@@ -43,3 +44,15 @@ class MyDataset(GeneratorBasedBuilder):
             for subAgent in agentTrace['subProcessors']:
                 convs += self.ExtractConversations(agentTrace['subProcessors'][subAgent])
         return convs
+    
+    def Split(self, conv):
+        ret = [[]]
+        currentLen = 0
+        for c in conv:
+            currentLen += len(f"{c['role']}: {c['msg']}")
+            if (currentLen // 4) >= 4096:
+                ret.append([c])
+                currentLen = 0
+            else:
+                ret[-1].append(c)
+        return ret
