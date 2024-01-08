@@ -102,6 +102,9 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
     trainData = ds['train'].map(tokenizeAIlice, batched=True, num_proc=32, remove_columns=["conversations"])
     trainData = trainData.add_column('labels',trainData["input_ids"])
     trainData = trainData.with_format("torch")
+    validData = ds['validation'].map(tokenizeAIlice, batched=True, num_proc=32, remove_columns=["conversations"])
+    validData = validData.add_column('labels',validData["input_ids"])
+    validData = validData.with_format("torch")
     
     config = LoraConfig(
     r=LORA_R,
@@ -144,7 +147,7 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
     trainer = transformers.Trainer(
         model=model,
         train_dataset=trainData,
-        #eval_dataset=valid_data,
+        eval_dataset=validData,
         args=trainingArguments,
         data_collator=collator
     )

@@ -5,7 +5,7 @@ from pathlib import Path
 import simplejson as json
 
 
-class MyDataset(GeneratorBasedBuilder):
+class DatasetAIliceTrace(GeneratorBasedBuilder):
     VERSION = datasets.Version("1.0.0")
     
     def __init__(self, maxWindow: int, **kwargs):
@@ -27,16 +27,19 @@ class MyDataset(GeneratorBasedBuilder):
     
     def _split_generators(self, dl_manager):
         return [
-            SplitGenerator(name=Split.TRAIN, gen_kwargs={"datasetDir": dl_manager.manual_dir}),
+            SplitGenerator(name=Split.TRAIN, gen_kwargs={"datasetDir": dl_manager.manual_dir, "datasetType": "train"}),
+            SplitGenerator(name=Split.VALIDATION, gen_kwargs={"datasetDir": dl_manager.manual_dir, "datasetType": "validation"}),
         ]
     
-    def _generate_examples(self, datasetDir):
+    def _generate_examples(self, datasetDir, datasetType):
         idx = -1
         directoryPath = Path(datasetDir)
         for jsonFile in directoryPath.glob('*.json'):
             with jsonFile.open('r', encoding='utf-8') as f:
                 data = json.load(f)
-                for conv in self.ExtractConversations(data):
+                convs = self.ExtractConversations(data)
+                left,right = {"train": (0, int(0.8 * len(convs))), "validation": (int(0.8 * len(convs)), len(convs))}[datasetType]
+                for conv in convs[left: right]:
                     for convPiece in self.Split(conv):
                         idx += 1
                         yield idx, {'conversations': convPiece}
