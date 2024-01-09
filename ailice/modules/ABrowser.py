@@ -25,12 +25,14 @@ class ABrowser():
         self.options.add_argument("--disable-blink-features=AutomationControlled")
 
         self.driver = webdriver.Chrome(options=self.options)
-        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN"})
+        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
         return
     
     def ModuleInfo(self):
         return {"NAME": "browser", "ACTIONS": {"BROWSE": {"sig": "Browse(url:str)->str", "prompt": "Open a webpage/PDF and obtain the visible content."},
-                                               "SCROLLDOWN": {"sig": "ScrollDown()->str", "prompt": "Scroll down the page."}}}
+                                               "SCROLLDOWN": {"sig": "ScrollDown()->str", "prompt": "Scroll down the page."},
+                                               "SEARCHDOWN": {"sig": "SearchDown(keyword: str)->str", "prompt": "Search content downward from the current location."},
+                                               "SEARCHUP": {"sig": "SearchUp(keyword: str)->str", "prompt": "Search content upward from the current location."}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()
@@ -135,6 +137,14 @@ class ABrowser():
     def PathIsPDF(self, path: str) -> bool:
         return (path[-4:] == ".pdf")
     
+    def SearchDown(self, keyword: str) -> str:
+        self.page.SearchDown(keyword=keyword)
+        return self.page()
+    
+    def SearchUp(self, keyword: str) -> str:
+        self.page.SearchUp(keyword=keyword)
+        return self.page()
+    
     def Browse(self, url: str) -> str:
         try:
             url, path = self.GetLocation(url)
@@ -168,4 +178,4 @@ if __name__ == '__main__':
     
     with tempfile.TemporaryDirectory() as tmpdir:
         browser = ABrowser(pdfOutputDir=args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)
-        makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown"]).Run()
+        makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp"]).Run()

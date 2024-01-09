@@ -15,6 +15,10 @@ class AScrollablePage():
             funcs.append(f"#scroll down the page: \n{self.functions['SCROLLDOWN']}<!||!>\n")
         if ('SCROLLUP' in self.functions) and (self.currentIdx > 0):
             funcs.append(f"#scroll up the page: \n{self.functions['SCROLLUP']}<!||!>\n")
+        if ('SEARCHDOWN' in self.functions) and (self.currentIdx + STEP < len(self.txt)):
+            funcs.append(f"#search page down: \n{self.functions['SEARCHDOWN']}<!||!>\n")
+        if ('SEARCHUP' in self.functions) and (self.currentIdx > 0):
+            funcs.append(f"#search page up: \n{self.functions['SEARCHUP']}<!||!>\n")
         return ret + "".join(funcs) if len(funcs) > 0 else ""
     
     def LoadPage(self, txt: str, initPosition: str):
@@ -28,6 +32,16 @@ class AScrollablePage():
     
     def ScrollUp(self):
         self.currentIdx -= STEP
+        return
+
+    def SearchDown(self, keyword: str):
+        loc = self.txt.find(keyword, self.currentIdx if 0 < self.currentIdx else 0)
+        self.currentIdx = (loc - STEP//2) if -1 != loc else self.currentIdx
+        return
+    
+    def SearchUp(self, keyword: str):
+        loc = self.txt.rfind(keyword, 0, (self.currentIdx + 1) if 0 < (self.currentIdx + 1) else 0)
+        self.currentIdx = (loc - STEP//2) if -1 != loc else self.currentIdx
         return
     
     def __call__(self) -> str:

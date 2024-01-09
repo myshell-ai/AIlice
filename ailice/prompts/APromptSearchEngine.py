@@ -21,6 +21,8 @@ class APromptSearchEngine():
                          "SCROLLDOWNDUCKDUCKGO": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNDUCKDUCKGO<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str"), "isEntry": True}],
+                         "SEARCHDOWN": [{"re": GenerateRE4FunctionCalling("SEARCHDOWN<!|keyword: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SEARCHUP": [{"re": GenerateRE4FunctionCalling("SEARCHUP<!|keyword: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS= {}
         return
