@@ -40,6 +40,13 @@ class APromptCoderProxy():
     def GetActions(self):
         return self.ACTIONS
     
+    def Recall(self, key: str):
+        ret = self.storage.Query(self.collection, key)
+        if (0 != len(ret)): #and (ret[0][1] <= 0.5):
+            return ret[0][0]
+        else:
+            return "None."
+    
     def UpdateMemory(self, newMemory: str):
         self.memory = newMemory
         return
@@ -52,12 +59,16 @@ class APromptCoderProxy():
         return self.vars.get(varName, f"Variable {varName} NOT DEFINED. Only defined variable names are legal, this includes: {[k for k in self.vars]}")
     
     def ParameterizedBuildPrompt(self, n: int):
+        context = str(self.formatter(prompt0 = "", conversations = self.conversations.GetConversations(frm = -1), encode = False))
         prompt = f"""
 {self.prompt0}
 
 End of general instructions.
 
 Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
+
+Relevant Information: {self.Recall(context).strip()}
+
 """
         #prompt += "\nConversations:"
         ret = self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
