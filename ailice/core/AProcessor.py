@@ -70,6 +70,7 @@ class AProcessor():
     
     def __call__(self, txt: str) -> str:
         self.conversation.Add(role = "USER", msg = txt)
+        self.EvalStore(txt)
         self.outputCB("<")
         self.outputCB(f"USER_{self.name}", txt)
 
@@ -77,12 +78,14 @@ class AProcessor():
             prompt = self.prompt.BuildPrompt()
             ret = self.llm.Generate(prompt, proc=partial(self.outputCB, "ASSISTANT_" + self.name), endchecker=self.interpreter.EndChecker, temperature = config.temperature)
             self.conversation.Add(role = "ASSISTANT", msg = ret)
+            self.EvalStore(ret)
             self.result = ret
             
             resp = self.interpreter.EvalEntries(ret)
             
             if "" != resp:
                 self.conversation.Add(role = "SYSTEM", msg = "Function returned: {" + resp + "}")
+                self.EvalStore("Function returned: {" + resp + "}")
                 self.outputCB(f"SYSTEM_{self.name}", resp)
             else:
                 self.outputCB(">")
