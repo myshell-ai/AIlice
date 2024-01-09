@@ -16,7 +16,7 @@ After you obtain one to two sets of valid data, generate replies by extracting u
 If you still cannot get any valid information in the end, just say you didn't find it.
 
 Available commands:
-QUERY<!|clues: str|!> #Use some clues to retrieve local memory.
+QUERY<!|keywords: str|!> #Use some keywords to retrieve local memory.
 ARXIV<!|keywords: str|!> #Use arxiv to search academic literatures.
 GOOGLE<!|keywords: str|!> #Use google to search internet content.
 DUCKDUCKGO<!|keywords: str|!> #Use duckduckgo to search internet content.
