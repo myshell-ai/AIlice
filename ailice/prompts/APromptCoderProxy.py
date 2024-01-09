@@ -20,6 +20,7 @@ class APromptCoderProxy():
                          "SCROLLUPBASH": [{"re": GenerateRE4FunctionCalling("SCROLLUPBASH<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
+                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str", faultTolerance = True), "isEntry": True}],
                          "UpdateMemory": [{"re": r"UPDATED MEMORY(?P<newState>.*?)", "isEntry": True}],
                          "SetVar": [{"re": r"(?P<varName>[a-zA-Z0-9_-]+)[ ]*=[ ]*<!\|(?P<varValue>.*?)\|!>", "isEntry": True}],
                          "PrintVar": [{"re": GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), "isEntry": True}]}

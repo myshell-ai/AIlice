@@ -45,6 +45,9 @@ BASH<!|code: str|!>
 #Execute python code. Please note that you need to copy the complete code here, and you must not use references.
 PYTHON<!|code: str|!>
 
+#Wait for some seconds. The unit of the "duration" parameter is seconds. Useful when waiting for script or command execution to complete. 
+WAIT<!|duration: int|!>
+
 EXAMPLE:
 !CALL<!|"coder", "clock_coder", "Build a program that can check CPU usage."|!>
 !PYTHON<!|"""print('hello wolrd.')"""|!>

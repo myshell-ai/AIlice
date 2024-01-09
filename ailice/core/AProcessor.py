@@ -23,6 +23,7 @@ class AProcessor():
         self.interpreter.RegisterAction("COMPLETE", {"func": self.EvalComplete})
         self.interpreter.RegisterAction("STORE", {"func": self.EvalStore})
         self.interpreter.RegisterAction("QUERY", {"func": self.EvalQuery})
+        self.interpreter.RegisterAction("WAIT", {"func": self.EvalWait})
         
         self.outputCB = outputCB
         self.collection = "ailice" + str(time.time()) if collection is None else collection
@@ -115,6 +116,10 @@ class AProcessor():
         self.result = result
         self.prompt.Reset()
         return
+    
+    def EvalWait(self, duration: int) -> str:
+        time.sleep(duration)
+        return f"Waiting is over. It has been {duration} seconds."
     
     def ToJson(self) -> str:
         return {"name": self.name,
