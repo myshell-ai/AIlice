@@ -19,11 +19,11 @@ class APromptMain():
         return
     
     def Recall(self, key: str):
-        ret = self.storage.Query(self.collection, key)
-        if (0 != len(ret)) and (ret[0][1] <= 0.5):
-            return ret[0][0]
-        else:
-            return "None."
+        ret = self.storage.Query(self.collection, key, num_results=4)
+        for r in ret:
+            if (key not in r[0]) and (r[0] not in key):
+                return r[0]
+        return "None."
     
     def Reset(self):
         return
@@ -35,7 +35,7 @@ class APromptMain():
         return self.ACTIONS
     
     def ParameterizedBuildPrompt(self, n: int):
-        context = str(self.formatter(prompt0 = "", conversations = self.conversations.GetConversations(frm = -1), encode = False))
+        context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt = f"""
 {self.prompt0}
 
