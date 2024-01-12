@@ -168,7 +168,7 @@ class ABrowser():
         return self.page()
     
     def GetFullText(self, url: str) -> str:
-        return self.page.txt
+        return self.page.txt if self.page.txt is not None else ""
 
 if __name__ == '__main__':
     import argparse
