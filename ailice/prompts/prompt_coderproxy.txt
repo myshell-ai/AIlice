@@ -50,4 +50,4 @@ WAIT<!|duration: int|!>
 
 EXAMPLE:
 !CALL<!|"coder", "clock_coder", "Build a program that can check CPU usage."|!>
-!PYTHON<!|"""print('hello wolrd.')"""|!>
+!PYTHON<!|print('hello wolrd.')|!>
