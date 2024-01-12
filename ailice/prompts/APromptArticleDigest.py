@@ -17,8 +17,8 @@ class APromptArticleDigest():
         self.prompt0 = read_text('ailice.prompts', 'prompt_article_digest.txt')
         self.PATTERNS = {"READ": [{"re": GenerateRE4FunctionCalling("READ<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SEARCHDOWN": [{"re": GenerateRE4FunctionCalling("SEARCHDOWN<!|keyword: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SEARCHUP": [{"re": GenerateRE4FunctionCalling("SEARCHUP<!|keyword: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SEARCHDOWN": [{"re": GenerateRE4FunctionCalling("SEARCHDOWN<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SEARCHUP": [{"re": GenerateRE4FunctionCalling("SEARCHUP<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RETRIEVE": [{"re": GenerateRE4FunctionCalling("RETRIEVE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS = {"READ": {"func": self.Read},

@@ -31,8 +31,8 @@ class ABrowser():
     def ModuleInfo(self):
         return {"NAME": "browser", "ACTIONS": {"BROWSE": {"sig": "Browse(url:str)->str", "prompt": "Open a webpage/PDF and obtain the visible content."},
                                                "SCROLLDOWN": {"sig": "ScrollDown()->str", "prompt": "Scroll down the page."},
-                                               "SEARCHDOWN": {"sig": "SearchDown(keyword: str)->str", "prompt": "Search content downward from the current location."},
-                                               "SEARCHUP": {"sig": "SearchUp(keyword: str)->str", "prompt": "Search content upward from the current location."}}}
+                                               "SEARCHDOWN": {"sig": "SearchDown(query: str)->str", "prompt": "Search content downward from the current location."},
+                                               "SEARCHUP": {"sig": "SearchUp(query: str)->str", "prompt": "Search content upward from the current location."}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()
@@ -137,13 +137,11 @@ class ABrowser():
     def PathIsPDF(self, path: str) -> bool:
         return (path[-4:] == ".pdf")
     
-    def SearchDown(self, keyword: str) -> str:
-        self.page.SearchDown(keyword=keyword)
-        return self.page()
+    def SearchDown(self, query: str) -> str:
+        return self.page() if self.page.SearchDown(query=query) else "NOT FOUND."
     
-    def SearchUp(self, keyword: str) -> str:
-        self.page.SearchUp(keyword=keyword)
-        return self.page()
+    def SearchUp(self, query: str) -> str:
+        return self.page() if self.page.SearchUp(query=query) else "NOT FOUND."
     
     def Browse(self, url: str) -> str:
         try:
