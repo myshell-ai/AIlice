@@ -16,9 +16,9 @@ class AScrollablePage():
         if ('SCROLLUP' in self.functions) and (self.currentIdx > 0):
             funcs.append(f"#scroll up the page: \n{self.functions['SCROLLUP']}<!||!>\n")
         if ('SEARCHDOWN' in self.functions) and (self.currentIdx + STEP < len(self.txt)):
-            funcs.append(f"#search page down: \n{self.functions['SEARCHDOWN']}<!||!>\n")
+            funcs.append(f"#search page down, exactly matches query in the text: \n{self.functions['SEARCHDOWN']}<!|query: str|!>\n")
         if ('SEARCHUP' in self.functions) and (self.currentIdx > 0):
-            funcs.append(f"#search page up: \n{self.functions['SEARCHUP']}<!||!>\n")
+            funcs.append(f"#search page up, exactly matches query in the text: \n{self.functions['SEARCHUP']}<!|query: str|!>\n")
         return ret + "".join(funcs) if len(funcs) > 0 else ""
     
     def LoadPage(self, txt: str, initPosition: str):

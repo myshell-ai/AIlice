@@ -169,6 +169,8 @@ class ABrowser():
         self.page.ScrollDown()
         return self.page()
     
+    def GetFullText(self, url: str) -> str:
+        return self.page.txt
 
 if __name__ == '__main__':
     import argparse
@@ -178,4 +180,4 @@ if __name__ == '__main__':
     
     with tempfile.TemporaryDirectory() as tmpdir:
         browser = ABrowser(pdfOutputDir=args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)
-        makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp"]).Run()
+        makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText"]).Run()
