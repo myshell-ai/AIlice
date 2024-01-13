@@ -26,5 +26,4 @@ class AArxiv():
         self.page.ScrollDown()
         return self.page()
 
-ar = AArxiv()
-makeServer(ar, "ipc:///tmp/AArxiv.ipc", ["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run()
+makeServer(AArxiv, "ipc:///tmp/AArxiv.ipc", ["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run()

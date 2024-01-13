@@ -177,5 +177,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     with tempfile.TemporaryDirectory() as tmpdir:
-        browser = ABrowser(pdfOutputDir=args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)
-        makeServer(browser, "ipc:///tmp/ABrowser.ipc", ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText"]).Run()
+        makeServer(lambda: ABrowser(pdfOutputDir=args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir),
+                   "ipc:///tmp/ABrowser.ipc",
+                   ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText"]).Run()

@@ -72,5 +72,4 @@ class ASpeech():
                     sd.play(audio, sr)
                     sd.wait()
 
-speech = ASpeech()
-makeServer(speech, "ipc:///tmp/ASpeech.ipc", ["ModuleInfo", "GetAudio", "Play", "SetDevices"]).Run()
+makeServer(ASpeech, "ipc:///tmp/ASpeech.ipc", ["ModuleInfo", "GetAudio", "Play", "SetDevices"]).Run()

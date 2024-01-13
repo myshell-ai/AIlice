@@ -26,5 +26,4 @@ class AGoogle():
         self.page.ScrollDown()
         return self.page()
 
-google = AGoogle()
-makeServer(google, "ipc:///tmp/AGoogle.ipc", ["ModuleInfo", "Google", "ScrollDown"]).Run()
+makeServer(AGoogle, "ipc:///tmp/AGoogle.ipc", ["ModuleInfo", "Google", "ScrollDown"]).Run()

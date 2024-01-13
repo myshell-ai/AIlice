@@ -23,9 +23,10 @@ def ReceiveMsg(conn):
   return pickle.loads(conn.recv())
 
 class GenesisRPCServer(object):
-  def __init__(self,obj,url,APIList):
+  def __init__(self,objFactory,url,APIList):
+    self.objFactory=objFactory
     self.url=url
-    self.obj=obj
+    self.objPool=dict()
     self.APIList=APIList
     self.context=context
     self.receiver = self.context.socket(zmq.ROUTER)
@@ -59,10 +60,18 @@ class GenesisRPCServer(object):
       msg=ReceiveMsg(socket)
       ret=None
       try:
-        if "GET_META" in msg:
+        if ('clientID' in msg) and (msg['clientID'] not in self.objPool):
+          ret = {"exception": KeyError(f"clientID {msg['clientID']} not exist.")}
+        elif "GET_META" in msg:
           ret={"META":{"methods": [method for method in self.APIList]}}
+        elif "CREATE" in msg:
+          newID = str(max([int(k) for k in self.objPool]) + 1) if self.objPool else '10000000'
+          self.objPool[newID]=self.objFactory()
+          ret = {"clientID": newID}
+        elif "DEL" in msg:
+          del self.objPool[msg['clientID']]
         else:
-          ret={'ret':(getattr(self.obj,msg['function'])(*msg['args'], **msg['kwargs']))}
+          ret={'ret':(getattr(self.objPool[msg['clientID']],msg['function'])(*msg['args'], **msg['kwargs']))}
       except Exception as e:
         ret={'exception':e}
         traceback.print_tb(e.__traceback__)
@@ -71,8 +80,8 @@ class GenesisRPCServer(object):
     return
 
 
-def makeServer(obj,url,APIList):
-  return GenesisRPCServer(obj,url,APIList)
+def makeServer(objFactory,url,APIList):
+  return GenesisRPCServer(objFactory,url,APIList)
 
 def AddMethod(kls,methodName):
   def methodTemplate(self,*args,**kwargs):
@@ -84,20 +93,27 @@ def makeClient(url,returnClass=False):
     def __init__(self):
       self.url=url
       self.context=context
+      self.clientID=self.Send({'CREATE':''})['clientID']
       return
     
-    def RemoteCall(self,funcName,args,kwargs):
+    def Send(self, msg):
       with self.context.socket(zmq.REQ) as socket:
         socket.setsockopt(zmq.CONNECT_TIMEOUT, 10000)
         socket.setsockopt(zmq.HEARTBEAT_IVL, 2000)
         socket.setsockopt(zmq.HEARTBEAT_TIMEOUT, 10000)
-
         socket.connect(url)
-        SendMsg(socket,{'function':funcName,'args':args, "kwargs": kwargs})
-        ret=ReceiveMsg(socket)
+        SendMsg(socket, msg)
+        return ReceiveMsg(socket)
+    
+    def RemoteCall(self,funcName,args,kwargs):
+      ret = self.Send({'clientID': self.clientID, 'function':funcName, 'args':args, "kwargs": kwargs})
       if 'exception' in ret:
         raise ret['exception']
       return ret['ret']
+
+    def __del__(self):
+      self.Send({'DEL':'', 'clientID': self.clientID})
+      return
   
   with context.socket(zmq.REQ) as socket:
     socket.setsockopt(zmq.CONNECT_TIMEOUT, 10000)

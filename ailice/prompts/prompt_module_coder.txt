@@ -46,8 +46,8 @@ class AArxiv():
 if __name__ == '__main__':
     import os
     addr = "tcp://0.0.0.0:59001" if "1"==os.environ.get("A_IN_CONTAINER") else "tcp://127.0.0.1:59001" #You always have to determine whether you are in a container to use a different IP, which ensures the security of the service.
-    ar = AArxiv()
-    makeServer(ar, addr, ["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run() #Start the module as an RPC service. The methods listed in the list are the methods open to clients. Please choose a port number between 59001 and 59200.
+    serviceFactory = lambda: AArxiv() #makeServer requires a parameterless callback function as the first parameter. The purpose of this function is to create the server background object.
+    makeServer(serviceFactory, addr, ["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run() #Start the module as an RPC service. The methods listed in the list are the methods open to clients. Please choose a port number between 59001 and 59200.
 ```
 
 The interfaces of modules open to clients, except for ModuleInfo, must follow the following standards: the input type must be one of the four types: str, float, int, bool, and the output type must be str or None.

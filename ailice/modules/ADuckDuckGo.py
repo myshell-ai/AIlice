@@ -32,5 +32,4 @@ class ADuckDuckGo():
         self.page.ScrollDown()
         return self.page()
 
-duckduckgo = ADuckDuckGo()
-makeServer(duckduckgo, "ipc:///tmp/ADuckDuckGo.ipc", ["ModuleInfo", "DuckDuckGo", "ScrollDown"]).Run()
+makeServer(ADuckDuckGo, "ipc:///tmp/ADuckDuckGo.ipc", ["ModuleInfo", "DuckDuckGo", "ScrollDown"]).Run()
