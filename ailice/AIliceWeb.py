@@ -1,5 +1,6 @@
 import time
 import simplejson as json
+import traceback
 from termcolor import colored
 
 import threading
@@ -8,7 +9,7 @@ from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.ARemoteAccessors import clientPool
-from ailice.AServices import StartServices
+from ailice.AServices import StartServices, TerminateSubprocess
 
 from ailice.common.APrompts import promptsManager
 from ailice.prompts.APromptChat import APromptChat
@@ -89,7 +90,14 @@ def main():
     parser.add_argument('--localExecution',action='store_true', help="localExecution controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.")
     parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
     kwargs = vars(parser.parse_args())
-    mainLoop(**kwargs)
+
+    try:
+        mainLoop(**kwargs)
+    except Exception as e:
+        print(f"Encountered an exception, AIlice is exiting: {str(e)}")
+        traceback.print_tb(e.__traceback__)
+        TerminateSubprocess()
+        raise
 
 if __name__ == '__main__':
     main()

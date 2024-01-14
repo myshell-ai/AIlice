@@ -1,3 +1,4 @@
+import os
 import subprocess
 import signal
 
@@ -6,6 +7,7 @@ from ailice.common.AConfig import config
 processes = []
 
 def StartServices():
+    os.system("ps aux | grep ailice.modules | awk '{print $2}' | xargs kill")
     if config.localExecution:
         config.services['scripter'] = {"cmd": "docker stop scripter; python3 -m ailice.modules.AScripter", "addr": "tcp://127.0.0.1:59000"}
     else:
@@ -26,7 +28,7 @@ def StartServices():
     signal.signal(signal.SIGINT, TerminateSubprocess)
     signal.signal(signal.SIGTERM, TerminateSubprocess)
 
-def TerminateSubprocess(signum, frame):
+def TerminateSubprocess(signum=None, frame=None):
     for p in processes:
         if p.poll() is None:
             p.terminate()
