@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import signal
 
@@ -32,4 +33,5 @@ def TerminateSubprocess(signum=None, frame=None):
     for p in processes:
         if p.poll() is None:
             p.terminate()
-    exit(1)
+            p.wait()
+    sys.exit(0)
