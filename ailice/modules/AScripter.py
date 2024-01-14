@@ -22,7 +22,9 @@ class AScripter():
                                                 "SCROLLUPPY": {"sig": "ScrollUpPy()->str", "prompt": "Scroll up the results."}}}
     
     def RunCMD(self, session: str, cmd: list[str], timeout: int = 30):
-        self.sessions[session]['proc'] = subprocess.Popen(cmd, env={"A_IN_CONTAINER": "1" if self.incontainer else "0"}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1, universal_newlines=True)
+        env = os.environ.copy()
+        env["A_IN_CONTAINER"] = "1" if self.incontainer else "0"
+        self.sessions[session]['proc'] = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1, universal_newlines=True)
         os.set_blocking(self.sessions[session]['proc'].stdout.fileno(), False)
         self.Wait(process=self.sessions[session]['proc'], timeout=timeout)
         return
