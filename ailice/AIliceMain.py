@@ -32,7 +32,7 @@ def GetInput(speech) -> str:
         inp = input(colored("USER: ", "green"))
     return inp
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, localExecution: bool, trace: str):
+def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, trace: str):
     config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
     config.quantization = quantization
     config.maxMemory = maxMemory
@@ -40,8 +40,10 @@ def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temp
     config.flashAttention2 = flashAttention2
     config.speechOn = speechOn
     config.contextWindowRatio = contextWindowRatio
-    config.localExecution = localExecution
     
+    print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
+To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
+use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
     print(colored("The port range of the ext-modules has been changed from 2005-2016 to 59000-59200. If you are using an old version, startup failure will occur after updating the code. Please modify the port number in config.json and rebuild the docker image.", "yellow"))
     
     StartServices()
@@ -91,7 +93,6 @@ def main():
     parser.add_argument('--speechOn',action='store_true', help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.")
     parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--localExecution',action='store_true', help="localExecution controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.")
     parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
     kwargs = vars(parser.parse_args())
 

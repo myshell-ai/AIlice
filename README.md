@@ -168,11 +168,30 @@ pip install -e .[speech]
 pip install -e .[finetuning]
 ```
 
-To use the automatic programming feature, we need a code execution environment running in a docker container. It can be built with the following command:
+After installation, AIlice can run, but by default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify AIlice's configuration file (AIlice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
 
 ```bash
 docker build -t env4scripter .
 docker run -d -p 127.0.0.1:59000-59200:59000-59200 --name scripter env4scripter
+```
+
+In my case, when AIlice starts, it informs me that the configuration file is located at ~/.config/ailice/config.json, so I modify it in the following way
+
+```bash
+nano ~/.config/ailice/config.json
+```
+
+Modify "scripter" under "services":
+
+```
+{
+    ...
+    "services": {
+        ...
+        "scripter": {"cmd": "docker start scripter",
+                     "addr": "tcp://127.0.0.1:59000"},
+    }
+}
 ```
 
 Now that the environment configuration has been done, you can directly copy a command from the typical use cases below to run AIlice.
@@ -180,7 +199,7 @@ Now that the environment configuration has been done, you can directly copy a co
 ```bash
 ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
 ailice_main --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./trace
-ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main" --localExecution
+ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
 ailice_main --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
@@ -203,7 +222,6 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**speechOn** is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
-- --**localExecution** controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
 AIlice may get stuck after the code is updated. This is because the code in the docker container has not been updated. Please execute the following command to update the docker container.

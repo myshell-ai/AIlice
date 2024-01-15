@@ -11,7 +11,6 @@ class AConfig():
         self.temperature = 0.0
         self.flashAttention2 = False
         self.speechOn = False
-        self.localExecution = False
         self.contextWindowRatio = 0.6
         self.services = {
             "storage": {"cmd": "python3 -m ailice.modules.AStorageChroma", "addr": "ipc:///tmp/AIliceStorage.ipc"},
@@ -19,7 +18,7 @@ class AConfig():
             "arxiv": {"cmd": "python3 -m ailice.modules.AArxiv", "addr": "ipc:///tmp/AArxiv.ipc"},
             "google": {"cmd": "python3 -m ailice.modules.AGoogle", "addr": "ipc:///tmp/AGoogle.ipc"},
             "duckduckgo": {"cmd": "python3 -m ailice.modules.ADuckDuckGo", "addr": "ipc:///tmp/ADuckDuckGo.ipc"},
-            "scripter": {"cmd": "docker start scripter", "addr": "tcp://127.0.0.1:59000"},
+            "scripter": {"cmd": "python3 -m ailice.modules.AScripter", "addr": "tcp://127.0.0.1:59000"},
             "speech": {"cmd": "python3 -m ailice.modules.ASpeech", "addr": "ipc:///tmp/ASpeech.ipc"},
         }
         return

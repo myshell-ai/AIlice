@@ -25,15 +25,17 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 import gradio as gr
 
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float, localExecution: bool, trace: str):
+def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float, trace: str):
     config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
     config.flashAttention2 = flashAttention2
     config.contextWindowRatio = contextWindowRatio
-    config.localExecution = localExecution
     
+    print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
+To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
+use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
     print(colored("The port range of the ext-modules has been changed from 2005-2016 to 59000-59200. If you are using an old version, startup failure will occur after updating the code. Please modify the port number in config.json and rebuild the docker image.", "yellow"))
 
     StartServices()
@@ -87,7 +89,6 @@ def main():
     parser.add_argument('--temperature',type=float,default=0.0, help="temperature sets the temperature parameter of LLM reasoning, the default is zero.")
     parser.add_argument('--flashAttention2',action='store_true', help="flashAttention2 is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality.")
     parser.add_argument('--contextWindowRatio',type=float,default=0.6, help="contextWindowRatio is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. The default value is 0.6.")
-    parser.add_argument('--localExecution',action='store_true', help="localExecution controls whether to execute code locally. The default is False, which means it is executed in docker container/VM/remote environment. Turning on this switch means that AI has full control over the local environment, which may lead to serious security risks. But you can place AIlice in In a virtual machine environment before turn on this switch. The advantage of this is that you can call visual tools more freely in automatic programming tasks.")
     parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
     kwargs = vars(parser.parse_args())
 
