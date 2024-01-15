@@ -24,8 +24,9 @@ class ABrowser():
     
     def Init(self):
         if self.inited:
-            return
+            return True, ""
         try:
+            subprocess.run(['google-chrome', '--version'], check=True)
             self.options = webdriver.ChromeOptions()
             self.options.add_argument('--headless')
             self.options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36")
@@ -176,7 +177,7 @@ class ABrowser():
 
         except Exception as e:
             print("EXCEPTION. e: ", str(e))
-            return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}"
+            return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
 
     def ScrollDown(self) -> str:
         self.page.ScrollDown()
