@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import requests
 import tempfile
+import traceback
 
 from urllib.parse import urlparse, urlunparse
 from urlextract import URLExtract
@@ -17,16 +18,26 @@ from ailice.modules.AScrollablePage import AScrollablePage
 
 class ABrowser():
     def __init__(self, pdfOutputDir: str):
+        self.inited = False
         self.pdfOutputDir = pdfOutputDir
-        self.options = webdriver.ChromeOptions()
-        self.options.add_argument('--headless')
-        self.options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36")
-        self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        self.options.add_argument("--disable-blink-features=AutomationControlled")
-
-        self.driver = webdriver.Chrome(options=self.options)
-        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
         return
+    
+    def Init(self):
+        if self.inited:
+            return
+        try:
+            self.options = webdriver.ChromeOptions()
+            self.options.add_argument('--headless')
+            self.options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36")
+            self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            self.options.add_argument("--disable-blink-features=AutomationControlled")
+
+            self.driver = webdriver.Chrome(options=self.options)
+            self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
+            self.inited = True
+            return True, ""
+        except Exception as e:
+            return False, f"webdriver init FAILED. It may be caused by chrome not being installed correctly. please install chrome manually, or let AIlice do it for you. Exception details: {str(e)}\n{traceback.format_exc()}"
     
     def ModuleInfo(self):
         return {"NAME": "browser", "ACTIONS": {"BROWSE": {"sig": "Browse(url:str)->str", "prompt": "Open a webpage/PDF and obtain the visible content."},
@@ -144,6 +155,10 @@ class ABrowser():
         return self.page() if self.page.SearchUp(query=query) else "NOT FOUND."
     
     def Browse(self, url: str) -> str:
+        succ, msg = self.Init()
+        if not succ:
+            return msg
+        
         try:
             url, path = self.GetLocation(url)
             if url is not None:
