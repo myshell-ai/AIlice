@@ -224,9 +224,13 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
-AIlice may get stuck after the code is updated. This is because the code in the docker container has not been updated. Please execute the following command to update the docker container.
+
+## Code Update
+
+Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration files and Docker containers with the new code. The most thorough solution for this scenario is to delete the configuration files (making sure to save any API keys beforehand) and the containers, and then perform a complete reinstall. However, for most situations, you can address the issue by simply deleting the configuration files and updating the AIlice module within the containers.
 
 ```bash
+rm ~/.config/ailice/config.json
 cd AIlice
 docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
 docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
