@@ -93,7 +93,10 @@ def makeClient(url,returnClass=False):
     def __init__(self):
       self.url=url
       self.context=context
-      self.clientID=self.Send({'CREATE':''})['clientID']
+      ret=self.Send({'CREATE':''})
+      if "exception" in ret:
+        raise ret["exception"]
+      self.clientID=ret['clientID']
       return
     
     def Send(self, msg):
@@ -112,7 +115,8 @@ def makeClient(url,returnClass=False):
       return ret['ret']
 
     def __del__(self):
-      self.Send({'DEL':'', 'clientID': self.clientID})
+      if hasattr(self, "clientID"):
+        self.Send({'DEL':'', 'clientID': self.clientID})
       return
   
   with context.socket(zmq.REQ) as socket:
