@@ -26,4 +26,12 @@ class AGoogle():
         self.page.ScrollDown()
         return self.page()
 
-makeServer(AGoogle, "ipc:///tmp/AGoogle.ipc", ["ModuleInfo", "Google", "ScrollDown"]).Run()
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--addr',type=str, help="The address where the service runs on.")
+    args = parser.parse_args()
+    makeServer(AGoogle, args.addr, ["ModuleInfo", "Google", "ScrollDown"]).Run()
+
+if __name__ == '__main__':
+    main()

@@ -32,4 +32,12 @@ class ADuckDuckGo():
         self.page.ScrollDown()
         return self.page()
 
-makeServer(ADuckDuckGo, "ipc:///tmp/ADuckDuckGo.ipc", ["ModuleInfo", "DuckDuckGo", "ScrollDown"]).Run()
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--addr',type=str, help="The address where the service runs on.")
+    args = parser.parse_args()
+    makeServer(ADuckDuckGo, args.addr, ["ModuleInfo", "DuckDuckGo", "ScrollDown"]).Run()
+
+if __name__ == '__main__':
+    main()

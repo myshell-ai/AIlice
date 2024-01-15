@@ -26,4 +26,12 @@ class AArxiv():
         self.page.ScrollDown()
         return self.page()
 
-makeServer(AArxiv, "ipc:///tmp/AArxiv.ipc", ["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run()
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--addr',type=str, help="The address where the service runs on.")
+    args = parser.parse_args()
+    makeServer(AArxiv, args.addr, ["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run()
+
+if __name__ == '__main__':
+    main()

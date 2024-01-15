@@ -49,5 +49,12 @@ class AStorageChromaDB():
             print("query() EXCEPTION: ", e)
             return []
         
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--addr',type=str, help="The address where the service runs on.")
+    args = parser.parse_args()
+    makeServer(AStorageChromaDB, args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query"]).Run()
 
-makeServer(AStorageChromaDB, "ipc:///tmp/AIliceStorage.ipc", ["ModuleInfo", "Open", "Reset", "Store", "Query"]).Run()
+if __name__ == '__main__':
+    main()

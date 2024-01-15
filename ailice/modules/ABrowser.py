@@ -186,13 +186,17 @@ class ABrowser():
     def GetFullText(self, url: str) -> str:
         return self.page.txt if self.page.txt is not None else ""
 
-if __name__ == '__main__':
+def main():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     parser.add_argument('--pdfOutputDir',type=str,default="", help="You can set it as a directory to store the OCR results of PDF files to avoid repeated OCR computation.")
     args = parser.parse_args()
     
     with tempfile.TemporaryDirectory() as tmpdir:
         makeServer(lambda: ABrowser(pdfOutputDir=args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir),
-                   "ipc:///tmp/ABrowser.ipc",
+                   args.addr,
                    ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText"]).Run()
+
+if __name__ == '__main__':
+    main()

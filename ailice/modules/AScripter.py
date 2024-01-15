@@ -103,11 +103,14 @@ class AScripter():
         self.sessions['py']['pages'].ScrollUp()
         return self.sessions['py']['pages']()
 
-
-if __name__ == '__main__':
+def main():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     parser.add_argument('--incontainer',action="store_true",help="Run in container. Please DO NOT turn on this switch on non-virtual machines, otherwise it will cause serious security risks.")
     args = parser.parse_args()
-    addr = "tcp://0.0.0.0:59000" if args.incontainer else "tcp://127.0.0.1:59000"
-    makeServer(lambda: AScripter(incontainer=args.incontainer), addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()
+    #addr = "tcp://0.0.0.0:59000" if args.incontainer else "tcp://127.0.0.1:59000"
+    makeServer(lambda: AScripter(incontainer=args.incontainer), args.addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()
+
+if __name__ == '__main__':
+    main()

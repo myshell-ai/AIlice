@@ -16,4 +16,4 @@ RUN pip3 install pyzmq
 EXPOSE 59000-59200
 
 
-CMD ["python3", "-m", "ailice.modules.AScripter", "--incontainer"]
+CMD ["python3", "-m", "ailice.modules.AScripter", "--incontainer", "--addr=tcp://0.0.0.0:59000"]

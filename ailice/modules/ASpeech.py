@@ -72,4 +72,12 @@ class ASpeech():
                     sd.play(audio, sr)
                     sd.wait()
 
-makeServer(ASpeech, "ipc:///tmp/ASpeech.ipc", ["ModuleInfo", "GetAudio", "Play", "SetDevices"]).Run()
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--addr',type=str, help="The address where the service runs on.")
+    args = parser.parse_args()
+    makeServer(ASpeech, args.addr, ["ModuleInfo", "GetAudio", "Play", "SetDevices"]).Run()
+
+if __name__ == '__main__':
+    main()
