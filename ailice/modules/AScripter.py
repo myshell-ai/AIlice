@@ -65,7 +65,7 @@ class AScripter():
         try:
             output, completed = self.CheckOutput(session='bash')
             res += output
-            res += "\nThe bash script takes longer to complete. You can pass an empty string to the BASH function to get new output." if not completed else "\nExecution completed."
+            res += "\nThe bash script takes longer to complete. You can pass an empty string to the BASH function to get new output, or use WAIT to wait for a while and check again." if not completed else "\nExecution completed."
         except Exception as e:
             res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
@@ -91,7 +91,7 @@ class AScripter():
         try:
             output, completed = self.CheckOutput(session='py')
             res += output
-            res += "\nThe python script takes longer to complete. You can pass an empty string to the PYTHON function to get new output." if not completed else "\nExecution completed."
+            res += "\nThe python script takes longer to complete. You can pass an empty string to the PYTHON function to get new output, or use WAIT to wait for a while and check again." if not completed else "\nExecution completed."
         except Exception as e:
             res += f"Exception when check the output of python execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
