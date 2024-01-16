@@ -227,7 +227,7 @@ needs. You can also specify a special type of agent and interact with it directl
 
 ## Code Update
 
-Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration files and Docker containers with the new code. The most thorough solution for this scenario is to delete the configuration files (making sure to save any API keys beforehand) and the containers, and then perform a complete reinstall. However, for most situations, you can address the issue by simply deleting the configuration files and updating the AIlice module within the containers.
+Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration file and Docker container with the new code. The most thorough solution for this scenario is to delete the configuration file (making sure to save any API keys beforehand) and the container, and then perform a complete reinstall. However, for most situations, you can address the issue by simply deleting the configuration file and updating the AIlice module within the container.
 
 ```bash
 rm ~/.config/ailice/config.json
