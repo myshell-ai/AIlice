@@ -33,7 +33,7 @@ agentType: A string used to specify the type of AI agent. It can be of the follo
     2. "module-coder". The only agent capable of building ext-modules, and this is its sole responsibility.
     3. "module-loader". An agent that can help you load and use ext-modules. Please pass in the address of the module when creating the agent, and then you can let it help you interact with the module. You can use this agent to assist in ext-module debugging.
     4. "researcher". Suitable for technical problem search tasks such as library document or sample code search on the internet.
-agentName: The name of the AI agent instance. Create a new one if not found. Please use a concise name that reflects the agent’s responsibilities.
+agentName: The name of the AI agent instance. Create a new one if not found. Name should reflect responsibility. A new task can be assigned to an existing agent with a relevant name, as they often possess related experience.
 msg: message need to be told to the agent. The agent cannot see content other than msg. Please provide complete content in msg.
 
 #Dialog with user. Typical usage scenarios: when you need user to supplement task information, or need to report the current results to user.

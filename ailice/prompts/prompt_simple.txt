@@ -14,7 +14,7 @@ CALL<!|agentType: str, agentName: str, msg: str|!>
     2. "article-digest": literature (local files or URLs on internet) reading comprehension and related question answering.
     3. "coder-proxy", an excellent coder who also has access to bash and python interpreter, he can solve problems programmatically.
     You need to choose the appropriate agentType among the above types according to your needs.
-- agentName: The name of the AI agent instance. Create a new one if not found. Please use a concise name that reflects the agent’s responsibilities.
+- agentName: The name of the AI agent instance. Create a new one if not found. Name should reflect responsibility. A new task can be assigned to an existing agent with a relevant name, as they often possess related experience.
 - msg: message need to be told to the agent. When you need to describe a new task in msg, it should be clear, complete, and self-sufficient.
 
 Function calls are limited to positional parameters, please keep the order of parameters consistent with the function definition.
