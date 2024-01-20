@@ -2,13 +2,21 @@ import os
 import sys
 import subprocess
 import signal
+import psutil
 
 from ailice.common.AConfig import config
 
 processes = []
 
 def StartServices():
-    os.system("ps aux | grep ailice.modules | awk '{print $2}' | xargs kill")
+    for process in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            if process.info['cmdline'] and ('ailice.modules' in ' '.join(process.info['cmdline'])):
+                print(f"killing proc with PID {process.info['pid']}")
+                process.kill()
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    
     for serviceName, cfg in config.services.items():
         if ("speech" == serviceName) and not config.speechOn:
             continue
