@@ -21,12 +21,12 @@ class AArxiv():
         self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWNARXIV", "SCROLLUP": "SCROLLUPARXIV"}) #For cases where the returned result is too long, we recommend using the AScrollablePage class to implement a scrolling page effect. The parameter is a dict, used to map the keys("SCROLLUP" and "SCROLLDOWN") to corresponding ACTION names. The ACTION name is decided by you, but it needs to be consistent with the one in ModuleInfo().
         return
     
-    def ModuleInfo(self): #This is a standard interface for ext-module that must be implemented. It allows users to dynamically load and use modules at runtime. ACTIONS contains a list of methods registered with the client. The client's AI uses these ACTIONs through the prompts of each ACTION.
-        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"sig": "ArxivSearch(keywords:str)->str", "prompt": "Use arxiv to search academic literatures."},
-                                             "SCROLLDOWNARXIV": {"sig": "ScrollDown()->str", "prompt": "Scroll down the results."},
-                                             "SCROLLUPARXIV": {"sig": "ScrollUp()->str", "prompt": "Scroll up the results."}}}
+    def ModuleInfo(self): #This is a standard interface for ext-module that must be implemented. It allows users to dynamically load and use modules at runtime. ACTIONS contains a list of methods registered with the client. The client's AI uses these ACTIONs through the prompts of each ACTION. All functions listed under the "func" field must include a complete signature when defined, otherwise the module will be unavailable.
+        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures."},
+                                             "SCROLLDOWNARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results."},
+                                             "SCROLLUPARXIV": {"func": "ScrollUp", "prompt": "Scroll up the results."}}}
     
-    def ArxivSearch(self, keywords):
+    def ArxivSearch(self, keywords: str) -> str:
         try:
             ret = str(list(arxiv.Search(query=keywords, max_results=40).results()))
         except Exception as e:
@@ -35,11 +35,11 @@ class AArxiv():
         self.page.LoadPage(str(ret), "TOP") #"TOP" means to set the currently visible page to the top of the results. You can also use "BOTTOM" to set the currently visible page to the bottom of the results. The latter is usually more commonly used when outputting results of program execution.
         return self.page() #The page() method returns the text within the currently visible page range.
 
-    def ScrollDown(self):
+    def ScrollDown(self) -> str:
         self.page.ScrollDown()
         return self.page()
     
-    def ScrollUp(self):
+    def ScrollUp(self) -> str:
         self.page.ScrollUp()
         return self.page()
 

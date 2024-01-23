@@ -9,10 +9,10 @@ class AGoogle():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "google", "ACTIONS": {"GOOGLE": {"sig": "Google(keywords:str)->str", "prompt": "Use google to search internet content."},
-                                              "SCROLLDOWNGOOGLE": {"sig": "ScrollDown()->str", "prompt": "Scroll down the results."}}}
+        return {"NAME": "google", "ACTIONS": {"GOOGLE": {"func": "Google", "prompt": "Use google to search internet content."},
+                                              "SCROLLDOWNGOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
     
-    def Google(self, keywords):
+    def Google(self, keywords: str) -> str:
         try:
             res = search(keywords, num_results=20, advanced=True, sleep_interval=5) #sleep_interval will work when num_results>100.
             ret = list(res)
@@ -22,7 +22,7 @@ class AGoogle():
         self.page.LoadPage(str(ret), "TOP")
         return self.page()
     
-    def ScrollDown(self):
+    def ScrollDown(self) -> str:
         self.page.ScrollDown()
         return self.page()
 

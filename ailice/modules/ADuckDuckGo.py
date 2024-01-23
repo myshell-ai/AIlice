@@ -10,8 +10,8 @@ class ADuckDuckGo():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": {"sig": "DuckDuckGo(keywords:str)->str", "prompt": "Use duckduckgo to search internet content."},
-                                                  "SCROLLDOWNDUCKDUCKGO": {"sig": "ScrollDown()->str", "prompt": "Scrolldown the results."}}}
+        return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": {"func": "DuckDuckGo", "prompt": "Use duckduckgo to search internet content."},
+                                                  "SCROLLDOWNDUCKDUCKGO": {"func": "ScrollDown", "prompt": "Scrolldown the results."}}}
     
     def DuckDuckGo(self, keywords: str) -> str:
         params = {
@@ -28,7 +28,7 @@ class ADuckDuckGo():
         self.page.LoadPage(str(ret), "TOP")
         return self.page()
     
-    def ScrollDown(self):
+    def ScrollDown(self) -> str:
         self.page.ScrollDown()
         return self.page()
 

@@ -29,8 +29,8 @@ class ASpeech():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "speech", "ACTIONS": {"GETAUDIO": {"sig": "GetAudio()->str", "prompt": "Get text input from microphone."},
-                                              "PLAY": {"sig": "Play(txt:str)->None", "prompt": "Synthesize input text fragments into audio and play."}}}
+        return {"NAME": "speech", "ACTIONS": {"GETAUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone."},
+                                              "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play."}}}
     
     def SetDevices(self, deviceMap: dict[str,str]):
         if "stt" in deviceMap:
@@ -39,7 +39,7 @@ class ASpeech():
             self.t2s.To(deviceMap['tts'])
         return
     
-    def GetAudio(self):
+    def GetAudio(self) -> str:
         self.inputDone = True
         with self.lock:
             ret = self.s2t()

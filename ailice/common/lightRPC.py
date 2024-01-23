@@ -8,6 +8,7 @@ Created on Mon Feb 15 11:39:09 2021
 
 import sys
 import threading
+import inspect
 import zmq
 import pickle
 import traceback
@@ -64,7 +65,8 @@ class GenesisRPCServer(object):
         if ('clientID' in msg) and (msg['clientID'] not in self.objPool):
           ret = {"exception": KeyError(f"clientID {msg['clientID']} not exist.")}
         elif "GET_META" in msg:
-          ret={"META":{"methods": [method for method in self.APIList]}}
+          methods=inspect.getmembers(self.objCls, predicate=lambda x: (inspect.isfunction(x) and x.__name__ in self.APIList))
+          ret={"META":{"methods": {methodName: str(inspect.signature(method)) for methodName, method in methods}}}
         elif "CREATE" in msg:
           newID = str(max([int(k) for k in self.objPool]) + 1) if self.objPool else '10000000'
           self.objPool[newID]=self.objCls(**self.objArgs)
@@ -84,9 +86,16 @@ class GenesisRPCServer(object):
 def makeServer(objCls,objArgs,url,APIList):
   return GenesisRPCServer(objCls,objArgs,url,APIList)
 
-def AddMethod(kls,methodName):
+def AddMethod(kls,methodName,signature):
+  tempNamespace = {}
+  exec(f"def tempFunc{signature}: pass", tempNamespace)
+  tempFunc = tempNamespace['tempFunc']
+  newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(tempFunc).parameters.items()],
+                                   return_annotation=inspect.signature(tempFunc).return_annotation)
+
   def methodTemplate(self,*args,**kwargs):
     return self.RemoteCall(methodName,args,kwargs)
+  methodTemplate.__signature__ = newSignature
   setattr(kls,methodName,methodTemplate)
 
 def makeClient(url,returnClass=False):
@@ -127,6 +136,6 @@ def makeClient(url,returnClass=False):
     socket.connect(url)
     SendMsg(socket,{'GET_META':''})
     ret=ReceiveMsg(socket)
-  for funcName in ret['META']['methods']:
-    AddMethod(GenesisRPCClientTemplate,funcName)
+  for funcName, signature in ret['META']['methods'].items():
+    AddMethod(GenesisRPCClientTemplate,funcName,signature)
   return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()

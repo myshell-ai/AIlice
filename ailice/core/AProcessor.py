@@ -1,4 +1,5 @@
 import time
+import inspect
 from functools import partial
 from ailice.common.AConfig import config
 from ailice.core.llm.ALLMPool import llmPool
@@ -54,15 +55,17 @@ class AProcessor():
             
             self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
             for actionName, actionMeta in info["ACTIONS"].items():
-                ret.append({"action": actionName, "signature": actionMeta["sig"], "prompt": actionMeta["prompt"]})
-                actionFunc = actionMeta["sig"][:actionMeta["sig"].find("(")]
-                self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionFunc),
-                                                                 "signatureExpr": actionMeta["sig"]})
+                ret.append({"action": actionName, "signature": str(inspect.signature(getattr(module, actionMeta['func']))), "prompt": actionMeta["prompt"]})
+                self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionMeta["func"])})
         return ret
     
     def CreateActionCB(self, actionName, module, actionFunc):
+        func = getattr(module, actionFunc)
         def callback(*args,**kwargs):
-            return f"{actionName}_RESULT=[{getattr(module, actionFunc)(*args,**kwargs)}]"
+            return f"{actionName}_RESULT=[{func(*args,**kwargs)}]"
+        newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(func).parameters.items()],
+                                         return_annotation=inspect.signature(func).return_annotation)
+        callback.__signature__ = newSignature
         return callback
         
     def GetPromptName(self) -> str:

@@ -10,10 +10,10 @@ class AArxiv():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"sig": "ArxivSearch(keywords:str)->str", "prompt": "Use arxiv to search academic literatures."},
-                                             "SCROLLDOWNARXIV": {"sig": "ScrollDown()->str", "prompt": "Scroll down the results."}}}
+        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures."},
+                                             "SCROLLDOWNARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
     
-    def ArxivSearch(self, keywords):
+    def ArxivSearch(self, keywords: str) -> str:
         try:
             ret = str(list(arxiv.Search(query=keywords, max_results=40).results()))
         except Exception as e:
@@ -22,7 +22,7 @@ class AArxiv():
         self.page.LoadPage(str(ret), "TOP")
         return self.page()
 
-    def ScrollDown(self):
+    def ScrollDown(self) -> str:
         self.page.ScrollDown()
         return self.page()
 

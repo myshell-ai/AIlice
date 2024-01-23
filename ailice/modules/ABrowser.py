@@ -41,10 +41,10 @@ class ABrowser():
             return False, f"webdriver init FAILED. It may be caused by chrome not being installed correctly. please install chrome manually, or let AIlice do it for you. Exception details: {str(e)}\n{traceback.format_exc()}"
     
     def ModuleInfo(self):
-        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"sig": "Browse(url:str)->str", "prompt": "Open a webpage/PDF and obtain the visible content."},
-                                               "SCROLLDOWN": {"sig": "ScrollDown()->str", "prompt": "Scroll down the page."},
-                                               "SEARCHDOWN": {"sig": "SearchDown(query: str)->str", "prompt": "Search content downward from the current location."},
-                                               "SEARCHUP": {"sig": "SearchUp(query: str)->str", "prompt": "Search content upward from the current location."}}}
+        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content."},
+                                               "SCROLLDOWN": {"func": "ScrollDown", "prompt": "Scroll down the page."},
+                                               "SEARCHDOWN": {"func": "SearchDown", "prompt": "Search content downward from the current location."},
+                                               "SEARCHUP": {"func": "SearchUp", "prompt": "Search content upward from the current location."}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()

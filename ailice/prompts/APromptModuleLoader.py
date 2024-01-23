@@ -34,7 +34,7 @@ class APromptModuleLoader():
             ret = self.processor.RegisterModules([addr])
             prompts = []
             for r in ret:
-                t = r['signature'].replace(r['signature'][:r['signature'].find('(')], r['action'], 1)
+                t = r['action'] + r['signature']
                 newSig = t.replace('(', '<!|').replace(')', '|!>')
                 self.processor.interpreter.RegisterPattern(nodeType=r['action'], pattern=GenerateRE4FunctionCalling(newSig, faultTolerance = True), isEntry=True)
                 prompts.append(f"{newSig}: {r['prompt']}")

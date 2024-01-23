@@ -16,10 +16,10 @@ class AScripter():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "scripter", "ACTIONS": {"BASH": {"sig": "RunBash(code:str)->str", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time."},
-                                                "SCROLLUPBASH": {"sig": "ScrollUpBash()->str", "prompt": "Scroll up the results."},
-                                                "PYTHON": {"sig": "RunPython(code:str)->str", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references."},
-                                                "SCROLLUPPY": {"sig": "ScrollUpPy()->str", "prompt": "Scroll up the results."}}}
+        return {"NAME": "scripter", "ACTIONS": {"BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time."},
+                                                "SCROLLUPBASH": {"func": "ScrollUpBash", "prompt": "Scroll up the results."},
+                                                "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references."},
+                                                "SCROLLUPPY": {"func": "ScrollUpPy", "prompt": "Scroll up the results."}}}
     
     def RunCMD(self, session: str, cmd: list[str], timeout: int = 30):
         env = os.environ.copy()
