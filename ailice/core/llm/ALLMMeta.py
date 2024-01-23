@@ -20,5 +20,6 @@ ALLMMeta={"hf:meta-llama/Llama-2-13b-chat-hf": {"formatter": AFormatterLLAMA2, "
           "hf:mistralai/Mixtral-8x7B-Instruct-v0.1": {"formatter": AFormatterSimple, "contextWindow": 32000, "systemAsUser": False},
           "hf:ehartford/dolphin-2.5-mixtral-8x7b": {"formatter": AFormatterChatML, "contextWindow": 16000, "systemAsUser": False},
           "hf:openchat/openchat_3.5": {"formatter": AFormatterOpenChat, "contextWindow": 8192, "systemAsUser": False},
+          "hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": {"formatter": AFormatterChatML, "contextWindow": 32000, "systemAsUser": False},
           #"peft:model/": {"formatter": AFormatterChatML, "contextWindow": 8192, "systemAsUser": False}
           }

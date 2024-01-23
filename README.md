@@ -205,7 +205,7 @@ ailice_main --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./tra
 ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
 ailice_main --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
-ailice_web --modelID=hf:ehartford/dolphin-2.5-mixtral-8x7b --prompt="main" --quantization=4bit --contextWindowRatio=0.3
+ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ```
 
@@ -257,7 +257,7 @@ Among the open-source models, the ones that usually perform well include:
 
 - hf:Open-Orca/Mistral-7B-OpenOrca
 - hf:openchat/openchat_3.5
-- hf:ehartford/dolphin-2.5-mixtral-8x7b
+- hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO
 - hf:Phind/Phind-CodeLlama-34B-v2
 
 ## How to add LLM support
