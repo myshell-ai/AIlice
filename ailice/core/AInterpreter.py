@@ -9,10 +9,6 @@ class AInterpreter():
     def __init__(self):
         self.actions = {}#nodeType: {"func": func}
         self.patterns = {}#nodeType: [(pattern,isEntry)]
-        self.TypeMap = {"str": str,
-                        "int": int,
-                        "float": float,
-                        "bool": bool}
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
