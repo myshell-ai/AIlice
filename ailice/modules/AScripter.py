@@ -111,7 +111,7 @@ def main():
     parser.add_argument('--incontainer',action="store_true",help="Run in container. Please DO NOT turn on this switch on non-virtual machines, otherwise it will cause serious security risks.")
     args = parser.parse_args()
     #addr = "tcp://0.0.0.0:59000" if args.incontainer else "tcp://127.0.0.1:59000"
-    makeServer(lambda: AScripter(incontainer=args.incontainer), args.addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()
+    makeServer(AScripter, {"incontainer": args.incontainer}, args.addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()
 
 if __name__ == '__main__':
     main()

@@ -194,7 +194,8 @@ def main():
     args = parser.parse_args()
     
     with tempfile.TemporaryDirectory() as tmpdir:
-        makeServer(lambda: ABrowser(pdfOutputDir=args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir),
+        makeServer(ABrowser,
+                   {"pdfOutputDir": (args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)},
                    args.addr,
                    ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText"]).Run()
 

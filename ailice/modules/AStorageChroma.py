@@ -54,7 +54,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AStorageChromaDB, args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query"]).Run()
+    makeServer(AStorageChromaDB, dict(), args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query"]).Run()
 
 if __name__ == '__main__':
     main()

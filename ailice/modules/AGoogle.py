@@ -31,7 +31,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AGoogle, args.addr, ["ModuleInfo", "Google", "ScrollDown"]).Run()
+    makeServer(AGoogle, dict(), args.addr, ["ModuleInfo", "Google", "ScrollDown"]).Run()
 
 if __name__ == '__main__':
     main()

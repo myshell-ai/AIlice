@@ -23,8 +23,9 @@ def ReceiveMsg(conn):
   return pickle.loads(conn.recv())
 
 class GenesisRPCServer(object):
-  def __init__(self,objFactory,url,APIList):
-    self.objFactory=objFactory
+  def __init__(self,objCls,objArgs,url,APIList):
+    self.objCls=objCls
+    self.objArgs=objArgs
     self.url=url
     self.objPool=dict()
     self.APIList=APIList
@@ -66,7 +67,7 @@ class GenesisRPCServer(object):
           ret={"META":{"methods": [method for method in self.APIList]}}
         elif "CREATE" in msg:
           newID = str(max([int(k) for k in self.objPool]) + 1) if self.objPool else '10000000'
-          self.objPool[newID]=self.objFactory()
+          self.objPool[newID]=self.objCls(**self.objArgs)
           ret = {"clientID": newID}
         elif "DEL" in msg:
           del self.objPool[msg['clientID']]
@@ -80,8 +81,8 @@ class GenesisRPCServer(object):
     return
 
 
-def makeServer(objFactory,url,APIList):
-  return GenesisRPCServer(objFactory,url,APIList)
+def makeServer(objCls,objArgs,url,APIList):
+  return GenesisRPCServer(objCls,objArgs,url,APIList)
 
 def AddMethod(kls,methodName):
   def methodTemplate(self,*args,**kwargs):
