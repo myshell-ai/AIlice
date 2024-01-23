@@ -5,18 +5,6 @@ from inspect import Parameter, Signature
 def HasReturnValue(action):
     return action['signature'].return_annotation != inspect.Parameter.empty
 
-def ParseSignatureExpr(signature: str):
-    #signature: "FUNC(ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...) -> RETURN_TYPE"
-    pattern = r"(\w+)\(((?:\w+[ ]*:[ ]*[\w, ]+)*)\)(?:[ ]*->[ ]*)(\w+)"
-    matches = re.search(pattern, signature)
-    if matches is None:
-        print("signature invalid. exit. ", signature)
-        exit()
-    funcName, args, retType = matches[1], matches[2], matches[3]
-    pattern = r"(\w+)[ ]*:[ ]*(\w+)"
-    typePairs = re.findall(pattern, args)
-    return funcName, typePairs, retType
-
 class AInterpreter():
     def __init__(self):
         self.actions = {}#nodeType: {"func": func}
@@ -28,22 +16,12 @@ class AInterpreter():
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
-        if "signatureExpr" in action:
-            funcName, argPairs, retType = ParseSignatureExpr(action['signatureExpr'])
-            parameters = [Parameter(name=argName,
-                                    kind=Parameter.POSITIONAL_OR_KEYWORD,
-                                    annotation=self.TypeMap[argType]) for argName, argType in argPairs]
-            retAnnotation = inspect.Signature.empty if "None" == retType else self.TypeMap[retType]
-            signature = Signature(parameters=parameters, return_annotation=retAnnotation)
-            self.actions[nodeType] = {k:v for k,v in action.items()}
-            self.actions[nodeType]["signature"] = signature
-        else:
-            signature = inspect.signature(action["func"])
-            if not all([param.annotation != inspect.Parameter.empty for param in signature.parameters.values()]):
-                print("Need annotations in registered function. node type: ", nodeType)
-                exit()
-            self.actions[nodeType] = {k:v for k,v in action.items()}
-            self.actions[nodeType]["signature"] = signature
+        signature = inspect.signature(action["func"])
+        if not all([param.annotation != inspect.Parameter.empty for param in signature.parameters.values()]):
+            print("Need annotations in registered function. node type: ", nodeType)
+            exit()
+        self.actions[nodeType] = {k:v for k,v in action.items()}
+        self.actions[nodeType]["signature"] = signature
         return
     
     def RegisterPattern(self, nodeType: str, pattern: str, isEntry: bool):
