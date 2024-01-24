@@ -49,5 +49,5 @@ End of general instructions.
     def BuildPrompt(self):
         prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
         if prompt is None:
-            prompt = self.ParameterizedBuildPrompt(1)
+            prompt, _ = self.ParameterizedBuildPrompt(1)
         return prompt
