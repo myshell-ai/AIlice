@@ -299,6 +299,21 @@ dynamically constructed.
 - For developers who want to understand the internal operation logic of AIlice, please read core/AProcessor.py and core/Interpreter.py. These two files do not exceed two
 hundred lines of code in total, but they contain the basic framework of AIlice.
 
+# Project Development Standards and Constraints
+
+- In this project, achieving the desired functionality of the AI Agent is the primary goal. The secondary goal is code clarity and simplicity. The implementation of the AI Agent is still an exploratory topic, so we aim to minimize rigid components in the software (such as architecture/interfaces imposing constraints on future development) and provide maximum flexibility for the application layer (e.g., prompt classes). Abstraction, deduplication, and decoupling are not immediate priorities.
+
+- When implementing a feature, always choose the best method rather than the most obvious one. The metric for "best" often includes traits such as trivializing the problem from a higher perspective, maintaining code clarity and simplicity, and ensuring that changes do not significantly increase overall complexity or limit the software's future possibilities.
+
+- Adding comments is not mandatory unless absolutely necessary; strive to make the code clear enough to be self-explanatory. While this may not be an issue for developers who appreciate comments, in the AI era, we can generate detailed code explanations at any time, eliminating the need for unstructured, hard-to-maintain comments.
+
+- Follow the principle of Occam's razor when adding code; never add unnecessary lines.
+
+- Functions or methods in the core should not exceed 60 lines.
+
+- While there are no explicit coding style constraints, maintain consistency or similarity with the original code in terms of naming and case usage to avoid readability burdens. 
+
+AIlice aims to achieve multimodal and self-expanding features within a scale of less than 5000 lines, reaching its final form at the current stage. The pursuit of concise code is not only because succinct code often represents a better implementation, but also because it enables AI to develop introspective capabilities early on and facilitates better self-expansion. Please adhere to the above rules and approach each line of code with diligence.
 
 # Future Development Roadmap
 
