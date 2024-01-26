@@ -213,7 +213,7 @@ When you run it for the first time, you will be asked to enter the api-key of op
 
 As shown in the examples, you can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both are used in the same way except that AIliceWeb does not support voice conversations currently.
 
-- --**modelID** specifies the model. The currently supported models can be seen in core/llm/ALLMMeta.py, just copy it directly. We will implement a simpler model specification method
+- --**modelID** specifies the model. The currently supported models can be seen in config.json. We will implement a simpler model specification method
 in the future.
 - --**quantization** is the quantization option, you can choose 4bit or 8bit. The default is not quantized.
 - --**maxMemory** is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".
@@ -311,16 +311,34 @@ Usually one line of code is enough to add a new model, but occasionally you are 
 
 Here is the complete method of adding new LLM support:
 
-Open core/llm/ALLMMeta.py, you should add the config of new LLM into the dict named ALLMMeta, which looks like the following:
+Open config.json, you should add the config of new LLM into models.hf.modelList, which looks like the following:
 
-```python
-ALLMMeta={"hf:meta-llama/Llama-2-13b-chat-hf": {"formatter": AFormatterLLAMA2, "contextWindow": 4096, "systemAsUser": False},
-          "hf:meta-llama/Llama-2-70b-chat-hf": {"formatter": AFormatterLLAMA2, "contextWindow": 4096, "systemAsUser": False},
-          ...
-         }
+```json
+{
+  "maxMemory": {},
+  "quantization": null,
+  "models": {
+    "hf": {
+      "modelWrapper": "AModelLLAMA",
+      "modelList": {
+        "meta-llama/Llama-2-13b-chat-hf": {
+          "formatter": "AFormatterLLAMA2",
+          "contextWindow": 4096,
+          "systemAsUser": false
+        },
+        "meta-llama/Llama-2-70b-chat-hf": {
+          "formatter": "AFormatterLLAMA2",
+          "contextWindow": 4096,
+          "systemAsUser": false
+        },
+        ...
+      }
+    },
+  ...
+  }
+...
+}
 ```
-
-- The "hf:" in the address means this is a model from huggingface, you need to append the address of the model to it to form a modelID as a key in the dict. 
 
 - "formatter" is a class that defines LLM's prompt format. You can find their definitions in core/llm/AFormatter. You can read these codes to determine which format is required for the model you want to add. In case you don't find it, You need to write one yourself. Fortunately, Formatter is a very simple thing and can be completed in more than a dozen lines of code. I believe you will understand how to do it after reading a few Formatter source codes.
 
@@ -328,7 +346,7 @@ ALLMMeta={"hf:meta-llama/Llama-2-13b-chat-hf": {"formatter": AFormatterLLAMA2, "
 
 - "systemAsUser": We use the "system" role as the sender of the message returned by the function calls. However, not all LLMs have a clear definition of system role, and there is no guarantee that the LLM can adapt to this approach. So we need to use systemAsUser to set whether to put the text returned by the function calls in user messages. Try to set it to False first.
 
-Everything is done! Use the modelID of the new model as the command parameter to start AIlice!
+Everything is done! Use "hf:" as a prefix to the model name to form a modelID, and use the modelID of the new model as the command parameter to start AIlice!
 
 
 # How Developers Should Get Started
