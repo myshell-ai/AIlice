@@ -170,3 +170,10 @@ class AFormatterGPT():
 
     def Len(self, prompt) -> int:
         return len(str(prompt)) // 4
+    
+def CreateFormatter(formatterClsName: str, tokenizer, systemAsUser):
+    formatterList = [AFormatterSimple, AFormatterLLAMA2, AFormatterVicuna, AFormatterChatML, AFormatterAMAZON, AFormatterZephyr, AFormatterOpenChat, AFormatterGPT]
+    for formatterCls in formatterList:
+        if formatterClsName == formatterCls.__name__:
+            return formatterCls(tokenizer = tokenizer, systemAsUser = systemAsUser)
+    raise ValueError(f"{formatterClsName} is not a valid formatter class name.")

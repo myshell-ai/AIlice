@@ -5,8 +5,7 @@ from peft import PeftConfig, PeftModel
 
 from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import sentences_split
-from ailice.core.llm.ALLMMeta import ALLMMeta
-
+from ailice.core.llm.AFormatter import CreateFormatter
 
 class AModelLLAMA():
     def __init__(self, modelType: str, modelName: str):
@@ -15,12 +14,12 @@ class AModelLLAMA():
         self.model = None
         self.LoadModel(modelName)
         
-        modelID = modelType + ":" + modelName
-        if modelID not in ALLMMeta:
-            print(f"LLM {modelID} not supported yet.")
+        if (modelType not in config.models) or (modelName not in config.models[modelType]["modelList"]):
+            print(f"LLM {modelType}:{modelName} not supported yet.")
             exit(-1)
-        self.formatter = ALLMMeta[modelID]['formatter'](tokenizer = self.tokenizer, systemAsUser = ALLMMeta[modelID]['systemAsUser'])
-        self.contextWindow = ALLMMeta[modelID]['contextWindow']
+        modelCfg = config.models[modelType]["modelList"][modelName]
+        self.formatter = CreateFormatter(modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = modelCfg['systemAsUser'])
+        self.contextWindow = modelCfg['contextWindow']
         return
 
     def LoadModel(self, modelName: str):

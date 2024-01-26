@@ -8,6 +8,37 @@ class AConfig():
         self.maxMemory = {}
         self.quantization = None
         self.models = {
+            "hf": {
+                "modelWrapper": "AModelLLAMA",
+                "modelList": {
+                    "meta-llama/Llama-2-13b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False},
+                    "meta-llama/Llama-2-70b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False},
+                    "upstage/llama-30b-instruct-2048": {"formatter": "AFormatterSimple", "contextWindow": 2048, "systemAsUser": False},
+                    "lmsys/vicuna-33b-v1.3": {"formatter": "AFormatterVicuna", "contextWindow": 2048, "systemAsUser": False},
+                    "Phind/Phind-CodeLlama-34B-v2": {"formatter": "AFormatterSimple", "contextWindow": 4096, "systemAsUser": False},
+                    "Xwin-LM/Xwin-LM-70B-V0.1": {"formatter": "AFormatterVicuna", "contextWindow": 4096, "systemAsUser": False},
+                    "Xwin-LM/Xwin-LM-13B-V0.1": {"formatter": "AFormatterVicuna", "contextWindow": 4096, "systemAsUser": False},
+                    "mistralai/Mistral-7B-Instruct-v0.1": {"formatter": "AFormatterLLAMA2", "contextWindow": 8192, "systemAsUser": False},
+                    "Open-Orca/Mistral-7B-OpenOrca": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False},
+                    "teknium/OpenHermes-2.5-Mistral-7B": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False},
+                    "Intel/neural-chat-7b-v3-1": {"formatter": "AFormatterSimple", "contextWindow": 8192, "systemAsUser": False},
+                    "amazon/MistralLite": {"formatter": "AFormatterAMAZON", "contextWindow": 16384, "systemAsUser": False},
+                    "HuggingFaceH4/zephyr-7b-beta": {"formatter": "AFormatterZephyr", "contextWindow": 8192, "systemAsUser": False},
+                    "THUDM/agentlm-13b": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False},
+                    "microsoft/Orca-2-13b": {"formatter": "AFormatterChatML", "contextWindow": 4096, "systemAsUser": False},
+                    "01-ai/Yi-34B-Chat": {"formatter": "AFormatterChatML", "contextWindow": 32000, "systemAsUser": False},
+                    "mistralai/Mixtral-8x7B-Instruct-v0.1": {"formatter": "AFormatterSimple", "contextWindow": 32000, "systemAsUser": False},
+                    "ehartford/dolphin-2.5-mixtral-8x7b": {"formatter": "AFormatterChatML", "contextWindow": 16000, "systemAsUser": False},
+                    "openchat/openchat_3.5": {"formatter": "AFormatterOpenChat", "contextWindow": 8192, "systemAsUser": False},
+                    "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": {"formatter": "AFormatterChatML", "contextWindow": 32000, "systemAsUser": False},
+                },
+            },
+            "peft": {
+                "modelWrapper": "AModelLLAMA",
+                "modelList": {
+                    #"peft:model/": {"formatter": AFormatterChatML, "contextWindow": 8192, "systemAsUser": False}
+                }
+            },
             "oai": {"modelWrapper": "AModelChatGPT",
                     "apikey": None,
                     "baseURL": None,

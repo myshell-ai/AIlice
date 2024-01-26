@@ -11,7 +11,8 @@ from peft import (
     prepare_model_for_kbit_training,
 )
 
-from ailice.core.llm.ALLMMeta import ALLMMeta
+from ailice.common.AConfig import config
+from ailice.core.llm.AFormatter import CreateFormatter
 
 
 BATCH_SIZE = 128
@@ -47,11 +48,13 @@ class MyDataCollatorWithPadding(transformers.DataCollatorWithPadding):
 
     
 def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, outDir: str, logDir: str):
-    locType, modelLocation = modelID[:modelID.find(":")], modelID[modelID.find(":")+1:]
+    config.Initialize(needOpenaiGPTKey = False)
+    
+    modelType, modelName = modelID[:modelID.find(":")], modelID[modelID.find(":")+1:]
     
     ds = load_dataset(dataset, maxWindow=maxWindow, data_dir=dataDir)
 
-    tokenizer = transformers.AutoTokenizer.from_pretrained(modelLocation, truncation=True, max_length=maxWindow, add_special_tokens=True, add_bos_token=False, add_eos_token=False, legacy=False)
+    tokenizer = transformers.AutoTokenizer.from_pretrained(modelName, truncation=True, max_length=maxWindow, add_special_tokens=True, add_bos_token=False, add_eos_token=False, legacy=False)
     tokenizer.pad_token = tokenizer.unk_token
     #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
     quant_config = transformers.BitsAndBytesConfig(
@@ -61,7 +64,7 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
         bnb_4bit_compute_dtype=torch.bfloat16
     )
 
-    model = transformers.AutoModelForCausalLM.from_pretrained(modelLocation,
+    model = transformers.AutoModelForCausalLM.from_pretrained(modelName,
                                                               quantization_config=quant_config,
                                                               device_map="auto"
                                                             )
@@ -84,7 +87,8 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
         return tokenizedInputs
 
     def tokenizeAIlice(batch):
-        formatter = ALLMMeta[modelID]['formatter'](tokenizer=None, systemAsUser = ALLMMeta[modelID]['systemAsUser'])
+        modelCfg = config.models[modelType]["modelList"][modelName]
+        formatter = CreateFormatter(modelCfg["formatter"], tokenizer=None, systemAsUser = modelCfg['systemAsUser'])
         concatenatedSamples = [
             formatter(prompt0="",conversations=[{"role": role, "msg": msg} for role,msg in zip(conv['role'], conv['msg'])], encode=False, assistTag=False)
             for conv in batch['conversations']
@@ -106,7 +110,7 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
     validData = validData.add_column('labels',validData["input_ids"])
     validData = validData.with_format("torch")
     
-    config = LoraConfig(
+    loraConfig = LoraConfig(
     r=LORA_R,
     lora_alpha=LORA_ALPHA,
     target_modules=LORA_TARGET_MODULES,
@@ -116,7 +120,7 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
     #inference_mode=False
     )
     
-    model = get_peft_model(model, config)
+    model = get_peft_model(model, loraConfig)
     model.print_trainable_parameters()
     
     trainingArguments = transformers.TrainingArguments(

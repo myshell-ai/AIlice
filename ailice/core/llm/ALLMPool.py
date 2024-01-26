@@ -16,10 +16,7 @@ class ALLMPool():
         MODEL_WRAPPER_MAP = {"AModelLLAMA": AModelLLAMA, "AModelChatGPT": AModelChatGPT}
         for id in llmIDs:
             modelType, modelName = self.ParseID(id)
-            if modelType in ["hf", "file", "peft"]:
-                self.pool[id] = AModelLLAMA(modelType=modelType, modelName=modelName)
-            else:
-                self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
+            self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
         return
     
     def GetModel(self, modelID: str):
