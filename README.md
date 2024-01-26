@@ -65,7 +65,7 @@ Her features are briefly listed as follows:
 # COOL things we can do
 Let's list some typical use cases. I frequently employ these examples to test AIlice during development, ensuring stable performance. However, even with these tests, the execution results are influenced by the chosen model, code version, and even the testing time. (GPT-4 may experience a decrease in performance under high loads, while open-source models, of course, don't have this issue; they don't have much room for degradation) Additionally, AIlice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when AIlice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success. Furthermore, if the task execution falls short, you can guide her in the right direction, and she will rectify her approach.
 
-The last point to note is that AIlice currently lacks a runtime control mechanism, so she might get stuck in a loop or run for an extended period. When using a commercial LLM runtime, you need to monitor her operation closely.
+The last point to note is that AIlice currently lacks a run time control mechanism, so she might get stuck in a loop or run for an extended period. When using a commercial LLM, you need to monitor her operation closely.
 
 - **"Please list the contents of the current directory."**
 
@@ -260,10 +260,51 @@ Among the open-source models, the ones that usually perform well include:
 - hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO
 - hf:Phind/Phind-CodeLlama-34B-v2
 
-## How to add LLM support
+## How to Add LLM Support
 For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
 
+### Models(or Services) compatible with OpenAI Interface
+
 For openai models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:" prefix.
+
+You can use any third-party inference server compatible with the OpenAI API to replace the built-in LLM inference functionality in AIlice. For inference servers that do not support the OpenAI API, you can try using litellm to convert them into an OpenAI-compatible API. However, it's important to note that due to the presence of many SYSTEM messages in AIlice's conversation records, which is not a common use case for LLM, the level of support for this depends on the specific implementation of these inference servers. So, utilizing this method for inference may lead to a performance decline.
+
+We use Ollama as an example to explain how to add support for such services.
+First, we need to use Litellm to convert Ollama's interface into a format compatible with OpenAI.
+
+```bash
+pip install litellm
+ollama pull mistral-openorca
+litellm --model ollama/mistral-openorca --api_base http://localhost:11434 --temperature 0.0 --max_tokens 8192
+```
+
+Then, add support for this service in the config.json file (the location of this file will be prompted when AIlice is launched).
+
+```json
+  "models": {
+    "oai": {
+        ...
+    },
+    "ollama": {
+      "modelWrapper": "AModelChatGPT",
+      "apikey": "fake-key",
+      "baseURL": "http://localhost:8000",
+      "modelList": {
+        "mistral-openorca": {
+          "contextWindow": 8192
+        }
+      }
+    }
+  },
+```
+
+Now we can run AIlice:
+
+```bash
+ailice_main --modelID=ollama:mistral-openorca --prompt="main"
+```
+
+### Open Source Models on Huggingface
 
 For open source models on Huggingface, you only need to know the following information to add support for new models: The huggingface address of the model, the prompt format of the model, and the context window length.
 Usually one line of code is enough to add a new model, but occasionally you are unlucky and you need about a dozen lines of code.
