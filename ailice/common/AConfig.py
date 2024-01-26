@@ -102,11 +102,6 @@ class AConfig():
             self.Store(configFile)
             print(colored("********************** End of Initialization *****************************", "yellow"))
         print(f"config.json is located at {configFile}")
-
-        if "2005" == self.services['scripter']['addr'][-4:]:
-            print(colored(f"It seems that the script in your configuration file is configured on the 2005 port that was used in the old \
-version, but this port has been abandoned and replaced with port 59000. This may cause AIlice to fail to start. \
-Please change the configuration file and try again. The config file is located at: {configFile}", "red"))
         return
 
     def Load(self, configFile: str) -> dict:

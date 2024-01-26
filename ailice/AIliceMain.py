@@ -44,7 +44,6 @@ def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temp
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
-    print(colored("The port range of the ext-modules has been changed from 2005-2016 to 59000-59200. If you are using an old version, startup failure will occur after updating the code. Please modify the port number in config.json and rebuild the docker image.", "yellow"))
     
     StartServices()
     clientPool.Init()
