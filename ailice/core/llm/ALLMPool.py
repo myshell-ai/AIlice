@@ -1,4 +1,4 @@
-
+from ailice.common.AConfig import config
 from ailice.core.llm.AModelLLAMA import AModelLLAMA
 from ailice.core.llm.AModelChatGPT import AModelChatGPT
 
@@ -13,13 +13,13 @@ class ALLMPool():
         return id[:split], id[split+1:]
     
     def Init(self, llmIDs: [str]):
+        MODEL_WRAPPER_MAP = {"AModelLLAMA": AModelLLAMA, "AModelChatGPT": AModelChatGPT}
         for id in llmIDs:
-            locType, location = self.ParseID(id)
-            
-            if "oai" == locType:
-                self.pool[id] = AModelChatGPT(location)
+            modelType, modelName = self.ParseID(id)
+            if modelType in ["hf", "file", "peft"]:
+                self.pool[id] = AModelLLAMA(modelType=modelType, modelName=modelName)
             else:
-                self.pool[id] = AModelLLAMA(locType=locType, modelLocation=location)
+                self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
         return
     
     def GetModel(self, modelID: str):

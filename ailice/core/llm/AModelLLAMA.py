@@ -9,13 +9,13 @@ from ailice.core.llm.ALLMMeta import ALLMMeta
 
 
 class AModelLLAMA():
-    def __init__(self, locType: str, modelLocation: str):
-        self.locType = locType
+    def __init__(self, modelType: str, modelName: str):
+        self.modelType = modelType
         self.tokenizer = None
         self.model = None
-        self.LoadModel(modelLocation)
+        self.LoadModel(modelName)
         
-        modelID = locType + ":" + modelLocation
+        modelID = modelType + ":" + modelName
         if modelID not in ALLMMeta:
             print(f"LLM {modelID} not supported yet.")
             exit(-1)
@@ -23,17 +23,17 @@ class AModelLLAMA():
         self.contextWindow = ALLMMeta[modelID]['contextWindow']
         return
 
-    def LoadModel(self, modelLocation: str):
-        if "peft" == self.locType:
-            self.LoadModel_PEFT(modelLocation=modelLocation)
+    def LoadModel(self, modelName: str):
+        if "peft" == self.modelType:
+            self.LoadModel_PEFT(modelName=modelName)
         else:
-            self.LoadModel_Default(modelLocation=modelLocation)
+            self.LoadModel_Default(modelName=modelName)
         return
     
-    def LoadModel_Default(self, modelLocation: str):
+    def LoadModel_Default(self, modelName: str):
         quantizationConfig = transformers.BitsAndBytesConfig(llm_int4_enable_fp32_cpu_offload=True)
-        self.tokenizer = transformers.AutoTokenizer.from_pretrained(modelLocation, use_fast=False, legacy=False, force_download=False, resume_download=True)
-        self.model = transformers.AutoModelForCausalLM.from_pretrained(modelLocation,
+        self.tokenizer = transformers.AutoTokenizer.from_pretrained(modelName, use_fast=False, legacy=False, force_download=False, resume_download=True)
+        self.model = transformers.AutoModelForCausalLM.from_pretrained(modelName,
                                                     device_map="auto",
                                                     low_cpu_mem_usage=True,
                                                     load_in_4bit=("4bit" == config.quantization),
@@ -46,8 +46,8 @@ class AModelLLAMA():
                                                     )
         return
 
-    def LoadModel_PEFT(self, modelLocation: str):
-        peftConfig = PeftConfig.from_pretrained(modelLocation)
+    def LoadModel_PEFT(self, modelName: str):
+        peftConfig = PeftConfig.from_pretrained(modelName)
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(peftConfig.base_model_name_or_path, use_fast=False)
         self.model = transformers.AutoModelForCausalLM.from_pretrained(peftConfig.base_model_name_or_path,
                                                     device_map="auto",
@@ -58,7 +58,7 @@ class AModelLLAMA():
                                                     max_memory=config.maxMemory,
                                                     #offload_folder="offload"
                                                     )
-        self.model = PeftModel.from_pretrained(self.model, modelLocation)
+        self.model = PeftModel.from_pretrained(self.model, modelName)
         return
     
     def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float = 0.2) -> str:

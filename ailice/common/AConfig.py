@@ -8,6 +8,20 @@ class AConfig():
         self.maxMemory = {}
         self.quantization = None
         self.openaiGPTKey = None
+        self.models = {
+            "oai": {"modelWrapper": "AModelChatGPT",
+                    "baseURL": None,
+                    "modelList": {
+                        "gpt-4-1106-preview": {"contextWindow": 128000},
+                        "gpt-4-vision-preview": {"contextWindow": 128000},
+                        "gpt-4": {"contextWindow": 8192},
+                        "gpt-4-32k": {"contextWindow": 32768},
+                        "gpt-4-0613": {"contextWindow": 8192},
+                        "gpt-4-32k-0613": {"contextWindow": 32768},
+                        "gpt-4-0314": {"contextWindow": 8192},
+                        "gpt-4-32k-0314": {"contextWindow": 32768}
+                        }},
+        }
         self.temperature = 0.0
         self.flashAttention2 = False
         self.speechOn = False
