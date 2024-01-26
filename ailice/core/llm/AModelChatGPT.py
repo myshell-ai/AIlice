@@ -10,7 +10,7 @@ class AModelChatGPT():
         self.tokenizer = None
         self.modelType = modelType
         self.modelName = modelName
-        self.client = openai.OpenAI(api_key = config.openaiGPTKey,
+        self.client = openai.OpenAI(api_key = config.models[modelType]["apikey"],
                                     base_url = config.models[modelType]["baseURL"])
 
         self.formatter = AFormatterGPT(tokenizer = self.tokenizer, systemAsUser = False)
