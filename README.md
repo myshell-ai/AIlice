@@ -260,6 +260,16 @@ Among the open-source models, the ones that usually perform well include:
 - hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO
 - hf:Phind/Phind-CodeLlama-34B-v2
 
+## The Most Outstanding Open-source Model
+
+We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
+
+- The best among all models: **hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
+
+- The best among 7B models: **hf:Open-Orca/Mistral-7B-OpenOrca**
+
+If you find a better model, please let me know.
+
 ## How to Add LLM Support
 For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
 
