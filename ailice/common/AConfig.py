@@ -36,7 +36,7 @@ class AConfig():
             "peft": {
                 "modelWrapper": "AModelLLAMA",
                 "modelList": {
-                    #"peft:model/": {"formatter": AFormatterChatML, "contextWindow": 8192, "systemAsUser": False}
+                    "model/": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False}
                 }
             },
             "oai": {"modelWrapper": "AModelChatGPT",
