@@ -116,12 +116,14 @@ class ABrowser():
         return ret
     
     def OpenPDF(self, loc: str) -> str:
-        os.makedirs("temp/", exist_ok=True)
         fullName = loc.split('/')[-1]
         fileName = fullName[:fullName.rfind('.')]
-        pdfPath = f"temp/{fullName}"
+        outDir = f"{self.pdfOutputDir}/{fileName}"
+        os.makedirs(outDir, exist_ok=True)
+        
+        pdfPath = f"{outDir}/{fullName}"
         if os.path.exists(loc):
-            shutil.copy(loc, "./")
+            shutil.copy(loc, pdfPath)
         else:
             response = requests.get(loc)
             if response.status_code == 200:
@@ -130,7 +132,6 @@ class ABrowser():
             else:
                 print("can not download pdf file. HTTP err code:", response.status_code)
         
-        outDir = f"{self.pdfOutputDir}/{fileName}"
         cmd = f"nougat {pdfPath} -o {outDir}"
         result = subprocess.run([cmd], stdout=subprocess.PIPE, text=True, shell=True)
 
