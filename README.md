@@ -202,7 +202,7 @@ Now that the environment configuration has been done, you can directly copy a co
 ```bash
 ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
 ailice_main --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./trace
-ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
+ailice_main --modelID=oai:gpt-4-turbo-preview --prompt="main"
 ailice_main --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
@@ -291,9 +291,12 @@ litellm --model ollama/mistral-openorca --api_base http://localhost:11434 --temp
 Then, add support for this service in the config.json file (the location of this file will be prompted when AIlice is launched).
 
 ```json
+{
+  "maxMemory": {},
+  "quantization": null,
   "models": {
     "oai": {
-        ...
+      ...
     },
     "ollama": {
       "modelWrapper": "AModelChatGPT",
@@ -304,8 +307,11 @@ Then, add support for this service in the config.json file (the location of this
           "contextWindow": 8192
         }
       }
-    }
+    },
+    ...
   },
+  ...
+}
 ```
 
 Now we can run AIlice:
@@ -370,15 +376,15 @@ hundred lines of code in total, but they contain the basic framework of AIlice.
 
 # Project Development Standards and Constraints
 
-- In this project, achieving the desired functionality of the AI Agent is the primary goal. The secondary goal is code clarity and simplicity. The implementation of the AI Agent is still an exploratory topic, so we aim to minimize rigid components in the software (such as architecture/interfaces imposing constraints on future development) and provide maximum flexibility for the application layer (e.g., prompt classes). Abstraction, deduplication, and decoupling are not immediate priorities.
+- In this project, **achieving the desired functionality of the AI Agent is the primary goal. The secondary goal is code clarity and simplicity**. The implementation of the AI Agent is still an exploratory topic, so we aim to **minimize rigid components in the software (such as architecture/interfaces imposing constraints on future development) and provide maximum flexibility for the application layer (e.g., prompt classes)**. Abstraction, deduplication, and decoupling are not immediate priorities.
 
-- When implementing a feature, always choose the best method rather than the most obvious one. The metric for "best" often includes traits such as trivializing the problem from a higher perspective, maintaining code clarity and simplicity, and ensuring that changes do not significantly increase overall complexity or limit the software's future possibilities.
+- When implementing a feature, **always choose the best method rather than the most obvious one**. The metric for "best" often includes traits such as trivializing the problem from a higher perspective, maintaining code clarity and simplicity, and ensuring that changes do not significantly increase overall complexity or limit the software's future possibilities.
 
-- Adding comments is not mandatory unless absolutely necessary; strive to make the code clear enough to be self-explanatory. While this may not be an issue for developers who appreciate comments, in the AI era, we can generate detailed code explanations at any time, eliminating the need for unstructured, hard-to-maintain comments.
+- Adding comments is not mandatory unless absolutely necessary; **strive to make the code clear enough to be self-explanatory**. While this may not be an issue for developers who appreciate comments, in the AI era, we can generate detailed code explanations at any time, eliminating the need for unstructured, hard-to-maintain comments.
 
-- Follow the principle of Occam's razor when adding code; never add unnecessary lines.
+- Follow the principle of Occam's razor when adding code; **never add unnecessary lines**.
 
-- Functions or methods in the core should not exceed 60 lines.
+- **Functions or methods in the core should not exceed 60 lines**.
 
 - While there are no explicit coding style constraints, maintain consistency or similarity with the original code in terms of naming and case usage to avoid readability burdens. 
 
