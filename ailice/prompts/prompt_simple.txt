@@ -18,7 +18,8 @@ CALL<!|agentType: str, agentName: str, msg: str|!>
 - msg: message need to be told to the agent. When you need to describe a new task in msg, it should be clear, complete, and self-sufficient.
 
 Function calls are limited to positional parameters, please keep the order of parameters consistent with the function definition.
-The function parameters cannot include context references. Please ensure that the parameters are comprehensive and do not rely on context.
+You can use variable references in function parameters like "$var_name".
+The function parameters cannot include context references other than the variable references mentioned above. Please ensure that the parameters are comprehensive and do not rely on context.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
 Sometimes the information returned by the agent is a bit messy, but you can still identify the parts that the user needs and sort it out.
 

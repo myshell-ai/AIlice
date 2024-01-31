@@ -9,6 +9,7 @@ class AInterpreter():
     def __init__(self):
         self.actions = {}#nodeType: {"func": func}
         self.patterns = {}#nodeType: [(pattern,isEntry)]
+        self.env = {}
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
@@ -63,6 +64,11 @@ class AInterpreter():
         nodeType, paras = self.Parse(txt)
         if None == nodeType:
             return txt
+        elif re.match(r"\$[a-zA-Z0-9_]+", txt):
+            if txt[1:] in self.env:
+                return self.env[txt[1:]]
+            else:
+                return txt #TODO.
         else:
             r = self.CallWithTextArgs(self.actions[nodeType], paras)
             return r if r is not None else ""

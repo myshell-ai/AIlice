@@ -1,6 +1,6 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
-from ailice.prompts.ARegex import GenerateRE4FunctionCalling
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling, VAR_DEF
 from ailice.prompts.ATools import ConstructOptPrompt
 
 
@@ -27,13 +27,9 @@ class APromptResearcher():
                          "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "STORE": [{"re": GenerateRE4FunctionCalling("STORE<!|txt: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "QUERY": [{"re": GenerateRE4FunctionCalling("QUERY<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "VAR": [{"re": GenerateRE4FunctionCalling("VAR<!|name: str, content: str|!> -> None", faultTolerance = True), "isEntry": True}]}
-        self.ACTIONS = {"VAR": {"func": self.Var}}
-        self.variables = dict()
-        return
-    
-    def Var(self, name: str, content: str):
-        self.variables[name] = content
+                         "VAR": [{"re": VAR_DEF, "isEntry": True}],
+                         "PRINT": [{"re": GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), "isEntry": True}],}
+        self.ACTIONS = {}
         return
     
     def Recall(self, key: str):
@@ -59,7 +55,7 @@ End of general instructions.
 Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
 
 Variables:
-{[f"{varName}: {content}" for varName, content in self.variables.items()]}
+{[f"{varName}: {content[:20]}..." for varName, content in self.processor.interpreter.env.items()]}
 
 Relevant Information: {self.Recall(context).strip()}
 The "RELEVANT INFORMATION" part contains data that may be related to the current task, originating from your own history or the histories of other agents. Please refrain from attempting to invoke functions mentioned in the relevant information, as you may not necessarily have the permissions to do so.
