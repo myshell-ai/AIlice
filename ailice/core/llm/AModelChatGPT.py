@@ -13,7 +13,7 @@ class AModelChatGPT():
         self.client = openai.OpenAI(api_key = config.models[modelType]["apikey"],
                                     base_url = config.models[modelType]["baseURL"])
 
-        self.formatter = AFormatterGPT(tokenizer = self.tokenizer, systemAsUser = False)
+        self.formatter = AFormatterGPT(tokenizer = self.tokenizer, systemAsUser = config.models[modelType]["modelList"][modelName]["systemAsUser"])
         self.contextWindow = config.models[modelType]["modelList"][modelName]["contextWindow"]
         return
     

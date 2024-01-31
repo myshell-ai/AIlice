@@ -304,7 +304,8 @@ Then, add support for this service in the config.json file (the location of this
       "baseURL": "http://localhost:8000",
       "modelList": {
         "mistral-openorca": {
-          "contextWindow": 8192
+          "contextWindow": 8192,
+          "systemAsUser": false
         }
       }
     },
