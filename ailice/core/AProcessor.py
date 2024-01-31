@@ -114,7 +114,7 @@ class AProcessor():
         self.interpreter.env[varName] = content
         return
     
-    def EvalPrint(self, varName: str):
+    def EvalPrint(self, varName: str) -> str:
         if varName in self.interpreter.env:
             return self.interpreter.env[varName]
         else:
