@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import paragraph_generator
-from ailice.prompts.ARegex import GenerateRE4FunctionCalling
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling, VAR_DEF
 from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptArticleDigest():
@@ -20,7 +20,9 @@ class APromptArticleDigest():
                          "SEARCHDOWN": [{"re": GenerateRE4FunctionCalling("SEARCHDOWN<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SEARCHUP": [{"re": GenerateRE4FunctionCalling("SEARCHUP<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RETRIEVE": [{"re": GenerateRE4FunctionCalling("RETRIEVE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}]}
+                         "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
+                         "VAR": [{"re": VAR_DEF, "isEntry": True}],
+                         "PRINT": [{"re": GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS = {"READ": {"func": self.Read},
                         "RETRIEVE": {"func": self.Recall}}
         return
