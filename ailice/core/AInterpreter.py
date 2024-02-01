@@ -10,6 +10,9 @@ class AInterpreter():
         self.actions = {}#nodeType: {"func": func}
         self.patterns = {}#nodeType: [(pattern,isEntry)]
         self.env = {}
+
+        self.RegisterPattern("_VAR_REF", r"\$(?P<varName>[a-zA-Z0-9_]+)", False)
+        self.RegisterAction("_VAR_REF", {"func": self.EvalVarRef})
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
@@ -28,7 +31,7 @@ class AInterpreter():
         return
     
     def EndChecker(self, txt: str) -> bool:
-        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if HasReturnValue(self.actions[nodeType])]
+        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if (HasReturnValue(self.actions[nodeType]) and p['isEntry'])]
         return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns])
     
     def GetEntryPatterns(self) -> dict[str,str]:
@@ -64,15 +67,9 @@ class AInterpreter():
         nodeType, paras = self.Parse(txt)
         if None == nodeType:
             return txt
-        elif re.match(r"\$[a-zA-Z0-9_]+", txt):
-            if txt[1:] in self.env:
-                return self.env[txt[1:]]
-            else:
-                return txt #TODO.
         else:
             r = self.CallWithTextArgs(self.actions[nodeType], paras)
             return r if r is not None else ""
-    
 
     def ParseEntries(self, txt_input: str) -> list[str]:
         matches = []
@@ -99,4 +96,11 @@ class AInterpreter():
             if "" != r:
                 resp += (r + "\n")
         return resp
+    
+    def EvalVarRef(self, varName: str) -> str:
+        if varName in self.env:
+            print(f"{varName} query. {self.env[varName]}")
+            return self.env[varName]
+        else:
+            return f"{varName} NOT DEFINED."
 
