@@ -53,5 +53,7 @@ Variable Definition
 var_name := <!|content|!>
 
 Function Call Examples
+!BASH<!|$bash_code|!>
+!CALL<!|"...","...",$keywords|!>
 !CALL<!|"...","...","..."|!>
 !BROWSE<!|...|!>
