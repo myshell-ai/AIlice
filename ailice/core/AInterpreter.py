@@ -1,6 +1,7 @@
 import re
 import inspect
 import random
+import traceback
 from typing import Any
 from ailice.common.ADataType import typeMap
 
@@ -63,7 +64,7 @@ class AInterpreter():
         try:
             ret = action['func'](**paras)
         except Exception as e:
-            ret = str(e)
+            ret = str(e) + f"EXCEPTION: {str(e)}\n{traceback.format_exc()}"
         
         if type(ret) in typeMap:
             varName = f"{nodeType}_ret_{typeMap[type(ret)]}_{str(random.randint(0,10000))}"
