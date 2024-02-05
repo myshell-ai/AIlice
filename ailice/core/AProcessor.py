@@ -21,8 +21,6 @@ class AProcessor():
         self.RegisterModules([config.services['storage']['addr']])
         self.interpreter.RegisterAction("CALL", {"func": self.EvalCall})
         self.interpreter.RegisterAction("RESPOND", {"func": self.EvalRespond})
-        self.interpreter.RegisterAction("VAR", {"func": self.EvalVar})
-        self.interpreter.RegisterAction("PRINT", {"func": self.EvalPrint})
         self.interpreter.RegisterAction("COMPLETE", {"func": self.EvalComplete})
         self.interpreter.RegisterAction("STORE", {"func": self.EvalStore})
         self.interpreter.RegisterAction("QUERY", {"func": self.EvalQuery})
@@ -89,7 +87,7 @@ class AProcessor():
             resp = self.interpreter.EvalEntries(ret)
             
             if "" != resp:
-                self.EvalVar(varName="returned_content_in_last_function_call", content=resp)
+                self.interpreter.EvalVar(varName="returned_content_in_last_function_call", content=resp)
                 self.conversation.Add(role = "SYSTEM", msg = "Function returned: {" + resp + "}")
                 self.EvalStore("Function returned: {" + resp + "}")
                 self.outputCB(f"SYSTEM_{self.name}", resp)
@@ -109,16 +107,6 @@ class AProcessor():
     def EvalRespond(self, message: str):
         self.result = message
         return
-    
-    def EvalVar(self, varName: str, content: str):
-        self.interpreter.env[varName] = content
-        return
-    
-    def EvalPrint(self, varName: str) -> str:
-        if varName in self.interpreter.env:
-            return self.interpreter.env[varName]
-        else:
-            return f"ERROR: {varName} not defined."
     
     def EvalStore(self, txt: str):
         if not self.modules['storage']['module'].Store(self.collection, txt):

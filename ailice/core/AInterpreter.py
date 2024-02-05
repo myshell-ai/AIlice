@@ -4,6 +4,7 @@ import random
 import traceback
 from typing import Any
 from ailice.common.ADataType import typeMap
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling, VAR_DEF
 
 def HasReturnValue(action):
     return action['signature'].return_annotation != inspect.Parameter.empty
@@ -14,6 +15,10 @@ class AInterpreter():
         self.patterns = {}#nodeType: [(pattern,isEntry)]
         self.env = {}
 
+        self.RegisterPattern("_VAR", VAR_DEF, True)
+        self.RegisterAction("_VAR", {"func": self.EvalVar})
+        self.RegisterPattern("_PRINT", GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), True)
+        self.RegisterAction("_PRINT", {"func": self.EvalPrint})
         self.RegisterPattern("_VAR_REF", r"\$(?P<varName>[a-zA-Z0-9_]+)", False)
         self.RegisterAction("_VAR_REF", {"func": self.EvalVarRef})
         return
@@ -114,3 +119,12 @@ class AInterpreter():
         else:
             return f"{varName} NOT DEFINED."
 
+    def EvalVar(self, varName: str, content: str):
+        self.env[varName] = content
+        return
+    
+    def EvalPrint(self, varName: str) -> str:
+        if varName in self.env:
+            return self.env[varName]
+        else:
+            return f"ERROR: {varName} not defined."

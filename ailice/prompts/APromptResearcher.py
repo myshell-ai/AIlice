@@ -1,6 +1,6 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
-from ailice.prompts.ARegex import GenerateRE4FunctionCalling, VAR_DEF
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
 
 
@@ -26,9 +26,7 @@ class APromptResearcher():
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "STORE": [{"re": GenerateRE4FunctionCalling("STORE<!|txt: str|!> -> None", faultTolerance = True), "isEntry": True}],
-                         "QUERY": [{"re": GenerateRE4FunctionCalling("QUERY<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "VAR": [{"re": VAR_DEF, "isEntry": True}],
-                         "PRINT": [{"re": GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), "isEntry": True}],}
+                         "QUERY": [{"re": GenerateRE4FunctionCalling("QUERY<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS = {}
         return
     
