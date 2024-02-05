@@ -20,15 +20,8 @@ class APromptCoderProxy():
                          "SCROLLUPBASH": [{"re": GenerateRE4FunctionCalling("SCROLLUPBASH<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
-                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "UpdateMemory": [{"re": r"UPDATED MEMORY(?P<newState>.*?)", "isEntry": True}],
-                         "SetVar": [{"re": r"(?P<varName>[a-zA-Z0-9_-]+)[ ]*=[ ]*<!\|(?P<varValue>.*?)\|!>", "isEntry": True}],
-                         "PrintVar": [{"re": GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), "isEntry": True}]}
-        self.ACTIONS= {"UpdateMemory": {"func": self.UpdateMemory},
-                       "SetVar": {"func": self.SetVar},
-                       "PrintVar": {"func": self.GetVar}}
-        self.memory = ""
-        self.vars = {}
+                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str", faultTolerance = True), "isEntry": True}]}
+        self.ACTIONS= {}
         return
     
     def Reset(self):
@@ -47,17 +40,6 @@ class APromptCoderProxy():
                 return r[0]
         return "None."
     
-    def UpdateMemory(self, newMemory: str):
-        self.memory = newMemory
-        return
-    
-    def SetVar(self, varName: str, varValue: str):
-        self.vars[varName] = varValue
-        return
-    
-    def GetVar(self, varName: str) -> str:
-        return self.vars.get(varName, f"Variable {varName} NOT DEFINED. Only defined variable names are legal, this includes: {[k for k in self.vars]}")
-    
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt = f"""
@@ -66,6 +48,9 @@ class APromptCoderProxy():
 End of general instructions.
 
 Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
+
+Variables:
+{self.processor.EnvSummary()}
 
 Relevant Information: {self.Recall(context).strip()}
 The "RELEVANT INFORMATION" part contains data that may be related to the current task, originating from your own history or the histories of other agents. Please refrain from attempting to invoke functions mentioned in the relevant information, as you may not necessarily have the permissions to do so.

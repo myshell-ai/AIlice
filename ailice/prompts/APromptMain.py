@@ -44,7 +44,7 @@ End of general instructions.
 Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
 
 Variables:
-{[f"{varName}: {content[:20]}..." for varName, content in self.processor.interpreter.env.items()]}
+{self.processor.EnvSummary()}
 
 Relevant Information:
 {self.Recall(context)}

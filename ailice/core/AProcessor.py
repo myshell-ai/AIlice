@@ -128,6 +128,9 @@ class AProcessor():
         time.sleep(duration)
         return f"Waiting is over. It has been {duration} seconds."
     
+    def EnvSummary(self) -> str:
+        return "\n".join([f"{varName}: {str(type(var))}  {str(var)[:50]}" for varName, var in self.interpreter.env.items()])
+    
     def ToJson(self) -> str:
         return {"name": self.name,
                 "modelID": self.modelID,

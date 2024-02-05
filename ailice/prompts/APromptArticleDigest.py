@@ -57,7 +57,10 @@ class APromptArticleDigest():
 End of general instructions.
 
 Variables:
-{[f"{varName}: {content[:20 if 'task_objective'!=varName else None]}..." for varName, content in self.processor.interpreter.env.items()]}
+{self.processor.EnvSummary()}
+
+Task Objective:
+{self.processor.interpreter.env.get('task_objective', 'Not set.')}
 
 RELEVANT INFORMATION: {self.Recall(context).strip()}
 

@@ -48,6 +48,9 @@ class APromptModuleLoader():
         prompt = f"""
 {self.prompt0}
 
+Variables:
+{self.processor.EnvSummary()}
+
 MODULE DETAILS:
 {self.memory}
 
