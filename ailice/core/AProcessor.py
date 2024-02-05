@@ -64,7 +64,7 @@ class AProcessor():
     def CreateActionCB(self, actionName, module, actionFunc):
         func = getattr(module, actionFunc)
         def callback(*args,**kwargs):
-            return f"{actionName}_RESULT=[{func(*args,**kwargs)}]"
+            return func(*args,**kwargs)
         newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(func).parameters.items()],
                                          return_annotation=inspect.signature(func).return_annotation)
         callback.__signature__ = newSignature

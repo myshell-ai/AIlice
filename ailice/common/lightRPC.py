@@ -12,6 +12,8 @@ import inspect
 import zmq
 import pickle
 import traceback
+import ailice
+from ailice.common.ADataType import AImage
 
 WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
@@ -87,7 +89,7 @@ def makeServer(objCls,objArgs,url,APIList):
   return GenesisRPCServer(objCls,objArgs,url,APIList)
 
 def AddMethod(kls,methodName,signature):
-  tempNamespace = {}
+  tempNamespace = {"ailice": ailice, "AImage": AImage}
   exec(f"def tempFunc{signature}: pass", tempNamespace)
   tempFunc = tempNamespace['tempFunc']
   newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(tempFunc).parameters.items()],

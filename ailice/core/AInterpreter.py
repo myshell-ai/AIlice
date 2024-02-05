@@ -1,6 +1,8 @@
 import re
 import inspect
-from inspect import Parameter, Signature
+import random
+from typing import Any
+from ailice.common.ADataType import typeMap
 
 def HasReturnValue(action):
     return action['signature'].return_annotation != inspect.Parameter.empty
@@ -45,7 +47,8 @@ class AInterpreter():
                     return (nodeType, m.groupdict())
         return (None, None)
 
-    def CallWithTextArgs(self, action, txtArgs):
+    def CallWithTextArgs(self, nodeType, txtArgs):
+        action = self.actions[nodeType]
         #print(f"action: {action}, {txtArgs}")
         signature = action["signature"]
         if set(txtArgs.keys()) != set(signature.parameters.keys()):
@@ -61,6 +64,13 @@ class AInterpreter():
             ret = action['func'](**paras)
         except Exception as e:
             ret = str(e)
+        
+        if type(ret) in typeMap:
+            varName = f"{nodeType}_ret_{typeMap[type(ret)]}_{str(random.randint(0,10000))}"
+            self.env[varName] = ret
+            ret = f"The data of {typeMap[type(ret)]} type is returned and has been stored in a variable named '{varName}'."
+        else:
+            ret = f"{nodeType}_RESULT: [{ret}]"
         return ret
     
     def Eval(self, txt: str) -> str:
@@ -68,7 +78,7 @@ class AInterpreter():
         if None == nodeType:
             return txt
         else:
-            r = self.CallWithTextArgs(self.actions[nodeType], paras)
+            r = self.CallWithTextArgs(nodeType, paras)
             return r if r is not None else ""
 
     def ParseEntries(self, txt_input: str) -> list[str]:
@@ -97,9 +107,8 @@ class AInterpreter():
                 resp += (r + "\n")
         return resp
     
-    def EvalVarRef(self, varName: str) -> str:
+    def EvalVarRef(self, varName: str) -> Any:
         if varName in self.env:
-            print(f"{varName} query. {self.env[varName]}")
             return self.env[varName]
         else:
             return f"{varName} NOT DEFINED."
