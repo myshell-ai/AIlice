@@ -1,4 +1,5 @@
 import copy
+import io
 
 class AFormatterVicuna():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -170,9 +171,29 @@ class AFormatterGPT():
 
     def Len(self, prompt) -> int:
         return len(str(prompt)) // 4
+
+class AFormatterGPTVision():
+    def __init__(self, tokenizer=None, systemAsUser = False):
+        self.systemAsUser = systemAsUser
+        self.typeConvert = {"image": "image_url"}
+        return
     
+    def BuildMsg(self, role: str, msg: str, attachments: dict):
+        roleMap = {"SYSTEM": "system" if not self.systemAsUser else "user", "USER": "user", "ASSISTANT": "assistant"}
+        return {"role": roleMap[role],
+                "content": [{"type": "text", "text": msg}] +
+                           [{"type": self.typeConvert[a['type']], self.typeConvert[a['type']]: f"data:image/jpeg;base64,{a['content'].ToJson()['data']}"} for k,a in attachments.items()]}
+        
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = [self.BuildMsg('SYSTEM', prompt0, {})] + [self.BuildMsg(c['role'], c['msg'], c['attachments']) for c in conversations]
+        #print("prompt: ", ret)
+        return ret
+
+    def Len(self, prompt) -> int:
+        return len(str(prompt)) // 4
+
 def CreateFormatter(formatterClsName: str, tokenizer, systemAsUser):
-    formatterList = [AFormatterSimple, AFormatterLLAMA2, AFormatterVicuna, AFormatterChatML, AFormatterAMAZON, AFormatterZephyr, AFormatterOpenChat, AFormatterGPT]
+    formatterList = [AFormatterSimple, AFormatterLLAMA2, AFormatterVicuna, AFormatterChatML, AFormatterAMAZON, AFormatterZephyr, AFormatterOpenChat, AFormatterGPT, AFormatterGPTVision]
     for formatterCls in formatterList:
         if formatterClsName == formatterCls.__name__:
             return formatterCls(tokenizer = tokenizer, systemAsUser = systemAsUser)
