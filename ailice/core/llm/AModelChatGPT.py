@@ -2,7 +2,7 @@ import openai
 
 from ailice.common.utils.ATextSpliter import sentences_split
 from ailice.common.AConfig import config
-from ailice.core.llm.AFormatter import AFormatterGPT
+from ailice.core.llm.AFormatter import CreateFormatter
 
 
 class AModelChatGPT():
@@ -13,18 +13,21 @@ class AModelChatGPT():
         self.client = openai.OpenAI(api_key = config.models[modelType]["apikey"],
                                     base_url = config.models[modelType]["baseURL"])
 
-        self.formatter = AFormatterGPT(tokenizer = self.tokenizer, systemAsUser = config.models[modelType]["modelList"][modelName]["systemAsUser"])
-        self.contextWindow = config.models[modelType]["modelList"][modelName]["contextWindow"]
+        modelCfg = config.models[modelType]["modelList"][modelName]
+        self.formatter = CreateFormatter(modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = modelCfg['systemAsUser'])
+        self.contextWindow = modelCfg["contextWindow"]
         return
     
     def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float = 0.2) -> str:
         proc(txt='', action='open')
         currentPosition = 0
         text = ""
+        extras = {"max_tokens": 4096} if "vision" in self.modelName else {}
         for chunk in self.client.chat.completions.create(model=self.modelName,
                                                          messages=prompt,
                                                          temperature=temperature,
-                                                         stream=True):
+                                                         stream=True,
+                                                         **extras):
             text += (chunk.choices[0].delta.content or "")
 
             if endchecker(text):

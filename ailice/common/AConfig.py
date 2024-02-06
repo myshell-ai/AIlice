@@ -43,20 +43,20 @@ class AConfig():
                     "apikey": None,
                     "baseURL": None,
                     "modelList": {
-                        "gpt-4-0125-preview": {"contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-turbo-preview": {"contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-1106-preview": {"contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-vision-preview": {"contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4": {"contextWindow": 8192, "systemAsUser": False},
-                        "gpt-4-32k": {"contextWindow": 32768, "systemAsUser": False},
-                        "gpt-4-0613": {"contextWindow": 8192, "systemAsUser": False},
-                        "gpt-4-32k-0613": {"contextWindow": 32768, "systemAsUser": False},
-                        "gpt-4-0314": {"contextWindow": 8192, "systemAsUser": False},
-                        "gpt-4-32k-0314": {"contextWindow": 32768, "systemAsUser": False},
-                        "gpt-3.5-turbo-1106": {"contextWindow": 16385, "systemAsUser": False},
-                        "gpt-3.5-turbo": {"contextWindow": 4096, "systemAsUser": False},
-                        "gpt-3.5-turbo-16k": {"contextWindow": 16385, "systemAsUser": False},
-                        "gpt-3.5-turbo-instruct": {"contextWindow": 4096, "systemAsUser": False}
+                        "gpt-4-0125-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
+                        "gpt-4-turbo-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
+                        "gpt-4-1106-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
+                        "gpt-4-vision-preview": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
+                        "gpt-4": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                        "gpt-4-32k": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                        "gpt-4-0613": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                        "gpt-4-32k-0613": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                        "gpt-4-0314": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                        "gpt-4-32k-0314": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                        "gpt-3.5-turbo-1106": {"formatter": "AFormatterGPT", "contextWindow": 16385, "systemAsUser": False},
+                        "gpt-3.5-turbo": {"formatter": "AFormatterGPT", "contextWindow": 4096, "systemAsUser": False},
+                        "gpt-3.5-turbo-16k": {"formatter": "AFormatterGPT", "contextWindow": 16385, "systemAsUser": False},
+                        "gpt-3.5-turbo-instruct": {"formatter": "AFormatterGPT", "contextWindow": 4096, "systemAsUser": False}
                         }},
         }
         self.temperature = 0.0
@@ -72,6 +72,7 @@ class AConfig():
                 "duckduckgo": {"cmd": "python -m ailice.modules.ADuckDuckGo --addr=tcp://127.0.0.1:59005", "addr": "tcp://127.0.0.1:59005"},
                 "scripter": {"cmd": "python -m ailice.modules.AScripter --addr=tcp://127.0.0.1:59000", "addr": "tcp://127.0.0.1:59000"},
                 "speech": {"cmd": "python -m ailice.modules.ASpeech --addr=tcp://127.0.0.1:59006", "addr": "tcp://127.0.0.1:59006"},
+                "files": {"cmd": "python -m ailice.modules.AFiles --addr=tcp://127.0.0.1:59007", "addr": "tcp://127.0.0.1:59007"},
             }
         else:
             self.services = {
@@ -82,6 +83,7 @@ class AConfig():
                 "duckduckgo": {"cmd": "python3 -m ailice.modules.ADuckDuckGo --addr=ipc:///tmp/ADuckDuckGo.ipc", "addr": "ipc:///tmp/ADuckDuckGo.ipc"},
                 "scripter": {"cmd": "python3 -m ailice.modules.AScripter --addr=tcp://127.0.0.1:59000", "addr": "tcp://127.0.0.1:59000"},
                 "speech": {"cmd": "python3 -m ailice.modules.ASpeech --addr=ipc:///tmp/ASpeech.ipc", "addr": "ipc:///tmp/ASpeech.ipc"},
+                "files": {"cmd": "python3 -m ailice.modules.AFiles --addr=ipc:///tmp/AFiles.ipc", "addr": "ipc:///tmp/AFiles.ipc"},
             }
         return
 
