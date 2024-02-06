@@ -1,10 +1,24 @@
+import re
+from typing import Any
+from ailice.common.ADataType import typeMap
+
 class AConversations():
     def __init__(self):
-        self.conversations: list[dict[str,str]] = []
+        self.conversations: list[dict] = []
         return
     
-    def Add(self, role: str, msg: str):
-        self.conversations.append({"role": role, "msg": msg})
+    def Add(self, role: str, msg: str, env: dict[str,Any]):
+        record = {"role": role, "msg": msg, "attachments": {}}
+        
+        if role in ["USER", "SYSTEM"]:
+            matches = [m for m in re.findall(r'<([a-z]+)\|([a-zA-Z0-9_]+)\|([a-z]+)>', msg) if (m[0]==m[2]) and (m[0] in typeMap.values())]
+            for label, varName, _ in matches:
+                if varName in env:
+                    record["attachments"][varName] = {"type": typeMap[type(env[varName])], "content": env[varName]}
+                else:
+                    msgNew = msg.replace(f"<{label}|{varName}|{label}>", f"<{label}|{varName}|{label}> (Error: {varName} not found in env.)")
+                    record["msg"] = msgNew   
+        self.conversations.append(record)
         return
     
     def GetConversations(self, frm=0):

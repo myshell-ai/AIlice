@@ -7,6 +7,7 @@ from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
+from ailice.common.utils.AFileUtils import serialize
 from ailice.common.ARemoteAccessors import clientPool
 from ailice.AServices import StartServices, TerminateSubprocess
 
@@ -74,7 +75,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     while True:
         if "" != trace.strip():
             with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
-                json.dump(processor.ToJson(), f, indent=2)
+                json.dump(processor.ToJson(), f, indent=2, default=serialize)
         inpt = GetInput(speech)
         processor(inpt)
     return
