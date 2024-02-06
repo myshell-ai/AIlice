@@ -102,7 +102,7 @@ class AInterpreter():
         for script in scripts:
             try:
                 r = self.Eval(script)
-                if r is not None:
+                if type(r) in typeMap:
                     varName = f"ret_{type(r).__name__}_{str(random.randint(0,10000))}"
                     self.env[varName] = r
                     r = f"Returned data: {varName} := {str(r)} "
