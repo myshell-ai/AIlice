@@ -53,7 +53,7 @@ class AInterpreter():
                     return (nodeType, m.groupdict())
         return (None, None)
 
-    def CallWithTextArgs(self, nodeType, txtArgs):
+    def CallWithTextArgs(self, nodeType, txtArgs) -> Any:
         action = self.actions[nodeType]
         #print(f"action: {action}, {txtArgs}")
         signature = action["signature"]
@@ -62,30 +62,22 @@ class AInterpreter():
         paras = dict()
         for k,v in txtArgs.items():
             v = self.Eval(v)
-            if str == signature.parameters[k].annotation:
+            if signature.parameters[k].annotation in typeMap:
+                if type(v) != signature.parameters[k].annotation:
+                    raise TypeError(f"parameter {k} should be of type {signature.parameters[k].annotation.__name__}, but got {type(v).__name__}.")
+                paras[k] = v
+            elif str == signature.parameters[k].annotation:
                 paras[k] = str(v.strip('"\'')) if (len(v) > 0) and (v[0] == v[-1]) and (v[0] in ["'",'"']) else str(v)
             else:
                 paras[k] = signature.parameters[k].annotation(v)
-        try:
-            ret = action['func'](**paras)
-        except Exception as e:
-            ret = str(e) + f"EXCEPTION: {str(e)}\n{traceback.format_exc()}"
-        
-        if type(ret) in typeMap:
-            varName = f"{nodeType}_ret_{typeMap[type(ret)]}_{str(random.randint(0,10000))}"
-            self.env[varName] = ret
-            ret = f"The data of {typeMap[type(ret)]} type is returned and has been stored in a variable named '{varName}'."
-        else:
-            ret = f"{nodeType}_RESULT: [{ret}]"
-        return ret
+        return action['func'](**paras)
     
-    def Eval(self, txt: str) -> str:
+    def Eval(self, txt: str) -> Any:
         nodeType, paras = self.Parse(txt)
         if None == nodeType:
             return txt
         else:
-            r = self.CallWithTextArgs(nodeType, paras)
-            return r if r is not None else ""
+            return self.CallWithTextArgs(nodeType, paras)
 
     def ParseEntries(self, txt_input: str) -> list[str]:
         matches = []
@@ -108,8 +100,15 @@ class AInterpreter():
         scripts = self.ParseEntries(txt)
         resp = ""
         for script in scripts:
-            r = self.Eval(script)
-            if "" != r:
+            try:
+                r = self.Eval(script)
+                if r is not None:
+                    varName = f"ret_{type(r).__name__}_{str(random.randint(0,10000))}"
+                    self.env[varName] = r
+                    r = f"Returned data: {varName} := {str(r)} "
+            except Exception as e:
+                r = str(e) + f"EXCEPTION: {str(e)}\n{traceback.format_exc()}"
+            if r not in ["", None]:
                 resp += (r + "\n")
         return resp
     

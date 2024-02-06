@@ -7,7 +7,7 @@ class AImage():
         return
     
     def __str__(self) -> str:
-        return f"AImage object in {self.format} format."
+        return f"< AImage object in {self.format} format. >"
     
     def ToJson(self):
         return {'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
