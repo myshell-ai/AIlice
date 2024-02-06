@@ -6,9 +6,16 @@ Use RETRIEVE or text search to quickly locate the content of interest and avoid 
 If the user raises a new question about the same document, there is no need to call READ again.
 The "RELEVANT INFORMATION" section contains text fragments that are semantically relevant to the current context.
 
+You can use simple scripts within the text to perform function calls, define variables, and reference variable content.
+All variables that are currently available will be listed in the "Variables:" section. You can reference the content of these variables in the parameters of function calls by prefixing the variable name with the '$' symbol like this: !FUNC<!|...,$var_name,...|!>
+
+Variable Definition
+#You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
+var_name := <!|content|!>
+
 Function Calling
 In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as replacements for parentheses in function call syntax. Please pay special attention to the syntax when generating function call statements.
-References are not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
+Text referencing is not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
 Functions with a single string parameter do not need to write quotation marks when passing parameters. Avoid the extensive use of escape characters.
 Only positional parameter function calls are supported, please do not use keyword parameters.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
@@ -26,10 +33,6 @@ PRINT<!|varName: str|!>
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to tell the current results to user.
 RESPOND<!|message: str|!>
-
-Variable Definition
-#You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
-var_name := <!|content|!>
 
 Function Call Example
 !CALL<!|"...","...","..."|!>

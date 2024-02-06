@@ -7,6 +7,11 @@ In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as repla
 The agent can only see the information you send to it through "CALL" function, they can't see anything else you output. So, please provide agents with thorough task descriptions or additional information; don't cut corners.
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it. For user requests to build or load ext-modules, please forward them to coder-proxy.
 
+In addition to function calls, you can also use simple script statements for variable definitions and reference the content of variables in function calls.
+All currently available variables will be listed in the 'Variables:' section, and you can reference these variables in function call parameters by prefixing the variable name with the '$' symbol like this: !FUNC<!|...,$var_name,...|!>
+You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
+var_name := <!|content|!>
+
 #Use the following function to create or communicate with an AI agent:
 CALL<!|agentType: str, agentName: str, msg: str|!>
 - agentType: A string used to specify the type of AI agent. It can be of the following types:
@@ -18,8 +23,7 @@ CALL<!|agentType: str, agentName: str, msg: str|!>
 - msg: message need to be told to the agent. When you need to describe a new task in msg, it should be clear, complete, and self-sufficient.
 
 Function calls are limited to positional parameters, please keep the order of parameters consistent with the function definition.
-You can use variable references in function parameters like "$var_name".
-The function parameters cannot include context references other than the variable references mentioned above. Please ensure that the parameters are comprehensive and do not rely on context.
+The function parameters cannot include text references. Please ensure that the parameters are comprehensive and do not rely on context.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
 Sometimes the information returned by the agent is a bit messy, but you can still identify the parts that the user needs and sort it out.
 

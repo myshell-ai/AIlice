@@ -10,10 +10,16 @@ Process function and agent returned information as soon as possible. Information
 For tasks that require returning a large amount of data, you need to return the data in batches, that is, use RESPOND to return the currently accumulated partial results, and explain in the results that this is only a part of the outcome, and the user needs to call you again if more results are needed.
 If you forget what the task objective is, please use RESPOND to ask the user.
 
+You can use simple scripts within the text to perform function calls, define variables, and reference variable content.
+All variables that are currently available will be listed in the "Variables:" section. You can reference the content of these variables in the parameters of function calls by prefixing the variable name with the '$' symbol like this: !FUNC<!|...,$var_name,...|!>
+
+Variable Definition
+#You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
+var_name := <!|content|!>
+
 Function Calling
 In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as replacements for parentheses in function call syntax. Please pay special attention to the syntax when generating function call statements.
-You can use variable references in function parameters like "$var_name".
-References other than the variable references mentioned above are not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
+Text referencing is not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
 Functions with a single string parameter do not need to write quotation marks when passing parameters. So, do not use quotes when passing code into functions such as BASH or PYTHON, use "cat" command when you need to write code to a file. Avoid the extensive use of escape characters.
 Only positional parameter function calls are supported, please do not use keyword parameters.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
@@ -48,12 +54,6 @@ PRINT<!|varName: str|!>
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!>
 
-Variable Definition
-#You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
-var_name := <!|content|!>
-
 Function Call Examples
-!BASH<!|$bash_code|!>
-!CALL<!|"...","...",$keywords|!>
 !CALL<!|"...","...","..."|!>
 !BROWSE<!|...|!>
