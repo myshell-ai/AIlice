@@ -112,6 +112,8 @@ class AInterpreter():
                     varName = f"ret_{type(r).__name__}_{str(random.randint(0,10000))}"
                     self.env[varName] = r
                     r = f"Returned data: {varName} := {str(r)} " + f"<image|{varName}|image>"
+                else:
+                    r = str(r)
             except Exception as e:
                 r = str(e) + f"EXCEPTION: {str(e)}\n{traceback.format_exc()}"
             if r not in ["", None]:
