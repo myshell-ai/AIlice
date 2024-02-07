@@ -42,6 +42,11 @@ class AInterpreter():
         self.patterns[nodeType].append({"re": pattern, "isEntry": isEntry})
         return
     
+    def CreateVar(self, content: Any, prefix: str) -> str:
+        varName = f"{prefix}_{type(content).__name__}_{str(random.randint(0,10000))}"
+        self.env[varName] = content
+        return varName
+    
     def EndChecker(self, txt: str) -> bool:
         endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (HasReturnValue(self.actions[nodeType]))]
         return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns])
@@ -109,8 +114,7 @@ class AInterpreter():
             try:
                 r = self.Eval(script)
                 if type(r) in typeMap:
-                    varName = f"ret_{type(r).__name__}_{str(random.randint(0,10000))}"
-                    self.env[varName] = r
+                    varName = self.CreateVar(content=r, prefix="ret")
                     r = f"Returned data: {varName} := {str(r)} " + f"<image|{varName}|image>"
                 else:
                     r = str(r)
