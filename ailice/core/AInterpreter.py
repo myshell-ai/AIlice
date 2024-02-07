@@ -4,7 +4,7 @@ import random
 import traceback
 from typing import Any
 from ailice.common.ADataType import typeMap
-from ailice.prompts.ARegex import GenerateRE4FunctionCalling, VAR_DEF
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling, ARegexMap, VAR_DEF
 
 def HasReturnValue(action):
     return action['signature'].return_annotation != inspect.Parameter.empty
@@ -21,6 +21,10 @@ class AInterpreter():
         self.RegisterAction("_PRINT", {"func": self.EvalPrint})
         self.RegisterPattern("_VAR_REF", r"\$(?P<varName>[a-zA-Z0-9_]+)", False)
         self.RegisterAction("_VAR_REF", {"func": self.EvalVarRef})
+        self.RegisterPattern("_STR", f"(?P<txt>({ARegexMap['str']}))", False)
+        self.RegisterPattern("_INT", f"(?P<txt>({ARegexMap['int']}))", False)
+        self.RegisterPattern("_FLOAT", f"(?P<txt>({ARegexMap['float']}))", False)
+        self.RegisterPattern("_BOOL", f"(?P<txt>({ARegexMap['bool']}))", False)
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
@@ -39,7 +43,7 @@ class AInterpreter():
         return
     
     def EndChecker(self, txt: str) -> bool:
-        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if (HasReturnValue(self.actions[nodeType]) and p['isEntry'])]
+        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (HasReturnValue(self.actions[nodeType]))]
         return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns])
     
     def GetEntryPatterns(self) -> dict[str,str]:
@@ -61,21 +65,23 @@ class AInterpreter():
             return "The function call failed because the arguments did not match. txtArgs.keys(): " + str(txtArgs.keys()) + ". func params: " + str(signature.parameters.keys())
         paras = dict()
         for k,v in txtArgs.items():
-            v = self.Eval(v)
-            if signature.parameters[k].annotation in typeMap:
-                if type(v) != signature.parameters[k].annotation:
-                    raise TypeError(f"parameter {k} should be of type {signature.parameters[k].annotation.__name__}, but got {type(v).__name__}.")
-                paras[k] = v
-            elif str == signature.parameters[k].annotation:
-                paras[k] = str(v.strip('"\'')) if (len(v) > 0) and (v[0] == v[-1]) and (v[0] in ["'",'"']) else str(v)
-            else:
-                paras[k] = signature.parameters[k].annotation(v)
+            paras[k] = self.Eval(v)
+            if type(paras[k]) != signature.parameters[k].annotation:
+                raise TypeError(f"parameter {k} should be of type {signature.parameters[k].annotation.__name__}, but got {type(paras[k]).__name__}.")
         return action['func'](**paras)
     
     def Eval(self, txt: str) -> Any:
         nodeType, paras = self.Parse(txt)
         if None == nodeType:
             return txt
+        elif "_STR" == nodeType:
+            return str(txt.strip('"\''))
+        elif "_INT" == nodeType:
+            return int(txt)
+        elif "_FLOAT" == nodeType:
+            return float(txt)
+        elif "_BOOL" ==nodeType:
+            return bool(txt)
         else:
             return self.CallWithTextArgs(nodeType, paras)
 
