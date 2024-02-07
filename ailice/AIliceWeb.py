@@ -1,4 +1,7 @@
 import time
+import os
+import io
+from PIL import Image
 import simplejson as json
 import traceback
 from termcolor import colored
@@ -9,6 +12,7 @@ from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.utils.AFileUtils import serialize
+from ailice.common.ADataType import AImage
 from ailice.common.ARemoteAccessors import clientPool
 from ailice.AServices import StartServices, TerminateSubprocess
 
@@ -25,6 +29,16 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 
+
+def readImage(path: str):
+    try:
+        image = Image.open(path)
+        imageByte = io.BytesIO()
+        image.save(imageByte, format='JPEG')
+    except Exception as e:
+        print("readImage FAILED. EXCEPTON: ", str(e))
+        return None
+    return AImage(format="jpg", data=imageByte.getvalue())
 
 def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float, trace: str):
     config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
@@ -54,29 +68,67 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['google']['addr'],
                                config.services['duckduckgo']['addr'],
                                config.services['scripter']['addr']])
-    def bot(text, history):
-        if text is None:
-            yield None
-            return
-        
+    def bot(history):
         if "" != trace.strip():
             with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
                 json.dump(processor.ToJson(), f, indent=2, default=serialize)
         
-        threadLLM = threading.Thread(target=processor, args=(text,))
+        if str != type(history[-1][0]):
+            image = readImage(history[-1][0][0])
+            if None == image:
+                msg = "System Error: Failed to load image. The user attempted to load an image as input but failed. Possibly due to an unsupported image format or a corrupted image file."
+            else:
+                varName = processor.interpreter.CreateVar(content=image, prefix="input")
+                msg = f"Please observe this image. <image|{varName}|image>"
+        else:
+            msg = history[-1][0]
+        threadLLM = threading.Thread(target=processor, args=(msg,))
         threadLLM.start()
-        ret = ""
+        history[-1][1] = ""
         while True:
             channel, txt = logger.queue.get()
             if ">" == channel:
                 threadLLM.join()
                 return
             update = (channel + ":\r" + txt)
-            ret += ("\r\r" + update)
-            yield ret
+            history[-1][1] += ("\r\r" + update)
+            yield history
     
-    ui = gr.ChatInterface(fn=bot)
-    ui.queue().launch()
+    def add_text(history, text):
+        history = history + [(text, None)]
+        return history, gr.Textbox(value="", interactive=False)
+
+    def add_file(history, file):
+        history = history + [((file.name,), None)]
+        return history
+
+    with gr.Blocks() as demo:
+        chatbot = gr.Chatbot(
+            [],
+            elem_id="chatbot",
+            bubble_full_width=False,
+            avatar_images=(None, (os.path.join(os.path.dirname(__file__), f"{os.path.dirname(__file__)}/../AIlice.png"))),
+        )
+
+        with gr.Row():
+            txt = gr.Textbox(
+                scale=4,
+                show_label=False,
+                placeholder="Enter text and press enter, or upload an image",
+                container=False,
+            )
+            btn = gr.UploadButton("📁", file_types=["image"])
+
+        txt_msg = txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(
+            bot, chatbot, chatbot, api_name="bot_response"
+        )
+        txt_msg.then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
+        file_msg = btn.upload(add_file, [chatbot, btn], [chatbot], queue=False).then(
+            bot, chatbot, chatbot
+        )
+
+    demo.queue()
+    demo.launch()
     return
 
 def main():
