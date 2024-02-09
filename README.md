@@ -331,7 +331,7 @@ In this example, we will use LM Studio to run the currently most powerful open-s
 
 Download model weights of **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF** using LM Studio.
 
-In the LM Studio's "LocalServer" window, adjust the 'Context Length' parameter on the left to 32764 and change the 'Context Overflow Policy' to 'Stop at limit.' We will allow AIlice to manage the context on its own.
+In the LM Studio's "LocalServer" window, set n_gpu_layers to -1 if you want to use GPU only. Adjust the 'Context Length' parameter on the left to 16384(or a smaller value based on your available memory), and change the 'Context Overflow Policy' to 'Stop at limit.' We will allow AIlice to manage the context on its own.
 
 Run the service. We assume the address of the service is "http://localhost:1234/v1/".
 
@@ -366,7 +366,7 @@ Then, we open config.json and make the following modifications:
 Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on your available VRAM or memory space. The larger the parameter, the more VRAM space is required.
 
 ```bash
-ailice_main --modelID=lm-server:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.2
+ailice_main --modelID=lm-server:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
 ```
 
 ### Open Source Models on Huggingface
