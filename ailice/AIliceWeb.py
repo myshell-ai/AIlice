@@ -107,6 +107,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
             [],
             elem_id="chatbot",
             bubble_full_width=False,
+            line_breaks=False,
             avatar_images=(None, (os.path.join(os.path.dirname(__file__), f"../AIlice.png"))),
         )
 
