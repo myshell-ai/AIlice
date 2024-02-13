@@ -21,6 +21,6 @@ def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> 
     typePairs = re.findall(pattern, args)
     
     reMap = {k: v for k,v in ARegexMap.items()}
-    reMap["str"] = r"(?:.*(?=\|!>))" if faultTolerance else ARegexMap['str']
+    reMap["str"] = r"(?:.*?(?=\|!>))" if faultTolerance else ARegexMap['str']
     patternArgs = '[ ]*,[ ]*'.join([f"(?:({arg}|\"{arg}\"|\'{arg}\')[ ]*[:=][ ]*)?(?P<{arg}>({reMap[tp]}))" for arg,tp in typePairs])
     return rf"!{funcName}<!\|[ ]*{patternArgs}[ ]*\|!>"
