@@ -245,7 +245,7 @@ docker restart scripter
 ```
 
 # Choice of LLM
-AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, only gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide relatively stable results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
+AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide the best results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
 gpt-3.5-turbo still has problems. It has relatively high requirements for prompts, and we have never been able to find a stable prompt expression.
 
@@ -259,14 +259,17 @@ Among the open-source models, the ones that usually perform well include:
 - hf:openchat/openchat_3.5
 - hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO
 - hf:Phind/Phind-CodeLlama-34B-v2
+- Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF
 
 ## The Most Outstanding Open-source Model
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
-- The best among all models: **hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
+- The best among all models: **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF**. This is a model with capabilities close to GPT-4! It is also a model with stable practical value, a very exciting advancement!
 
-- The best among 7B models: **hf:Open-Orca/Mistral-7B-OpenOrca**
+- The second-best performing model: **NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
+
+- The best among 7B models: **Open-Orca/Mistral-7B-OpenOrca**
 
 If you find a better model, please let me know.
 
@@ -279,6 +282,7 @@ For openai models, you don't need to do anything. Just use the modelID consistin
 
 You can use any third-party inference server compatible with the OpenAI API to replace the built-in LLM inference functionality in AIlice. For inference servers that do not support the OpenAI API, you can try using litellm to convert them into an OpenAI-compatible API. However, it's important to note that due to the presence of many SYSTEM messages in AIlice's conversation records, which is not a common use case for LLM, the level of support for this depends on the specific implementation of these inference servers. So, utilizing this method for inference may lead to a performance decline.
 
+#### Example 1: ollama + litellm
 We use Ollama as an example to explain how to add support for such services.
 First, we need to use Litellm to convert Ollama's interface into a format compatible with OpenAI.
 
@@ -319,6 +323,50 @@ Now we can run AIlice:
 
 ```bash
 ailice_main --modelID=ollama:mistral-openorca --prompt="main"
+```
+
+#### Example 2: LM Studio
+
+In this example, we will use LM Studio to run the currently most powerful open-source model **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF**, powering AIlice to run on a local machine.
+
+Download model weights of **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF** using LM Studio.
+
+In the LM Studio's "LocalServer" window, set n_gpu_layers to -1 if you want to use GPU only. Adjust the 'Context Length' parameter on the left to 16384(or a smaller value based on your available memory), and change the 'Context Overflow Policy' to 'Stop at limit.' We will allow AIlice to manage the context on its own.
+
+Run the service. We assume the address of the service is "http://localhost:1234/v1/".
+
+Then, we open config.json and make the following modifications:
+
+```json
+{
+  "maxMemory": {},
+  "quantization": null,
+  "models": {
+    "oai": {
+      ...
+    },
+    "lm-server": {
+      "modelWrapper": "AModelChatGPT",
+      "apikey": "fakekey",
+      "baseURL": "http://localhost:1234/v1/",
+      "modelList": {
+        "Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF": {
+          "formatter": "AFormatterGPT",
+          "contextWindow": 32764,
+          "systemAsUser": true
+        }
+      }
+    },
+    ...
+  },
+  ...
+}
+```
+
+Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on your available VRAM or memory space. The larger the parameter, the more VRAM space is required.
+
+```bash
+ailice_main --modelID=lm-server:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
 ```
 
 ### Open Source Models on Huggingface
