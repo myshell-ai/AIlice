@@ -116,7 +116,7 @@ class AInterpreter():
                 if type(r) in typeMap:
                     varName = self.CreateVar(content=r, prefix="ret")
                     r = f"Returned data: {varName} := {str(r)} " + f"<image|{varName}|image>"
-                else:
+                elif r != None:
                     r = str(r)
             except Exception as e:
                 r = str(e) + f"EXCEPTION: {str(e)}\n{traceback.format_exc()}"
