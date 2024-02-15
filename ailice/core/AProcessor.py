@@ -129,7 +129,8 @@ class AProcessor():
         return f"Waiting is over. It has been {duration} seconds."
     
     def EnvSummary(self) -> str:
-        return "\n".join([f"{varName}: {type(var).__name__}  {str(var)[:50]}{'...[The remaining content is not shown]' if len(str(var)) > 50 else ''}" for varName, var in self.interpreter.env.items()])
+        return "\n".join([f"{varName}: {type(var).__name__}  {str(var)[:50]}{'...[The remaining content is not shown]' if len(str(var)) > 50 else ''}" for varName, var in self.interpreter.env.items()]) + \
+            ("\nTo save context space, only the first fifty characters of each variable are shown here. You can use the PRINT function to view its complete contents." if self.interpreter.env else "")
     
     def ToJson(self) -> str:
         return {"name": self.name,
