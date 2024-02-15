@@ -20,7 +20,6 @@ class AInterpreter():
         self.RegisterPattern("_FLOAT", f"(?P<txt>({ARegexMap['float']}))", False)
         self.RegisterPattern("_BOOL", f"(?P<txt>({ARegexMap['bool']}))", False)
         self.RegisterPattern("_VAR", VAR_DEF, True)
-        self.RegisterAction("_VAR", {"func": self.EvalVar})
         self.RegisterPattern("_PRINT", GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), True)
         self.RegisterAction("_PRINT", {"func": self.EvalPrint})
         self.RegisterPattern("_VAR_REF", f"(?P<varName>({ARegexMap['ref']}))", False)
@@ -47,7 +46,7 @@ class AInterpreter():
         return varName
     
     def EndChecker(self, txt: str) -> bool:
-        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (HasReturnValue(self.actions[nodeType]))]
+        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (HasReturnValue(self.actions[nodeType]) if nodeType in self.actions else False)]
         return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns])
     
     def GetEntryPatterns(self) -> dict[str,str]:
@@ -86,6 +85,8 @@ class AInterpreter():
             return float(txt)
         elif "_BOOL" ==nodeType:
             return bool(txt)
+        elif "_VAR" == nodeType:
+            return self.EvalVar(varName=paras['varName'], content=self.Eval(paras['content']))
         elif "_VAR_REF" == nodeType:
             return self.EvalVarRef(txt)
         else:
