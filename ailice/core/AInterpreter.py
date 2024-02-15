@@ -23,6 +23,7 @@ class AInterpreter():
         self.RegisterPattern("_PRINT", GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), True)
         self.RegisterAction("_PRINT", {"func": self.EvalPrint})
         self.RegisterPattern("_VAR_REF", f"(?P<varName>({ARegexMap['ref']}))", False)
+        self.RegisterPattern("_EXPR_CAT", f"(?P<expr>({ARegexMap['expr_cat']}))", False)
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
@@ -89,6 +90,8 @@ class AInterpreter():
             return self.EvalVar(varName=paras['varName'], content=self.Eval(paras['content']))
         elif "_VAR_REF" == nodeType:
             return self.EvalVarRef(txt)
+        elif "_EXPR_CAT" == nodeType:
+            return self.EvalExprCat(txt)
         else:
             return self.CallWithTextArgs(nodeType, paras)
 
@@ -141,6 +144,13 @@ class AInterpreter():
     def EvalVar(self, varName: str, content: str):
         self.env[varName] = content
         return
+    
+    def EvalExprCat(self, expr: str) -> str:
+        pattern = f"{ARegexMap['str']}|{ARegexMap['ref']}"
+        ret = ""
+        for match in re.finditer(pattern, expr):
+            ret += self.Eval(match.group(0))
+        return ret
     
     def EvalPrint(self, varName: str) -> str:
         if varName in self.env:
