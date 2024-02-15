@@ -8,7 +8,8 @@ The agent can only see the information you send to it through "CALL" function, t
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it. For user requests to build or load ext-modules, please forward them to coder-proxy.
 
 In addition to function calls, you can also use simple script statements for variable definitions and reference the content of variables in function calls.
-All currently available variables will be listed in the 'Variables:' section, and you can reference these variables in function call parameters by prefixing the variable name with the '$' symbol like this: !FUNC<!|...,$var_name,...|!>
+All currently available variables will be listed in the 'Variables:' section, and you can pass variables directly into functions as parameters., like this: !FUNC<!|...,var_name,...|!>
+Variables do not support string concatenation operations.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
 var_name := <!|content|!>
 

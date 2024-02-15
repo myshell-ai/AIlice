@@ -15,16 +15,15 @@ class AInterpreter():
         self.patterns = {}#nodeType: [(pattern,isEntry)]
         self.env = {}
 
-        self.RegisterPattern("_VAR", VAR_DEF, True)
-        self.RegisterAction("_VAR", {"func": self.EvalVar})
-        self.RegisterPattern("_PRINT", GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), True)
-        self.RegisterAction("_PRINT", {"func": self.EvalPrint})
-        self.RegisterPattern("_VAR_REF", r"\$(?P<varName>[a-zA-Z0-9_]+)", False)
-        self.RegisterAction("_VAR_REF", {"func": self.EvalVarRef})
         self.RegisterPattern("_STR", f"(?P<txt>({ARegexMap['str']}))", False)
         self.RegisterPattern("_INT", f"(?P<txt>({ARegexMap['int']}))", False)
         self.RegisterPattern("_FLOAT", f"(?P<txt>({ARegexMap['float']}))", False)
         self.RegisterPattern("_BOOL", f"(?P<txt>({ARegexMap['bool']}))", False)
+        self.RegisterPattern("_VAR", VAR_DEF, True)
+        self.RegisterAction("_VAR", {"func": self.EvalVar})
+        self.RegisterPattern("_PRINT", GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), True)
+        self.RegisterAction("_PRINT", {"func": self.EvalPrint})
+        self.RegisterPattern("_VAR_REF", f"(?P<varName>({ARegexMap['ref']}))", False)
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
@@ -87,6 +86,8 @@ class AInterpreter():
             return float(txt)
         elif "_BOOL" ==nodeType:
             return bool(txt)
+        elif "_VAR_REF" == nodeType:
+            return self.EvalVarRef(txt)
         else:
             return self.CallWithTextArgs(nodeType, paras)
 

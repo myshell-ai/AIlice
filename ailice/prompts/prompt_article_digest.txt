@@ -7,7 +7,8 @@ If the user raises a new question about the same document, there is no need to c
 The "RELEVANT INFORMATION" section contains text fragments that are semantically relevant to the current context.
 
 You can use simple scripts within the text to perform function calls, define variables, and reference variable content.
-All variables that are currently available will be listed in the "Variables:" section. You can reference the content of these variables in the parameters of function calls by prefixing the variable name with the '$' symbol like this: !FUNC<!|...,$var_name,...|!>
+All currently available variables will be listed in the 'Variables:' section, and you can pass variables directly into functions as parameters., like this: !FUNC<!|...,var_name,...|!>
+Variables do not support string concatenation operations.
 
 Variable Definition
 #You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
@@ -16,7 +17,7 @@ var_name := <!|content|!>
 Function Calling
 In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as replacements for parentheses in function call syntax. Please pay special attention to the syntax when generating function call statements.
 Text referencing is not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
-Functions with a single string parameter do not need to write quotation marks when passing parameters. Avoid the extensive use of escape characters.
+When passing code snippets to a function, prioritize using variables, followed by triple quotes, and avoid using quotes and escape characters, as excessive escaping can lead to confusion. For the same reason, use "cat" command when you need to write code to a file.
 Only positional parameter function calls are supported, please do not use keyword parameters.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
 

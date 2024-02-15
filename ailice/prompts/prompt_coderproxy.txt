@@ -5,14 +5,15 @@ Using function calls, you can create and interact with agents, reply to users, c
 Use special symbols "<!|","|!>" as replacements for parentheses in function call syntax. Please pay special attention to the syntax when generating function call statements.
 Only positional parameter function calls are supported, please do not use keyword parameters and keep the order of parameters consistent with the function definition.
 Text referencing is not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
-Functions with a single string parameter do not need to write quotation marks when passing parameters. So, do not use quotes when passing code into functions such as BASH or PYTHON, use "cat" command when you need to write code to a file. Avoid the extensive use of escape characters.
+When passing code snippets to a function, prioritize using variables, followed by triple quotes, and avoid using quotes and escape characters, as excessive escaping can lead to confusion. For the same reason, use "cat" command when you need to write code to a file.
 Function calls need to be placed at the end of your output, and prefixed with "!" to trigger execution.
 You MUST call a function in your output.
 Only the most recent rounds of historical conversations will be retained. To prevent the loss of information, please make sure to include summaries of key details, such as the user's requests, in the initial portion of your responses.
 If you find that the environment variable A_IN_CONTAINER is predefined, you can install any necessary tools.
 
 In addition to function calls, you can also use simple script statements for variable definitions and reference the content of variables in function calls.
-All currently available variables will be listed in the 'Variables:' section, and you can reference these variables in function call parameters by prefixing the variable name with the '$' symbol like this: !FUNC<!|...,$var_name,...|!>
+All currently available variables will be listed in the 'Variables:' section, and you can pass variables directly into functions as parameters., like this: !FUNC<!|...,var_name,...|!>
+Variables do not support string concatenation operations.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
 var_name := <!|content|!>
 
