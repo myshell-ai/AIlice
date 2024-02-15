@@ -80,7 +80,7 @@ class AInterpreter():
         if None == nodeType:
             return txt
         elif "_STR" == nodeType:
-            return str(txt.strip('"\''))
+            return self.EvalStr(txt)
         elif "_INT" == nodeType:
             return int(txt)
         elif "_FLOAT" == nodeType:
@@ -123,6 +123,9 @@ class AInterpreter():
             if r not in ["", None]:
                 resp += (r + "\n")
         return resp
+
+    def EvalStr(self, txt: str) -> str:
+        return str(txt.strip('"\'')).encode('latin1').decode('unicode_escape')
     
     def EvalVarRef(self, varName: str) -> Any:
         if varName in self.env:
