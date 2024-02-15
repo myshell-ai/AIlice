@@ -92,11 +92,12 @@ class AInterpreter():
             return self.CallWithTextArgs(nodeType, paras)
 
     def ParseEntries(self, txt_input: str) -> list[str]:
-        matches = []
+        ms = []
         for nodeType, pattern in self.GetEntryPatterns():
             for match in re.finditer(pattern, txt_input, re.DOTALL):
-                matches.append(match)
-            
+                ms.append(match)
+        matches = sorted(ms, key=lambda match: match.start())
+        
         ret = []
         #Here we assume that a match will not appear multiple times in matches. This is reasonable.
         for match in matches:
