@@ -18,7 +18,8 @@ class AConversations():
                 varName = f"code_{language}_{str(random.randint(0,10000))}"
                 env[varName] = code
                 vars.append(varName)
-            record['msg'] += f"\nSystem notification: The code snippets in triple backticks have been stored in variables in order: {vars}\n"
+            if 0 < len(vars):
+                record['msg'] += f"\nSystem notification: The code snippets in triple backticks have been stored in variables in order: {vars}\n"
             
             matches = [m for m in re.findall(r'<([a-z]+)\|([a-zA-Z0-9_]+)\|([a-z]+)>', msg) if (m[0]==m[2]) and (m[0] in typeMap.values())]
             for label, varName, _ in matches:
