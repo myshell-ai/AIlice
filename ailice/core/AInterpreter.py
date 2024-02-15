@@ -127,7 +127,9 @@ class AInterpreter():
         return resp
 
     def EvalStr(self, txt: str) -> str:
-        return str(txt.strip('"\'')).encode('latin1').decode('unicode_escape')
+        while (txt[0] == txt[-1]) and (txt[0] in ["'",'"']):
+            txt = txt[1:-1]
+        return txt.encode('latin1').decode('unicode_escape')
     
     def EvalVarRef(self, varName: str) -> Any:
         if varName in self.env:
