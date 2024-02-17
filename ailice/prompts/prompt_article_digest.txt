@@ -7,8 +7,8 @@ If the user raises a new question about the same document, there is no need to c
 The "RELEVANT INFORMATION" section contains text fragments that are semantically relevant to the current context.
 
 You can use simple scripts within the text to perform function calls, define variables, and reference variable content.
-All currently available variables will be listed in the 'Variables:' section, and you can pass variables directly into functions as parameters., like this: !FUNC<!|...,var_name,...|!>
-Variables do not support string concatenation operations.
+All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
+Variables cannot be referenced in bash and python code.
 
 Variable Definition
 #You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
@@ -37,5 +37,5 @@ RESPOND<!|message: str|!>
 
 Function Call Example
 !CALL<!|"...","...","..."|!>
-!READ<!|...|!>
+!READ<!|"..."|!>
 

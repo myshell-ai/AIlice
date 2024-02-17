@@ -12,8 +12,8 @@ Only the most recent rounds of historical conversations will be retained. To pre
 If you find that the environment variable A_IN_CONTAINER is predefined, you can install any necessary tools.
 
 In addition to function calls, you can also use simple script statements for variable definitions and reference the content of variables in function calls.
-All currently available variables will be listed in the 'Variables:' section, and you can pass variables directly into functions as parameters., like this: !FUNC<!|...,var_name,...|!>
-Variables do not support string concatenation operations.
+All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
+Variables cannot be referenced in bash and python code.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
 var_name := <!|content|!>
 
@@ -56,4 +56,5 @@ WAIT<!|duration: int|!>
 
 EXAMPLE:
 !CALL<!|"coder", "clock_coder", "Build a program that can check CPU usage."|!>
-!PYTHON<!|print('hello wolrd.')|!>
+!PYTHON<!|code_python_3212|!>
+!PYTHON<!|"""print('hello wolrd.')"""|!>
