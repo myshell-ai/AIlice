@@ -1,6 +1,7 @@
 import re
 import inspect
 import random
+import codecs
 import traceback
 from typing import Any
 from ailice.common.ADataType import typeMap
@@ -133,7 +134,7 @@ class AInterpreter():
     def EvalStr(self, txt: str) -> str:
         while (txt[0] == txt[-1]) and (txt[0] in ["'",'"']):
             txt = txt[1:-1]
-        return txt.encode('latin1').decode('unicode_escape')
+        return codecs.decode(txt, 'unicode_escape')
     
     def EvalVarRef(self, varName: str) -> Any:
         if varName in self.env:
