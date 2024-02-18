@@ -132,7 +132,7 @@ class AInterpreter():
         return resp
 
     def EvalStr(self, txt: str) -> str:
-        while (txt[0] == txt[-1]) and (txt[0] in ["'",'"']):
+        while (len(txt) >= 2) and (txt[0] == txt[-1]) and (txt[0] in ["'",'"']):
             txt = txt[1:-1]
         return codecs.decode(txt, 'unicode_escape')
     
