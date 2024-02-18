@@ -19,7 +19,8 @@ class AScripter():
         return {"NAME": "scripter", "ACTIONS": {"BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time."},
                                                 "SCROLLUPBASH": {"func": "ScrollUpBash", "prompt": "Scroll up the results."},
                                                 "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references."},
-                                                "SCROLLUPPY": {"func": "ScrollUpPy", "prompt": "Scroll up the results."}}}
+                                                "SCROLLUPPY": {"func": "ScrollUpPy", "prompt": "Scroll up the results."},
+                                                "SAVE2FILE": {"func": "Save2File", "prompt": "Save text or code to file."}}}
     
     def RunCMD(self, session: str, cmd: list[str], timeout: int = 30):
         env = os.environ.copy()
@@ -103,6 +104,16 @@ class AScripter():
     def ScrollUpPy(self) -> str:
         self.sessions['py']['pages'].ScrollUp()
         return self.sessions['py']['pages']()
+    
+    def Save2File(self, filePath: str, code: str) -> str:
+        try:
+            os.makedirs(os.path.dirname(filePath), exist_ok=True)
+            with open(filePath, 'w') as f:
+                f.write(code)
+            return f"The file contents has been written."
+        except Exception as e:
+            return f"Exception encountered while writing to file. EXCEPTION: {str(e)}"
+
 
 def main():
     import argparse
@@ -111,7 +122,7 @@ def main():
     parser.add_argument('--incontainer',action="store_true",help="Run in container. Please DO NOT turn on this switch on non-virtual machines, otherwise it will cause serious security risks.")
     args = parser.parse_args()
     #addr = "tcp://0.0.0.0:59000" if args.incontainer else "tcp://127.0.0.1:59000"
-    makeServer(AScripter, {"incontainer": args.incontainer}, args.addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy"]).Run()
+    makeServer(AScripter, {"incontainer": args.incontainer}, args.addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy", "Save2File"]).Run()
 
 if __name__ == '__main__':
     main()
