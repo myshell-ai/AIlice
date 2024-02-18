@@ -19,7 +19,7 @@ class AConversations():
                 env[varName] = code
                 vars.append(varName)
             if 0 < len(vars):
-                record['msg'] += f"\nSystem notification: The code snippets in triple backticks have been stored in variables in order: {vars}\n"
+                record['msg'] += f"\nSystem notification: The code snippets within the triple backticks in this message have been saved as variables, in accordance with their order in the text, the variable names are as follows: {vars}\n"
             
             matches = [m for m in re.findall(r'<([a-z]+)\|([a-zA-Z0-9_]+)\|([a-z]+)>', msg) if (m[0]==m[2]) and (m[0] in typeMap.values())]
             for label, varName, _ in matches:
