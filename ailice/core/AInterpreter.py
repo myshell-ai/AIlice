@@ -157,4 +157,4 @@ class AInterpreter():
         if varName in self.env:
             return self.env[varName]
         else:
-            return f"ERROR: {varName} not defined."
+            return f"ERROR: variable with specified name is undefined. varName: {varName}"
