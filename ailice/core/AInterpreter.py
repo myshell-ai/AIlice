@@ -21,7 +21,7 @@ class AInterpreter():
         self.RegisterPattern("_FLOAT", f"(?P<txt>({ARegexMap['float']}))", False)
         self.RegisterPattern("_BOOL", f"(?P<txt>({ARegexMap['bool']}))", False)
         self.RegisterPattern("_VAR", VAR_DEF, True)
-        self.RegisterPattern("_PRINT", GenerateRE4FunctionCalling("PRINT<!|varName: str|!> -> str", faultTolerance = True), True)
+        self.RegisterPattern("_PRINT", GenerateRE4FunctionCalling("PRINT<!|txt: str|!> -> str", faultTolerance = True), True)
         self.RegisterAction("_PRINT", {"func": self.EvalPrint})
         self.RegisterPattern("_VAR_REF", f"(?P<varName>({ARegexMap['ref']}))", False)
         self.RegisterPattern("_EXPR_CAT", f"(?P<expr>({ARegexMap['expr_cat']}))", False)
@@ -153,8 +153,5 @@ class AInterpreter():
             ret += self.Eval(match.group(0))
         return ret
     
-    def EvalPrint(self, varName: str) -> str:
-        if varName in self.env:
-            return self.env[varName]
-        else:
-            return f"ERROR: variable with specified name is undefined. varName: {varName}"
+    def EvalPrint(self, txt: str) -> str:
+        return txt

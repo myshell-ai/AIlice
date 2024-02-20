@@ -50,7 +50,7 @@ STORE<!|txt: str|!>
 QUERY<!|keywords: str|!>
 
 #Use this function to print the content of a variable.
-PRINT<!|varName: str|!>
+PRINT<!|txt: str|!>
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!>
