@@ -16,14 +16,14 @@ class AFiles():
             image = Image.open(path)
             imageByte = io.BytesIO()
             image.save(imageByte, format='JPEG')
-            return AImage(format="jpg", data=imageByte.getvalue())
+            return AImage(format="JPEG", data=imageByte.getvalue())
         except Exception as e:
             print("ReadImage() excetption: ", e)
         return AImage(format=None, data=None)
     
     def WriteImage(self, image: AImage, path: str):
         try:
-            Image.open(io.BytesIO(image.Data())).save(path)
+            Image.open(io.BytesIO(image.data)).save(path)
         except Exception as e:
             print("WriteImage() excetption: ", e)
         return

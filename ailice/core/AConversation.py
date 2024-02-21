@@ -1,7 +1,13 @@
 import re
 import random
 from typing import Any
-from ailice.common.ADataType import typeMap
+from ailice.prompts.ARegex import ARegexMap
+from ailice.common.ADataType import typeInfo
+
+def StrStrip(txt):
+    while (len(txt) >= 2) and (txt[0] == txt[-1]) and (txt[0] in ["'",'"']):
+        txt = txt[1:-1]
+    return txt
 
 class AConversations():
     def __init__(self):
@@ -9,7 +15,7 @@ class AConversations():
         return
     
     def Add(self, role: str, msg: str, env: dict[str,Any]):
-        record = {"role": role, "msg": msg, "attachments": {}}
+        record = {"role": role, "msg": msg, "attachments": []}
         
         if role in ["USER", "SYSTEM"]:
             matches = re.findall(r"```(\w*)\n([\s\S]*?)```", msg)
@@ -21,12 +27,17 @@ class AConversations():
             if 0 < len(vars):
                 record['msg'] += f"\nSystem notification: The code snippets within the triple backticks in this message have been saved as variables, in accordance with their order in the text, the variable names are as follows: {vars}\n"
             
-            matches = [m for m in re.findall(r'<([a-z]+)\|([a-zA-Z0-9_]+)\|([a-z]+)>', msg) if (m[0]==m[2]) and (m[0] in typeMap.values())]
-            for label, varName, _ in matches:
-                if varName in env:
-                    record["attachments"][varName] = {"type": typeMap[type(env[varName])], "content": env[varName]}
-                else:
-                    msgNew = msg.replace(f"<{label}|{varName}|{label}>", f"<{label}|{varName}|{label}> (Error: {varName} not found in env.)")
+            matches = [m for m in re.findall(f'<([a-zA-Z0-9_]+)\\|(?:({ARegexMap["ref"]})|({ARegexMap["str"]}))\\|([a-zA-Z0-9_]+)>', msg) if (m[0]==m[3]) and (m[0] in [t.__name__ for t in typeInfo.keys()])]
+            for label, varName, txt, _ in matches:
+                txt = StrStrip(txt)
+                try:
+                    if ("" != varName) and (varName in env):
+                        record["attachments"].append({"type": typeInfo[type(env[varName])]['modal'], "content": env[varName].Standardize()})
+                    elif ("" != txt):
+                        targetType = [t for t in typeInfo if t.__name__ == label][0]
+                        record["attachments"].append({"type": typeInfo[targetType]['modal'], "content": targetType(txt).Standardize()})
+                except Exception as e:
+                    msgNew = msg.replace(f"<{label}|{varName}{txt}|{label}>", f"<{label}|{varName}{txt}|{label}> (Can not obtain labeled content: {e})")
                     record["msg"] = msgNew
         self.conversations.append(record)
         return

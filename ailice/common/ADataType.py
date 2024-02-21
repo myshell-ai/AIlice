@@ -1,4 +1,8 @@
+import io
 import base64
+import requests
+from urllib.parse import urlparse
+from PIL import Image
 
 class AImage():
     def __init__(self, format: str, data: bytes):
@@ -12,10 +16,37 @@ class AImage():
     def ToJson(self):
         return {'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
     
-    def Format(self) -> str:
-        return self.format
+    def Convert(self, format: str):
+        if format == self.format:
+            return self
+        imageBytes = io.BytesIO()
+        Image.open(io.BytesIO(self.data)).save(imageBytes, format=format)
+        return AImage(format=format, data=imageBytes.getvalue())
     
-    def Data(self) -> bytes:
-        return self.data
+    def Standardize(self):
+        return self.Convert(format="JPEG")
 
-typeMap = {AImage: "image"}
+class AImageLocation():
+    def __init__(self, urlOrPath: str):
+        self.urlOrPath = urlOrPath
+        return
+    
+    def IsURL(self, ident: str) -> bool:
+        return urlparse(ident).scheme != ''
+    
+    def GetImage(self, ident: str) -> Image:
+        if self.IsURL(ident):
+            response = requests.get(ident)
+            imageBytes = io.BytesIO(response.content)
+            return Image.open(imageBytes)
+        else:
+            return Image.open(ident)
+
+    def Standardize(self):
+        image = self.GetImage(self.urlOrPath)
+        imageByte = io.BytesIO()
+        image.save(imageByte, format='JPEG')
+        return AImage(format="JPEG", data=imageByte.getvalue())
+
+typeInfo = {AImage: {"modal": "image"},
+            AImageLocation: {"modal": "image"}}

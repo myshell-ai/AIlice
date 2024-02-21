@@ -178,11 +178,11 @@ class AFormatterGPTVision():
         self.typeConvert = {"image": "image_url"}
         return
     
-    def BuildMsg(self, role: str, msg: str, attachments: dict):
+    def BuildMsg(self, role: str, msg: str, attachments: list):
         roleMap = {"SYSTEM": "system" if not self.systemAsUser else "user", "USER": "user", "ASSISTANT": "assistant"}
         return {"role": roleMap[role],
                 "content": [{"type": "text", "text": msg}] +
-                           [{"type": self.typeConvert[a['type']], self.typeConvert[a['type']]: {"url": f"data:image/jpeg;base64,{a['content'].ToJson()['data']}"}} for k,a in attachments.items()]}
+                           [{"type": self.typeConvert[a['type']], self.typeConvert[a['type']]: {"url": f"data:image/jpeg;base64,{a['content'].ToJson()['data']}"}} for a in attachments if (a['type'] in ["image"])]}
         
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = [{"role": "system", "content": [{"type": "text", "text": prompt0}]}] + [self.BuildMsg(c['role'], c['msg'], c['attachments']) for c in conversations]

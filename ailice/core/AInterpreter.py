@@ -4,7 +4,7 @@ import random
 import codecs
 import traceback
 from typing import Any
-from ailice.common.ADataType import typeMap
+from ailice.common.ADataType import typeInfo
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling, ARegexMap, VAR_DEF
 
 def HasReturnValue(action):
@@ -120,9 +120,9 @@ class AInterpreter():
         for script in scripts:
             try:
                 r = self.Eval(script)
-                if type(r) in typeMap:
+                if type(r) in typeInfo:
                     varName = self.CreateVar(content=r, prefix="ret")
-                    r = f"Returned data: {varName} := {str(r)} " + f"<image|{varName}|image>"
+                    r = f"Returned data: {varName} := {str(r)} " + f"<{type(r).__name__}|{varName}|{type(r).__name__}>"
                 elif r != None:
                     r = str(r)
             except Exception as e:

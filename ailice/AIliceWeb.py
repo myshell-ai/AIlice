@@ -29,17 +29,6 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 
-
-def readImage(path: str):
-    try:
-        image = Image.open(path)
-        imageByte = io.BytesIO()
-        image.save(imageByte, format='JPEG')
-    except Exception as e:
-        print("readImage FAILED. EXCEPTON: ", str(e))
-        return None
-    return AImage(format="jpg", data=imageByte.getvalue())
-
 def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float, trace: str):
     config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
     config.quantization = quantization
@@ -74,12 +63,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 json.dump(processor.ToJson(), f, indent=2, default=serialize)
         
         if str != type(history[-1][0]):
-            image = readImage(history[-1][0][0])
-            if None == image:
-                msg = "System Error: Failed to load image. The user attempted to load an image as input but failed. Possibly due to an unsupported image format or a corrupted image file."
-            else:
-                varName = processor.interpreter.CreateVar(content=image, prefix="input")
-                msg = f"Please observe this image. <image|{varName}|image>"
+            msg = f'Please observe this image. <AImageLocation|"{history[-1][0][0]}"|AImageLocation>'
         else:
             msg = history[-1][0]
         threadLLM = threading.Thread(target=processor, args=(msg,))
