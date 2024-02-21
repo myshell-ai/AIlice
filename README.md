@@ -21,8 +21,9 @@ ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
 AIlice is an AI agent akin to JARVIS from Iron Man. She is committed to developing into **an intelligent agent that can understand and carry out tasks through dialogue with users**. At present, AIlice is adept at conducting thematic research, writing and executing code, system management, literature review, and hybrid tasks that build upon the aforementioned fundamental tasks.
 Currently, for everyday tasks, AIlice has achieved essentially perfect performance on GPT-4. She is also nearing practical usability on the most powerful open-source models.
 
+You can get a sense of AIlice's current capabilities from this video:
+
 [![AIlice Demo Video](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
-You can get a sense of AIlice's current capabilities from this video.
 
 Her technical features are briefly listed as follows:
 
@@ -403,7 +404,7 @@ Open config.json, you should add the config of new LLM into models.hf.modelList,
 Everything is done! Use "hf:" as a prefix to the model name to form a modelID, and use the modelID of the new model as the command parameter to start AIlice!
 
 
-#Development
+# Development
 
 <a name="design"></a>
 ## Design
