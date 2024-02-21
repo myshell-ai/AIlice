@@ -36,44 +36,6 @@ Her technical features are briefly listed as follows:
 - **Automation programming and script execution. It serves as an all-encompassing coder and a proficient system management tool, mastering all system commands—akin to an AI operating system.**
 
 
-## Comparison
-
-We have designed several dimensions to compare AIlice with mainstream AI agents. These include:
-
-- **Multi-agents**:
-Whether problems are addressed through multi-agent dialogues. This can enhance fault tolerance.
-
-- **Dynamic Creation**:
-The ability to dynamically create agents during task execution. This helps to break down tasks into subtasks, reducing context consumption within agents.
-
-- **Interactive Calling**:
-Whether dynamically created agents can interact with their creators (callers). This improves fault tolerance for subtask failures and allows users to naturally participate as collaborators.
-
-- **Long Term Memory**:
-The technical solutions used for long-term memory. Enabling LLM to surpass its context window constraints and accomplish more complex tasks.
-
-- **Function Call Syntax**:
-The syntax for function calls. Diverse syntax supports provide LLM with more flexible ways of external interaction.
-
-- **Self-expansion**:
-Modules for self-expansion. Allowing the agent to build more functionalities for itself, avoiding the manual development of numerous external interaction modules.
-
-- **Multimodal**:
-Support for multimodal models. The support for multimodal models will enable the agent to have a broader range of applications.
-
-- **Code Size**:
-The number of lines of code. A smaller codebase enables developers to better understand its internal logic and exert stronger control over the code. Ultimately, simple code implementation makes self-reflection and self-expansion for the agent simpler.
-
-Please note that this is an ongoing research, and the data in the table may be inaccurate due to oversights in my investigation or rapid progress in these projects. If any errors are identified, please point them out.
-
-|  | Multi-agents | Dynamic Creation | Interactive Calling | Long Term Memory | Function Call Syntax | Self-expansion | Multimodal | Code Size |
-|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
-| AutoGen | Y | Y | N | RAG and more | JSON | N | Y | 20851 |
-| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | Y | 2772 |
-
-The number of lines of code is calculated in the latest code base via the "git ls-files "*.py" | xargs wc -l" command.
-
-
 <a name="cool-things-we-can-do"></a>
 ## COOL things we can do
 Let's list some typical use cases. I frequently employ these examples to test AIlice during development, ensuring stable performance. However, even with these tests, the execution results are influenced by the chosen model, code version, and even the testing time. (GPT-4 may experience a decrease in performance under high loads, while open-source models, of course, don't have this issue; they don't have much room for degradation) Additionally, AIlice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when AIlice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success. Furthermore, if the task execution falls short, you can guide her in the right direction, and she will rectify her approach.
@@ -463,6 +425,44 @@ trigger the execution of an action. This implicit function call does not need to
 convention. For the most hardcore possibility, we have left room. The interpreter here can not only use regular expressions for pattern matching, its Eval function is
 recursive. We don't know what this will be used for, but it seems not bad to leave a cool possibility, right? Therefore, inside AProcessor, the calculation is alternately
 completed by LLM and the interpreter, their outputs are each other's inputs, forming a cycle.
+
+
+## Comparison
+
+We have designed several dimensions to compare AIlice with mainstream AI agents. These include:
+
+- **Multi-agents**:
+Whether problems are addressed through multi-agent dialogues. This can enhance fault tolerance.
+
+- **Dynamic Creation**:
+The ability to dynamically create agents during task execution. This helps to break down tasks into subtasks, reducing context consumption within agents.
+
+- **Interactive Calling**:
+Whether dynamically created agents can interact with their creators (callers). This improves fault tolerance for subtask failures and allows users to naturally participate as collaborators.
+
+- **Long Term Memory**:
+The technical solutions used for long-term memory. Enabling LLM to surpass its context window constraints and accomplish more complex tasks.
+
+- **Function Call Syntax**:
+The syntax for function calls. Diverse syntax supports provide LLM with more flexible ways of external interaction.
+
+- **Self-expansion**:
+Modules for self-expansion. Allowing the agent to build more functionalities for itself, avoiding the manual development of numerous external interaction modules.
+
+- **Multimodal**:
+Support for multimodal models. The support for multimodal models will enable the agent to have a broader range of applications.
+
+- **Code Size**:
+The number of lines of code. A smaller codebase enables developers to better understand its internal logic and exert stronger control over the code. Ultimately, simple code implementation makes self-reflection and self-expansion for the agent simpler.
+
+Please note that this is an ongoing research, and the data in the table may be inaccurate due to oversights in my investigation or rapid progress in these projects. If any errors are identified, please point them out.
+
+|  | Multi-agents | Dynamic Creation | Interactive Calling | Long Term Memory | Function Call Syntax | Self-expansion | Multimodal | Code Size |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
+| AutoGen | Y | Y | N | RAG and more | JSON | N | Y | 20851 |
+| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | Y | 2772 |
+
+The number of lines of code is calculated in the latest code base via the "git ls-files "*.py" | xargs wc -l" command.
 
 
 ## How Developers Should Get Started
