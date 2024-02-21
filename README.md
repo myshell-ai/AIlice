@@ -44,7 +44,7 @@ Please note that this is an ongoing research, and the data in the table may be i
 |  | Multi-agents | Dynamic Creation | Interactive Calling | Long Term Memory | Function Call Syntax | Self-expansion | Multimodal | Code Size |
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
 | AutoGen | Y | Y | N | RAG and more | JSON | N | Y | 20851 |
-| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | in dev | 2772 |
+| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | Y | 2772 |
 
 The number of lines of code is calculated in the latest code base via the "git ls-files "*.py" | xargs wc -l" command.
 
@@ -57,6 +57,7 @@ Her features are briefly listed as follows:
 - **Natural and highly fault-tolerant Interactive Agents Calling Tree architecture.**
 - **Parsing LLM output in the most flexible way possible, supporting more varied function call mechanisms.**
 - **Self-constructing and dynamically loading environment interaction modules, offering limitless potential for feature expansion.**
+- **Support multi-modal models.**
 - **Designed for open-source models but seamlessly supports commercial models like GPT-4.**
 - **Supports in-depth investigations on specific topics.**
 - **Automation programming and script execution. It serves as an all-encompassing coder and a proficient system management tool, mastering all system commands—akin to an AI operating system.**
@@ -230,7 +231,7 @@ needs. You can also specify a special type of agent and interact with it directl
 
 ## Code Update
 
-Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration file and Docker container with the new code. The most thorough solution for this scenario is to delete the configuration file (making sure to save any API keys beforehand) and the container, and then perform a complete reinstall. However, for most situations, you can address the issue by simply deleting the configuration file and updating the AIlice module within the container.
+Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration file and Docker container with the new code. The most thorough solution for this scenario is to delete the configuration file (making sure to save any API keys beforehand) and the container, and then perform a complete reinstall. However, for most situations, you can address the issue by simply **deleting the configuration file** and **updating the AIlice module within the container**.
 
 ```bash
 rm ~/.config/ailice/config.json
@@ -369,6 +370,39 @@ Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on 
 ailice_main --modelID=lm-server:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
 ```
 
+#### Example 3: Add open source multimodal model support
+
+Similar to what we did in the previous section, after we use LM Studio to download and run LLAVA, we modify the configuration file as follows:
+
+```json
+{
+  "maxMemory": {},
+  "quantization": null,
+  "models": {
+    "oai": {
+      ...
+    },
+    "lm-server": {
+      "modelWrapper": "AModelChatGPT",
+      "apikey": "fakekey",
+      "baseURL": "http://localhost:1234/v1/",
+      "modelList": {
+        "llava-1.6-34b": {
+          "formatter": "AFormatterGPTVision",
+          "contextWindow": 4096,
+          "systemAsUser": true
+        }
+      },
+    },
+    ...
+  },
+  ...
+}
+```
+
+However, it should be noted that the current open source multi-modal model is far from sufficient to perform agent tasks, so this example is for developers rather than users.
+
+
 ### Open Source Models on Huggingface
 
 For open source models on Huggingface, you only need to know the following information to add support for new models: The huggingface address of the model, the prompt format of the model, and the context window length.
@@ -447,11 +481,9 @@ If you are interested in the development of AIlice itself, you may consider the 
 
 - Explore improved **long-term memory mechanisms** to enhance the capabilities of each Agent.
 
-- **Multimodal** support.
+- **Multimodal** support. The support for the multimodal model has been completed, and the current development focus is shifting towards the multimodal support of peripheral modules. In particular, we need a browser specially designed for AI agents. It should be able to retrieve webpage text and multimodal content, while also supporting the manipulation of web pages through function calls, such as user login.
 
 - **Self-expanding** support. Our goal is to enable language models to **autonomously code and implement new peripheral modules and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities. It has been implemented, but it still needs to be improved so that various agents can easily use dynamically loaded modules.
-
-- **Introducing more script language features beyond function calls, unleashing LLM's text manipulation capabilities.** For example, one of the most pressing needs is for LLM to have the ability to define and reference text variables. This grants it a named-access storage mechanism, expanding the context window, while also allowing it to avoid unnecessary copying when transmitting large code segments.
 
 - **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
 
