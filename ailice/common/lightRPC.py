@@ -8,6 +8,7 @@ Created on Mon Feb 15 11:39:09 2021
 
 import sys
 import threading
+import numpy
 import inspect
 import zmq
 import pickle
@@ -91,6 +92,7 @@ def makeServer(objCls,objArgs,url,APIList):
 def AddMethod(kls,methodName,signature):
   tempNamespace = {k.__name__: k for k in typeInfo}
   tempNamespace["ailice"] = ailice
+  tempNamespace["numpy"] = numpy
   exec(f"def tempFunc{signature}: pass", tempNamespace)
   tempFunc = tempNamespace['tempFunc']
   newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(tempFunc).parameters.items()],

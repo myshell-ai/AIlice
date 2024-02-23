@@ -29,12 +29,13 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, contextWindowRatio: float, trace: str):
+def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, trace: str):
     config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
     config.flashAttention2 = flashAttention2
+    config.speechOn = speechOn
     config.contextWindowRatio = contextWindowRatio
     
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
@@ -44,12 +45,22 @@ use the provided Dockerfile to build an image and container, and modify the rele
     StartServices()
     clientPool.Init()
 
+    if speechOn:
+        speech = clientPool.GetClient(config.services['speech']['addr'])
+        if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
+            print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
+            exit(-1)
+        else:
+            speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
+    else:
+        speech = None
+    
     for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptModuleLoader, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
     llmPool.Init([modelID])
     
-    logger = ALogger(speech=None)
+    logger = ALogger(speech=speech)
     timestamp = str(time.time())
     processor = AProcessor(name="AIlice", modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + timestamp)
     processor.RegisterModules([config.services['browser']['addr'],
@@ -85,6 +96,11 @@ use the provided Dockerfile to build an image and container, and modify the rele
     def add_file(history, file):
         history = history + [((file.name,), None)]
         return history
+    
+    def stt(history, audio):
+        text = speech.Speech2Text(audio[1], audio[0])
+        history = history + [(text, None)]
+        return history
 
     with gr.Blocks() as demo:
         chatbot = gr.Chatbot(
@@ -103,6 +119,8 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 container=False,
             )
             btn = gr.UploadButton("📁", file_types=["image"])
+            if speechOn:
+                audio = gr.Audio(sources=["microphone"], type="numpy", editable=False)
 
         txt_msg = txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(
             bot, chatbot, chatbot, api_name="bot_response"
@@ -111,6 +129,10 @@ use the provided Dockerfile to build an image and container, and modify the rele
         file_msg = btn.upload(add_file, [chatbot, btn], [chatbot], queue=False).then(
             bot, chatbot, chatbot
         )
+        if speechOn:
+            audio.stop_recording(stt, [chatbot, audio], [chatbot], queue=False).then(
+                bot, chatbot, chatbot
+            )
 
     demo.queue()
     demo.launch()
@@ -126,6 +148,9 @@ def main():
     parser.add_argument('--temperature',type=float,default=0.0, help="temperature sets the temperature parameter of LLM reasoning, the default is zero.")
     parser.add_argument('--flashAttention2',action='store_true', help="flashAttention2 is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality.")
     parser.add_argument('--contextWindowRatio',type=float,default=0.6, help="contextWindowRatio is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. The default value is 0.6.")
+    parser.add_argument('--speechOn',action='store_true', help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.")
+    parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
+    parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
     kwargs = vars(parser.parse_args())
 

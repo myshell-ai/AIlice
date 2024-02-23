@@ -1,7 +1,9 @@
 import queue
 import string
 import threading
+import numpy as np
 import sounddevice as sd
+from ailice.modules.speech.AAudioSource import audio_data_to_numpy
 from ailice.modules.speech.ATTS_LJS import T2S_LJS
 from ailice.modules.speech.ASTT_Whisper import S2T_WhisperLarge
 
@@ -29,7 +31,8 @@ class ASpeech():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "speech", "ACTIONS": {"GETAUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone."},
+        return {"NAME": "speech", "ACTIONS": {"SPEECH2TEXT": {"func": "Speech2Text", "prompt": "Speech to text."},
+                                              "GETAUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone."},
                                               "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play."}}}
     
     def SetDevices(self, deviceMap: dict[str,str]):
@@ -38,6 +41,9 @@ class ASpeech():
         elif "tts" in deviceMap:
             self.t2s.To(deviceMap['tts'])
         return
+    
+    def Speech2Text(self, wav: np.ndarray, sr: float) -> str:
+        return self.s2t.recognize(audio_data_to_numpy((wav, sr)))
     
     def GetAudio(self) -> str:
         self.inputDone = True
@@ -77,7 +83,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "GetAudio", "Play", "SetDevices"]).Run()
+    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "Speech2Text", "GetAudio", "Play", "SetDevices"]).Run()
 
 if __name__ == '__main__':
     main()
