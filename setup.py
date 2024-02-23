@@ -22,7 +22,6 @@ setup(
         'torch',
         'accelerate',
         'bitsandbytes',
-        'peft',
         'appdirs',
         'openai',
         'gradio',
@@ -33,7 +32,7 @@ setup(
         'arxiv'
     ],
     extras_require={
-        'finetuning': ['datasets', 'tensorboard', ],
+        'finetuning': ['peft', 'datasets', 'tensorboard', ],
         'speech': ['typeguard==2.13.3', 'sounddevice', 'numpy', 'librosa', 'datasets', 'SpeechRecognition', 'espnet', 'espnet-model-zoo', 'espnet-tts-frontend', 'torchaudio',],
     },
     author='Steven Lu',

@@ -1,7 +1,13 @@
+import sys
 import torch
-from termcolor import colored
 import transformers
-from peft import PeftConfig, PeftModel
+
+PEFT_INSTALLED = False
+try:
+    from peft import PeftConfig, PeftModel
+    PEFT_INSTALLED = True
+except ImportError:
+    print("peft not installed. If you need to run the peft fine-tuned model, please install it with the following command: pip install -e .[finetuning]")
 
 from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import sentences_split
@@ -46,6 +52,9 @@ class AModelLLAMA():
         return
 
     def LoadModel_PEFT(self, modelName: str):
+        if not PEFT_INSTALLED:
+            print("peft not installed. Please install it with the following command: pip install -e .[finetuning]")
+            sys.exit()
         peftConfig = PeftConfig.from_pretrained(modelName)
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(peftConfig.base_model_name_or_path, use_fast=False)
         self.model = transformers.AutoModelForCausalLM.from_pretrained(peftConfig.base_model_name_or_path,
