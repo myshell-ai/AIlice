@@ -1,4 +1,3 @@
-import speech_recognition as sr
 import numpy as np
 import sounddevice as sd
 import torch
@@ -14,15 +13,6 @@ def audio_data_to_numpy(audio_data, sr=16000):
         audio_array, sr0 = audio_data
     ret = librosa.resample(y=audio_array.astype(np.float32), orig_sr=sr0, target_sr=sr)
     return ret
-
-class AudioSourceSR():
-    def __init__(self, sr=16000):
-        return
-    
-    def get(self):
-        r = sr.Recognizer()
-        with sr.Microphone() as source:
-            return r.listen(source, phrase_time_limit=3)
     
 class AudioSourceSileroVAD():
     def __init__(self, sr=16000):
