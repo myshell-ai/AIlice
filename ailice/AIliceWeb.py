@@ -78,12 +78,12 @@ use the provided Dockerfile to build an image and container, and modify the rele
         threadLLM.start()
         history[-1][1] = ""
         while True:
-            channel, txt = logger.queue.get()
+            channel, txt, action = logger.queue.get()
             if ">" == channel:
                 threadLLM.join()
                 return
-            update = (channel + ":\r" + txt)
-            history[-1][1] += ("\r\r" + update)
+            history[-1][1] += "\r\r" if "open"==action else ""
+            history[-1][1] += txt
             yield (history, tts(txt)) if speechOn else history
     
     def add_text(history, text):

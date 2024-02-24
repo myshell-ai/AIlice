@@ -35,17 +35,7 @@ class ALogger():
         return
     
     def SinkQueue(self, channel: str, txt: str = None, action: str = ''):
-        if 'open' == action:
-            self.txtBuf = {"channel": channel, "txt": txt}
-        elif 'append' == action:
-            assert self.txtBuf['channel'] == channel, "assert self.txtBuf['channel'] == channel FAILED."
-            self.txtBuf['txt'] += txt
-        elif 'close' == action:
-            assert self.txtBuf['channel'] == channel, "assert self.txtBuf['channel'] == channel FAILED."
-            self.txtBuf['txt'] += txt
-            self.queue.put((channel, self.txtBuf['txt']))
-        else:
-            self.queue.put((channel, txt))
+        self.queue.put((channel, txt, action))
         return
 
     def Receiver(self, channel: str, txt: str = None, action: str = ''):

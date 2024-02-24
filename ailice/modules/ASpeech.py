@@ -48,6 +48,8 @@ class ASpeech():
         return self.s2t.recognize(audio_data_to_numpy((wav, sr)))
 
     def Text2Speech(self, txt: str) -> tuple[np.ndarray, float]:
+        if (None == txt) or ("" == strip(txt)):
+            return (np.zeros(1), 1.0)
         return self.t2s(txt)
     
     def GetAudio(self) -> str:
