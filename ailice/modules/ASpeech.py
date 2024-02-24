@@ -44,12 +44,12 @@ class ASpeech():
             self.t2s.To(deviceMap['tts'])
         return
     
-    def Speech2Text(self, wav: np.ndarray, sr: float) -> str:
+    def Speech2Text(self, wav: np.ndarray, sr: int) -> str:
         return self.s2t.recognize(audio_data_to_numpy((wav, sr)))
 
-    def Text2Speech(self, txt: str) -> tuple[np.ndarray, float]:
+    def Text2Speech(self, txt: str) -> tuple[np.ndarray, int]:
         if (None == txt) or ("" == strip(txt)):
-            return (np.zeros(1), 1.0)
+            return (np.zeros(1), 24000)
         return self.t2s(txt)
     
     def GetAudio(self) -> str:

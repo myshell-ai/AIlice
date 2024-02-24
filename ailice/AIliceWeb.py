@@ -2,6 +2,8 @@ import time
 import os
 import simplejson as json
 import traceback
+import queue
+import sounddevice as sd
 from termcolor import colored
 
 import threading
@@ -65,6 +67,18 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['google']['addr'],
                                config.services['duckduckgo']['addr'],
                                config.services['scripter']['addr']])
+    
+    audioQue = queue.Queue(maxsize=100)
+
+    def playAudio():
+        while True:
+            sr, audio = audioQue.get()
+            sd.play(audio, sr)
+            sd.wait()
+    if speechOn:
+        threadPlayer = threading.Thread(target=playAudio, args=())
+        threadPlayer.start()
+    
     def bot(history):
         if "" != trace.strip():
             with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
@@ -84,7 +98,9 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 return
             history[-1][1] += "\r\r" if "open"==action else ""
             history[-1][1] += txt
-            yield (history, tts(txt)) if speechOn else history
+            if speechOn:
+                audioQue.put(tts(txt))
+            yield history
     
     def add_text(history, text):
         history = history + [(text, None)]
@@ -124,14 +140,14 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 audio = gr.Audio(sources=["microphone"], type="numpy", editable=False)
                 speaker = gr.Audio(sources=["upload"], type="numpy", interactive=False, autoplay=True, visible=False)
 
-        txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(bot, chatbot, [chatbot, speaker] if speechOn else chatbot, api_name="bot_response"
+        txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(bot, chatbot, chatbot, api_name="bot_response"
             ).then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
         
-        btn.upload(add_file, [chatbot, btn], [chatbot], queue=False).then(bot, chatbot, [chatbot, speaker] if speechOn else chatbot)
+        btn.upload(add_file, [chatbot, btn], [chatbot], queue=False).then(bot, chatbot, chatbot)
         
         if speechOn:
             audio.stop_recording(stt, [chatbot, audio], [chatbot], queue=False).then(
-                bot, chatbot, [chatbot, speaker] if speechOn else chatbot)
+                bot, chatbot, chatbot)
 
     demo.queue()
     demo.launch()
