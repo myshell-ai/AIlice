@@ -1,6 +1,7 @@
 import queue
 import string
 import threading
+import time
 import numpy as np
 import sounddevice as sd
 from ailice.modules.speech.AAudioSource import audio_data_to_numpy
@@ -32,6 +33,7 @@ class ASpeech():
     
     def ModuleInfo(self):
         return {"NAME": "speech", "ACTIONS": {"SPEECH2TEXT": {"func": "Speech2Text", "prompt": "Speech to text."},
+                                              "TEXT2SPEECH": {"func": "Text2Speech", "prompt": "Text to speech."},
                                               "GETAUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone."},
                                               "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play."}}}
     
@@ -44,6 +46,9 @@ class ASpeech():
     
     def Speech2Text(self, wav: np.ndarray, sr: float) -> str:
         return self.s2t.recognize(audio_data_to_numpy((wav, sr)))
+
+    def Text2Speech(self, txt: str) -> tuple[np.ndarray, float]:
+        return self.t2s(txt)
     
     def GetAudio(self) -> str:
         self.inputDone = True
@@ -72,6 +77,7 @@ class ASpeech():
     
     def ProcessAudio(self):
         while True:
+            time.sleep(0.1)
             with self.lock:
                 while not (self.inputDone and self.noTextLeft and self.audioQue.empty()):
                     audio,sr = self.audioQue.get()
@@ -83,7 +89,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "Speech2Text", "GetAudio", "Play", "SetDevices"]).Run()
+    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "Speech2Text", "Text2Speech", "GetAudio", "Play", "SetDevices"]).Run()
 
 if __name__ == '__main__':
     main()

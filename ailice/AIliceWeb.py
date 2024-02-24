@@ -1,7 +1,5 @@
 import time
 import os
-import io
-from PIL import Image
 import simplejson as json
 import traceback
 from termcolor import colored
@@ -12,7 +10,6 @@ from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.utils.AFileUtils import serialize
-from ailice.common.ADataType import AImage
 from ailice.common.ARemoteAccessors import clientPool
 from ailice.AServices import StartServices, TerminateSubprocess
 
@@ -60,7 +57,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     
     llmPool.Init([modelID])
     
-    logger = ALogger(speech=speech)
+    logger = ALogger(speech=None)
     timestamp = str(time.time())
     processor = AProcessor(name="AIlice", modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + timestamp)
     processor.RegisterModules([config.services['browser']['addr'],
@@ -87,7 +84,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 return
             update = (channel + ":\r" + txt)
             history[-1][1] += ("\r\r" + update)
-            yield history
+            yield (history, tts(txt)) if speechOn else history
     
     def add_text(history, text):
         history = history + [(text, None)]
@@ -101,6 +98,10 @@ use the provided Dockerfile to build an image and container, and modify the rele
         text = speech.Speech2Text(audio[1], audio[0])
         history = history + [(text, None)]
         return history
+    
+    def tts(txt):
+        wav, sr = speech.Text2Speech(txt)
+        return sr, wav
 
     with gr.Blocks() as demo:
         chatbot = gr.Chatbot(
@@ -121,18 +122,16 @@ use the provided Dockerfile to build an image and container, and modify the rele
             btn = gr.UploadButton("📁", file_types=["image"])
             if speechOn:
                 audio = gr.Audio(sources=["microphone"], type="numpy", editable=False)
+                speaker = gr.Audio(sources=["upload"], type="numpy", interactive=False, autoplay=True, visible=False)
 
-        txt_msg = txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(
-            bot, chatbot, chatbot, api_name="bot_response"
-        )
-        txt_msg.then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
-        file_msg = btn.upload(add_file, [chatbot, btn], [chatbot], queue=False).then(
-            bot, chatbot, chatbot
-        )
+        txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(bot, chatbot, [chatbot, speaker] if speechOn else chatbot, api_name="bot_response"
+            ).then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
+        
+        btn.upload(add_file, [chatbot, btn], [chatbot], queue=False).then(bot, chatbot, [chatbot, speaker] if speechOn else chatbot)
+        
         if speechOn:
             audio.stop_recording(stt, [chatbot, audio], [chatbot], queue=False).then(
-                bot, chatbot, chatbot
-            )
+                bot, chatbot, [chatbot, speaker] if speechOn else chatbot)
 
     demo.queue()
     demo.launch()
