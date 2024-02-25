@@ -1,7 +1,7 @@
 import re
 import inspect
 import random
-import codecs
+import ast
 import traceback
 from typing import Any
 from ailice.common.ADataType import typeInfo
@@ -132,9 +132,7 @@ class AInterpreter():
         return resp
 
     def EvalStr(self, txt: str) -> str:
-        while (len(txt) >= 2) and (txt[0] == txt[-1]) and (txt[0] in ["'",'"']):
-            txt = txt[1:-1]
-        return codecs.decode(txt, 'unicode_escape')
+        return ast.literal_eval(txt)
     
     def EvalVarRef(self, varName: str) -> Any:
         if varName in self.env:

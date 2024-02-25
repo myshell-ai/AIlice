@@ -1,13 +1,10 @@
 import re
 import random
+import ast
 from typing import Any
 from ailice.prompts.ARegex import ARegexMap
 from ailice.common.ADataType import typeInfo
 
-def StrStrip(txt):
-    while (len(txt) >= 2) and (txt[0] == txt[-1]) and (txt[0] in ["'",'"']):
-        txt = txt[1:-1]
-    return txt
 
 class AConversations():
     def __init__(self):
@@ -29,7 +26,7 @@ class AConversations():
             
             matches = [m for m in re.findall(f'<([a-zA-Z0-9_]+)\\|(?:({ARegexMap["ref"]})|({ARegexMap["str"]}))\\|([a-zA-Z0-9_]+)>', msg) if (m[0]==m[3]) and (m[0] in [t.__name__ for t in typeInfo.keys()])]
             for label, varName, txt, _ in matches:
-                txt = StrStrip(txt)
+                txt = ast.literal_eval(txt)
                 try:
                     if ("" != varName) and (varName in env):
                         record["attachments"].append({"type": typeInfo[type(env[varName])]['modal'], "content": env[varName].Standardize()})

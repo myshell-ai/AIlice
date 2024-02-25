@@ -138,7 +138,6 @@ use the provided Dockerfile to build an image and container, and modify the rele
             btn = gr.UploadButton("📁", file_types=["image"])
             if speechOn:
                 audio = gr.Audio(sources=["microphone"], type="numpy", editable=False)
-                speaker = gr.Audio(sources=["upload"], type="numpy", interactive=False, autoplay=True, visible=False)
 
         txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(bot, chatbot, chatbot, api_name="bot_response"
             ).then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
