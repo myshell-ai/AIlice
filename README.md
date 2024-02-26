@@ -129,7 +129,7 @@ ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --qu
 
 When you run it for the first time, you will be asked to enter the api-key of openai. If you only want to use open source LLM, you do not need to enter it. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
 
-As shown in the examples, you can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both are used in the same way except that AIliceWeb does not support voice conversations currently.
+As shown in the examples, you can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both are used in the same way.
 
 - --**modelID** specifies the model. The currently supported models can be seen in config.json. We will implement a simpler model specification method
 in the future.
@@ -140,7 +140,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**temperature** sets the temperature parameter of LLM reasoning, the default is zero.
 - --**flashAttention2** is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality.
 - --**contextWindowRatio** is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. The default value is 0.6.
-- --**speechOn** is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.
+- --**speechOn** is the switch to enable voice conversation.
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
@@ -503,8 +503,6 @@ If you are interested in the development of AIlice itself, you may consider the 
 - **Self-expanding** support. Our goal is to enable language models to **autonomously code and implement new peripheral modules and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities. It has been implemented, but it still needs to be improved so that various agents can easily use dynamically loaded modules.
 
 - **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
-
-- **Improved Voice Conversation Feature**, currently, there are frequent instances of failure in detecting the endpoint of user speech in voice conversations. Addressing this issue is crucial for enhancing the overall functionality.
 
 - **Considering using a simple implementation of a vector database as a replacement for ChromaDB.** it introduces too many additional dependencies.
 
