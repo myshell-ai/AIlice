@@ -89,7 +89,20 @@ pip install -e .[speech]
 pip install -e .[finetuning]
 ```
 
-After installation, AIlice can run, but by default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify AIlice's configuration file (AIlice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
+Sometimes the above installation steps cannot be completed successfully because some dependencies are conflicting. You can consider installing all the dependencies of requirements.txt in a new virtual environment to solve this problem:
+
+```bash
+pip install -r requirements.txt
+pip install -e .
+```
+
+AIlice installed in this way also has voice conversation and fine-tuning functions.
+
+You can run AIlice now! Use the commands in [Some Typical Use Cases for Launching AIlice](#some-typical-use-cases-for-launching-ailice).
+
+
+## Virtual Environment Settings for Code Execution
+By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify AIlice's configuration file (AIlice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
 
 ```bash
 docker build -t env4scripter .
@@ -115,7 +128,12 @@ Modify "scripter" under "services":
 }
 ```
 
-Now that the environment configuration has been done, you can directly copy a command from the typical use cases below to run AIlice.
+Now that the environment configuration has been done.
+
+<a name="some-typical-use-cases-for-launching-ailice"></a>
+## Some Typical Use Cases for Launching AIlice
+
+You can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
 ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
@@ -125,9 +143,14 @@ ailice_main --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantiz
 ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
+ailice_web --modelID=lm-server:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
 ```
 
+It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster AIlice startup speed, making it more suitable for ordinary users.
+
 When you run it for the first time, you will be asked to enter the api-key of openai. If you only want to use open source LLM, you do not need to enter it. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
+
+When you turn on the speechOn switch for the first time, you may need to wait for a long time at startup. This is because the weights of the speech recognition and TTS models are being downloaded in the background.
 
 As shown in the examples, you can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both are used in the same way.
 
@@ -192,6 +215,7 @@ We will select the currently best-performing open-source model to provide a refe
 
 If you find a better model, please let me know.
 
+<a name="how-to-add-llm-support"></a>
 ## How to Add LLM Support
 For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
 
