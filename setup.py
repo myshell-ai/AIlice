@@ -24,6 +24,7 @@ setup(
         'bitsandbytes',
         'appdirs',
         'openai',
+        'pillow',
         'gradio',
         'importlib-metadata',
         'chromadb',
@@ -33,7 +34,7 @@ setup(
     ],
     extras_require={
         'finetuning': ['peft', 'datasets', 'tensorboard', ],
-        'speech': ['typeguard==2.13.3', 'sounddevice', 'numpy', 'librosa', 'datasets', 'SpeechRecognition', 'espnet', 'espnet-model-zoo', 'espnet-tts-frontend', 'torchaudio',],
+        'speech': ['sounddevice', 'numpy', 'librosa', 'espnet', 'espnet-model-zoo', 'espnet-tts-frontend', 'torchaudio',],
     },
     author='Steven Lu',
     author_email='stevenlu1729@gmail.com',
