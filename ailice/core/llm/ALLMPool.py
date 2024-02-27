@@ -12,7 +12,7 @@ class ALLMPool():
         split = id.find(":")
         return id[:split], id[split+1:]
     
-    def Init(self, llmIDs: [str]):
+    def Init(self, llmIDs: list[str]):
         MODEL_WRAPPER_MAP = {"AModelLLAMA": AModelLLAMA, "AModelChatGPT": AModelChatGPT}
         for id in llmIDs:
             modelType, modelName = self.ParseID(id)

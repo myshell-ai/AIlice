@@ -18,6 +18,10 @@ class AModelLLAMA():
         self.modelType = modelType
         self.tokenizer = None
         self.model = None
+        self.configMap = {"": None, None:None,
+                          "4bit": transformers.BitsAndBytesConfig(load_in_4bit=True,
+                                                                  bnb_4bit_compute_dtype=torch.bfloat16),
+                          "8bit": transformers.BitsAndBytesConfig(load_in_8bit=True)}
         self.LoadModel(modelName)
         
         if (modelType not in config.models) or (modelName not in config.models[modelType]["modelList"]):
@@ -36,15 +40,12 @@ class AModelLLAMA():
         return
     
     def LoadModel_Default(self, modelName: str):
-        quantizationConfig = transformers.BitsAndBytesConfig(llm_int4_enable_fp32_cpu_offload=True)
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(modelName, use_fast=False, legacy=False, force_download=False, resume_download=True)
         self.model = transformers.AutoModelForCausalLM.from_pretrained(modelName,
                                                     device_map="auto",
                                                     low_cpu_mem_usage=True,
-                                                    load_in_4bit=("4bit" == config.quantization),
-                                                    load_in_8bit=("8bit" == config.quantization),
-                                                    use_flash_attention_2=config.flashAttention2,
-                                                    #quantization_config=quantizationConfig,
+                                                    quantization_config=self.configMap[config.quantization],
+                                                    attn_implementation="flash_attention_2" if config.flashAttention2 else None,
                                                     max_memory=config.maxMemory,
                                                     #offload_folder="offload",
                                                     force_download=False, resume_download=True
@@ -60,9 +61,8 @@ class AModelLLAMA():
         self.model = transformers.AutoModelForCausalLM.from_pretrained(peftConfig.base_model_name_or_path,
                                                     device_map="auto",
                                                     low_cpu_mem_usage=True,
-                                                    load_in_4bit=("4bit" == config.quantization),
-                                                    load_in_8bit=("8bit" == config.quantization),
-                                                    use_flash_attention_2=config.flashAttention2,
+                                                    quantization_config=self.configMap[config.quantization],
+                                                    attn_implementation="flash_attention_2" if config.flashAttention2 else None,
                                                     max_memory=config.maxMemory,
                                                     #offload_folder="offload"
                                                     )
