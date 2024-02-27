@@ -104,9 +104,9 @@ class AProcessor():
         resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg)}"
         return resp
     
-    def EvalRespond(self, message: str):
+    def EvalRespond(self, message: str) -> str:
         self.result = message
-        return
+        return ""
     
     def EvalStore(self, txt: str):
         if not self.modules['storage']['module'].Store(self.collection, txt):
