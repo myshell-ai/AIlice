@@ -47,6 +47,9 @@ use the provided Dockerfile to build an image and container, and modify the rele
 
     if speechOn:
         speech = clientPool.GetClient(config.services['speech']['addr'])
+        print("The speech module is preparing speech recognition and TTS models, which may include the work of downloading weight data, so it may take a long time.")
+        speech.PrepareModel()
+        print("The speech module model preparation work is completed.")
         if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
             print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
             exit(-1)

@@ -18,8 +18,8 @@ class ASpeech():
     def __init__(self):
         self.textQue = queue.Queue(maxsize=100)
         self.audioQue = queue.Queue(maxsize=100)
-        self.t2s = T2S_LJS()
-        self.s2t = S2T_WhisperLarge()
+        self.t2s = None
+        self.s2t = None
 
         self.inputDone = True
         self.lock = threading.Lock()
@@ -36,6 +36,11 @@ class ASpeech():
                                               "TEXT2SPEECH": {"func": "Text2Speech", "prompt": "Text to speech."},
                                               "GETAUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone."},
                                               "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play."}}}
+    
+    def PrepareModel(self):
+        self.t2s = T2S_LJS()
+        self.s2t = S2T_WhisperLarge()
+        return
     
     def SetDevices(self, deviceMap: dict[str,str]):
         if "stt" in deviceMap:
@@ -91,7 +96,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "Speech2Text", "Text2Speech", "GetAudio", "Play", "SetDevices"]).Run()
+    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "PrepareModel", "Speech2Text", "Text2Speech", "GetAudio", "Play", "SetDevices"]).Run()
 
 if __name__ == '__main__':
     main()
