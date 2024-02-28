@@ -29,3 +29,4 @@ espnet==202207
 espnet-model-zoo==0.1.7
 espnet-tts-frontend==0.0.3
 torchaudio==2.2.1
+typeguard==2.13.3
