@@ -30,7 +30,8 @@ setup(
         'googlesearch-python',
         'duckduckgo-search',
         'urlextract', 'selenium>=4.10.0', 'html2text', 'nougat-ocr', 'scipy', 'scikit-learn',
-        'arxiv'
+        'arxiv',
+        'einops'
     ],
     extras_require={
         'finetuning': ['peft', 'datasets', 'tensorboard', ],
