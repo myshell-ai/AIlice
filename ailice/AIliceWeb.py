@@ -42,8 +42,16 @@ To prevent irreversible losses due to potential AI errors, you may consider one 
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
 
     StartServices()
-    time.sleep(5)
-    clientPool.Init()
+    for i in range(5):
+        try:
+            clientPool.Init()
+            break
+        except Exception as e:
+            if i == 4:
+                print(f"It seems that some peripheral module services failed to start. EXCEPTION: {str(e)}")
+                exit(-1)
+            time.sleep(5)
+            continue
 
     if speechOn:
         speech = clientPool.GetClient(config.services['speech']['addr'])
