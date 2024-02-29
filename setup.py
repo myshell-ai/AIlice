@@ -29,6 +29,7 @@ setup(
         'importlib-metadata',
         'chromadb',
         'googlesearch-python',
+        'duckduckgo-search',
         'urlextract', 'selenium>=4.10.0', 'html2text', 'nougat-ocr', 'scipy', 'scikit-learn',
         'arxiv'
     ],
