@@ -65,7 +65,7 @@ class AConfig():
         self.contextWindowRatio = 0.6
         if 'nt' == os.name:
             self.services = {
-                "storage": {"cmd": "python -m ailice.modules.AStorageChroma --addr=tcp://127.0.0.1:59001", "addr": "tcp://127.0.0.1:59001"},
+                "storage": {"cmd": "python -m ailice.modules.AStorageVecDB --addr=tcp://127.0.0.1:59001", "addr": "tcp://127.0.0.1:59001"},
                 "browser": {"cmd": "python -m ailice.modules.ABrowser --addr=tcp://127.0.0.1:59002", "addr": "tcp://127.0.0.1:59002"},
                 "arxiv": {"cmd": "python -m ailice.modules.AArxiv --addr=tcp://127.0.0.1:59003", "addr": "tcp://127.0.0.1:59003"},
                 "google": {"cmd": "python -m ailice.modules.AGoogle --addr=tcp://127.0.0.1:59004", "addr": "tcp://127.0.0.1:59004"},
@@ -76,7 +76,7 @@ class AConfig():
             }
         else:
             self.services = {
-                "storage": {"cmd": "python3 -m ailice.modules.AStorageChroma --addr=ipc:///tmp/AIliceStorage.ipc", "addr": "ipc:///tmp/AIliceStorage.ipc"},
+                "storage": {"cmd": "python3 -m ailice.modules.AStorageVecDB --addr=ipc:///tmp/AIliceStorage.ipc", "addr": "ipc:///tmp/AIliceStorage.ipc"},
                 "browser": {"cmd": "python3 -m ailice.modules.ABrowser --addr=ipc:///tmp/ABrowser.ipc", "addr": "ipc:///tmp/ABrowser.ipc"},
                 "arxiv": {"cmd": "python3 -m ailice.modules.AArxiv --addr=ipc:///tmp/AArxiv.ipc", "addr": "ipc:///tmp/AArxiv.ipc"},
                 "google": {"cmd": "python3 -m ailice.modules.AGoogle --addr=ipc:///tmp/AGoogle.ipc", "addr": "ipc:///tmp/AGoogle.ipc"},
