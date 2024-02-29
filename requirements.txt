@@ -10,7 +10,6 @@ openai==1.12.0
 pillow==10.2.0
 gradio==4.19.2
 importlib-metadata==6.11.0
-chromadb==0.4.23
 googlesearch-python==1.2.3
 duckduckgo_search==4.5.0
 urlextract==1.8.0
