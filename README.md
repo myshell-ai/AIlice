@@ -143,7 +143,7 @@ ailice_main --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantiz
 ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
-ailice_web --modelID=lm-server:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
+ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
 ```
 
 It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster AIlice startup speed, making it more suitable for ordinary users.
@@ -288,7 +288,7 @@ Then, we open config.json and make the following modifications:
     "oai": {
       ...
     },
-    "lm-server": {
+    "lm-studio": {
       "modelWrapper": "AModelChatGPT",
       "apikey": "fakekey",
       "baseURL": "http://localhost:1234/v1/",
@@ -309,7 +309,7 @@ Then, we open config.json and make the following modifications:
 Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on your available VRAM or memory space. The larger the parameter, the more VRAM space is required.
 
 ```bash
-ailice_main --modelID=lm-server:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
+ailice_main --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
 ```
 
 #### Example 3: Add open source multimodal model support
@@ -324,7 +324,7 @@ Similar to what we did in the previous section, after we use LM Studio to downlo
     "oai": {
       ...
     },
-    "lm-server": {
+    "lm-studio": {
       "modelWrapper": "AModelChatGPT",
       "apikey": "fakekey",
       "baseURL": "http://localhost:1234/v1/",
@@ -527,8 +527,6 @@ If you are interested in the development of AIlice itself, you may consider the 
 - **Self-expanding** support. Our goal is to enable language models to **autonomously code and implement new peripheral modules and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities. It has been implemented, but it still needs to be improved so that various agents can easily use dynamically loaded modules.
 
 - **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
-
-- **Considering using a simple implementation of a vector database as a replacement for ChromaDB.** it introduces too many additional dependencies.
 
 - **Develop Agents** with various functionalities based on the current framework.
 
