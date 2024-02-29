@@ -53,11 +53,20 @@ use the provided Dockerfile to build an image and container, and modify the rele
             time.sleep(5)
             continue
 
+    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+    print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
+    storage = clientPool.GetClient(config.services['storage']['addr'])
+    msg = storage.Open("")
+    print(f"Vector database has been started. returned msg: {msg}")
+    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+    
     if speechOn:
         speech = clientPool.GetClient(config.services['speech']['addr'])
+        print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
         print("The speech module is preparing speech recognition and TTS models, which may include the work of downloading weight data, so it may take a long time.")
         speech.PrepareModel()
         print("The speech module model preparation work is completed.")
+        print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
         if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
             print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
             exit(-1)

@@ -63,7 +63,7 @@ class AStorageVecDB():
                 return f"chroma database under {directory} is opened. tokenizer: {self.data['tokenizer']}, model: {self.data['model']}"
         except Exception as e:
             print(f"Open() EXCEPTION. e: {str(e)}")
-            return f"Open() EXCEPTION. e: {str(e)}"
+            raise e
     
     def Reset(self) -> str:
         self.data["collections"].clear()
