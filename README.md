@@ -3,13 +3,13 @@
 
 # Quick Start
 
-Install and run AIlice with the following commands. Once AIlice is launched, a dialogue interface will appear. Issue commands to AIlice through the conversation to accomplish various tasks. For your first use, you can try the commands provided in the [COOL things we can do](#cool-things-we-can-do) section to quickly get familiarized.
+Install and run AIlice with the following commands. Once AIlice is launched, use a browser to open the web page it provides, a dialogue interface will appear. Issue commands to AIlice through the conversation to accomplish various tasks. For your first use, you can try the commands provided in the [COOL things we can do](#cool-things-we-can-do) section to quickly get familiarized.
 
 ```bash
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 pip install -e .
-ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
+ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
 ```
 
 - For a more detailed understanding of the installation and configuration methods, please visit the [Environment Configuration and Running](#environment-configuration-and-running) section and the [Choice of LLM](#choice-of-llm) section.
@@ -484,19 +484,17 @@ Please note that this is an ongoing research, and the data in the table may be i
 
 |  | Multi-agents | Dynamic Creation | Interactive Calling | Long Term Memory | Function Call Syntax | Self-expansion | Multimodal | Code Size |
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
-| AutoGen | Y | Y | N | RAG and more | JSON | N | Y | 20851 |
-| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | Y | 2772 |
+| AutoGen | Y | Y | N | RAG and more | JSON | N | Y | 35419 |
+| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | Y | 3375 |
 
 The number of lines of code is calculated in the latest code base via the "git ls-files "*.py" | xargs wc -l" command.
 
 
 ## How Developers Should Get Started
 
-- For developing Agents, the main loop of AIlice is located in the AIliceMain.py or AIliceWeb.py files. Each of these modules does not exceed seventy lines of Python code.
-To further understand the construction of an agent, you need to read the code in the "prompts" folder, by reading these code you can understand how an agent's prompts are
-dynamically constructed.
+- For developing Agents, the main loop of AIlice is located in the AIliceMain.py or AIliceWeb.py files. To further understand the construction of an agent, you need to read the code in the "prompts" folder, by reading these code you can understand how an agent's prompts are dynamically constructed.
 
-- For developers who want to understand the internal operation logic of AIlice, please read core/AProcessor.py and core/Interpreter.py. These two files do not exceed two
+- For developers who want to understand the internal operation logic of AIlice, please read core/AProcessor.py and core/Interpreter.py. These two files contain approximately three
 hundred lines of code in total, but they contain the basic framework of AIlice.
 
 ## Project Development Standards and Constraints
