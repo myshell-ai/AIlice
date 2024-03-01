@@ -55,19 +55,19 @@ class AStorageVecDB():
             if "" == directory.strip():
                 self.dir = None
                 self.PrepareModel()
-                return f"chroma database has been switched to a non-persistent version. tokenizer: {self.data['tokenizer']}, model: {self.data['model']}"
+                return f"vector database has been switched to a non-persistent version. tokenizer: {self.data['tokenizer']}, model: {self.data['model']}"
             else:
                 self.dir = directory
                 self.Load(directory)
                 self.PrepareModel()
-                return f"chroma database under {directory} is opened. tokenizer: {self.data['tokenizer']}, model: {self.data['model']}"
+                return f"vector database under {directory} is opened. tokenizer: {self.data['tokenizer']}, model: {self.data['model']}"
         except Exception as e:
             print(f"Open() EXCEPTION. e: {str(e)}")
             raise e
     
     def Reset(self) -> str:
         self.data["collections"].clear()
-        return "chroma database reseted."
+        return "vector database reseted."
     
     def Store(self, collection: str, txt: str) -> bool:
         try:

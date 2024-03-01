@@ -3,7 +3,6 @@ import os
 import simplejson as json
 import traceback
 import queue
-import sounddevice as sd
 from termcolor import colored
 
 import threading
@@ -62,6 +61,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
     
     if speechOn:
+        import sounddevice as sd
         speech = clientPool.GetClient(config.services['speech']['addr'])
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
         print("The speech module is preparing speech recognition and TTS models, which may include the work of downloading weight data, so it may take a long time.")
