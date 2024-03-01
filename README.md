@@ -18,22 +18,26 @@ ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
 
 
 # Introduction
-AIlice is an AI agent akin to JARVIS from Iron Man. She is committed to developing into **an intelligent agent that can understand and carry out tasks through dialogue with users**. At present, AIlice is adept at conducting thematic research, writing and executing code, system management, literature review, and hybrid tasks that build upon the aforementioned fundamental tasks.
-Currently, for everyday tasks, AIlice has achieved essentially perfect performance on GPT-4. She is also nearing practical usability on the most powerful open-source models.
+The AIlice project is dedicated to creating a self-contained artificial intelligence assistant akin to JARVIS, leveraging open-source models. AIlice achieves this goal by building a "text computer" that uses a Large Language Model (LLM) as its core processor. Currently, AIlice demonstrates proficiency in a range of tasks, including thematic research, coding, system management, literature reviews, and complex hybrid tasks that go beyond these basic capabilities.
 
-You can get a sense of AIlice's current capabilities from this video:
+AIlice has reached near-perfect performance in everyday tasks using GPT-4 and is making strides towards practical application with the latest open-source models.
+
+To understand AIlice's present abilities, watch this demonstration video:
 
 [![AIlice Demo Video](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
 
-Her technical features are briefly listed as follows:
+Key technical features of AIlice include:
 
-- **Natural and highly fault-tolerant Interactive Agents Calling Tree architecture.**
-- **Parsing LLM output in the most flexible way possible, supporting more varied function call mechanisms.**
-- **Self-constructing and dynamically loading environment interaction modules, offering limitless potential for feature expansion.**
-- **Support multi-modal models.**
-- **Designed for open-source models but seamlessly supports commercial models like GPT-4.**
-- **Supports in-depth investigations on specific topics.**
-- **Automation programming and script execution. It serves as an all-encompassing coder and a proficient system management tool, mastering all system commands—akin to an AI operating system.**
+- **In-depth research capabilities on specialized subjects.**
+- **The ability to read and analyze articles and scholarly works.**
+- **Advanced automation in programming and script execution, functioning as a comprehensive coder and an efficient system management tool, similar to an AI-powered operating system.**
+- **Voice interaction support.**
+- **Compatibility with open-source models and seamless integration with commercial models like GPT-4.**
+- **A more intuitive and flexible approach to user interaction, allowing for seamless conversation participation as an agent or the ability to intervene during task execution.**
+- **Support for multi-modal models.**
+- **A natural and highly fault-tolerant Interactive Agents Calling Tree architecture.**
+- **Flexible parsing of LLM outputs, enabling a broader range of function call mechanisms.**
+- **The capability to self-construct and dynamically load modules for interacting with the environment, providing endless possibilities for expanding features.**
 
 
 <a name="cool-things-we-can-do"></a>
