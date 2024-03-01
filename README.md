@@ -82,11 +82,12 @@ cd AIlice
 pip install -e .
 ```
 
-For users who need to use the voice dialogue or model fine-tuning function, you can use one of the following command:
+For users who need to use the voice dialogue or model fine-tuning or pdf reading functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
 
 ```bash
 pip install -e .[speech]
 pip install -e .[finetuning]
+pip install -e .[pdf-reading]
 ```
 
 Sometimes the above installation steps cannot be completed successfully because some dependencies are conflicting. You can consider installing all the dependencies of requirements.txt in a new virtual environment to solve this problem:
