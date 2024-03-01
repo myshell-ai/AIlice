@@ -29,13 +29,14 @@ setup(
         'importlib-metadata',
         'googlesearch-python',
         'duckduckgo-search',
-        'urlextract', 'selenium>=4.10.0', 'html2text', 'nougat-ocr', 'scipy', 'scikit-learn',
+        'urlextract', 'selenium>=4.10.0', 'html2text', 'scipy', 'scikit-learn',
         'arxiv',
         'einops'
     ],
     extras_require={
         'finetuning': ['peft', 'datasets', 'tensorboard', ],
         'speech': ['typeguard==2.13.3', 'sounddevice', 'numpy', 'librosa', 'espnet', 'espnet-model-zoo', 'espnet-tts-frontend', 'torchaudio',],
+        'pdf-reading': ['nougat-ocr',]
     },
     author='Steven Lu',
     author_email='stevenlu1729@gmail.com',

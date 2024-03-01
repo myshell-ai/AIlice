@@ -133,10 +133,12 @@ class ABrowser():
                 print("can not download pdf file. HTTP err code:", response.status_code)
         
         cmd = f"nougat {pdfPath} -o {outDir}"
-        result = subprocess.run([cmd], stdout=subprocess.PIPE, text=True, shell=True)
-
-        with open(f"{outDir}/{fileName}.mmd", mode='rt') as txt_file:
-            self.page.LoadPage(txt_file.read(), "TOP")
+        result = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, shell=True)
+        try:    
+            with open(f"{outDir}/{fileName}.mmd", mode='rt') as txt_file:
+                self.page.LoadPage(txt_file.read(), "TOP")
+        except Exception as e:
+            self.page.LoadPage(f"Exception: {str(e)}. Perhaps it is caused by nougat's failure to do pdf ocr. nougat returned: {str(result)}", "BOTTOM")
         return self.page()
 
     def URLIsPDF(self, url: str) -> bool:
