@@ -6,6 +6,7 @@ import traceback
 from typing import Any
 from ailice.common.ADataType import typeInfo
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling, ARegexMap, VAR_DEF
+from ailice.common.AMessenger import messenger
 
 def HasReturnValue(action):
     return action['signature'].return_annotation != inspect.Parameter.empty
@@ -49,7 +50,7 @@ class AInterpreter():
     
     def EndChecker(self, txt: str) -> bool:
         endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (HasReturnValue(self.actions[nodeType]) if nodeType in self.actions else False)]
-        return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns])
+        return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns]) or (None != messenger.Get())
     
     def GetEntryPatterns(self) -> dict[str,str]:
         return [(nodeType, p['re']) for nodeType,patterns in self.patterns.items() for p in patterns if p["isEntry"]]

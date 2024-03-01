@@ -5,6 +5,7 @@ from ailice.common.AConfig import config
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.APrompts import promptsManager
 from ailice.common.ARemoteAccessors import clientPool
+from ailice.common.AMessenger import messenger
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
 
@@ -83,6 +84,14 @@ class AProcessor():
             self.conversation.Add(role = "ASSISTANT", msg = ret, env = self.interpreter.env)
             self.EvalStore(ret)
             self.result = ret
+            
+            msg = messenger.GetPreviousMsg()
+            if msg != None:
+                resp = f"Interruption. Reminder from super user: {msg}"
+                self.conversation.Add(role = "SYSTEM", msg = resp, env = self.interpreter.env)
+                self.EvalStore(resp)
+                self.outputCB(f"SYSTEM_{self.name}", resp)
+                continue
             
             resp = self.interpreter.EvalEntries(ret)
             

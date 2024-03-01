@@ -13,6 +13,7 @@ from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.utils.AFileUtils import serialize
 from ailice.common.ARemoteAccessors import clientPool
+from ailice.common.AMessenger import messenger
 from ailice.AServices import StartServices, TerminateSubprocess
 
 from ailice.common.APrompts import promptsManager
@@ -122,6 +123,11 @@ use the provided Dockerfile to build an image and container, and modify the rele
             if speechOn:
                 audioQue.put(tts(txt))
             yield history
+
+    def interrupt(text):
+        messenger.Put(text)
+        messenger.Unlock()
+        return
     
     def add_text(history, text):
         history = history + [(text, None)]
@@ -168,7 +174,21 @@ use the provided Dockerfile to build an image and container, and modify the rele
         if speechOn:
             audio.stop_recording(stt, [chatbot, audio], [chatbot], queue=False).then(
                 bot, chatbot, chatbot)
-
+            
+        with gr.Row():
+            interruptTxt = gr.Textbox(
+                scale=4,
+                show_label=False,
+                placeholder="Send an interrupt message to the currently active agent. Used to rescue agent from errors.",
+                container=False,
+                interactive=False,
+                visible=False
+            )
+            interruptBtn = gr.Button("Interrupt")
+        
+        interruptBtn.click(lambda: messenger.Lock(), [], []).then(lambda: gr.Textbox(interactive=True, visible=True), [], [interruptTxt]).then(lambda: gr.Button("Interrupt", interactive=False), [], [interruptBtn])
+        interruptTxt.submit(interrupt, [interruptTxt], []).then(lambda: gr.Textbox(value="", interactive=False, visible=False), [], [interruptTxt]).then(lambda: gr.Button("Interrupt", interactive=True), [], [interruptBtn])
+        
     demo.queue()
     demo.launch()
     return
