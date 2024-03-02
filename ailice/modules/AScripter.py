@@ -107,7 +107,9 @@ class AScripter():
     
     def Save2File(self, filePath: str, code: str) -> str:
         try:
-            os.makedirs(os.path.dirname(filePath), exist_ok=True)
+            dirPath = os.path.dirname(filePath)
+            if "" != dirPath:
+                os.makedirs(dirPath, exist_ok=True)
             with open(filePath, 'w') as f:
                 f.write(code)
             return f"The file contents has been written."
