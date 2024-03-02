@@ -187,7 +187,7 @@ class ABrowser():
         return self.page()
     
     def GetFullText(self, url: str) -> str:
-        return self.page.txt if self.page.txt is not None else ""
+        return self.page.txt if hasattr(self, 'page') and (self.page.txt != None) else ""
 
 def main():
     import argparse
