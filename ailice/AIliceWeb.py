@@ -146,7 +146,13 @@ use the provided Dockerfile to build an image and container, and modify the rele
         wav, sr = speech.Text2Speech(txt)
         return sr, wav
 
-    with gr.Blocks() as demo:
+    CSS ="""
+    .contain { display: flex; flex-direction: column; }
+    .gradio-container { height: 100vh !important; }
+    #component-0 { height: 100%; }
+    #chatbot { flex-grow: 1; overflow: auto;}
+    """
+    with gr.Blocks(css=CSS) as demo:
         chatbot = gr.Chatbot(
             [],
             elem_id="chatbot",
