@@ -77,10 +77,8 @@ class ABrowser():
         return None,None
     
     def ToHttps(self, url: str) -> str:
-        parsedURL = urlparse(url)
-        if not parsedURL.scheme:
-            parsedURL = parsedURL._replace(scheme="https")
-        url = urlunparse(parsedURL)
+        if not urlparse(url).scheme:
+            url = "https://" + url
         return url
 
     def OpenWebpage(self, url: str) -> str:
