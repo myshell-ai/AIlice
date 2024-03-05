@@ -24,6 +24,8 @@ setup(
         'bitsandbytes',
         'appdirs',
         'openai',
+        'mistralai',
+        'anthropic',
         'pillow',
         'gradio',
         'importlib-metadata',

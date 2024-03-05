@@ -29,7 +29,7 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 import gradio as gr
 
 def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, trace: str):
-    config.Initialize(needOpenaiGPTKey = ("oai:" in modelID))
+    config.Initialize(modelID = modelID)
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
