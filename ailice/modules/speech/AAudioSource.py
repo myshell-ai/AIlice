@@ -6,12 +6,9 @@ from collections import deque
 
 
 def audio_data_to_numpy(audio_data, sr=16000):
-    if tuple != type(audio_data):
-        audio_array = np.frombuffer(audio_data.frame_data, dtype=np.int16)
-        sr0 = audio_data.sample_rate
-    else:
-        audio_array, sr0 = audio_data
-    ret = librosa.resample(y=audio_array.astype(np.float32), orig_sr=sr0, target_sr=sr)
+    audio_array, sr0 = audio_data
+    scale = np.iinfo(audio_array.dtype).max if audio_array.dtype in [np.int16, np.int32] else 1.0
+    ret = librosa.resample(y=audio_array.astype(np.float32)/scale, orig_sr=sr0, target_sr=sr)
     return ret
     
 class AudioSourceSileroVAD():
