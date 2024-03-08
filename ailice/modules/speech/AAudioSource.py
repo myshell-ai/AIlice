@@ -32,7 +32,7 @@ class AudioSourceSileroVAD():
         vad_iterator = VADIterator(self.model)
 
         wav = []
-        with sd.InputStream(samplerate=self.sr, channels=1, blocksize=chunk_samples, dtype=np.int16) as stream:
+        with sd.InputStream(samplerate=self.sr, channels=1, blocksize=chunk_samples, dtype=np.float32) as stream:
             currentTime = 0.0
             while(True):
                 audio_chunk, overflowed = stream.read(chunk_samples)
