@@ -1,5 +1,6 @@
 import time
 import simplejson as json
+import re
 import traceback
 from termcolor import colored
 
@@ -72,9 +73,9 @@ use the provided Dockerfile to build an image and container, and modify the rele
         print("The speech module is preparing speech recognition and TTS models, which may include the work of downloading weight data, so it may take a long time.")
         speech.PrepareModel()
         print("The speech module model preparation work is completed.")
-        if (ttsDevice not in {'cpu','cuda'}) or (sttDevice not in {'cpu','cuda'}):
-            print("the value of ttsDevice and sttDevice should be one of cpu or cuda, the default is cpu.")
-            print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+        print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+        if any([re.fullmatch(r"(cuda|cpu)(:(\d+))?", s) == None for s in [ttsDevice, sttDevice]]):
+            print("the value of ttsDevice and sttDevice should be a valid cuda device, such as cuda, cuda:0, or cpu, the default is cpu.")
             exit(-1)
         else:
             speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
