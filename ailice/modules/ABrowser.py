@@ -1,43 +1,20 @@
-import os
-import re
-import shutil
-import subprocess
 import requests
 import tempfile
 import traceback
 
 from urllib.parse import urlparse
 from urlextract import URLExtract
-from selenium import webdriver
-import html2text
 
 from ailice.common.lightRPC import makeServer
-from ailice.modules.AScrollablePage import AScrollablePage
+from ailice.modules.AWebBrowser import AWebBrowser
+from ailice.modules.APDFBrowser import APDFBrowser
 
-class ABrowser(AScrollablePage):
+class ABrowser():
     def __init__(self, pdfOutputDir: str):
-        super(ABrowser, self).__init__({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
-        self.inited = False
         self.pdfOutputDir = pdfOutputDir
+        self.browser = None
         return
-    
-    def Init(self):
-        if self.inited:
-            return True, ""
-        try:
-            subprocess.run(['google-chrome', '--version'], check=True)
-            self.options = webdriver.ChromeOptions()
-            self.options.add_argument('--headless')
-            self.options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36")
-            self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
-            self.options.add_argument("--disable-blink-features=AutomationControlled")
 
-            self.driver = webdriver.Chrome(options=self.options)
-            self.inited = True
-            return True, ""
-        except Exception as e:
-            return False, f"webdriver init FAILED. It may be caused by chrome not being installed correctly. please install chrome manually, or let AIlice do it for you. Exception details: {str(e)}\n{traceback.format_exc()}"
-    
     def ModuleInfo(self):
         return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content."},
                                                "SCROLLDOWN": {"func": "ScrollDown", "prompt": "Scroll down the page."},
@@ -79,43 +56,6 @@ class ABrowser(AScrollablePage):
             url = "https://" + url
         return url
 
-    def OpenWebpage(self, url: str) -> str:
-        self.driver.get(url)
-        res = self.ExtractTextURLs(self.driver.page_source)
-        self.LoadPage(res, "TOP")
-        return self()
-    
-    def ExtractTextURLs(self, html: str) -> str:
-        h = html2text.HTML2Text()
-        h.ignore_links = False
-        return str(h.handle(html))
-    
-    def OpenPDF(self, loc: str) -> str:
-        fullName = loc.split('/')[-1]
-        fileName = fullName[:fullName.rfind('.')]
-        outDir = f"{self.pdfOutputDir}/{fileName}"
-        os.makedirs(outDir, exist_ok=True)
-        
-        pdfPath = f"{outDir}/{fullName}"
-        if os.path.exists(loc):
-            shutil.copy(loc, pdfPath)
-        else:
-            response = requests.get(loc)
-            if response.status_code == 200:
-                with open(pdfPath, "wb") as pdf_file:
-                    pdf_file.write(response.content)
-            else:
-                print("can not download pdf file. HTTP err code:", response.status_code)
-        
-        cmd = f"nougat {pdfPath} -o {outDir}"
-        result = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, shell=True)
-        try:    
-            with open(f"{outDir}/{fileName}.mmd", mode='rt') as txt_file:
-                self.LoadPage(txt_file.read(), "TOP")
-        except Exception as e:
-            self.LoadPage(f"Exception: {str(e)}. Perhaps it is caused by nougat's failure to do pdf ocr. nougat returned: {str(result)}", "BOTTOM")
-        return self()
-
     def URLIsPDF(self, url: str) -> bool:
         response = requests.get(url, allow_redirects=True)
         if response.status_code == 200:
@@ -128,20 +68,19 @@ class ABrowser(AScrollablePage):
         return (path[-4:] == ".pdf")
     
     def Browse(self, url: str) -> str:
-        succ, msg = self.Init()
-        if not succ:
-            return msg
-        
         try:
             url, path = self.GetLocation(url)
             if url is not None:
                 if self.URLIsPDF(url):
-                    return self.OpenPDF(url)
+                    self.browser = APDFBrowser(self.pdfOutputDir) if ("APDFBrowser" != type(self.browser).__name__) else self.browser
+                    return self.browser.Browse(url)
                 else:
-                    return self.OpenWebpage(url)
+                    self.browser = AWebBrowser() if ("AWebBrowser" != type(self.browser).__name__) else self.browser
+                    return self.browser.Browse(url)
             elif path is not None:
                 if self.PathIsPDF(path):
-                    return self.OpenPDF(path)
+                    self.browser = APDFBrowser(self.pdfOutputDir) if ("APDFBrowser" != type(self.browser).__name__) else self.browser
+                    return self.browser.Browse(url)
                 else:
                     return "File format not supported. Please check your input."
             else:
@@ -152,8 +91,20 @@ class ABrowser(AScrollablePage):
             return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
     
     def GetFullText(self, url: str) -> str:
-        return self.txt if (self.txt != None) else ""
+        return self.browser.GetFullText(url)
 
+    def ScrollDown(self) -> str:
+        return self.browser.ScrollDown()
+    
+    def ScrollUp(self) -> str:
+        return self.browser.ScrollUp()
+
+    def SearchDown(self, query: str) -> bool:
+        return self.browser.SearchDown(query=query)
+    
+    def SearchUp(self, query: str) -> bool:
+        return self.browser.SearchUp(query=query)
+    
 def main():
     import argparse
     parser = argparse.ArgumentParser()
