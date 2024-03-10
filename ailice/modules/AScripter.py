@@ -76,8 +76,7 @@ class AScripter():
             return self.sessions['bash']['pages']()
     
     def ScrollUpBash(self) -> str:
-        self.sessions['bash']['pages'].ScrollUp()
-        return self.sessions['bash']['pages']()
+        return self.sessions['bash']['pages'].ScrollUp()
     
     def RunPython(self, code: str) -> str:
         res = ""
@@ -102,8 +101,7 @@ class AScripter():
             return self.sessions['py']['pages']()
     
     def ScrollUpPy(self) -> str:
-        self.sessions['py']['pages'].ScrollUp()
-        return self.sessions['py']['pages']()
+        return self.sessions['py']['pages'].ScrollUp()
     
     def Save2File(self, filePath: str, code: str) -> str:
         try:

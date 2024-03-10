@@ -4,10 +4,10 @@ from duckduckgo_search import DDGS
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
-class ADuckDuckGo():
+class ADuckDuckGo(AScrollablePage):
     def __init__(self):
+        super(ADuckDuckGo, self).__init__(functions={"SCROLLDOWN": "SCROLLDOWNDUCKDUCKGO"})
         self.baseURL = "https://api.duckduckgo.com/"
-        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNDUCKDUCKGO"})
         return
     
     def ModuleInfo(self):
@@ -25,12 +25,8 @@ class ADuckDuckGo():
             ret = str(e)
         finally:
             loop.close()
-        self.page.LoadPage(str(ret), "TOP")
-        return self.page()
-    
-    def ScrollDown(self) -> str:
-        self.page.ScrollDown()
-        return self.page()
+        self.LoadPage(str(ret), "TOP")
+        return self()
 
 def main():
     import argparse

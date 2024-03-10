@@ -14,8 +14,9 @@ import html2text
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
-class ABrowser():
+class ABrowser(AScrollablePage):
     def __init__(self, pdfOutputDir: str):
+        super(ABrowser, self).__init__({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
         self.inited = False
         self.pdfOutputDir = pdfOutputDir
         return
@@ -32,7 +33,6 @@ class ABrowser():
             self.options.add_argument("--disable-blink-features=AutomationControlled")
 
             self.driver = webdriver.Chrome(options=self.options)
-            self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
             self.inited = True
             return True, ""
         except Exception as e:
@@ -82,8 +82,8 @@ class ABrowser():
     def OpenWebpage(self, url: str) -> str:
         self.driver.get(url)
         res = self.ExtractTextURLs(self.driver.page_source)
-        self.page.LoadPage(res, "TOP")
-        return self.page()
+        self.LoadPage(res, "TOP")
+        return self()
     
     def ExtractTextURLs(self, html: str) -> str:
         h = html2text.HTML2Text()
@@ -111,10 +111,10 @@ class ABrowser():
         result = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, shell=True)
         try:    
             with open(f"{outDir}/{fileName}.mmd", mode='rt') as txt_file:
-                self.page.LoadPage(txt_file.read(), "TOP")
+                self.LoadPage(txt_file.read(), "TOP")
         except Exception as e:
-            self.page.LoadPage(f"Exception: {str(e)}. Perhaps it is caused by nougat's failure to do pdf ocr. nougat returned: {str(result)}", "BOTTOM")
-        return self.page()
+            self.LoadPage(f"Exception: {str(e)}. Perhaps it is caused by nougat's failure to do pdf ocr. nougat returned: {str(result)}", "BOTTOM")
+        return self()
 
     def URLIsPDF(self, url: str) -> bool:
         response = requests.get(url, allow_redirects=True)
@@ -126,12 +126,6 @@ class ABrowser():
     
     def PathIsPDF(self, path: str) -> bool:
         return (path[-4:] == ".pdf")
-    
-    def SearchDown(self, query: str) -> str:
-        return self.page() if self.page.SearchDown(query=query) else "NOT FOUND."
-    
-    def SearchUp(self, query: str) -> str:
-        return self.page() if self.page.SearchUp(query=query) else "NOT FOUND."
     
     def Browse(self, url: str) -> str:
         succ, msg = self.Init()
@@ -156,13 +150,9 @@ class ABrowser():
         except Exception as e:
             print("EXCEPTION. e: ", str(e))
             return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
-
-    def ScrollDown(self) -> str:
-        self.page.ScrollDown()
-        return self.page()
     
     def GetFullText(self, url: str) -> str:
-        return self.page.txt if hasattr(self, 'page') and (self.page.txt != None) else ""
+        return self.txt if (self.txt != None) else ""
 
 def main():
     import argparse

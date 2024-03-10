@@ -3,9 +3,9 @@ from googlesearch import search
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
-class AGoogle():
+class AGoogle(AScrollablePage):
     def __init__(self):
-        self.page = AScrollablePage(functions={"SCROLLDOWN": "SCROLLDOWNGOOGLE"})
+        super(AGoogle, self).__init__(functions={"SCROLLDOWN": "SCROLLDOWNGOOGLE"})
         return
     
     def ModuleInfo(self):
@@ -19,12 +19,8 @@ class AGoogle():
         except Exception as e:
             print("google excetption: ", e)
             ret = f"google excetption: {str(e)}"
-        self.page.LoadPage(str(ret), "TOP")
-        return self.page()
-    
-    def ScrollDown(self) -> str:
-        self.page.ScrollDown()
-        return self.page()
+        self.LoadPage(str(ret), "TOP")
+        return self()
 
 def main():
     import argparse

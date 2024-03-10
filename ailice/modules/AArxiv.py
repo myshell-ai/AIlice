@@ -4,9 +4,9 @@ import arxiv
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
-class AArxiv():
+class AArxiv(AScrollablePage):
     def __init__(self):
-        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWNARXIV"})
+        super(AArxiv, self).__init__({"SCROLLDOWN": "SCROLLDOWNARXIV"})
         return
     
     def ModuleInfo(self):
@@ -19,12 +19,8 @@ class AArxiv():
         except Exception as e:
             print("arxiv excetption: ", e)
             ret = f"arxiv excetption: {str(e)}"
-        self.page.LoadPage(str(ret), "TOP")
-        return self.page()
-
-    def ScrollDown(self) -> str:
-        self.page.ScrollDown()
-        return self.page()
+        self.LoadPage(str(ret), "TOP")
+        return self()
 
 def main():
     import argparse

@@ -16,9 +16,10 @@ import arxiv
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage #ailice is already exist in the local running environment, please do not try to install or build them.
 
-class AArxiv():
+#For cases where the returned result is too long, we recommend inheriting the AScrollablePage class to implement a scrolling page effect. AScrollablePage contains the following methods: LoadPage, ScrollDown, ScrollUp, SearchDown, SearchUp.
+class AArxiv(AScrollablePage):
     def __init__(self):
-        self.page = AScrollablePage({"SCROLLDOWN": "SCROLLDOWNARXIV", "SCROLLUP": "SCROLLUPARXIV"}) #For cases where the returned result is too long, we recommend using the AScrollablePage class to implement a scrolling page effect. The parameter is a dict, used to map the keys("SCROLLUP" and "SCROLLDOWN") to corresponding ACTION names. The ACTION name is decided by you, but it needs to be consistent with the one in ModuleInfo().
+        super(AArxiv, self).__init__({"SCROLLDOWN": "SCROLLDOWNARXIV"})#The parameter is a dict, used to map the keys("SCROLLUP" and "SCROLLDOWN") to corresponding ACTION names. The ACTION name is decided by you, but it needs to be consistent with the one in ModuleInfo().
         return
     
     def ModuleInfo(self): #This is a standard interface for ext-module that must be implemented. It allows users to dynamically load and use modules at runtime. ACTIONS contains a list of methods registered with the client. The client's AI uses these ACTIONs through the prompts of each ACTION. All functions listed under the "func" field must include a complete signature when defined, otherwise the module will be unavailable.
@@ -32,16 +33,8 @@ class AArxiv():
         except Exception as e:
             print("arxiv excetption: ", e)
             ret = f"arxiv excetption: {str(e)}" #Regardless of whether the result is obtained or an error occurs, it is recommended to return the obtained information to the user in the form of a string so that the user can know the details.
-        self.page.LoadPage(str(ret), "TOP") #"TOP" means to set the currently visible page to the top of the results. You can also use "BOTTOM" to set the currently visible page to the bottom of the results. The latter is usually more commonly used when outputting results of program execution.
-        return self.page() #The page() method returns the text within the currently visible page range.
-
-    def ScrollDown(self) -> str:
-        self.page.ScrollDown()
-        return self.page()
-    
-    def ScrollUp(self) -> str:
-        self.page.ScrollUp()
-        return self.page()
+        self.LoadPage(str(ret), "TOP") #"TOP" means to set the currently visible page to the top of the results. You can also use "BOTTOM" to set the currently visible page to the bottom of the results. The latter is usually more commonly used when outputting results of program execution.
+        return self() #The __call__() method returns the text within the currently visible page range.
 
 if __name__ == '__main__':
     import os
