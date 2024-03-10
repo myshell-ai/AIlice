@@ -6,11 +6,9 @@ import requests
 import tempfile
 import traceback
 
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse
 from urlextract import URLExtract
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 import html2text
 
 from ailice.common.lightRPC import makeServer
@@ -91,27 +89,6 @@ class ABrowser():
         h = html2text.HTML2Text()
         h.ignore_links = False
         return str(h.handle(html))
-
-    def SplitGen(self, txt_list):
-        for txt in txt_list:
-            while txt:
-                yield txt[:1024]
-                txt = txt[1024:]
-        return
-    
-    def Split(self, txt: str) -> list[str]:
-        sep = '\n\n'
-        paragraphs = txt.split(sep)
-        
-        ret = []
-        current_p = ""
-        for s in self.SplitGen(paragraphs):
-            if (len(current_p + sep + s) <= 1026):
-                current_p += (sep + s)
-            else:
-                ret.append(current_p)
-                current_p = s
-        return ret
     
     def OpenPDF(self, loc: str) -> str:
         fullName = loc.split('/')[-1]
