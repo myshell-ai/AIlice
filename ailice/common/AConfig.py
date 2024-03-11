@@ -94,7 +94,7 @@ class AConfig():
                 "duckduckgo": {"cmd": "python -m ailice.modules.ADuckDuckGo --addr=tcp://127.0.0.1:59005", "addr": "tcp://127.0.0.1:59005"},
                 "scripter": {"cmd": "python -m ailice.modules.AScripter --addr=tcp://127.0.0.1:59000", "addr": "tcp://127.0.0.1:59000"},
                 "speech": {"cmd": "python -m ailice.modules.ASpeech --addr=tcp://127.0.0.1:59006", "addr": "tcp://127.0.0.1:59006"},
-                "files": {"cmd": "python -m ailice.modules.AFiles --addr=tcp://127.0.0.1:59007", "addr": "tcp://127.0.0.1:59007"},
+                "files": {"cmd": "python -m ailice.modules.AComputer --addr=tcp://127.0.0.1:59007", "addr": "tcp://127.0.0.1:59007"},
             }
         else:
             self.services = {
@@ -105,7 +105,7 @@ class AConfig():
                 "duckduckgo": {"cmd": "python3 -m ailice.modules.ADuckDuckGo --addr=ipc:///tmp/ADuckDuckGo.ipc", "addr": "ipc:///tmp/ADuckDuckGo.ipc"},
                 "scripter": {"cmd": "python3 -m ailice.modules.AScripter --addr=tcp://127.0.0.1:59000", "addr": "tcp://127.0.0.1:59000"},
                 "speech": {"cmd": "python3 -m ailice.modules.ASpeech --addr=ipc:///tmp/ASpeech.ipc", "addr": "ipc:///tmp/ASpeech.ipc"},
-                "files": {"cmd": "python3 -m ailice.modules.AFiles --addr=ipc:///tmp/AFiles.ipc", "addr": "ipc:///tmp/AFiles.ipc"},
+                "files": {"cmd": "python3 -m ailice.modules.AComputer --addr=ipc:///tmp/AComputer.ipc", "addr": "ipc:///tmp/AComputer.ipc"},
             }
         return
 

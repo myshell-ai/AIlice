@@ -1,15 +1,21 @@
 import io
-from PIL import Image
+from PIL import Image, ImageGrab
 from ailice.common.lightRPC import makeServer
 from ailice.common.ADataType import AImage
 
-class AFiles():
+class AComputer():
     def __init__(self):
         return
     
     def ModuleInfo(self):
-        return {"NAME": "files", "ACTIONS": {"READIMAGE": {"func": "ReadImage", "prompt": "Read the content of an image file into a variable."},
+        return {"NAME": "files", "ACTIONS": {"SCREENSHOT": {"func": "ScreenShot", "prompt": "Take a screenshot of the current screen."},
+                                             "READIMAGE": {"func": "ReadImage", "prompt": "Read the content of an image file into a variable."},
                                              "WRITEIMAGE": {"func": "WriteImage", "prompt": "Write a variable of image type into a file."}}}
+    
+    def ScreenShot(self) -> AImage:
+        imageByte = io.BytesIO()
+        ImageGrab.grab().save(imageByte, format="JPEG")
+        return AImage(format="JPEG", data=imageByte.getvalue())
     
     def ReadImage(self, path: str) -> AImage:
         try:
@@ -33,7 +39,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AFiles, dict(), args.addr, ["ModuleInfo", "ReadImage", "WriteImage"]).Run()
+    makeServer(AComputer, dict(), args.addr, ["ModuleInfo", "ScreenShot", "ReadImage", "WriteImage"]).Run()
 
 if __name__ == '__main__':
     main()

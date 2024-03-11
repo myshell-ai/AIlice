@@ -26,7 +26,7 @@ class AConversations():
             
             matches = [m for m in re.findall(f'<([a-zA-Z0-9_]+)\\|(?:({ARegexMap["ref"]})|({ARegexMap["str"]}))\\|([a-zA-Z0-9_]+)>', msg) if (m[0]==m[3]) and (m[0] in [t.__name__ for t in typeInfo.keys()])]
             for label, varName, txt, _ in matches:
-                txt = ast.literal_eval(txt)
+                txt = ast.literal_eval(txt) if txt not in ["", None] else ""
                 try:
                     if ("" != varName) and (varName in env):
                         record["attachments"].append({"type": typeInfo[type(env[varName])]['modal'], "content": env[varName].Standardize()})
