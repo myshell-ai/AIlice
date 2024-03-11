@@ -1,3 +1,4 @@
+import re
 import requests
 import tempfile
 import traceback
@@ -81,7 +82,7 @@ class ABrowser():
             elif path is not None:
                 if self.PathIsPDF(path):
                     self.browser = APDFBrowser(self.pdfOutputDir) if ("APDFBrowser" != type(self.browser).__name__) else self.browser
-                    return self.browser.Browse(url)
+                    return self.browser.Browse(path)
                 else:
                     return "File format not supported. Please check your input."
             else:
