@@ -111,6 +111,7 @@ class AConfig():
 
     def Initialize(self, modelID):
         configFile = appdirs.user_config_dir("ailice", "Steven Lu")
+        print(f"config.json is located at {configFile}")
         try:
             os.makedirs(configFile)
         except OSError as e:
@@ -133,7 +134,6 @@ class AConfig():
                 self.models[modelType]["apikey"] = key if 1 < len(key) else None
             self.Store(configFile)
             print(colored("********************** End of Initialization *****************************", "yellow"))
-        print(f"config.json is located at {configFile}")
         return
 
     def Load(self, configFile: str) -> dict:
