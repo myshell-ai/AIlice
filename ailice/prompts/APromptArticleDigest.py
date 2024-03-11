@@ -19,6 +19,7 @@ class APromptArticleDigest():
                          "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str", faultTolerance = True), "isEntry": True}],
                          "SEARCHDOWN": [{"re": GenerateRE4FunctionCalling("SEARCHDOWN<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SEARCHUP": [{"re": GenerateRE4FunctionCalling("SEARCHUP<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "GETLINK": [{"re": GenerateRE4FunctionCalling("GETLINK<!|text: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RETRIEVE": [{"re": GenerateRE4FunctionCalling("RETRIEVE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                         }

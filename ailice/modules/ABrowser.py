@@ -19,7 +19,8 @@ class ABrowser():
         return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content."},
                                                "SCROLLDOWN": {"func": "ScrollDown", "prompt": "Scroll down the page."},
                                                "SEARCHDOWN": {"func": "SearchDown", "prompt": "Search content downward from the current location."},
-                                               "SEARCHUP": {"func": "SearchUp", "prompt": "Search content upward from the current location."}}}
+                                               "SEARCHUP": {"func": "SearchUp", "prompt": "Search content upward from the current location."},
+                                               "GETLINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to come from the part of the page enclosed by square brackets."}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()
@@ -105,6 +106,9 @@ class ABrowser():
     def SearchUp(self, query: str) -> bool:
         return self.browser.SearchUp(query=query)
     
+    def GetLink(self, text: str) -> str:
+        return self.browser.GetLink(text) if hasattr(self.browser, "GetLink") else "GetLink not supported in current browser."
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
@@ -116,7 +120,7 @@ def main():
         makeServer(ABrowser,
                    {"pdfOutputDir": (args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)},
                    args.addr,
-                   ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText"]).Run()
+                   ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText", "GetLink"]).Run()
 
 if __name__ == '__main__':
     main()
