@@ -2,8 +2,7 @@ import random
 import subprocess
 from urllib.parse import urljoin
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-
+from bs4 import BeautifulSoup, Comment
 from ailice.modules.AScrollablePage import AScrollablePage
 
 
@@ -41,8 +40,9 @@ class AWebBrowser(AScrollablePage):
         
         self.driver.get(url)
         self.baseURL = url
-        root = self.driver.find_element(By.TAG_NAME, "html")
-        self.LoadPage(self.TraverseDOM(root), "TOP")
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+        body = soup.find('body')
+        self.LoadPage(self.ProcessNode(body), "TOP")
         return self() + self.prompt
     
     def GetFullText(self, url: str) -> str:
@@ -73,61 +73,58 @@ class AWebBrowser(AScrollablePage):
         return ret
     
     def ProcessNode(self, node) -> str:
-        tag_name = node.tag_name.lower()
-        text = self.driver.execute_script("""
-        var parent = arguments[0];
-        var child = parent.firstChild;
-        var texts = [];
-        while (child) {
-            if (child.nodeType === Node.TEXT_NODE) {
-                texts.push(child.nodeValue);
-            }
-            child = child.nextSibling;
-        }
-        return texts.join('').trim();
-        """, node)
-        attributes = self.driver.execute_script(
-            """
-            var items = {}; 
-            for (index = 0; index < arguments[0].attributes.length; ++index) { 
-                items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value 
-            }; 
-            return items;
-            """, node)
-        
-        if tag_name in ['p', 'li', 'span', 'div']:
-            return text
-        elif tag_name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-            level = int(tag_name[1])
-            return '\n\n' + '#' * level + ' ' + text + "\n"
-        elif tag_name == 'a':
-            href = attributes.get('href', '')
+        ret = ''
+        if node.name is None:  # This is a text node or a comment node
+            if isinstance(node, Comment):
+                # Handle comment nodes
+                return ""
+            else:
+                # Handle text nodes
+                return node.string.strip() if node.string else ''
+        elif node.name == 'li':
+            li = ''
+            for child in node.children:
+                li += self.ProcessNode(child)
+            ret = f"- {li}"
+        elif node.name == 'p':
+            ret += "\n\n"
+            for child in node.children:
+                ret += self.ProcessNode(child)
+        elif node.name in ['span', 'div']:
+            for child in node.children:
+                ret += self.ProcessNode(child)
+        elif node.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+            level = int(node.name[1])
+            for child in node.children:
+                ret += self.ProcessNode(child)
+            ret = '\n\n' + '#' * level + ' ' + ret + "\n"
+        elif node.name == 'a':
+            href = node.get('href', '')
+            text = ""
+            for child in node.children:
+                text += self.ProcessNode(child)
             if ('' != text) and ('' != href):
-                href = urljoin(self.baseURL, attributes.get('href', ''))
+                href = urljoin(self.baseURL, node.get('href', ''))
                 textUni = self.EnsureUnique(text)
                 self.urls[textUni] = href
-                return f"[{textUni}]"
+                ret = f"[{textUni}]"
             else:
-                return text
-        elif tag_name == 'img':
-            src = attributes.get('src', '')
-            alt = attributes.get('alt', '')
+                ret = text
+        elif node.name == 'img':
+            src = node.get('src', '')
+            alt = node.get('alt', '')
             if ('' != src):
-                return f"{alt}: <AImageLocation|'{urljoin(self.baseURL, src)}'|AImageLocation>"
+                ret = f"{alt}: <AImageLocation|'{urljoin(self.baseURL, src)}'|AImageLocation>"
             else:
-                return alt
-        elif tag_name == 'ul':
-            return text
-        elif tag_name == 'ol':
-            return text
-        elif tag_name in ['script', 'style']:
-            return ""
+                ret = alt
+        elif node.name in ['ul', 'ol']:
+            ret += "\n\n"
+            for child in node.children:
+                ret += self.ProcessNode(child)
+            ret += "\n\n"
+        elif node.name in ['script', 'style', 'noscript']:
+            ret = ""
         else:
-            return text
-
-    def TraverseDOM(self, node) -> str:
-        ret = self.ProcessNode(node)
-        children = node.find_elements(By.XPATH, "./*")
-        for child in children:
-            ret += self.TraverseDOM(child)
+            for child in node.children:
+                ret += self.ProcessNode(child)
         return ret

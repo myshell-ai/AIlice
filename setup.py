@@ -31,7 +31,7 @@ setup(
         'importlib-metadata',
         'googlesearch-python',
         'duckduckgo-search',
-        'urlextract', 'selenium>=4.10.0', 'html2text', 'scipy', 'scikit-learn',
+        'urlextract', 'selenium>=4.10.0', 'bs4', 'scipy', 'scikit-learn',
         'arxiv',
         'einops'
     ],
