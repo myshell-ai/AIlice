@@ -80,16 +80,18 @@ class AWebBrowser(AScrollablePage):
                 return ""
             else:
                 # Handle text nodes
-                return node.string.strip() if node.string else ''
+                return node.string if node.string else ''
         elif node.name == 'li':
             li = ''
             for child in node.children:
                 li += self.ProcessNode(child)
-            ret = f"- {li}"
+            ret = f"- {li}\n"
         elif node.name == 'p':
             ret += "\n\n"
             for child in node.children:
                 ret += self.ProcessNode(child)
+        elif node.name == 'code':
+            ret = f"\n\n```\n{''.join([self.ProcessNode(child) for child in node.children])}\n```\n\n"
         elif node.name in ['span', 'div']:
             for child in node.children:
                 ret += self.ProcessNode(child)
