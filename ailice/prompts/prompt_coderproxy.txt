@@ -59,6 +59,15 @@ PYTHON<!|code: str|!>
 #Wait for some seconds. The unit of the "duration" parameter is seconds. Useful when waiting for script or command execution to complete. 
 WAIT<!|duration: int|!>
 
+#Take a screenshot and return as a image variable.
+SCREENSHOT<!||!>
+
+#Read the content of an image file into a variable.
+READIMAGE<!|path: str|!>
+
+#Write a variable of image type into a file.
+WRITEIMAGE<!|image: AImage, path: str|!>
+
 EXAMPLE:
 !CALL<!|"coder", "clock_coder", "Build a program that can check CPU usage."|!>
 !PYTHON<!|code_python_3212|!>

@@ -94,7 +94,8 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
                                config.services['duckduckgo']['addr'],
-                               config.services['scripter']['addr']] + ([config.services['speech']['addr']] if config.speechOn else []))
+                               config.services['scripter']['addr'],
+                               config.services['computer']['addr']] + ([config.services['speech']['addr']] if config.speechOn else []))
     while True:
         if "" != trace.strip():
             with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:

@@ -52,6 +52,15 @@ QUERY<!|keywords: str|!>
 #Use this function to print the content of a variable.
 PRINT<!|txt: str|!>
 
+#Take a screenshot and return as a image variable.
+SCREENSHOT<!||!>
+
+#Read the content of an image file into a variable.
+READIMAGE<!|path: str|!>
+
+#Write a variable of image type into a file.
+WRITEIMAGE<!|image: AImage, path: str|!>
+
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!>
 

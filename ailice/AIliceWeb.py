@@ -90,7 +90,8 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
                                config.services['duckduckgo']['addr'],
-                               config.services['scripter']['addr']])
+                               config.services['scripter']['addr'],
+                               config.services['computer']['addr']])
     
     audioQue = queue.Queue(maxsize=100)
 

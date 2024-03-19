@@ -17,11 +17,14 @@ class APromptCoderProxy():
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "SAVE2FILE": [{"re": GenerateRE4FunctionCalling("SAVE2FILE<!|filePath: str, code: str|!> -> str"), "isEntry": True}],
+                         "SCREENSHOT": [{"re": GenerateRE4FunctionCalling("SCREENSHOT<!||!> -> AImage"), "isEntry": True}],
+                         "READIMAGE": [{"re": GenerateRE4FunctionCalling("READIMAGE<!|path: str|!> -> AImage", faultTolerance=True), "isEntry": True}],
+                         "WRITEIMAGE": [{"re": GenerateRE4FunctionCalling("WRITEIMAGE<!|image: AImage, path: str|!>"), "isEntry": True}],
                          "BASH": [{"re": GenerateRE4FunctionCalling("BASH<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SCROLLUPBASH": [{"re": GenerateRE4FunctionCalling("SCROLLUPBASH<!||!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLUPBASH": [{"re": GenerateRE4FunctionCalling("SCROLLUPBASH<!||!> -> str"), "isEntry": True}],
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str", faultTolerance = True), "isEntry": True}],
-                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str", faultTolerance = True), "isEntry": True}]}
+                         "SCROLLUPPY": [{"re": GenerateRE4FunctionCalling("SCROLLUPPY<!||!> -> str"), "isEntry": True}],
+                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str"), "isEntry": True}]}
         self.ACTIONS= {}
         return
     
