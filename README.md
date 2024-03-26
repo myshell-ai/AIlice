@@ -228,7 +228,12 @@ For advanced players, it is inevitable to try more models. Fortunately, this is 
 
 For openai models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:" prefix.
 
-You can use any third-party inference server compatible with the OpenAI API to replace the built-in LLM inference functionality in AIlice. For inference servers that do not support the OpenAI API, you can try using litellm to convert them into an OpenAI-compatible API. However, it's important to note that due to the presence of many SYSTEM messages in AIlice's conversation records, which is not a common use case for LLM, the level of support for this depends on the specific implementation of these inference servers. So, utilizing this method for inference may lead to a performance decline.
+You can use any third-party inference server compatible with the OpenAI API to replace the built-in LLM inference functionality in AIlice. 
+Just use the same configuration format as the openai models and modify the baseURL, apikey, contextWindow and other parameters.
+
+For inference servers that do not support the OpenAI API, you can try using litellm to convert them into an OpenAI-compatible API. 
+
+It's important to note that due to the presence of many SYSTEM messages in AIlice's conversation records, which is not a common use case for LLM, the level of support for this depends on the specific implementation of these inference servers. In this case,  you can set the systemAsUser parameter to true to circumvent the issue. Although this might prevent the model from running AIlice at its optimal performance, it also allows us to be compatible with various efficient inference servers. For the average user, the benefits outweigh the drawbacks.
 
 #### Example 1: ollama + litellm
 We use Ollama as an example to explain how to add support for such services.
