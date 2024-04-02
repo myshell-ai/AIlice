@@ -1,11 +1,16 @@
 #The primary work of this module is completed by AIlice.
 #This module can be used to replace AGoogle.py by utilizing Google's official API for search tasks.
-#The replacement method involves the following configuration in the configuration file(note that you need to fill in the api_key and cse_id.):
+#To use this module, install the following dependency:
+#
+#pip install google-api-python-client
+#
+#and modify config.json (note that you need to fill in the api_key and cse_id):
 #
 #    "google": {
 #      "cmd": "python3 -m ailice.modules.AGoogleAPI --addr=ipc:///tmp/AGoogle.ipc --api_key=YOUR_API_KEY --cse_id=YOUR_CSE_ID",
 #      "addr": "ipc:///tmp/AGoogle.ipc"
 #    },
+#
 
 
 from googleapiclient.discovery import build
