@@ -22,9 +22,12 @@ The AIlice project is dedicated to creating a self-contained artificial intellig
 
 AIlice has reached near-perfect performance in everyday tasks using GPT-4 and is making strides towards practical application with the latest open-source models.
 
-To understand AIlice's present abilities, watch this demonstration video:
+To understand AIlice's present abilities, watch the following videos:
 
-[![AIlice Demo Video](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
+
+[![Building a Text-to-Image Website in 4 Conversations](https://www.youtube.com/watch?v=fLGR2iiXviA&t=214s)](https://www.youtube.com/watch?v=fLGR2iiXviA&t=214s)
+
+[![Document searching and downloading, financial data downloading and analysis with plotting, OpenGL texture rendering](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
 
 Key technical features of AIlice include:
 
