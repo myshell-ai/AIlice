@@ -25,7 +25,7 @@ AIlice has reached near-perfect performance in everyday tasks using GPT-4 and is
 To understand AIlice's present abilities, watch the following videos:
 
 
-[![Building a Text-to-Image Website in 4 Conversations](https://www.youtube.com/watch?v=fLGR2iiXviA&t=214s)](https://www.youtube.com/watch?v=fLGR2iiXviA&t=214s)
+[![Building a Text-to-Image Website in 4 Conversations](https://img.youtube.com/vi/fLGR2iiXviA/0.jpg)](https://www.youtube.com/watch?v=fLGR2iiXviA)
 
 [![Document searching and downloading, financial data downloading and analysis with plotting, OpenGL texture rendering](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
 
