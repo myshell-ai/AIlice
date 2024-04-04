@@ -18,6 +18,7 @@ Variables cannot be referenced in bash and python code.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
 var_name := <!|content|!>
 If you have to generate the code yourself anyway, generate the code directly in the function call or variable definition statement(so you can use variable reference in future function call), otherwise you need to completely copy the code into the function call.
+To pass the content of multimodal variables to the agent you want to call or to the agent calling you, you need to use the <&|VAR_NAME|&> syntax in the text, replacing VAR_NAME with the corresponding variable name.
 
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it.
 Do not attempt to build ext-modules unless explicitly requested by the user. It adds complexity to the debugging process.
