@@ -123,7 +123,7 @@ class AInterpreter():
                 r = self.Eval(script)
                 if type(r) in typeInfo:
                     varName = self.CreateVar(content=r, prefix="ret")
-                    r = f"Returned data: {varName} := {str(r)} " + f"<{type(r).__name__}|{varName}|{type(r).__name__}>"
+                    r = f"Returned data: {varName} := {str(r)} " + f"<&|{varName}|&>"
                 elif r != None:
                     r = str(r)
             except Exception as e:
