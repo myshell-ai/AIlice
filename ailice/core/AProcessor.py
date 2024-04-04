@@ -1,5 +1,6 @@
 import time
 import inspect
+import re
 from functools import partial
 from ailice.common.AConfig import config
 from ailice.core.llm.ALLMPool import llmPool
@@ -8,6 +9,8 @@ from ailice.common.ARemoteAccessors import clientPool
 from ailice.common.AMessenger import messenger
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
+from ailice.prompts.ARegex import ARegexMap
+
 
 class AProcessor():
     def __init__(self, name, modelID, promptName, outputCB, collection = None):
@@ -110,7 +113,19 @@ class AProcessor():
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
             self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
+            matches = [m for m in re.findall(f'<&\\|({ARegexMap["ref"]})\\|&>', msg)]
+            for varName in matches:
+                if varName in self.interpreter.env:
+                    self.subProcessors[agentName].interpreter.env[varName] = self.interpreter.env[varName]
+                else:
+                    return f"variable name {varName} not defined in current env. please check and correct."
+        
         resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg)}"
+
+        matches = [m for m in re.findall(f'<&\\|({ARegexMap["ref"]})\\|&>', resp)]
+        for varName in matches:
+            if varName in self.subProcessors[agentName].interpreter.env:
+                self.interpreter.env[varName] = self.subProcessors[agentName].interpreter.env[varName]
         return resp
     
     def EvalRespond(self, message: str) -> str:
