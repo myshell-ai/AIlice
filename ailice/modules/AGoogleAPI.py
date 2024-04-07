@@ -12,17 +12,18 @@
 #    },
 #
 
-
+import random
 from googleapiclient.discovery import build
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
-class AGoogle(AScrollablePage):
+class AGoogle():
     def __init__(self, api_key: str, cse_id: str):
-        super(AGoogle, self).__init__({"SCROLLDOWN": "SCROLLDOWNGOOGLE"})
         self.api_key = api_key
         self.cse_id = cse_id
         self.service = build("customsearch", "v1", developerKey=self.api_key)
+        self.sessions = {}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLLDOWNGOOGLE<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
@@ -34,6 +35,12 @@ class AGoogle(AScrollablePage):
             }
         }
     
+    def GetSessionID(self) -> str:
+        id = f"session_{str(random.randint(0,99999999))}"
+        while id in self.sessions:
+            id = f"session_{str(random.randint(0,99999999))}"
+        return id
+    
     def Google(self, keywords: str) -> str:
         try:
             res = self.service.cse().list(q=keywords, cx=self.cse_id).execute()
@@ -41,8 +48,13 @@ class AGoogle(AScrollablePage):
         except Exception as e:
             print("Google Search exception: ", e)
             ret = f"Google Search exception: {str(e)}"
-        self.LoadPage(ret, "TOP")
-        return self()
+        session = self.GetSessionID()
+        self.sessions[session] = AScrollablePage(functions=self.functions)
+        self.sessions[session].LoadPage(str(ret), "TOP")
+        return self.sessions[session]() + "\n\n" + f'Session name: "{session}"\n'
+
+    def ScrollDown(self, session: str) -> str:
+        return self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
 
 if __name__ == '__main__':    
     import argparse

@@ -7,13 +7,13 @@ from ailice.modules.AScrollablePage import AScrollablePage
 
 
 class AWebBrowser(AScrollablePage):
-    def __init__(self):
-        super(AWebBrowser, self).__init__({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
+    def __init__(self, functions: dict[str, str]):
+        super(AWebBrowser, self).__init__(functions=functions)
         self.inited = False
         self.driver = None
         self.baseURL = None
         self.urls = {}
-        self.prompt = "\nThe text with links are enclosed in square brackets to highlight it. If you need to get the url on a certain text, please use the GETLINK<!|text: str|!> function. Please note that the text must exactly match the content in the square brackets."
+        self.prompt = "\nThe text with links are enclosed in square brackets to highlight it. If you need to get the url on a certain text, please use the GETLINK<!|text: str, session: str|!> function. Please note that the text must exactly match the content in the square brackets."
         return
     
     def Init(self):
@@ -45,7 +45,7 @@ class AWebBrowser(AScrollablePage):
         self.LoadPage(self.ProcessNode(body), "TOP")
         return self() + self.prompt
     
-    def GetFullText(self, url: str) -> str:
+    def GetFullText(self) -> str:
         return self.txt if (self.txt != None) else ""
     
     def GetLink(self, text: str) -> str:

@@ -5,8 +5,8 @@ import requests
 from ailice.modules.AScrollablePage import AScrollablePage
 
 class APDFBrowser(AScrollablePage):
-    def __init__(self, pdfOutputDir: str):
-        super(APDFBrowser, self).__init__({"SCROLLDOWN": "SCROLLDOWN", "SEARCHDOWN": "SEARCHDOWN", "SEARCHUP": "SEARCHUP"})
+    def __init__(self, pdfOutputDir: str, functions: dict[str, str]):
+        super(APDFBrowser, self).__init__(functions=functions)
         self.pdfOutputDir = pdfOutputDir
         return
     
@@ -36,5 +36,5 @@ class APDFBrowser(AScrollablePage):
             self.LoadPage(f"Exception: {str(e)}. Perhaps it is caused by nougat's failure to do pdf ocr. nougat returned: {str(result)}", "BOTTOM")
         return self()
     
-    def GetFullText(self, url: str) -> str:
+    def GetFullText(self) -> str:
         return self.txt if (self.txt != None) else ""

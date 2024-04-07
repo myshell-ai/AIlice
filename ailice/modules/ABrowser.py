@@ -1,4 +1,5 @@
 import re
+import random
 import requests
 import tempfile
 import traceback
@@ -13,14 +14,19 @@ from ailice.modules.APDFBrowser import APDFBrowser
 class ABrowser():
     def __init__(self, pdfOutputDir: str):
         self.pdfOutputDir = pdfOutputDir
-        self.browser = None
+        self.sessions = {}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLLDOWNBROWSER<!|session: str|!>",
+                          "SCROLLUP": "#scroll up the page: \nSCROLLUPBROWSER<!|session: str|!>",
+                          "SEARCHDOWN": "#search the content downward and jumps the page to the next matching point(Just like the F3 key normally does): \nSEARCHDOWNBROWSER<!|query: str, session: str|!>",
+                          "SEARCHUP": "#search the content upward and jumps the page to the next matching point: \nSEARCHUPBROWSER<!|query: str, session: str|!>"}
         return
 
     def ModuleInfo(self):
-        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content."},
-                                               "SCROLLDOWN": {"func": "ScrollDown", "prompt": "Scroll down the page."},
-                                               "SEARCHDOWN": {"func": "SearchDown", "prompt": "Search content downward from the current location."},
-                                               "SEARCHUP": {"func": "SearchUp", "prompt": "Search content upward from the current location."},
+        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content. You need to pass a session parameter as the session name, and you can reuse the same session to open new web pages."},
+                                               "SCROLLDOWNBROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page."},
+                                               "SCROLLUPBROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page."},
+                                               "SEARCHDOWNBROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location."},
+                                               "SEARCHUPBROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location."},
                                                "GETLINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to come from the part of the page enclosed by square brackets."}}}
     
     def ParseURL(self, txt: str) -> str:
@@ -69,20 +75,20 @@ class ABrowser():
     def PathIsPDF(self, path: str) -> bool:
         return (path[-4:] == ".pdf")
     
-    def Browse(self, url: str) -> str:
+    def Browse(self, url: str, session: str) -> str:
         try:
             url, path = self.GetLocation(url)
             if url is not None:
                 if self.URLIsPDF(url):
-                    self.browser = APDFBrowser(self.pdfOutputDir) if ("APDFBrowser" != type(self.browser).__name__) else self.browser
-                    return self.browser.Browse(url)
+                    self.sessions[session] = APDFBrowser(self.pdfOutputDir, functions=self.functions)
+                    return self.sessions[session].Browse(url)  + "\n\n" + f'Session name: "{session}"\n'
                 else:
-                    self.browser = AWebBrowser() if ("AWebBrowser" != type(self.browser).__name__) else self.browser
-                    return self.browser.Browse(url)
+                    self.sessions[session] = AWebBrowser(functions=self.functions)
+                    return self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
             elif path is not None:
                 if self.PathIsPDF(path):
-                    self.browser = APDFBrowser(self.pdfOutputDir) if ("APDFBrowser" != type(self.browser).__name__) else self.browser
-                    return self.browser.Browse(path)
+                    self.sessions[session] = APDFBrowser(self.pdfOutputDir, functions=self.functions)
+                    return self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
                 else:
                     return "File format not supported. Please check your input."
             else:
@@ -92,23 +98,23 @@ class ABrowser():
             print("EXCEPTION. e: ", str(e))
             return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
     
-    def GetFullText(self, url: str) -> str:
-        return self.browser.GetFullText(url)
+    def GetFullText(self, session: str) -> str:
+        return self.sessions[session].GetFullText()
 
-    def ScrollDown(self) -> str:
-        return self.browser.ScrollDown()
+    def ScrollDown(self, session: str) -> str:
+        return self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
     
-    def ScrollUp(self) -> str:
-        return self.browser.ScrollUp()
+    def ScrollUp(self, session: str) -> str:
+        return self.sessions[session].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
 
-    def SearchDown(self, query: str) -> bool:
-        return self.browser.SearchDown(query=query)
+    def SearchDown(self, query: str, session: str) -> bool:
+        return self.sessions[session].SearchDown(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
-    def SearchUp(self, query: str) -> bool:
-        return self.browser.SearchUp(query=query)
+    def SearchUp(self, query: str, session: str) -> bool:
+        return self.sessions[session].SearchUp(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
-    def GetLink(self, text: str) -> str:
-        return self.browser.GetLink(text) if hasattr(self.browser, "GetLink") else "GetLink not supported in current browser."
+    def GetLink(self, text: str, session: str) -> str:
+        return self.sessions[session].GetLink(text) if hasattr(self.sessions[session], "GetLink") else "GetLink not supported in current browser."
 
 def main():
     import argparse
@@ -121,7 +127,7 @@ def main():
         makeServer(ABrowser,
                    {"pdfOutputDir": (args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)},
                    args.addr,
-                   ["ModuleInfo", "Browse", "ScrollDown", "SearchDown", "SearchUp", "GetFullText", "GetLink"]).Run()
+                   ["ModuleInfo", "Browse", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink"]).Run()
 
 if __name__ == '__main__':
     main()

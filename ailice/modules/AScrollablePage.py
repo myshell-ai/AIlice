@@ -12,14 +12,14 @@ class AScrollablePage():
         ret = "To avoid excessive consumption of context space due to lengthy content, we have paginated the entire content. This is just one page, to browse more content, please use the following function(s) for page navigation.\n"
         funcs = []
         if ('SCROLLDOWN' in self.functions) and (self.currentIdx + STEP < len(self.txt)):
-            funcs.append(f"#scroll down the page: \n{self.functions['SCROLLDOWN']}<!||!>\n")
+            funcs.append(self.functions['SCROLLDOWN'])
         if ('SCROLLUP' in self.functions) and (self.currentIdx > 0):
-            funcs.append(f"#scroll up the page: \n{self.functions['SCROLLUP']}<!||!>\n")
+            funcs.append(self.functions['SCROLLUP'])
         if ('SEARCHDOWN' in self.functions) and (self.currentIdx + STEP < len(self.txt)):
-            funcs.append(f"#search the content downward and jumps the page to the next matching point(Just like the F3 key normally does): \n{self.functions['SEARCHDOWN']}<!|query: str|!>\n")
+            funcs.append(self.functions['SEARCHDOWN'])
         if ('SEARCHUP' in self.functions) and (self.currentIdx > 0):
-            funcs.append(f"#search the content upward and jumps the page to the next matching point: \n{self.functions['SEARCHUP']}<!|query: str|!>\n")
-        return ret + "".join(funcs) if len(funcs) > 0 else ""
+            funcs.append(self.functions['SEARCHUP'])
+        return ret + "\n".join(funcs) if len(funcs) > 0 else ""
     
     def LoadPage(self, txt: str, initPosition: str):
         self.txt = txt

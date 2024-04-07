@@ -1,6 +1,7 @@
 import subprocess
 import os
 import time
+import random
 import tempfile
 import traceback
 
@@ -11,16 +12,22 @@ from ailice.modules.AScrollablePage import AScrollablePage
 class AScripter():
     def __init__(self, incontainer = False):
         self.incontainer = incontainer
-        self.sessions = {"bash": {"proc": None, "pages": AScrollablePage({"SCROLLUP": "SCROLLUPBASH"})},
-                         "py": {"proc": None, "pages": AScrollablePage({"SCROLLUP": "SCROLLUPPY"})}}
+        self.sessions = {}
+        self.functions = {"SCROLLUP": "#scroll up the page: \nSCROLLUPTERM<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
         return {"NAME": "scripter", "ACTIONS": {"BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time."},
-                                                "SCROLLUPBASH": {"func": "ScrollUpBash", "prompt": "Scroll up the results."},
                                                 "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references."},
-                                                "SCROLLUPPY": {"func": "ScrollUpPy", "prompt": "Scroll up the results."},
+                                                "CHECKOUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result."},
+                                                "SCROLLUPTERM": {"func": "ScrollUp", "prompt": "Scroll up the results."},
                                                 "SAVE2FILE": {"func": "Save2File", "prompt": "Save text or code to file."}}}
+    
+    def GetSessionID(self) -> str:
+        id = f"session_{str(random.randint(0,99999999))}"
+        while id in self.sessions:
+            id = f"session_{str(random.randint(0,99999999))}"
+        return id
     
     def RunCMD(self, session: str, cmd: list[str], timeout: int = 30):
         env = os.environ.copy()
@@ -38,7 +45,7 @@ class AScripter():
                 return
             time.sleep(0.5)
     
-    def CheckOutput(self, session: str) -> tuple[str,bool]:
+    def CheckProcOutput(self, session: str) -> tuple[str,bool]:
         process = self.sessions[session]['proc']
         output = ''
         completed = False
@@ -56,52 +63,64 @@ class AScripter():
                     break
         return output, completed
     
-    def RunBash(self, code: str) -> str:
+    def CheckOutput(self, session: str) -> str:
         res = ""
-        if "" != code.strip():
-            try:
-                self.RunCMD('bash', ["bash", "-c", code])
-            except Exception as e:
-                res += f"Exception: {str(e)}\n {traceback.format_exc()}"
-        
         try:
-            output, completed = self.CheckOutput(session='bash')
+            output, completed = self.CheckProcOutput(session=session)
             res += output
-            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then pass an empty string to the BASH function to get new output." if not completed else "\nExecution completed."
+            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECKOUTPUT function to get new output." if not completed else "\nExecution completed."
         except Exception as e:
             res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
         finally:
-            self.sessions['bash']['pages'].LoadPage(res, "BOTTOM")
-            return self.sessions['bash']['pages']()
-    
-    def ScrollUpBash(self) -> str:
-        return self.sessions['bash']['pages'].ScrollUp()
+            self.sessions[session]['pages'].LoadPage(res, "BOTTOM")
+            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
+        
+    def RunBash(self, code: str) -> str:
+        res = ""
+        try:
+            session = self.GetSessionID()
+            self.sessions[session] = {"proc": None, "pages": AScrollablePage(functions=self.functions)}
+            self.RunCMD(session, ["bash", "-c", code])
+        except Exception as e:
+            res += f"Exception: {str(e)}\n {traceback.format_exc()}"
+        
+        try:
+            output, completed = self.CheckProcOutput(session=session)
+            res += output
+            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECKOUTPUT function to get new output." if not completed else "\nExecution completed."
+        except Exception as e:
+            res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
+            print(res)
+        finally:
+            self.sessions[session]['pages'].LoadPage(res, "BOTTOM")
+            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
     
     def RunPython(self, code: str) -> str:
         res = ""
-        if "" != code.strip():
-            with tempfile.NamedTemporaryFile(mode='w', delete=True) as temp:
-                temp.write(code)
-                temp.flush()
-                try:
-                    self.RunCMD('py', ['python3', '-u', temp.name])
-                except Exception as e:
-                    res += f"Exception: {str(e)}\n {traceback.format_exc()}"
+        with tempfile.NamedTemporaryFile(mode='w', delete=True) as temp:
+            temp.write(code)
+            temp.flush()
+            try:
+                session = self.GetSessionID()
+                self.sessions[session] = {"proc": None, "pages": AScrollablePage(functions=self.functions)}
+                self.RunCMD(session, ['python3', '-u', temp.name])
+            except Exception as e:
+                res += f"Exception: {str(e)}\n {traceback.format_exc()}"
         
         try:
-            output, completed = self.CheckOutput(session='py')
+            output, completed = self.CheckProcOutput(session=session)
             res += output
-            res += "\nThe python script takes longer to complete. You can use WAIT to wait for a while and then pass an empty string to the PYTHON function to get new output." if not completed else "\nExecution completed."
+            res += "\nThe python script takes longer to complete. You can use WAIT to wait for a while and then use CHECKOUTPUT function to get new output." if not completed else "\nExecution completed."
         except Exception as e:
             res += f"Exception when check the output of python execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
         finally:
-            self.sessions['py']['pages'].LoadPage(res, "BOTTOM")
-            return self.sessions['py']['pages']()
+            self.sessions[session]['pages'].LoadPage(res, "BOTTOM")
+            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
     
-    def ScrollUpPy(self) -> str:
-        return self.sessions['py']['pages'].ScrollUp()
+    def ScrollUp(self, session: str) -> str:
+        return self.sessions[session]['pages'].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
     
     def Save2File(self, filePath: str, code: str) -> str:
         try:
@@ -122,7 +141,7 @@ def main():
     parser.add_argument('--incontainer',action="store_true",help="Run in container. Please DO NOT turn on this switch on non-virtual machines, otherwise it will cause serious security risks.")
     args = parser.parse_args()
     #addr = "tcp://0.0.0.0:59000" if args.incontainer else "tcp://127.0.0.1:59000"
-    makeServer(AScripter, {"incontainer": args.incontainer}, args.addr, ["ModuleInfo", "RunBash", "ScrollUpBash", "RunPython", "ScrollUpPy", "Save2File"]).Run()
+    makeServer(AScripter, {"incontainer": args.incontainer}, args.addr, ["ModuleInfo", "CheckOutput", "RunBash", "RunPython", "ScrollUp", "Save2File"]).Run()
 
 if __name__ == '__main__':
     main()

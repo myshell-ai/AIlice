@@ -1,17 +1,25 @@
 
 import arxiv
+import random
 
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
-class AArxiv(AScrollablePage):
+class AArxiv():
     def __init__(self):
-        super(AArxiv, self).__init__({"SCROLLDOWN": "SCROLLDOWNARXIV"})
+        self.sessions = {}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLLDOWNARXIV<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
         return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures."},
                                              "SCROLLDOWNARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
+    
+    def GetSessionID(self) -> str:
+        id = f"session_{str(random.randint(0,99999999))}"
+        while id in self.sessions:
+            id = f"session_{str(random.randint(0,99999999))}"
+        return id
     
     def ArxivSearch(self, keywords: str) -> str:
         try:
@@ -19,9 +27,14 @@ class AArxiv(AScrollablePage):
         except Exception as e:
             print("arxiv excetption: ", e)
             ret = f"arxiv excetption: {str(e)}"
-        self.LoadPage(str(ret), "TOP")
-        return self()
+        session = self.GetSessionID()
+        self.sessions[session] = AScrollablePage(functions=self.functions)
+        self.sessions[session].LoadPage(str(ret), "TOP")
+        return self.sessions[session]() + "\n\n" + f'Session name: "{session}"\n'
 
+    def ScrollDown(self, session: str) -> str:
+        return self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
+    
 def main():
     import argparse
     parser = argparse.ArgumentParser()

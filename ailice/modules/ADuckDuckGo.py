@@ -1,18 +1,26 @@
 import asyncio
+import random
 from duckduckgo_search import DDGS
 
 from ailice.common.lightRPC import makeServer
 from ailice.modules.AScrollablePage import AScrollablePage
 
-class ADuckDuckGo(AScrollablePage):
+class ADuckDuckGo():
     def __init__(self):
-        super(ADuckDuckGo, self).__init__(functions={"SCROLLDOWN": "SCROLLDOWNDUCKDUCKGO"})
         self.baseURL = "https://api.duckduckgo.com/"
+        self.sessions = {}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLLDOWNDUCKDUCKGO<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
         return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": {"func": "DuckDuckGo", "prompt": "Use duckduckgo to search internet content."},
                                                   "SCROLLDOWNDUCKDUCKGO": {"func": "ScrollDown", "prompt": "Scrolldown the results."}}}
+    
+    def GetSessionID(self) -> str:
+        id = f"session_{str(random.randint(0,99999999))}"
+        while id in self.sessions:
+            id = f"session_{str(random.randint(0,99999999))}"
+        return id
     
     def DuckDuckGo(self, keywords: str) -> str:
         try:
@@ -25,9 +33,14 @@ class ADuckDuckGo(AScrollablePage):
             ret = str(e)
         finally:
             loop.close()
-        self.LoadPage(str(ret), "TOP")
-        return self()
-
+        session = self.GetSessionID()
+        self.sessions[session] = AScrollablePage(functions=self.functions)
+        self.sessions[session].LoadPage(str(ret), "TOP")
+        return self.sessions[session]() + "\n\n" + f'Session name: "{session}"\n'
+    
+    def ScrollDown(self, session: str) -> str:
+        return self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
+    
 def main():
     import argparse
     parser = argparse.ArgumentParser()
