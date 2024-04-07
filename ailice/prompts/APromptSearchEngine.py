@@ -13,16 +13,17 @@ class APromptSearchEngine():
         self.outputCB = outputCB
         self.prompt0 = read_text("ailice.prompts", "prompt_searchengine.txt")
         self.PATTERNS = {"ARXIV": [{"re": GenerateRE4FunctionCalling("ARXIV<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SCROLLDOWNARXIV": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNARXIV<!||!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLDOWNARXIV": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNARXIV<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "GOOGLE": [{"re": GenerateRE4FunctionCalling("GOOGLE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SCROLLDOWNGOOGLE": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNGOOGLE<!||!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLDOWNGOOGLE": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNGOOGLE<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "DUCKDUCKGO": [{"re": GenerateRE4FunctionCalling("DUCKDUCKGO<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SCROLLDOWNDUCKDUCKGO": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNDUCKDUCKGO<!||!> -> str", faultTolerance = True), "isEntry": True}],
-                         "BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str"), "isEntry": True}],
-                         "SEARCHDOWN": [{"re": GenerateRE4FunctionCalling("SEARCHDOWN<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SEARCHUP": [{"re": GenerateRE4FunctionCalling("SEARCHUP<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "GETLINK": [{"re": GenerateRE4FunctionCalling("GETLINK<!|text: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLDOWNDUCKDUCKGO": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNDUCKDUCKGO<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str, session: str|!> -> str"), "isEntry": True}],
+                         "SCROLLDOWNBROWSER": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNBROWSER<!|session: str|!> -> str"), "isEntry": True}],
+                         "SCROLLUPBROWSER": [{"re": GenerateRE4FunctionCalling("SCROLLUPBROWSER<!|session: str|!> -> str"), "isEntry": True}],
+                         "SEARCHDOWNBROWSER": [{"re": GenerateRE4FunctionCalling("SEARCHDOWNBROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
+                         "SEARCHUPBROWSER": [{"re": GenerateRE4FunctionCalling("SEARCHUPBROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
+                         "GETLINK": [{"re": GenerateRE4FunctionCalling("GETLINK<!|text: str, session: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS= {}
         return

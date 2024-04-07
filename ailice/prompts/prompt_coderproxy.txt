@@ -60,6 +60,9 @@ PYTHON<!|code: str|!>
 #Wait for some seconds. The unit of the "duration" parameter is seconds. Useful when waiting for script or command execution to complete. 
 WAIT<!|duration: int|!>
 
+#Obtain script execution output result.
+CHECKOUTPUT<!|session: str|!>
+
 #Take a screenshot and return as a image variable.
 SCREENSHOT<!||!>
 

@@ -1,3 +1,4 @@
+import random
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import paragraph_generator
@@ -16,10 +17,11 @@ class APromptArticleDigest():
         self.outputCB = outputCB
         self.prompt0 = read_text('ailice.prompts', 'prompt_article_digest.txt')
         self.PATTERNS = {"READ": [{"re": GenerateRE4FunctionCalling("READ<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SCROLLDOWN": [{"re": GenerateRE4FunctionCalling("SCROLLDOWN<!||!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SEARCHDOWN": [{"re": GenerateRE4FunctionCalling("SEARCHDOWN<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SEARCHUP": [{"re": GenerateRE4FunctionCalling("SEARCHUP<!|query: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "GETLINK": [{"re": GenerateRE4FunctionCalling("GETLINK<!|text: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLDOWNBROWSER": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNBROWSER<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SCROLLUPBROWSER": [{"re": GenerateRE4FunctionCalling("SCROLLUPBROWSER<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "SEARCHDOWNBROWSER": [{"re": GenerateRE4FunctionCalling("SEARCHDOWNBROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
+                         "SEARCHUPBROWSER": [{"re": GenerateRE4FunctionCalling("SEARCHUPBROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
+                         "GETLINK": [{"re": GenerateRE4FunctionCalling("GETLINK<!|text: str, session: str|!> -> str"), "isEntry": True}],
                          "RETRIEVE": [{"re": GenerateRE4FunctionCalling("RETRIEVE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                         }
@@ -31,8 +33,9 @@ class APromptArticleDigest():
         return
 
     def Read(self, url: str) -> str:
-        ret = self.processor.modules['browser']['module'].Browse(url)
-        fulltxt = self.processor.modules['browser']['module'].GetFullText(url)
+        session = f"webpage_{random.randint(0,99999999)}"
+        ret = self.processor.modules['browser']['module'].Browse(url, session)
+        fulltxt = self.processor.modules['browser']['module'].GetFullText(session)
         for txt in paragraph_generator(fulltxt):
             self.storage.Store(self.collection, txt)
         return ret
