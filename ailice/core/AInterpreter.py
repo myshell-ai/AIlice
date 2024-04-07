@@ -139,7 +139,7 @@ class AInterpreter():
         if varName in self.env:
             return self.env[varName]
         else:
-            return f"{varName} NOT DEFINED."
+            return f"Variable name {varName} NOT FOUND, did you mean to use a string but forgot the quotation marks?"
 
     def EvalVar(self, varName: str, content: str):
         self.env[varName] = content
