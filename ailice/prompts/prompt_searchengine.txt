@@ -20,6 +20,10 @@ ARXIV<!|keywords: str|!> #Use arxiv to search academic literatures.
 GOOGLE<!|keywords: str|!> #Use google to search internet content.
 DUCKDUCKGO<!|keywords: str|!> #Use duckduckgo to search internet content.
 
+The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
+<FUNCTIONS>
+
+
 Example for function calling:
 Input: The principle of pagerank algorithm.
 Your output could be: This is an academic question, so I will try the ARXIV function first: !ARXIV<!|principle pagerank algorithm|!>

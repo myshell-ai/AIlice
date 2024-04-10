@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt
+from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedFunctions
 
 
 class APromptResearcher():
@@ -14,6 +14,7 @@ class APromptResearcher():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
+        self.functions = []
         self.prompt0 = read_text("ailice.prompts", "prompt_researcher.txt")
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
@@ -43,15 +44,21 @@ class APromptResearcher():
         return "None."
     
     def GetPatterns(self):
-        return self.PATTERNS
+        functions = FindRelatedFunctions("Internet operations, file operations.", len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
+        self.functions = [f for f in functions if f['action'] not in self.PATTERNS]
+        patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in self.functions}
+        patterns.update(self.PATTERNS)
+        return patterns
     
     def GetActions(self):
         return self.ACTIONS
 
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
+        prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
+
         prompt = f"""
-{self.prompt0}
+{prompt0}
 
 End of general instructions.
 

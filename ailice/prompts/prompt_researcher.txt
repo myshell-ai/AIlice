@@ -65,6 +65,10 @@ WRITEIMAGE<!|image: AImage, path: str|!>
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!>
 
+#The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
+
+<FUNCTIONS>
+
 Function Call Examples
 !CALL<!|"...","...","..."|!>
 !BROWSE<!|"..."|!>

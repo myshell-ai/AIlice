@@ -34,10 +34,8 @@ class APromptModuleLoader():
             ret = self.processor.RegisterModules([addr])
             prompts = []
             for r in ret:
-                t = r['action'] + r['signature']
-                newSig = t.replace('(', '<!|').replace(')', '|!>')
-                self.processor.interpreter.RegisterPattern(nodeType=r['action'], pattern=GenerateRE4FunctionCalling(newSig, faultTolerance = True), isEntry=True)
-                prompts.append(f"{newSig}: {r['prompt']}")
+                self.processor.interpreter.RegisterPattern(nodeType=r['action'], pattern=GenerateRE4FunctionCalling(r['signature'], faultTolerance = True), isEntry=True)
+                prompts.append(f"{r['signature']}: {r['prompt']}")
             self.memory = "\n".join(prompts)
             ret = self.memory
         except Exception as e:

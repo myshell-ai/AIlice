@@ -1,3 +1,5 @@
+import json
+
 def ConstructOptPrompt(func, low:int, high: int, maxLen: int) -> str:
     prompt = None
     n = None
@@ -11,3 +13,8 @@ def ConstructOptPrompt(func, low:int, high: int, maxLen: int) -> str:
         else:
             high = mid - 1
     return prompt, n
+
+
+def FindRelatedFunctions(prompt: str, num: int, storage, collection) -> list:
+    res = storage.Query(collection, prompt, num)
+    return [json.loads(r[0]) for r in res]

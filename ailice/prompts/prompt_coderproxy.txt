@@ -72,6 +72,10 @@ READIMAGE<!|path: str|!>
 #Write a variable of image type into a file.
 WRITEIMAGE<!|image: AImage, path: str|!>
 
+#The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
+
+<FUNCTIONS>
+
 EXAMPLE:
 !CALL<!|"coder", "clock_coder", "Build a program that can check CPU usage."|!>
 !PYTHON<!|code_python_3212|!>

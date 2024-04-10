@@ -1,16 +1,19 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt
+from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedFunctions
 
 class APromptSearchEngine():
     PROMPT_NAME = "search-engine"
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor
+        self.storage = storage
+        self.collection = collection
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
+        self.functions = []
         self.prompt0 = read_text("ailice.prompts", "prompt_searchengine.txt")
         self.PATTERNS = {"ARXIV": [{"re": GenerateRE4FunctionCalling("ARXIV<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLLDOWNARXIV": [{"re": GenerateRE4FunctionCalling("SCROLLDOWNARXIV<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
@@ -32,14 +35,19 @@ class APromptSearchEngine():
         return
     
     def GetPatterns(self):
-        return self.PATTERNS
+        functions = FindRelatedFunctions("Internet operations. Search engine operations. Retrieval operations.", len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
+        self.functions = [f for f in functions if f['action'] not in self.PATTERNS]
+        patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in self.functions}
+        patterns.update(self.PATTERNS)
+        return patterns
     
     def GetActions(self):
         return self.ACTIONS
     
     def ParameterizedBuildPrompt(self, n: int):
+        prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
         prompt = f"""
-{self.prompt0}
+{prompt0}
 
 End of general instructions.
 
