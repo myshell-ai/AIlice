@@ -43,6 +43,8 @@ class AConfig():
                     "apikey": None,
                     "baseURL": None,
                     "modelList": {
+                        "gpt-4-turbo": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
+                        "gpt-4-turbo-2024-04-09": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
                         "gpt-4-0125-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
                         "gpt-4-turbo-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
                         "gpt-4-1106-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
