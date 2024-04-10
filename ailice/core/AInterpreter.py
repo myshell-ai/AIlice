@@ -40,7 +40,9 @@ class AInterpreter():
     def RegisterPattern(self, nodeType: str, pattern: str, isEntry: bool):
         if nodeType not in self.patterns:
             self.patterns[nodeType] = []
-        self.patterns[nodeType].append({"re": pattern, "isEntry": isEntry})
+        p = {"re": pattern, "isEntry": isEntry}
+        if p not in self.patterns[nodeType]:
+            self.patterns[nodeType].append(p)
         return
     
     def CreateVar(self, content: Any, prefix: str) -> str:

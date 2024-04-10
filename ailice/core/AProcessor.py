@@ -1,6 +1,7 @@
 import time
 import inspect
 import re
+import json
 from functools import partial
 from ailice.common.AConfig import config
 from ailice.core.llm.ALLMPool import llmPool
@@ -33,11 +34,6 @@ class AProcessor():
         self.outputCB = outputCB
         self.collection = "ailice" + str(time.time()) if collection is None else collection
         self.prompt = promptsManager[promptName](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
-        for nodeType, action in self.prompt.GetActions().items():
-            self.interpreter.RegisterAction(nodeType, action)
-        for nodeType, patterns in self.prompt.GetPatterns().items():
-            for p in patterns:
-                self.interpreter.RegisterPattern(nodeType, p["re"], p["isEntry"])
         self.result = "None."
         return
     
@@ -59,8 +55,10 @@ class AProcessor():
             
             self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
             for actionName, actionMeta in info["ACTIONS"].items():
-                ret.append({"action": actionName, "signature": str(inspect.signature(getattr(module, actionMeta['func']))), "prompt": actionMeta["prompt"]})
+                sig = actionName + str(inspect.signature(getattr(module, actionMeta['func']))).replace('(', '<!|').replace(')', '|!>')
+                ret.append({"action": actionName, "signature": sig, "prompt": actionMeta["prompt"]})
                 self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionMeta["func"])})
+                self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"action": actionName, "signature": sig, "prompt": actionMeta["prompt"]}))
         return ret
     
     def CreateActionCB(self, actionName, module, actionFunc):
@@ -75,6 +73,15 @@ class AProcessor():
     def GetPromptName(self) -> str:
         return self.prompt.PROMPT_NAME
     
+    def Prepare(self):
+        self.RegisterModules(set(clientPool.pool) - set([d['addr'] for name, d in self.modules.items()]))
+        for nodeType, action in self.prompt.GetActions().items():
+            self.interpreter.RegisterAction(nodeType, action)
+        for nodeType, patterns in self.prompt.GetPatterns().items():
+            for p in patterns:
+                self.interpreter.RegisterPattern(nodeType, p["re"], p["isEntry"])
+        return
+    
     def __call__(self, txt: str) -> str:
         self.conversation.Add(role = "USER", msg = txt, env = self.interpreter.env)
         self.EvalStore(txt)
@@ -82,6 +89,7 @@ class AProcessor():
         self.outputCB(f"USER_{self.name}", txt)
 
         while True:
+            self.Prepare()
             prompt = self.prompt.BuildPrompt()
             ret = self.llm.Generate(prompt, proc=partial(self.outputCB, "ASSISTANT_" + self.name), endchecker=self.interpreter.EndChecker, temperature = config.temperature)
             self.conversation.Add(role = "ASSISTANT", msg = ret, env = self.interpreter.env)
