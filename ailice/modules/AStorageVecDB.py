@@ -74,8 +74,8 @@ class AStorageVecDB():
             print("collection: ", collection,". store: ", txt)
 
             if collection not in self.data["collections"]:
-                self.data["collections"][collection] = []
-            self.data["collections"][collection].append((self.CalcEmbeddings([txt])[0], txt))
+                self.data["collections"][collection] = set()
+            self.data["collections"][collection].add((self.CalcEmbeddings([txt])[0], txt))
             self.Dump(self.dir)
         except Exception as e:
             print("store() EXCEPTION: ", e, traceback.print_tb(e.__traceback__))
