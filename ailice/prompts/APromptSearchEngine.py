@@ -5,6 +5,7 @@ from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedFunctions
 
 class APromptSearchEngine():
     PROMPT_NAME = "search-engine"
+    PROMPT_DESCRIPTION = "Searching for information using search engines on the internet or document repositories such as arXiv."
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

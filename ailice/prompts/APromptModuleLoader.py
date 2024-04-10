@@ -6,6 +6,7 @@ from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptModuleLoader():
     PROMPT_NAME = "module-loader"
+    PROMPT_DESCRIPTION = "An agent that can help you load and use ext-modules. You need to include the address of the module in your request message. You can let it help you interact with the module. You can use this agent to assist in ext-module debugging."
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

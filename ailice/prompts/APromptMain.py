@@ -5,6 +5,7 @@ from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptMain():
     PROMPT_NAME = "main"
+    PROMPT_DESCRIPTION = "The coordinator between the user and other agents, also acting as the scheduler for collaboration among multiple agents."
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

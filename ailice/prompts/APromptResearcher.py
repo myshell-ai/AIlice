@@ -6,6 +6,7 @@ from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedFunctions
 
 class APromptResearcher():
     PROMPT_NAME = "researcher"
+    PROMPT_DESCRIPTION = "Conduct an internet investigation on a particular topic or gather data. It also has the capability to execute simple scripts."
     
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

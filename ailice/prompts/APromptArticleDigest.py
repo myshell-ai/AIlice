@@ -7,6 +7,7 @@ from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptArticleDigest():
     PROMPT_NAME = "article-digest"
+    PROMPT_DESCRIPTION = "Literature reading comprehension and related question answering. You need to include the URL or file path of the target documentation in the request message."
     
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

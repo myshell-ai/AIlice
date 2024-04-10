@@ -5,6 +5,7 @@ from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedFunctions
 
 class APromptCoderProxy():
     PROMPT_NAME = "coder-proxy"
+    PROMPT_DESCRIPTION = "They are adept at using programming to solve problems and has execution permissions for both Bash and Python."
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

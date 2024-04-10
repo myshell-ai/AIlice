@@ -6,6 +6,7 @@ from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptChat():
     PROMPT_NAME = "chat"
+    PROMPT_DESCRIPTION = "A chatbot with no capability for external interactions."
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor

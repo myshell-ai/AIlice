@@ -5,6 +5,7 @@ from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptModuleCoder():
     PROMPT_NAME = "module-coder"
+    PROMPT_DESCRIPTION = "The only agent capable of building ext-modules, and this is its sole responsibility."
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor
