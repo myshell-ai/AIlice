@@ -71,6 +71,6 @@ RESPOND<!|message: str|!>
 
 Function Call Examples
 !CALL<!|"...","...","..."|!>
-!BROWSE<!|"..."|!>
+!BROWSE<!|"...", "..."|!>
 !PYTHON<!|code_python_3212|!>
 !PYTHON<!|"""print('hello wolrd.')"""|!>
