@@ -42,3 +42,5 @@ class APromptCoder():
         if prompt is None:
             prompt, _ = self.ParameterizedBuildPrompt(1)
         return prompt
+    
+APrompt = APromptCoder

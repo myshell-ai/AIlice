@@ -79,3 +79,5 @@ RELEVANT INFORMATION: {self.Recall(context).strip()}
         if prompt is None:
             prompt, _ = self.ParameterizedBuildPrompt(1)
         return prompt
+
+APrompt = APromptArticleDigest

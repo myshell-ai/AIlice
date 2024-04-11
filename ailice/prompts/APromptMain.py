@@ -61,3 +61,5 @@ The "RELEVANT INFORMATION" part contains data that may be related to the current
         if prompt is None:
             prompt, _ = self.ParameterizedBuildPrompt(1)
         return prompt
+    
+APrompt = APromptMain
