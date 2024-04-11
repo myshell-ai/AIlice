@@ -63,8 +63,9 @@ class APromptModuleLoader():
             sys.modules[moduleName] = promptModule
             spec.loader.exec_module(promptModule)
             
-            promptsManager.RegisterPrompt(promptModule.APrompt)
-            ret = f"Prompt module {promptModule.APrompt.PROMPT_NAME} has been loaded. Its description information is as follows:\n{promptModule.APrompt.PROMPT_DESCRIPTION}"
+            ret += promptsManager.RegisterPrompt(promptModule.APrompt)
+            if "" == ret:
+                ret += f"Prompt module {promptModule.APrompt.PROMPT_NAME} has been loaded. Its description information is as follows:\n{promptModule.APrompt.PROMPT_DESCRIPTION}"
         except Exception as e:
             ret = f"Exception: {str(e)}"
         return ret

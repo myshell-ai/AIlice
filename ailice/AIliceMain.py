@@ -82,14 +82,17 @@ use the provided Dockerfile to build an image and container, and modify the rele
     else:
         speech = None
     
+    timestamp = str(time.time())
+    collection = "ailice" + timestamp
+
+    promptsManager.Init(storage=storage, collection=collection)
     for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptModuleLoader, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
     llmPool.Init([modelID])
     
     logger = ALogger(speech=speech)
-    timestamp = str(time.time())
-    processor = AProcessor(name='AIlice', modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection="ailice" + timestamp)
+    processor = AProcessor(name='AIlice', modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
