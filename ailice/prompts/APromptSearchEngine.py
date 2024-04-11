@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedFunctions
+from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedRecords
 
 class APromptSearchEngine():
     PROMPT_NAME = "search-engine"
@@ -36,7 +36,7 @@ class APromptSearchEngine():
         return
     
     def GetPatterns(self):
-        functions = FindRelatedFunctions("Internet operations. Search engine operations. Retrieval operations.", len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
+        functions = FindRelatedRecords("Internet operations. Search engine operations. Retrieval operations.", len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
         self.functions = [f for f in functions if f['action'] not in self.PATTERNS]
         patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in self.functions}
         patterns.update(self.PATTERNS)

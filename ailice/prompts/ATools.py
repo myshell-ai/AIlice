@@ -15,6 +15,6 @@ def ConstructOptPrompt(func, low:int, high: int, maxLen: int) -> str:
     return prompt, n
 
 
-def FindRelatedFunctions(prompt: str, num: int, storage, collection) -> list:
+def FindRelatedRecords(prompt: str, num: int, storage, collection) -> list:
     res = storage.Query(collection, prompt, num)
     return [json.loads(r[0]) for r in res]
