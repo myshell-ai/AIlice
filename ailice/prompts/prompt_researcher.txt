@@ -30,9 +30,10 @@ Available Functions
 #You can use divide and conquer strategy for complex tasks. Use this function to interact with an AI agent.
 CALL<!|agentType: str, agentName: str, msg: str|!>
 agentType: A string used to specify the type of AI agent. It can be of the following types:
-    1. "search-engine": search for information from sources like Google, arXiv.
-    2. "article-digest": literature reading comprehension and related question answering.
-    3. "coder-proxy": he is adept at using programming to solve problems and has execution permissions for both Bash and Python. You'd better leave it to problems that are easy to solve with programming.
+ - "search-engine": search for information from sources like Google, arXiv.
+ - "article-digest": literature reading comprehension and related question answering.
+ - "coder-proxy": he is adept at using programming to solve problems and has execution permissions for both Bash and Python. You'd better leave it to problems that are easy to solve with programming.
+<AGENTS>
 agentName: A name used to identify the agent. Create a new one if no such agent is found. Name should reflect responsibility. A new task can be assigned to an existing agent with a relevant name, as they often possess related experience.
 msg: message need to be told to the agent. The agent cannot see anything beyond the msg parameter, please provide the complete information of the task within the msg parameter, do not refer to external content, even if it means copying large sections of text. Otherwise, it will result in execution failure.
 

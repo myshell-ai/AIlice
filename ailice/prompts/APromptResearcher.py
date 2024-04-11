@@ -57,6 +57,8 @@ class APromptResearcher():
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
+        agents = FindRelatedRecords("academic, mathematics, search, investigation, analysis, logic.", 10, self.storage, self.collection + "_prompts")
+        prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["researcher", "search-engine", "article-digest", "coder-proxy"]]))
 
         prompt = f"""
 {prompt0}

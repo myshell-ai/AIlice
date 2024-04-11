@@ -53,7 +53,9 @@ class APromptCoderProxy():
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
-        
+        agents = FindRelatedRecords("Programming, debugging, investigating, searching, files, systems.", 10, self.storage, self.collection + "_prompts")
+        prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["coder-proxy", "module-coder", "module-loader", "researcher"]]))
+
         prompt = f"""
 {prompt0}
 
