@@ -1,12 +1,21 @@
+import sys
+import string
+import secrets
+import importlib
 from importlib.resources import read_text
 from ailice.common.AConfig import config
+from ailice.common.APrompts import promptsManager
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
 
+def GenSym(length=32, prefix="APrompt_"):
+    alphabet = string.ascii_uppercase + string.ascii_lowercase + string.digits
+    symbol = "".join([secrets.choice(alphabet) for i in range(length)])
+    return prefix + symbol
 
 class APromptModuleLoader():
     PROMPT_NAME = "module-loader"
-    PROMPT_DESCRIPTION = "An agent that can help you load and use ext-modules. You need to include the address of the module in your request message. You can let it help you interact with the module. You can use this agent to assist in ext-module debugging."
+    PROMPT_DESCRIPTION = "An agent that can help you load and use extensions such as ext-modules and ext-prompts. You need to include the address of the ext-module / path to ext-prompt in your request message. You can let it help you interact with the ext-module. You can use this agent to assist in ext-module debugging."
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor
@@ -17,8 +26,10 @@ class APromptModuleLoader():
         self.outputCB = outputCB
         self.prompt0 = read_text("ailice.prompts", "prompt_module_loader.txt")
         self.memory = ""
-        self.PATTERNS = {"LOADMODULE": [{"re": GenerateRE4FunctionCalling("LOADMODULE<!|addr: str|!> -> str", faultTolerance = True), "isEntry": True}]}
-        self.ACTIONS= {"LOADMODULE": {"func": self.LoadModule}}
+        self.PATTERNS = {"LOADEXTMODULE": [{"re": GenerateRE4FunctionCalling("LOADEXTMODULE<!|addr: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "LOADEXTPROMPT": [{"re": GenerateRE4FunctionCalling("LOADEXTPROMPT<!|path: str|!> -> str", faultTolerance = True), "isEntry": True}]}
+        self.ACTIONS= {"LOADEXTMODULE": {"func": self.LoadExtModule},
+                       "LOADEXTPROMPT": {"func": self.LoadExtPrompt}}
         return
     
     def Reset(self):
@@ -30,7 +41,7 @@ class APromptModuleLoader():
     def GetActions(self):
         return self.ACTIONS
     
-    def LoadModule(self, addr: str) -> str:
+    def LoadExtModule(self, addr: str) -> str:
         try:
             ret = self.processor.RegisterModules([addr])
             prompts = []
@@ -39,6 +50,21 @@ class APromptModuleLoader():
                 prompts.append(f"{r['signature']}: {r['prompt']}")
             self.memory = "\n".join(prompts)
             ret = self.memory
+        except Exception as e:
+            ret = f"Exception: {str(e)}"
+        return ret
+    
+    def LoadExtPrompt(self, path: str) -> str:
+        ret = ""
+        try:
+            moduleName = GenSym()
+            spec = importlib.util.spec_from_file_location(moduleName, path)
+            promptModule = importlib.util.module_from_spec(spec)
+            sys.modules[moduleName] = promptModule
+            spec.loader.exec_module(promptModule)
+            
+            promptsManager.RegisterPrompt(promptModule.APrompt)
+            ret = f"Prompt module {promptModule.APrompt.PROMPT_NAME} has been loaded. Its description information is as follows:\n{promptModule.APrompt.PROMPT_DESCRIPTION}"
         except Exception as e:
             ret = f"Exception: {str(e)}"
         return ret
