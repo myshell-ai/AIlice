@@ -1,31 +1,25 @@
 
-![AIlice](./AIlice.png)
+<div align= "center">
+    <img src="./AIliceLogo.png" height=256>
+    <h1>AIlice</h1>
+</div>
 
-# Quick Start
+<p align="center">
+  <a href="#quick-start">Quick Start</a> •
+  <a href="https://www.youtube.com/@stevenlu-zh6ds">Demo</a> •
+  <a href="#development">Development</a> •
+  <a href="https://twitter.com/stevenlu1729">Twitter</a> •
+  <a href="https://www.reddit.com/r/AIlice/">Reddit</a>
+</p>
 
-Install and run AIlice with the following commands. Once AIlice is launched, use a browser to open the web page it provides, a dialogue interface will appear. Issue commands to AIlice through the conversation to accomplish various tasks. For your first use, you can try the commands provided in the [COOL things we can do](#cool-things-we-can-do) section to quickly get familiarized.
-
-```bash
-git clone https://github.com/myshell-ai/AIlice.git
-cd AIlice
-pip install -e .
-ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
-```
-
-- For a more detailed understanding of the installation and configuration methods, please visit the [Environment Configuration and Running](#environment-configuration-and-running) section and the [Choice of LLM](#choice-of-llm) section.
-- To grasp the basic design principles of AIlice, navigate to the [Design](#design) section.
-
-
-
-# Introduction
-The AIlice project is dedicated to creating a self-contained artificial intelligence assistant akin to JARVIS, leveraging open-source models. AIlice achieves this goal by building a "text computer" that uses a Large Language Model (LLM) as its core processor. Currently, AIlice demonstrates proficiency in a range of tasks, including thematic research, coding, system management, literature reviews, and complex hybrid tasks that go beyond these basic capabilities.
+## Introduction
+AIlice is a fully **autonomous, general-purpose AI agent**. This project aims to create a standalone artificial intelligence assistant, similar to JARVIS, based on the open-source LLM. AIlice achieves this goal by building a "text computer" that uses a Large Language Model (LLM) as its core processor. Currently, AIlice demonstrates proficiency in a range of tasks, including **thematic research, coding, system management, literature reviews, and complex hybrid tasks** that go beyond these basic capabilities.
 
 AIlice has reached near-perfect performance in everyday tasks using GPT-4 and is making strides towards practical application with the latest open-source models.
 
+We will ultimately achieve **self-evolution of AI agents**. That is, AI agents will autonomously build their own feature expansions and new types of agents, unleashing LLM's knowledge and reasoning capabilities into the real world seamlessly.
+
 To understand AIlice's present abilities, watch the following videos:
-
-
-[![Building a Text-to-Image Website in 4 Conversations](https://img.youtube.com/vi/fLGR2iiXviA/0.jpg)](https://www.youtube.com/watch?v=fLGR2iiXviA)
 
 [![Document searching and downloading, financial data downloading and analysis with plotting, OpenGL texture rendering](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
 
@@ -42,9 +36,24 @@ Key technical features of AIlice include:
 - **Flexible parsing of LLM outputs, enabling a broader range of function call mechanisms.**
 - **The capability to self-construct and dynamically load modules for interacting with the environment, providing endless possibilities for expanding features.**
 
+<a name="quick-start"></a>
+## Quick Start
+
+Install and run AIlice with the following commands. Once AIlice is launched, use a browser to open the web page it provides, a dialogue interface will appear. Issue commands to AIlice through the conversation to accomplish various tasks. For your first use, you can try the commands provided in the [COOL things we can do](#cool-things-we-can-do) section to quickly get familiarized.
+
+```bash
+git clone https://github.com/myshell-ai/AIlice.git
+cd AIlice
+pip install -e .
+ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
+```
+
+- For a more detailed understanding of the installation and configuration methods, please visit the [Environment Configuration and Running](#environment-configuration-and-running) section and the [Choice of LLM](#choice-of-llm) section.
+- To grasp the basic design principles of AIlice, navigate to the [Design](#design) section.
+
 
 <a name="cool-things-we-can-do"></a>
-## COOL things we can do
+### COOL things we can do
 Let's list some typical use cases. I frequently employ these examples to test AIlice during development, ensuring stable performance. However, even with these tests, the execution results are influenced by the chosen model, code version, and even the testing time. (GPT-4 may experience a decrease in performance under high loads, while open-source models, of course, don't have this issue; they don't have much room for degradation) Additionally, AIlice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when AIlice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success. Furthermore, if the task execution falls short, you can guide her in the right direction, and she will rectify her approach.
 
 The last point to note is that AIlice currently lacks a run time control mechanism, so she might get stuck in a loop or run for an extended period. When using a commercial LLM, you need to monitor her operation closely.
@@ -76,7 +85,7 @@ can give us a glimpse of how mature geometric intuition can be in LLM's world vi
 
 
 <a name="environment-configuration-and-running"></a>
-# Environment Configuration and Running
+## Environment Configuration and Running
 Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. It may take us a long time to install the dependencies, but fortunately, this is basically done automatically.
 
 To run AIlice, you need to ensure that **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
@@ -109,7 +118,7 @@ AIlice installed in this way also has voice conversation and fine-tuning functio
 You can run AIlice now! Use the commands in [Some Typical Use Cases for Launching AIlice](#some-typical-use-cases-for-launching-ailice).
 
 
-## Virtual Environment Settings for Code Execution
+### Virtual Environment Settings for Code Execution
 By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify AIlice's configuration file (AIlice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
 
 ```bash
@@ -139,7 +148,7 @@ Modify "scripter" under "services":
 Now that the environment configuration has been done.
 
 <a name="some-typical-use-cases-for-launching-ailice"></a>
-## Some Typical Use Cases for Launching AIlice
+### Some Typical Use Cases for Launching AIlice
 
 You can directly copy a command from the typical use cases below to run AIlice.
 
@@ -177,7 +186,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
 
-## Code Update
+### Code Update
 
 Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration file and Docker container with the new code. The most thorough solution for this scenario is to delete the configuration file (making sure to save any API keys beforehand) and the container, and then perform a complete reinstall. However, for most situations, you can address the issue by simply **deleting the configuration file** and **updating the AIlice module within the container**.
 
@@ -194,7 +203,7 @@ docker restart scripter
 ```
 
 <a name="choice-of-llm"></a>
-# Choice of LLM
+## Choice of LLM
 AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide the best results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
 gpt-3.5-turbo still has problems. It has relatively high requirements for prompts, and we have never been able to find a stable prompt expression.
@@ -211,7 +220,7 @@ Among the open-source models, the ones that usually perform well include:
 - hf:Phind/Phind-CodeLlama-34B-v2
 - Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF
 
-## The Most Outstanding Open-source Model
+### The Most Outstanding Open-source Model
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
@@ -224,10 +233,10 @@ We will select the currently best-performing open-source model to provide a refe
 If you find a better model, please let me know.
 
 <a name="how-to-add-llm-support"></a>
-## How to Add LLM Support
+### How to Add LLM Support
 For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
 
-### Models(or Services) compatible with OpenAI Interface
+#### Models(or Services) compatible with OpenAI Interface
 
 For openai models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:" prefix.
 
@@ -238,7 +247,7 @@ For inference servers that do not support the OpenAI API, you can try using lite
 
 It's important to note that due to the presence of many SYSTEM messages in AIlice's conversation records, which is not a common use case for LLM, the level of support for this depends on the specific implementation of these inference servers. In this case,  you can set the systemAsUser parameter to true to circumvent the issue. Although this might prevent the model from running AIlice at its optimal performance, it also allows us to be compatible with various efficient inference servers. For the average user, the benefits outweigh the drawbacks.
 
-#### Example 1: ollama + litellm
+##### Example 1: ollama + litellm
 We use Ollama as an example to explain how to add support for such services.
 First, we need to use Litellm to convert Ollama's interface into a format compatible with OpenAI.
 
@@ -281,7 +290,7 @@ Now we can run AIlice:
 ailice_main --modelID=ollama:mistral-openorca --prompt="main"
 ```
 
-#### Example 2: LM Studio
+##### Example 2: LM Studio
 
 In this example, we will use LM Studio to run the currently most powerful open-source model **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF**, powering AIlice to run on a local machine.
 
@@ -325,7 +334,7 @@ Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on 
 ailice_main --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
 ```
 
-#### Example 3: Add open source multimodal model support
+##### Example 3: Add open source multimodal model support
 
 Similar to what we did in the previous section, after we use LM Studio to download and run LLAVA, we modify the configuration file as follows:
 
@@ -358,7 +367,7 @@ Similar to what we did in the previous section, after we use LM Studio to downlo
 However, it should be noted that the current open source multi-modal model is far from sufficient to perform agent tasks, so this example is for developers rather than users.
 
 
-### Open Source Models on Huggingface
+#### Open Source Models on Huggingface
 
 For open source models on Huggingface, you only need to know the following information to add support for new models: The huggingface address of the model, the prompt format of the model, and the context window length.
 Usually one line of code is enough to add a new model, but occasionally you are unlucky and you need about a dozen lines of code.
@@ -403,10 +412,11 @@ Open config.json, you should add the config of new LLM into models.hf.modelList,
 Everything is done! Use "hf:" as a prefix to the model name to form a modelID, and use the modelID of the new model as the command parameter to start AIlice!
 
 
-# Development
+<a name="development"></a>
+## Development
 
 <a name="design"></a>
-## Design
+### Design
 The basic principles when designing AIlice are:
 
 - **Enriching the behavior of LLM with highly dynamic prompt construction mechanisms;**
@@ -422,7 +432,7 @@ Separating computational tasks is, from a practical standpoint, due to our limit
 The third principle is what everyone is currently working on: having multiple intelligent agents interact and cooperate to complete more complex tasks. The implementation of this principle actually addresses the aforementioned issue of subtask failure. Multi-agent collaboration is crucial for the fault tolerance of agents in operation. In fact, this may be one of the biggest differences between the new computational paradigm and traditional computing: traditional computing is precise and error-free, assigning subtasks only through unidirectional communication (function calls), whereas the new computational paradigm is error-prone and requires bidirectional communication between computing units to correct errors. This will be explained in detail in the following section on the IACT framework.
 
 
-### Computational Model: Interactive Agents Calling Tree
+#### Computational Model: Interactive Agents Calling Tree
 ![IACT](./IACT.jpg)
 *IACT Architecture Diagram. A user requirement to build a page for image collection and display is dynamically decomposed into two tasks: coder_spider and coder_website. When coder_spider encounters difficulties, it proactively seeks assistance from its caller, proxy_cat_gallery. Proxy_cat_gallery then creates another agent, researcher_api, and employs it to address the issue.*
 
@@ -448,7 +458,7 @@ process by passing in the supplementary information. It can be seen that this "f
 The high intelligence of LLM makes this interesting property possible. You can also see it as **agents strung together by calling relationships, where each agent can create and call more sub-agents, and can also dialogue with its caller to obtain supplementary information or report its progress**. In AIlice, we call this computational unit
 **"AProcessor"**(essentially what we referred to as an agent). Its code is located in core/AProcessor.py.
 
-### Basic Computing Unit: Tai Chi Diagram of LLM and Interpreter
+#### Basic Computing Unit: Tai Chi Diagram of LLM and Interpreter
 Next, we will elaborate on the structure inside AProcessor. The interior of AProcessor is a multi-round dialogue. The "program" that defines the function of AProcessor
 is a prompt generation mechanism, which generates the prompt for each round of dialogue from the dialogue history. The dialogue is one-to-many. After the external caller
 inputs the request, LLM will have multiple rounds of dialogue with the peripheral modules (we call them SYSTEM), LLM outputs function calls in various grammatical forms,
@@ -463,7 +473,7 @@ convention. For the most hardcore possibility, we have left room. The interprete
 recursive. We don't know what this will be used for, but it seems not bad to leave a cool possibility, right? Therefore, inside AProcessor, the calculation is alternately
 completed by LLM and the interpreter, their outputs are each other's inputs, forming a cycle.
 
-### Agent Design: Implementing the Interpreter Framework
+#### Agent Design: Implementing the Interpreter Framework
 In AIlice, the interpreter is one of the most crucial components within an agent. We use the interpreter to map texts from the LLM output that match specific patterns to actions, including function calls, variable definitions and references, and any user-defined actions. Sometimes these actions directly interact with peripheral modules, affecting the external world; other times, they are used to modify the agent's internal state, thereby influencing its future prompts.
 
 The basic structure of the interpreter is straightforward: a list of pattern-action pairs. Patterns are defined by regular expressions, and actions are specified by a Python function with type annotations. Given that syntactic structures can be nested, we refer to the overarching structure as the entry pattern. During runtime, the interpreter actively detects these entry patterns in the LLM output text. Upon detecting an entry pattern (and if the corresponding action returns data), it immediately terminates the LLM generation to execute the relevant action.
@@ -473,7 +483,7 @@ The design of agents in AIlice encompasses two fundamental aspects: the logic fo
 Generating prompts from dialogue history and the internal state is nearly a standardized process, although developers still have the freedom to choose entirely different generation logic. The primary challenge for developers is to create a system prompt template, which is pivotal for the agent and often demands the most effort to perfect. However, this task revolves entirely around crafting natural language prompts.
 
 
-## Comparison
+### Comparison
 
 We have designed several dimensions to compare AIlice with mainstream AI agents. These include:
 
@@ -511,14 +521,14 @@ Please note that this is an ongoing research, and the data in the table may be i
 The number of lines of code is calculated in the latest code base via the "git ls-files "*.py" | xargs wc -l" command.
 
 
-## How Developers Should Get Started
+### How Developers Should Get Started
 
 - For developing Agents, the main loop of AIlice is located in the AIliceMain.py or AIliceWeb.py files. To further understand the construction of an agent, you need to read the code in the "prompts" folder, by reading these code you can understand how an agent's prompts are dynamically constructed.
 
 - For developers who want to understand the internal operation logic of AIlice, please read core/AProcessor.py and core/Interpreter.py. These two files contain approximately three
 hundred lines of code in total, but they contain the basic framework of AIlice.
 
-## Project Development Standards and Constraints
+### Project Development Standards and Constraints
 
 - In this project, **achieving the desired functionality of the AI Agent is the primary goal. The secondary goal is code clarity and simplicity**. The implementation of the AI Agent is still an exploratory topic, so we aim to **minimize rigid components in the software (such as architecture/interfaces imposing constraints on future development) and provide maximum flexibility for the application layer (e.g., prompt classes)**. Abstraction, deduplication, and decoupling are not immediate priorities.
 
@@ -534,7 +544,7 @@ hundred lines of code in total, but they contain the basic framework of AIlice.
 
 AIlice aims to achieve multimodal and self-expanding features within a scale of less than 5000 lines, reaching its final form at the current stage. The pursuit of concise code is not only because succinct code often represents a better implementation, but also because it enables AI to develop introspective capabilities early on and facilitates better self-expansion. Please adhere to the above rules and approach each line of code with diligence.
 
-## Future Development Roadmap
+### Future Development Roadmap
 
 AIlice's fundamental tasks are twofold: **one is to fully unleash the capabilities of LLM based on text into the real world; the other is to explore better mechanisms for long-term memory and forming a coherent understanding of vast amounts of text**. Our development efforts revolve around these two focal points.
 
