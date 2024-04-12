@@ -4,6 +4,14 @@
     <h1>AIlice</h1>
 </div>
 
+<p align="center">
+  <a href="#quick-start">Quick Start</a> •
+  <a href="https://www.youtube.com/@stevenlu-zh6ds">Demo</a> •
+  <a href="#development">Development</a> •
+  <a href="https://twitter.com/stevenlu1729">Twitter</a> •
+  <a href="https://www.reddit.com/r/AIlice/">Reddit</a>
+</p>
+
 ## Introduction
 AIlice is a fully **autonomous, general-purpose AI agent**. This project aims to create a standalone artificial intelligence assistant, similar to JARVIS, based on the open-source LLM. AIlice achieves this goal by building a "text computer" that uses a Large Language Model (LLM) as its core processor. Currently, AIlice demonstrates proficiency in a range of tasks, including **thematic research, coding, system management, literature reviews, and complex hybrid tasks** that go beyond these basic capabilities.
 
@@ -12,9 +20,6 @@ AIlice has reached near-perfect performance in everyday tasks using GPT-4 and is
 We will ultimately achieve **self-evolution of AI agents**. That is, AI agents will autonomously build their own feature expansions and new types of agents, unleashing LLM's knowledge and reasoning capabilities into the real world seamlessly.
 
 To understand AIlice's present abilities, watch the following videos:
-
-
-[![Building a Text-to-Image Website in 4 Conversations](https://img.youtube.com/vi/fLGR2iiXviA/0.jpg)](https://www.youtube.com/watch?v=fLGR2iiXviA)
 
 [![Document searching and downloading, financial data downloading and analysis with plotting, OpenGL texture rendering](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
 
@@ -31,6 +36,7 @@ Key technical features of AIlice include:
 - **Flexible parsing of LLM outputs, enabling a broader range of function call mechanisms.**
 - **The capability to self-construct and dynamically load modules for interacting with the environment, providing endless possibilities for expanding features.**
 
+<a name="quick-start"></a>
 ## Quick Start
 
 Install and run AIlice with the following commands. Once AIlice is launched, use a browser to open the web page it provides, a dialogue interface will appear. Issue commands to AIlice through the conversation to accomplish various tasks. For your first use, you can try the commands provided in the [COOL things we can do](#cool-things-we-can-do) section to quickly get familiarized.
@@ -406,6 +412,7 @@ Open config.json, you should add the config of new LLM into models.hf.modelList,
 Everything is done! Use "hf:" as a prefix to the model name to form a modelID, and use the modelID of the new model as the command parameter to start AIlice!
 
 
+<a name="development"></a>
 ## Development
 
 <a name="design"></a>
