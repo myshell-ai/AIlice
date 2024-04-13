@@ -9,12 +9,12 @@ class ADuckDuckGo():
     def __init__(self):
         self.baseURL = "https://api.duckduckgo.com/"
         self.sessions = {}
-        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLLDOWNDUCKDUCKGO<!|session: str|!>"}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL_DOWN_DUCKDUCKGO<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
         return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": {"func": "DuckDuckGo", "prompt": "Use duckduckgo to search internet content."},
-                                                  "SCROLLDOWNDUCKDUCKGO": {"func": "ScrollDown", "prompt": "Scrolldown the results."}}}
+                                                  "SCROLL_DOWN_DUCKDUCKGO": {"func": "ScrollDown", "prompt": "Scrolldown the results."}}}
     
     def GetSessionID(self) -> str:
         id = f"session_{str(random.randint(0,99999999))}"

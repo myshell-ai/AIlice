@@ -13,7 +13,7 @@ class AWebBrowser(AScrollablePage):
         self.driver = None
         self.baseURL = None
         self.urls = {}
-        self.prompt = "\nThe text with links are enclosed in square brackets to highlight it. If you need to get the url on a certain text, please use the GETLINK<!|text: str, session: str|!> function. Please note that the text must exactly match the content in the square brackets."
+        self.prompt = "\nThe text with links are enclosed in square brackets to highlight it. If you need to get the url on a certain text, please use the GET_LINK<!|text: str, session: str|!> function. Please note that the text must exactly match the content in the square brackets."
         return
     
     def Init(self):

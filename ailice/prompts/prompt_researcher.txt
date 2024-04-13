@@ -58,10 +58,10 @@ PRINT<!|txt: str|!>
 SCREENSHOT<!||!>
 
 #Read the content of an image file into a variable.
-READIMAGE<!|path: str|!>
+READ_IMAGE<!|path: str|!>
 
 #Write a variable of image type into a file.
-WRITEIMAGE<!|image: AImage, path: str|!>
+WRITE_IMAGE<!|image: AImage, path: str|!>
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!>

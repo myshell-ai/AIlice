@@ -23,7 +23,7 @@ class AGoogle():
         self.cse_id = cse_id
         self.service = build("customsearch", "v1", developerKey=self.api_key)
         self.sessions = {}
-        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLLDOWNGOOGLE<!|session: str|!>"}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL_DOWN_GOOGLE<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
@@ -31,7 +31,7 @@ class AGoogle():
             "NAME": "google",
             "ACTIONS": {
                 "GOOGLE": {"func": "Google", "prompt": "Use Google to search the web."},
-                "SCROLLDOWNGOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the search results."}
+                "SCROLL_DOWN_GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the search results."}
             }
         }
     

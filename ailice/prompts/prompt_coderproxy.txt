@@ -52,7 +52,7 @@ msg: message need to be told to the agent. The agent cannot see content other th
 RESPOND<!|message: str|!>
 
 #Save text or code to file.
-SAVE2FILE<!|filePath: str, code: str|!>
+SAVE_TO_FILE<!|filePath: str, code: str|!>
 
 #Execute bash script. A timeout error will occur for programs that have not been completed for a long time.
 BASH<!|code: str|!>
@@ -64,16 +64,16 @@ PYTHON<!|code: str|!>
 WAIT<!|duration: int|!>
 
 #Obtain script execution output result.
-CHECKOUTPUT<!|session: str|!>
+CHECK_OUTPUT<!|session: str|!>
 
 #Take a screenshot and return as a image variable.
 SCREENSHOT<!||!>
 
 #Read the content of an image file into a variable.
-READIMAGE<!|path: str|!>
+READ_IMAGE<!|path: str|!>
 
 #Write a variable of image type into a file.
-WRITEIMAGE<!|image: AImage, path: str|!>
+WRITE_IMAGE<!|image: AImage, path: str|!>
 
 #The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
 

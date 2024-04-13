@@ -8,12 +8,12 @@ from ailice.modules.AScrollablePage import AScrollablePage
 class AArxiv():
     def __init__(self):
         self.sessions = {}
-        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLLDOWNARXIV<!|session: str|!>"}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL_DOWN_ARXIV<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
         return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures."},
-                                             "SCROLLDOWNARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
+                                             "SCROLL_DOWN_ARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
     
     def GetSessionID(self) -> str:
         id = f"session_{str(random.randint(0,99999999))}"
