@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedRecords
+from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedRecords, FindRecordsByConstrains
 
 class APromptCoderProxy():
     PROMPT_NAME = "coder-proxy"
@@ -34,7 +34,8 @@ class APromptCoderProxy():
         return
     
     def GetPatterns(self):
-        functions = FindRelatedRecords("programming, debugging, file operation, system operation.", len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
+        modules = set([func['module'] for func in FindRelatedRecords("programming, debugging, file operation, system operation.", len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")])
+        functions = sum([FindRecordsByConstrains([('module', m)], -1, self.storage, self.collection + "_functions") for m in modules], [])
         self.functions = [f for f in functions if f['action'] not in self.PATTERNS]
         patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in self.functions}
         patterns.update(self.PATTERNS)
