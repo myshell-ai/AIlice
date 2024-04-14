@@ -50,7 +50,13 @@ class AScripter():
         output = ''
         completed = False
         if process.poll() is not None:
-            remainingOutput = process.stdout.read()
+            for i in range(2):
+                try:
+                    remainingOutput = process.stdout.read()
+                    break
+                except TypeError as e:
+                    time.sleep(1)
+                    continue
             if remainingOutput:
                 output += remainingOutput
             completed = True
