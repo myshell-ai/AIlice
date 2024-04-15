@@ -58,7 +58,7 @@ class AProcessor():
                 sig = actionName + str(inspect.signature(getattr(module, actionMeta['func']))).replace('(', '<!|').replace(')', '|!>')
                 ret.append({"action": actionName, "signature": sig, "prompt": actionMeta["prompt"]})
                 self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionMeta["func"])})
-                self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"module": info["NAME"], "action": actionName, "signature": sig, "prompt": actionMeta["prompt"]}))
+                self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"module": info["NAME"], "action": actionName, "signature": sig, "prompt": actionMeta["prompt"], "type": actionMeta["type"]}))
         return ret
     
     def CreateActionCB(self, actionName, module, actionFunc):

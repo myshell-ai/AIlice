@@ -17,11 +17,11 @@ class AScripter():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "scripter", "ACTIONS": {"BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time."},
-                                                "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references."},
-                                                "CHECK_OUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result."},
-                                                "SCROLL_UP_TERM": {"func": "ScrollUp", "prompt": "Scroll up the results."},
-                                                "SAVE_TO_FILE": {"func": "Save2File", "prompt": "Save text or code to file."}}}
+        return {"NAME": "scripter", "ACTIONS": {"BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time.", "type": "primary"},
+                                                "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references.", "type": "primary"},
+                                                "CHECK_OUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result.", "type": "supportive"},
+                                                "SCROLL_UP_TERM": {"func": "ScrollUp", "prompt": "Scroll up the results.", "type": "supportive"},
+                                                "SAVE_TO_FILE": {"func": "Save2File", "prompt": "Save text or code to file.", "type": "primary"}}}
     
     def GetSessionID(self) -> str:
         id = f"session_{str(random.randint(0,99999999))}"

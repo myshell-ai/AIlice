@@ -32,10 +32,10 @@ class ASpeech():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "speech", "ACTIONS": {"SPEECH_TO_TEXT": {"func": "Speech2Text", "prompt": "Speech to text."},
-                                              "TEXT_TO_SPEECH": {"func": "Text2Speech", "prompt": "Text to speech."},
-                                              "GET_AUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone."},
-                                              "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play."}}}
+        return {"NAME": "speech", "ACTIONS": {"SPEECH_TO_TEXT": {"func": "Speech2Text", "prompt": "Speech to text.", "type": "primary"},
+                                              "TEXT_TO_SPEECH": {"func": "Text2Speech", "prompt": "Text to speech.", "type": "primary"},
+                                              "GET_AUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone.", "type": "primary"},
+                                              "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play.", "type": "primary"}}}
     
     def PrepareModel(self):
         self.t2s = T2S_LJS()

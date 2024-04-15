@@ -45,10 +45,10 @@ class APromptResearcher():
         return "None."
     
     def GetPatterns(self):
-        modules = set([func['module'] for func in FindRecords("Internet operations, file operations.", [], len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")])
-        functions = sum([FindRecords("", [('module', m)], -1, self.storage, self.collection + "_functions") for m in modules], [])
-        self.functions = [f for f in functions if f['action'] not in self.PATTERNS]
-        patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in self.functions}
+        primaryFunctions = FindRecords("Internet operations, file operations.", [('type', 'primary')], len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
+        self.functions = [f for f in primaryFunctions if f['action'] not in self.PATTERNS]
+        allFunctions = sum([FindRecords("", [('module', m)], -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in primaryFunctions])], [])
+        patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in allFunctions}
         patterns.update(self.PATTERNS)
         return patterns
     

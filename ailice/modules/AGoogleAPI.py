@@ -30,8 +30,8 @@ class AGoogle():
         return {
             "NAME": "google",
             "ACTIONS": {
-                "GOOGLE": {"func": "Google", "prompt": "Use Google to search the web."},
-                "SCROLL_DOWN_GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the search results."}
+                "GOOGLE": {"func": "Google", "prompt": "Use Google to search the web.", "type": "primary"},
+                "SCROLL_DOWN_GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the search results.", "type": "supportive"}
             }
         }
     

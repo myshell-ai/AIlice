@@ -1,4 +1,3 @@
-
 import arxiv
 import random
 
@@ -12,8 +11,8 @@ class AArxiv():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures."},
-                                             "SCROLL_DOWN_ARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
+        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures.", "type": "primary"},
+                                             "SCROLL_DOWN_ARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results.", "type": "supportive"}}}
     
     def GetSessionID(self) -> str:
         id = f"session_{str(random.randint(0,99999999))}"

@@ -13,8 +13,8 @@ class ADuckDuckGo():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": {"func": "DuckDuckGo", "prompt": "Use duckduckgo to search internet content."},
-                                                  "SCROLL_DOWN_DUCKDUCKGO": {"func": "ScrollDown", "prompt": "Scrolldown the results."}}}
+        return {"NAME": "duckduckgo", "ACTIONS": {"DUCKDUCKGO": {"func": "DuckDuckGo", "prompt": "Use duckduckgo to search internet content.", "type": "primary"},
+                                                  "SCROLL_DOWN_DUCKDUCKGO": {"func": "ScrollDown", "prompt": "Scrolldown the results.", "type": "supportive"}}}
     
     def GetSessionID(self) -> str:
         id = f"session_{str(random.randint(0,99999999))}"

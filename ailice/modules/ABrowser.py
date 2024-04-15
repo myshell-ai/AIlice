@@ -22,12 +22,12 @@ class ABrowser():
         return
 
     def ModuleInfo(self):
-        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content. You need to pass a session parameter as the session name, and you can reuse the same session to open new web pages."},
-                                               "SCROLL_DOWN_BROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page."},
-                                               "SCROLL_UP_BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page."},
-                                               "SEARCH_DOWN_BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location."},
-                                               "SEARCH_UP_BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location."},
-                                               "GET_LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to come from the part of the page enclosed by square brackets."}}}
+        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content. You need to pass a session parameter as the session name, and you can reuse the same session to open new web pages.", "type": "primary"},
+                                               "SCROLL_DOWN_BROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page.", "type": "supportive"},
+                                               "SCROLL_UP_BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page.", "type": "supportive"},
+                                               "SEARCH_DOWN_BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},
+                                               "SEARCH_UP_BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location.", "type": "supportive"},
+                                               "GET_LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to come from the part of the page enclosed by square brackets.", "type": "supportive"}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()

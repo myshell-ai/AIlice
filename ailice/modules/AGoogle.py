@@ -11,8 +11,8 @@ class AGoogle():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "google", "ACTIONS": {"GOOGLE": {"func": "Google", "prompt": "Use google to search internet content."},
-                                              "SCROLL_DOWN_GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
+        return {"NAME": "google", "ACTIONS": {"GOOGLE": {"func": "Google", "prompt": "Use google to search internet content.", "type": "primary"},
+                                              "SCROLL_DOWN_GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the results.", "type": "supportive"}}}
     
     def GetSessionID(self) -> str:
         id = f"session_{str(random.randint(0,99999999))}"

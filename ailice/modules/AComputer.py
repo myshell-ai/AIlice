@@ -8,9 +8,9 @@ class AComputer():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "files", "ACTIONS": {"SCREENSHOT": {"func": "ScreenShot", "prompt": "Take a screenshot of the current screen."},
-                                             "READ_IMAGE": {"func": "ReadImage", "prompt": "Read the content of an image file into a variable."},
-                                             "WRITE_IMAGE": {"func": "WriteImage", "prompt": "Write a variable of image type into a file."}}}
+        return {"NAME": "files", "ACTIONS": {"SCREENSHOT": {"func": "ScreenShot", "prompt": "Take a screenshot of the current screen.", "type": "primary"},
+                                             "READ_IMAGE": {"func": "ReadImage", "prompt": "Read the content of an image file into a variable.", "type": "primary"},
+                                             "WRITE_IMAGE": {"func": "WriteImage", "prompt": "Write a variable of image type into a file.", "type": "primary"}}}
     
     def ScreenShot(self) -> AImage:
         imageByte = io.BytesIO()
