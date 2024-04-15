@@ -42,7 +42,7 @@ class APromptArticleDigest():
         return ret
     
     def Recall(self, keywords: str) -> str:
-        ret = self.storage.Query(self.collection, keywords, num_results=1)
+        ret = self.storage.Query(collection=self.collection, clue=keywords, num_results=1)
         if 0 != len(ret):
             return ret[0][0]
         else:

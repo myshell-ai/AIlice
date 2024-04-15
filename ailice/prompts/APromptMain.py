@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedRecords
+from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
 class APromptMain():
     PROMPT_NAME = "main"
@@ -20,7 +20,7 @@ class APromptMain():
         return
     
     def Recall(self, key: str):
-        ret = self.storage.Query(self.collection, key, num_results=4)
+        ret = self.storage.Query(collection=self.collection, clue=key, num_results=4)
         for r in ret:
             if (key not in r[0]) and (r[0] not in key):
                 return r[0]
@@ -37,7 +37,7 @@ class APromptMain():
     
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
-        agents = FindRelatedRecords("Investigate, perform tasks, program", 10, self.storage, self.collection + "_prompts")
+        agents = FindRecords("Investigate, perform tasks, program", [], 10, self.storage, self.collection + "_prompts")
         prompt0 = self.prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["main", "researcher", "article-digest", "coder-proxy"]]))
 
         prompt = f"""

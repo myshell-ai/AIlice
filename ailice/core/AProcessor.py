@@ -146,7 +146,7 @@ class AProcessor():
         return
     
     def EvalQuery(self, keywords: str) -> str:
-        res = self.modules['storage']['module'].Query(self.collection, keywords)
+        res = self.modules['storage']['module'].Query(collection=self.collection, clue=keywords)
         if (0 == len(res)) or (res[0][1] > 0.5):
             return "Nothing found."
         return "QUERY_RESULT={" + res[0][0] +"}"

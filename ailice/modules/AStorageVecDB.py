@@ -83,31 +83,35 @@ class AStorageVecDB():
             return False
         return True
     
-    def Query(self, collection: str, clue: str, num_results:int=1):# -> list(tuple[str,float]):
+    def Query(self, collection: str, clue: str = "", keywords: list[str] = None, num_results:int=1):# -> list(tuple[str,float]):
         try:
             if collection not in self.data["collections"]:
                 return []
+            
+            results = [txt for txt,_ in self.data['collections'][collection].items()]
+            if None != keywords:
+                for keyword in keywords:
+                    results = [txt for txt in results if keyword in txt]
+            
+            if clue in ["", None]:
+                results = [(r, None) for r in results]
+                return results[:num_results] if num_results > 0 else results
+
             query = self.CalcEmbeddings([clue])[0]
-            temp = [(txt, torch.sum((emb-query)**2,dim=0).item()) for txt, emb in self.data["collections"][collection].items()]
-            ret = sorted(temp, key=lambda x: x[1])[:num_results]
+            temp = [(txt, torch.sum((self.data["collections"][collection][txt]-query)**2,dim=0).item()) for txt in results]
+            ret = sorted(temp, key=lambda x: x[1])[:num_results] if num_results > 0 else temp
             print("query: ", collection, ".", clue, " -> ", ret)
             return ret
         except Exception as e:
             print("query() EXCEPTION: ", e, traceback.print_tb(e.__traceback__))
             return []
     
-    def Search(self, collection: str, keywords: list[str], num_results: int = 1) -> list[str]:
-        results = [txt for txt,_ in self.data['collections'][collection].items()]
-        for keyword in keywords:
-            results = [txt for txt in results if keyword in txt]
-        return results[:num_results] if num_results >= 0 else results
-    
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AStorageVecDB, dict(), args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query", "Search"]).Run()
+    makeServer(AStorageVecDB, dict(), args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query"]).Run()
 
 if __name__ == '__main__':
     main()

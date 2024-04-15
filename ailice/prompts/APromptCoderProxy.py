@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt, FindRelatedRecords, FindRecordsByConstrains
+from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
 class APromptCoderProxy():
     PROMPT_NAME = "coder-proxy"
@@ -34,8 +34,8 @@ class APromptCoderProxy():
         return
     
     def GetPatterns(self):
-        modules = set([func['module'] for func in FindRelatedRecords("programming, debugging, file operation, system operation.", len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")])
-        functions = sum([FindRecordsByConstrains([('module', m)], -1, self.storage, self.collection + "_functions") for m in modules], [])
+        modules = set([func['module'] for func in FindRecords("programming, debugging, file operation, system operation.", [], len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")])
+        functions = sum([FindRecords("", [('module', m)], -1, self.storage, self.collection + "_functions") for m in modules], [])
         self.functions = [f for f in functions if f['action'] not in self.PATTERNS]
         patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in self.functions}
         patterns.update(self.PATTERNS)
@@ -45,7 +45,7 @@ class APromptCoderProxy():
         return self.ACTIONS
     
     def Recall(self, key: str):
-        ret = self.storage.Query(self.collection, key, num_results=4)
+        ret = self.storage.Query(collection=self.collection, clue=key, num_results=4)
         for r in ret:
             if (key not in r[0]) and (r[0] not in key):
                 return r[0]
@@ -54,7 +54,7 @@ class APromptCoderProxy():
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
-        agents = FindRelatedRecords("Programming, debugging, investigating, searching, files, systems.", 10, self.storage, self.collection + "_prompts")
+        agents = FindRecords("Programming, debugging, investigating, searching, files, systems.", [], 10, self.storage, self.collection + "_prompts")
         prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["coder-proxy", "module-coder", "module-loader", "researcher"]]))
 
         prompt = f"""
