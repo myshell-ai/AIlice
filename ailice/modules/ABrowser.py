@@ -107,10 +107,10 @@ class ABrowser():
     def ScrollUp(self, session: str) -> str:
         return self.sessions[session].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
 
-    def SearchDown(self, query: str, session: str) -> bool:
+    def SearchDown(self, query: str, session: str) -> str:
         return self.sessions[session].SearchDown(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
-    def SearchUp(self, query: str, session: str) -> bool:
+    def SearchUp(self, query: str, session: str) -> str:
         return self.sessions[session].SearchUp(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
     def GetLink(self, text: str, session: str) -> str:

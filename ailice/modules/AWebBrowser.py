@@ -57,10 +57,10 @@ class AWebBrowser(AScrollablePage):
     def ScrollUp(self) -> str:
         return super(AWebBrowser, self).ScrollUp() + self.prompt
 
-    def SearchDown(self, query: str) -> bool:
+    def SearchDown(self, query: str) -> str:
         return super(AWebBrowser, self).SearchDown(query) + self.prompt
     
-    def SearchUp(self, query: str) -> bool:
+    def SearchUp(self, query: str) -> str:
         return super(AWebBrowser, self).SearchUp(query) + self.prompt
     
     def Action(self, action: str, paras: dict):

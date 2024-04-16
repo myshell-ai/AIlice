@@ -34,12 +34,12 @@ class AScrollablePage():
         self.currentIdx -= STEP
         return self()
 
-    def SearchDown(self, query: str) -> bool:
+    def SearchDown(self, query: str) -> str:
         loc = self.txt.lower().find(query.lower(), self.currentIdx if 0 < self.currentIdx else 0)
         self.currentIdx = (loc - STEP//2) if -1 != loc else self.currentIdx
         return self() if (-1 != loc) else "NOT FOUND."
     
-    def SearchUp(self, query: str) -> bool:
+    def SearchUp(self, query: str) -> str:
         loc = self.txt.lower().rfind(query.lower(), 0, (self.currentIdx + 1) if 0 < (self.currentIdx + 1) else 0)
         self.currentIdx = (loc - STEP//2) if -1 != loc else self.currentIdx
         return self() if (-1 != loc) else "NOT FOUND."
