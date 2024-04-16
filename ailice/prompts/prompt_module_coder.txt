@@ -10,35 +10,6 @@ Your code is clear, concise, and rigorous.
 Next we introduce the basic structure and interface of the ext-module.
 Here is an example of an ext-module that retrieves documents through arxiv:
 
-```
-import arxiv
-
-from ailice.common.lightRPC import makeServer
-from ailice.modules.AScrollablePage import AScrollablePage #ailice is already exist in the local running environment, please do not try to install or build them.
-
-#For cases where the returned result is too long, we recommend inheriting the AScrollablePage class to implement a scrolling page effect. AScrollablePage contains the following methods: LoadPage, ScrollDown, ScrollUp, SearchDown, SearchUp.
-class AArxiv(AScrollablePage):
-    def __init__(self):
-        super(AArxiv, self).__init__({"SCROLLDOWN": "SCROLL_DOWN_ARXIV"})#The parameter is a dict, used to map the keys("SCROLLUP" and "SCROLLDOWN") to corresponding ACTION names. The ACTION name is decided by you, but it needs to be consistent with the one in ModuleInfo().
-        return
-    
-    def ModuleInfo(self): #This is a standard interface for ext-module that must be implemented. It allows users to dynamically load and use modules at runtime. ACTIONS contains a list of methods registered with the client. The client's AI uses these ACTIONs through the prompts of each ACTION. All functions listed under the "func" field must include a complete signature when defined, otherwise the module will be unavailable.
-        return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures."},
-                                             "SCROLL_DOWN_ARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results."}}}
-    
-    def ArxivSearch(self, keywords: str) -> str:
-        try:
-            ret = str(list(arxiv.Search(query=keywords, max_results=40).results()))
-        except Exception as e:
-            print("arxiv excetption: ", e)
-            ret = f"arxiv excetption: {str(e)}" #Regardless of whether the result is obtained or an error occurs, it is recommended to return the obtained information to the user in the form of a string so that the user can know the details.
-        self.LoadPage(str(ret), "TOP") #"TOP" means to set the currently visible page to the top of the results. You can also use "BOTTOM" to set the currently visible page to the bottom of the results. The latter is usually more commonly used when outputting results of program execution.
-        return self() #The __call__() method returns the text within the currently visible page range.
-
-if __name__ == '__main__':
-    import os
-    addr = "tcp://0.0.0.0:59001" if "1"==os.environ.get("A_IN_CONTAINER") else "tcp://127.0.0.1:59001" #You always have to determine whether you are in a container to use a different IP, which ensures the security of the service.
-    makeServer(objCls=AArxiv, objArgs=dict(), url=addr, APIList=["ModuleInfo", "ArxivSearch", "ScrollDown"]).Run() #Start the module as an RPC service. For each user, a separate AArxiv object will be created. objArgs are the parameters passed to AArxiv(...) when creating the AArxiv object, and since there are no such parameters here, an empty dictionary is passed. The methods listed in the list are the methods open to clients. Please choose a port number between 59001 and 59200.
-```
+<CODE_EXAMPLE>
 
 The interfaces of modules open to clients, except for ModuleInfo, must follow the following standards: the input type must be one of the four types: str, float, int, bool, and the output type must be str or None.

@@ -30,8 +30,9 @@ class APromptModuleCoder():
         return self.ACTIONS
     
     def ParameterizedBuildPrompt(self, n: int):
+        prompt0 = self.prompt0.replace("<CODE_EXAMPLE>", read_text("ailice.modules", "AArxiv.py"))
         prompt = f"""
-{self.prompt0}
+{prompt0}
 """
         #prompt += "\nConversations:"
         ret = self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
