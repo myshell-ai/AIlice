@@ -15,8 +15,15 @@ def ConstructOptPrompt(func, low:int, high: int, maxLen: int) -> str:
     return prompt, n
 
 
-def FindRecords(prompt: str, constrains: list[tuple[str,str]], num: int, storage, collection) -> list:
-    constrains = [] if None == constrains else constrains
-    res = [json.loads(r) for r,_ in storage.Query(collection=collection, clue=prompt, keywords=[v for k,v in constrains], num_results=num*2)]
-    res = [r for r in res if all([(k in r) and (v == r[k]) for k,v in constrains])]
+def FindRecords(prompt: str, selector, num: int, storage, collection) -> list:
+    selector = (lambda x: True) if None == selector else selector
+    res = []
+    l = num
+    while (num < 0) or (len(res) < num):
+        l = l * 2
+        rs = [json.loads(r) for r,_ in storage.Query(collection=collection, clue=prompt, num_results=l)]
+        res = [r for r in rs if selector(r)]
+        if (num < 0) or (len(rs) < l):
+            break
+            
     return res[:num] if num > 0 else res

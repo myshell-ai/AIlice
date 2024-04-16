@@ -37,7 +37,7 @@ class APromptMain():
     
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
-        agents = FindRecords("Investigate, perform tasks, program", [], 10, self.storage, self.collection + "_prompts")
+        agents = FindRecords("Investigate, perform tasks, program", None, 10, self.storage, self.collection + "_prompts")
         prompt0 = self.prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["main", "researcher", "article-digest", "coder-proxy"]]))
 
         prompt = f"""

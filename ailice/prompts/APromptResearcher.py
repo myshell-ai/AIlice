@@ -45,9 +45,9 @@ class APromptResearcher():
         return "None."
     
     def GetPatterns(self):
-        primaryFunctions = FindRecords("Internet operations, file operations.", [('type', 'primary')], len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
+        primaryFunctions = FindRecords("Internet operations, file operations.", lambda r: r['type']=='primary', len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
         self.functions = [f for f in primaryFunctions if f['action'] not in self.PATTERNS]
-        allFunctions = sum([FindRecords("", [('module', m)], -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in primaryFunctions])], [])
+        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in primaryFunctions])], [])
         patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in allFunctions}
         patterns.update(self.PATTERNS)
         return patterns
@@ -58,7 +58,7 @@ class APromptResearcher():
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
-        agents = FindRecords("academic, mathematics, search, investigation, analysis, logic.", [], 10, self.storage, self.collection + "_prompts")
+        agents = FindRecords("academic, mathematics, search, investigation, analysis, logic.", None, 10, self.storage, self.collection + "_prompts")
         prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["researcher", "search-engine", "article-digest", "coder-proxy"]]))
 
         prompt = f"""
