@@ -15,7 +15,9 @@ class APromptMain():
         self.formatter = formatter
         self.outputCB = outputCB
         self.prompt0 = read_text("ailice.prompts", "prompt_simple.txt")
-        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}]}
+        self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
+                         "LOADEXTMODULE": [{"re": GenerateRE4FunctionCalling("LOADEXTMODULE<!|addr: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "LOADEXTPROMPT": [{"re": GenerateRE4FunctionCalling("LOADEXTPROMPT<!|path: str|!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS= {}
         return
     

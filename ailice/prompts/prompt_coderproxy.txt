@@ -42,7 +42,6 @@ CALL<!|agentType: str, agentName: str, msg: str|!>
 agentType: A string used to specify the type of AI agent. It can be of the following types:
  - "coder". An excellent coder, you need to leave any programming problems other than ext-modules building to him. It should be noted that he can only return the code to you, but does not have the authority to execute the code and configure the environment, this is where you need to help him.
  - "module-coder". The only agent capable of building ext-modules, and this is its sole responsibility.
- - "module-loader". An agent that can help you load and use extensions such as ext-modules and ext-prompts. You need to include the address of the ext-module / path to ext-prompt in your request message. You can let it help you interact with the ext-module. You can use this agent to assist in ext-module debugging.
  - "researcher". Suitable for technical problem search tasks such as library document or sample code search on the internet.
 <AGENTS>
 agentName: The name of the AI agent instance. Create a new one if not found. Name should reflect responsibility. A new task can be assigned to an existing agent with a relevant name, as they often possess related experience.

@@ -1,3 +1,7 @@
+import sys
+import string
+import secrets
+import importlib
 import time
 import inspect
 import re
@@ -10,7 +14,7 @@ from ailice.common.ARemoteAccessors import clientPool
 from ailice.common.AMessenger import messenger
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
-from ailice.prompts.ARegex import ARegexMap
+from ailice.prompts.ARegex import ARegexMap, GenerateRE4FunctionCalling
 
 
 class AProcessor():
@@ -30,11 +34,24 @@ class AProcessor():
         self.interpreter.RegisterAction("STORE", {"func": self.EvalStore})
         self.interpreter.RegisterAction("QUERY", {"func": self.EvalQuery})
         self.interpreter.RegisterAction("WAIT", {"func": self.EvalWait})
+        self.interpreter.RegisterAction("LOADEXTMODULE", {"func": self.LoadExtModule})
+        self.interpreter.RegisterAction("LOADEXTPROMPT", {"func": self.LoadExtPrompt})
         
         self.outputCB = outputCB
         self.collection = "ailice" + str(time.time()) if collection is None else collection
         self.prompt = promptsManager[promptName](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
         self.result = "None."
+
+        self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"module": "core",
+                                                                                            "action": "LOADEXTMODULE",
+                                                                                            "signature": "LOADEXTMODULE<!|addr: str|!> -> str",
+                                                                                            "prompt": "Load the ext-module and get the list of callable functions in it. ",
+                                                                                            "type": "primary"}))
+        self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"module": "core",
+                                                                                            "action": "LOADEXTPROMPT",
+                                                                                            "signature": "LOADEXTPROMPT<!|path: str|!> -> str",
+                                                                                            "prompt": "Load ext-prompt from the path pointing to python source code file, which include available new agent type.",
+                                                                                            "type": "primary"}))
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
@@ -159,6 +176,37 @@ class AProcessor():
     def EvalWait(self, duration: int) -> str:
         time.sleep(duration)
         return f"Waiting is over. It has been {duration} seconds."
+    
+    def LoadExtModule(self, addr: str) -> str:
+        try:
+            ret = self.RegisterModules([addr])
+            prompts = []
+            for r in ret:
+                self.interpreter.RegisterPattern(nodeType=r['action'], pattern=GenerateRE4FunctionCalling(r['signature'], faultTolerance = True), isEntry=True)
+                prompts.append(f"{r['signature']}: {r['prompt']}")
+            ret = "\n".join(prompts)
+        except Exception as e:
+            ret = f"Exception: {str(e)}"
+        return ret
+    
+    def LoadExtPrompt(self, path: str) -> str:
+        ret = ""
+        try:
+            alphabet = string.ascii_uppercase + string.ascii_lowercase + string.digits
+            symbol = "".join([secrets.choice(alphabet) for i in range(32)])
+
+            moduleName = "APrompt_" + symbol
+            spec = importlib.util.spec_from_file_location(moduleName, path)
+            promptModule = importlib.util.module_from_spec(spec)
+            sys.modules[moduleName] = promptModule
+            spec.loader.exec_module(promptModule)
+            
+            ret += promptsManager.RegisterPrompt(promptModule.APrompt)
+            if "" == ret:
+                ret += f"Prompt module {promptModule.APrompt.PROMPT_NAME} has been loaded. Its description information is as follows:\n{promptModule.APrompt.PROMPT_DESCRIPTION}"
+        except Exception as e:
+            ret = f"Exception: {str(e)}"
+        return ret
     
     def EnvSummary(self) -> str:
         return "\n".join([f"{varName}: {type(var).__name__}  {str(var)[:50]}{'...[The remaining content is not shown]' if len(str(var)) > 50 else ''}" for varName, var in self.interpreter.env.items()]) + \

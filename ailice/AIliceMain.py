@@ -19,7 +19,6 @@ from ailice.prompts.APromptSearchEngine import APromptSearchEngine
 from ailice.prompts.APromptResearcher import APromptResearcher
 from ailice.prompts.APromptCoder import APromptCoder
 from ailice.prompts.APromptModuleCoder import APromptModuleCoder
-from ailice.prompts.APromptModuleLoader import APromptModuleLoader
 from ailice.prompts.APromptCoderProxy import APromptCoderProxy
 from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
@@ -86,7 +85,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     collection = "ailice" + timestamp
 
     promptsManager.Init(storage=storage, collection=collection)
-    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptModuleLoader, APromptCoderProxy, APromptArticleDigest]:
+    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
     llmPool.Init([modelID])
