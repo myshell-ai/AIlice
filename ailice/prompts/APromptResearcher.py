@@ -43,11 +43,16 @@ class APromptResearcher():
             if (key not in r[0]) and (r[0] not in key):
                 return r[0]
         return "None."
-    
+
     def GetPatterns(self):
-        primaryFunctions = FindRecords("Internet operations, file operations.", lambda r: r['type']=='primary', len(self.PATTERNS) + 10, self.storage, self.collection + "_functions")
-        self.functions = [f for f in primaryFunctions if f['action'] not in self.PATTERNS]
-        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in primaryFunctions])], [])
+        self.functions = FindRecords("Internet operations, file operations.",
+                                     lambda r: ((r['type']=='primary') and (r['action'] not in self.PATTERNS)),
+                                     5, self.storage, self.collection + "_functions")
+        context = self.conversations.GetConversations(frm = -1)[0]['msg']
+        self.functions += FindRecords(context,
+                                      lambda r: ((r['type']=='primary') and (r['action'] not in self.PATTERNS) and (r not in self.functions)),
+                                      5, self.storage, self.collection + "_functions")
+        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in self.functions])], [])
         patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in allFunctions}
         patterns.update(self.PATTERNS)
         return patterns
@@ -59,6 +64,7 @@ class APromptResearcher():
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
         agents = FindRecords("academic, mathematics, search, investigation, analysis, logic.", None, 10, self.storage, self.collection + "_prompts")
+        agents += FindRecords(context, lambda r: (r not in agents), 5, self.storage, self.collection + "_prompts")
         prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["researcher", "search-engine", "article-digest", "coder-proxy"]]))
 
         prompt = f"""
