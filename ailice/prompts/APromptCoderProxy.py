@@ -27,7 +27,9 @@ class APromptCoderProxy():
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "CHECK_OUTPUT": [{"re": GenerateRE4FunctionCalling("CHECK_OUTPUT<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLL_UP_TERM": [{"re": GenerateRE4FunctionCalling("SCROLL_UP_TERM<!|session: str|!> -> str"), "isEntry": True}],
-                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str"), "isEntry": True}]}
+                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str"), "isEntry": True}],
+                         "LOADEXTMODULE": [{"re": GenerateRE4FunctionCalling("LOADEXTMODULE<!|addr: str|!> -> str", faultTolerance = True), "isEntry": True}],
+                         "LOADEXTPROMPT": [{"re": GenerateRE4FunctionCalling("LOADEXTPROMPT<!|path: str|!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS= {}
         return
     
@@ -62,7 +64,7 @@ class APromptCoderProxy():
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
         agents = FindRecords("Programming, debugging, investigating, searching, files, systems.", lambda r: (r['properties']['type'] == 'primary'), 5, self.storage, self.collection + "_prompts")
         agents += FindRecords(context, lambda r: (r['properties']['type'] == 'primary') and (r not in agents), 5, self.storage, self.collection + "_prompts")
-        prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["coder-proxy", "module-coder", "module-loader", "researcher"]]))
+        prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["coder-proxy", "module-coder", "researcher"]]))
 
         prompt = f"""
 {prompt0}

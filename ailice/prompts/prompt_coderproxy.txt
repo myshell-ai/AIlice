@@ -74,6 +74,12 @@ READ_IMAGE<!|path: str|!>
 #Write a variable of image type into a file.
 WRITE_IMAGE<!|image: AImage, path: str|!>
 
+#Load the ext-module and get the list of callable functions in it.
+LOADEXTMODULE<!|addr: str|!>
+
+#Load ext-prompt from the path pointing to python source code file, which include available new agent type.
+LOADEXTPROMPT<!|path: str|!>
+
 #The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
 
 <FUNCTIONS>
