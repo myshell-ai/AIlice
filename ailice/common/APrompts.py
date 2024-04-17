@@ -17,7 +17,7 @@ class APromptsManager():
             return f"{promptClass.PROMPT_NAME} is already exist, please use another name."
         self.prompts[promptClass.PROMPT_NAME] = promptClass
         
-        if not self.storage.Store(self.collection + "_prompts", json.dumps({"name": promptClass.PROMPT_NAME, "desc": promptClass.PROMPT_DESCRIPTION})):
+        if not self.storage.Store(self.collection + "_prompts", json.dumps({"name": promptClass.PROMPT_NAME, "desc": promptClass.PROMPT_DESCRIPTION, "properties": promptClass.PROMPT_PROPERTIES})):
             self.prompts.pop(promptClass.PROMPT_NAME)
             return "STORE prompt to vecdb FAILED, there may be a problem with the vector database."
         return ""

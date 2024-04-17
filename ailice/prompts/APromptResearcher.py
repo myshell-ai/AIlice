@@ -7,6 +7,7 @@ from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 class APromptResearcher():
     PROMPT_NAME = "researcher"
     PROMPT_DESCRIPTION = "Conduct an internet investigation on a particular topic or gather data. It also has the capability to execute simple scripts."
+    PROMPT_PROPERTIES = {"type": "primary"}
     
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor
@@ -63,8 +64,8 @@ class APromptResearcher():
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
-        agents = FindRecords("academic, mathematics, search, investigation, analysis, logic.", None, 10, self.storage, self.collection + "_prompts")
-        agents += FindRecords(context, lambda r: (r not in agents), 5, self.storage, self.collection + "_prompts")
+        agents = FindRecords("academic, mathematics, search, investigation, analysis, logic.", lambda r: (r['properties']['type'] == 'primary'), 10, self.storage, self.collection + "_prompts")
+        agents += FindRecords(context, lambda r: (r['properties']['type'] == 'primary') and (r not in agents), 5, self.storage, self.collection + "_prompts")
         prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["researcher", "search-engine", "article-digest", "coder-proxy"]]))
 
         prompt = f"""

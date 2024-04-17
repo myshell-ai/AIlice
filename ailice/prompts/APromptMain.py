@@ -6,6 +6,7 @@ from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 class APromptMain():
     PROMPT_NAME = "main"
     PROMPT_DESCRIPTION = "The coordinator between the user and other agents, also acting as the scheduler for collaboration among multiple agents."
+    PROMPT_PROPERTIES = {"type": "primary"}
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
         self.processor = processor
@@ -39,8 +40,8 @@ class APromptMain():
     
     def ParameterizedBuildPrompt(self, n: int):
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
-        agents = FindRecords("Investigate, perform tasks, program", None, 10, self.storage, self.collection + "_prompts")
-        agents += FindRecords(context, lambda r: (r not in agents), 5, self.storage, self.collection + "_prompts")
+        agents = FindRecords("Investigate, perform tasks, program", lambda r: (r['properties']['type'] == 'primary'), 10, self.storage, self.collection + "_prompts")
+        agents += FindRecords(context, lambda r: (r['properties']['type'] == 'primary') and (r not in agents), 5, self.storage, self.collection + "_prompts")
         prompt0 = self.prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["main", "researcher", "article-digest", "coder-proxy"]]))
 
         prompt = f"""
