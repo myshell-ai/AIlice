@@ -51,11 +51,13 @@ class AScripter():
         completed = False
         if process.poll() is not None:
             for i in range(2):
+                remainingOutput = ""
                 try:
                     remainingOutput = process.stdout.read()
                     break
                 except TypeError as e:
                     time.sleep(1)
+                    remainingOutput += str(e) if 1==i else ""
                     continue
             if remainingOutput:
                 output += remainingOutput
