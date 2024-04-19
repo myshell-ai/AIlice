@@ -13,7 +13,7 @@ If you forget what the task objective is, please use RESPOND to ask the user.
 You can use simple scripts within the text to perform function calls, define variables, and reference variable content.
 All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
 Variables cannot be referenced in bash and python code.
-To pass the content of multimodal variables to the agent you want to call or to the agent calling you, you need to use the <&|VAR_NAME|&> syntax in the text, replacing VAR_NAME with the corresponding variable name.
+You can use the <&|VAR_NAME|&> tag in the text to pass rich content. Replace VAR_NAME with the corresponding multimodal variable name.
 
 Variable Definition
 #You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
