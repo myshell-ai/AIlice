@@ -17,7 +17,7 @@ You can define variables with the following statement, where var_name and conten
 var_name := <!|content|!>
 
 #Use the following function to create or communicate with an AI agent:
-CALL<!|agentType: str, agentName: str, msg: str|!>
+CALL<!|agentType: str, agentName: str, msg: str|!> -> str
 agentType: A string used to specify the type of AI agent. It can be of the following types:
  - "researcher", Conduct an internet investigation on a particular topic or gather data. It also has the capability to execute simple scripts.
  - "article-digest": literature reading comprehension and related question answering. URL or file path is neccessary for the agent to work.
@@ -28,10 +28,10 @@ agentName: The name of the AI agent instance. Create a new one if not found. Nam
 msg: message need to be told to the agent. When you need to describe a new task in msg, it should be clear, complete, and self-sufficient.
 
 #Load the ext-module and get the list of callable functions in it.
-LOADEXTMODULE<!|addr: str|!>
+LOADEXTMODULE<!|addr: str|!> -> str
 
 #Load ext-prompt from the path pointing to python source code file, which include available new agent type.
-LOADEXTPROMPT<!|path: str|!>
+LOADEXTPROMPT<!|path: str|!> -> str
 
 Function calls are limited to positional parameters, please keep the order of parameters consistent with the function definition.
 The function parameters cannot include text references. Please ensure that the parameters are comprehensive and do not rely on context.

@@ -28,7 +28,7 @@ Function calls need to be placed at the end of your output, and prefixed with "!
 
 Available Functions
 #You can use divide and conquer strategy for complex tasks. Use this function to interact with an AI agent.
-CALL<!|agentType: str, agentName: str, msg: str|!>
+CALL<!|agentType: str, agentName: str, msg: str|!> -> str
 agentType: A string used to specify the type of AI agent. It can be of the following types:
  - "search-engine": search for information from sources like Google, arXiv.
  - "article-digest": literature reading comprehension and related question answering.
@@ -38,33 +38,33 @@ agentName: A name used to identify the agent. Create a new one if no such agent 
 msg: message need to be told to the agent. The agent cannot see anything beyond the msg parameter, please provide the complete information of the task within the msg parameter, do not refer to external content, even if it means copying large sections of text. Otherwise, it will result in execution failure.
 
 #Open a webpage/PDF and obtain the visible content. You need to pass a session parameter as the session name, and you can reuse the same session to open new web pages.
-BROWSE<!|url: str, session: str|!>
+BROWSE<!|url: str, session: str|!> -> str
 url: URL of webpage/pdf.
 
 #Execute a bash command such as pip install some package.
-BASH<!|code: str|!>
+BASH<!|code: str|!> -> str
 
 #Execute python code.
-PYTHON<!|code: str|!>
+PYTHON<!|code: str|!> -> str
 
 #Store a piece of text / Retrieve text semantically associated with keywords.
-STORE<!|txt: str|!>
-QUERY<!|keywords: str|!>
+STORE<!|txt: str|!> -> None
+QUERY<!|keywords: str|!> -> str
 
 #Use this function to print the content of a variable.
-PRINT<!|txt: str|!>
+PRINT<!|txt: str|!> -> str
 
 #Take a screenshot and return as a image variable.
-SCREENSHOT<!||!>
+SCREENSHOT<!||!> -> AImage
 
 #Read the content of an image file into a variable.
-READ_IMAGE<!|path: str|!>
+READ_IMAGE<!|path: str|!> -> AImage
 
 #Write a variable of image type into a file.
-WRITE_IMAGE<!|image: AImage, path: str|!>
+WRITE_IMAGE<!|image: AImage, path: str|!> -> None
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
-RESPOND<!|message: str|!>
+RESPOND<!|message: str|!> -> str
 
 #The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
 

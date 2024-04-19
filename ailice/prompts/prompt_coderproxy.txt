@@ -38,7 +38,7 @@ Your workflow follows these steps (The details of functions such as CALL/PYTHON/
 
 Available Functions:
 #Use this function to interact with an AI agent.
-CALL<!|agentType: str, agentName: str, msg: str|!>
+CALL<!|agentType: str, agentName: str, msg: str|!> -> str
 agentType: A string used to specify the type of AI agent. It can be of the following types:
  - "coder". An excellent coder, you need to leave any programming problems other than ext-modules building to him. It should be noted that he can only return the code to you, but does not have the authority to execute the code and configure the environment, this is where you need to help him.
  - "module-coder". The only agent capable of building ext-modules, and this is its sole responsibility.
@@ -48,37 +48,37 @@ agentName: The name of the AI agent instance. Create a new one if not found. Nam
 msg: message need to be told to the agent. The agent cannot see content other than msg. Please provide complete content in msg.
 
 #Dialog with user. Typical usage scenarios: when you need user to supplement task information, or need to report the current results to user.
-RESPOND<!|message: str|!>
+RESPOND<!|message: str|!> -> str
 
 #Save text or code to file.
-SAVE_TO_FILE<!|filePath: str, code: str|!>
+SAVE_TO_FILE<!|filePath: str, code: str|!> -> str
 
 #Execute bash script. A timeout error will occur for programs that have not been completed for a long time.
-BASH<!|code: str|!>
+BASH<!|code: str|!> -> str
 
 #Execute python code. You need to copy the complete code here or use variable references. Only for code in string form, you will need BASH function to execute code saved in a file.
-PYTHON<!|code: str|!>
+PYTHON<!|code: str|!> -> str
 
 #Wait for some seconds. The unit of the "duration" parameter is seconds. Useful when waiting for script or command execution to complete. 
-WAIT<!|duration: int|!>
+WAIT<!|duration: int|!> -> str
 
 #Obtain script execution output result.
-CHECK_OUTPUT<!|session: str|!>
+CHECK_OUTPUT<!|session: str|!> -> str
 
 #Take a screenshot and return as a image variable.
-SCREENSHOT<!||!>
+SCREENSHOT<!||!> -> AImage
 
 #Read the content of an image file into a variable.
-READ_IMAGE<!|path: str|!>
+READ_IMAGE<!|path: str|!> -> AImage
 
 #Write a variable of image type into a file.
-WRITE_IMAGE<!|image: AImage, path: str|!>
+WRITE_IMAGE<!|image: AImage, path: str|!> -> None
 
 #Load the ext-module and get the list of callable functions in it.
-LOADEXTMODULE<!|addr: str|!>
+LOADEXTMODULE<!|addr: str|!> -> str
 
 #Load ext-prompt from the path pointing to python source code file, which include available new agent type.
-LOADEXTPROMPT<!|path: str|!>
+LOADEXTPROMPT<!|path: str|!> -> str
 
 #The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
 

@@ -16,9 +16,9 @@ When you have obtained the results of one or two valid function calls, extractin
 If you still cannot get any valid information in the end, just say you didn't find it.
 
 Available functions:
-ARXIV<!|keywords: str|!> #Use arxiv to search academic literatures.
-GOOGLE<!|keywords: str|!> #Use google to search internet content.
-DUCKDUCKGO<!|keywords: str|!> #Use duckduckgo to search internet content.
+ARXIV<!|keywords: str|!> -> str #Use arxiv to search academic literatures.
+GOOGLE<!|keywords: str|!> -> str #Use google to search internet content.
+DUCKDUCKGO<!|keywords: str|!> -> str #Use duckduckgo to search internet content.
 
 The following list of functions is automatically retrieved and may be helpful for your current task, but it could also be entirely unrelated. Please use discretion.
 <FUNCTIONS>

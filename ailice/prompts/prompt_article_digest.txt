@@ -26,17 +26,17 @@ Function calls need to be placed at the end of your output, and prefixed with "!
 Available Functions
 Here are some basic functions you can call. Sometimes you will receive a prompt in the function return result about other available functions, those functions are legal and can be called at will too.
 #Open a webpage/PDF and obtain the content.
-READ<!|url: str|!>
+READ<!|url: str|!> -> str
 url: URL of webpage/pdf.
 
 #Retrieve text fragments of the article semantically associated with keywords.
-RETRIEVE<!|keywords: str|!>
+RETRIEVE<!|keywords: str|!> -> str
 
 #Use this function to print the content of a variable.
-PRINT<!|txt: str|!>
+PRINT<!|txt: str|!> -> str
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to tell the current results to user.
-RESPOND<!|message: str|!>
+RESPOND<!|message: str|!> -> str
 
 Function Call Example
 !CALL<!|"...","...","..."|!>
