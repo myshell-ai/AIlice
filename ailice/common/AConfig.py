@@ -13,6 +13,8 @@ class AConfig():
                 "modelList": {
                     "meta-llama/Llama-2-13b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False},
                     "meta-llama/Llama-2-70b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False},
+                    "meta-llama/Meta-Llama-3-8B-Instruct": {"formatter": "AFormatterLLAMA3", "contextWindow": 8192, "systemAsUser": False},
+                    "meta-llama/Meta-Llama-3-70B-Instruct": {"formatter": "AFormatterLLAMA3", "contextWindow": 8192, "systemAsUser": False},
                     "upstage/llama-30b-instruct-2048": {"formatter": "AFormatterSimple", "contextWindow": 2048, "systemAsUser": False},
                     "lmsys/vicuna-33b-v1.3": {"formatter": "AFormatterVicuna", "contextWindow": 2048, "systemAsUser": False},
                     "Phind/Phind-CodeLlama-34B-v2": {"formatter": "AFormatterSimple", "contextWindow": 4096, "systemAsUser": False},
