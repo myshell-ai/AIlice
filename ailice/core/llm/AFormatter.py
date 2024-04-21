@@ -1,5 +1,5 @@
 import copy
-import io
+import inspect
 
 class AFormatterVicuna():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -53,6 +53,25 @@ class AFormatterLLAMA2():
                 ret += f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}"
             #print("\n prompt: ", ret)
         return ret
+
+    def Len(self, prompt) -> int:
+        return len(prompt)
+
+class AFormatterLLAMA3():
+    def __init__(self, tokenizer=None, systemAsUser = False):
+        self.roles={'USER': "user", 'ASSISTANT': "assistant", 'SYSTEM': "system"}
+        self.tokenizer = tokenizer
+        self.systemAsUser = systemAsUser
+    
+    def BuildMsg(self, role: str, msg: str):
+        if self.systemAsUser and "SYSTEM" == role:
+            role = "USER"
+        return f"<|start_header_id|>{self.roles[role]}<|end_header_id|>\n{msg}<|eot_id|>"
+    
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n{prompt0}<|eot_id|>" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"<|start_header_id|>{self.roles['ASSISTANT']}<|end_header_id|>\n" if assistTag else "")
+        #print("prompt: ", ret)
+        return self.tokenizer.encode(ret) if encode else ret
 
     def Len(self, prompt) -> int:
         return len(prompt)
@@ -193,7 +212,7 @@ class AFormatterGPTVision():
         return len(str(prompt)) // 4
 
 def CreateFormatter(formatterClsName: str, tokenizer, systemAsUser):
-    formatterList = [AFormatterSimple, AFormatterLLAMA2, AFormatterVicuna, AFormatterChatML, AFormatterAMAZON, AFormatterZephyr, AFormatterOpenChat, AFormatterGPT, AFormatterGPTVision]
+    formatterList = [obj for name, obj in inspect.getmembers(inspect.getmodule(inspect.currentframe())) if inspect.isclass(obj) and name.startswith("AFormatter")]
     for formatterCls in formatterList:
         if formatterClsName == formatterCls.__name__:
             return formatterCls(tokenizer = tokenizer, systemAsUser = systemAsUser)
