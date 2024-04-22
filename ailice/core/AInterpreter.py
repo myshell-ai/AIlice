@@ -5,7 +5,7 @@ import ast
 import traceback
 from typing import Any
 from ailice.common.ADataType import typeInfo
-from ailice.prompts.ARegex import GenerateRE4FunctionCalling, ARegexMap, VAR_DEF
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling, GenerateRE4ObjectExpr, ARegexMap, VAR_DEF, EXPR_OBJ
 from ailice.common.AMessenger import messenger
 
 def HasReturnValue(action):
@@ -26,6 +26,13 @@ class AInterpreter():
         self.RegisterAction("_PRINT", {"func": self.EvalPrint})
         self.RegisterPattern("_VAR_REF", f"(?P<varName>({ARegexMap['ref']}))", False)
         self.RegisterPattern("_EXPR_CAT", f"(?P<expr>({ARegexMap['expr_cat']}))", False)
+        for dataType in typeInfo:
+            if not typeInfo[dataType]["tag"]:
+                continue
+            self.RegisterPattern(f"_EXPR_OBJ_{dataType.__name__}", GenerateRE4ObjectExpr(inspect.Signature([param for name,param in inspect.signature(dataType.__init__).parameters.items() if name != 'self']), dataType.__name__, faultTolerance=True), False)
+            self.RegisterAction(f"_EXPR_OBJ_{dataType.__name__}", {"func": self.CreateObjCB(dataType)})
+        self.RegisterPattern("_EXPR_OBJ_DEFAULT", EXPR_OBJ, False)
+        self.RegisterAction("_EXPR_OBJ_DEFAULT", {"func": self.EvalObjDefault, "noEval": ["typeBra", "typeKet"]})
         return
     
     def RegisterAction(self, nodeType: str, action: dict):
@@ -73,7 +80,7 @@ class AInterpreter():
             return "The function call failed because the arguments did not match. txtArgs.keys(): " + str(txtArgs.keys()) + ". func params: " + str(signature.parameters.keys())
         paras = dict()
         for k,v in txtArgs.items():
-            paras[k] = self.Eval(v)
+            paras[k] = v if (k in action.get("noEval", [])) else self.Eval(v)
             if type(paras[k]) != signature.parameters[k].annotation:
                 raise TypeError(f"parameter {k} should be of type {signature.parameters[k].annotation.__name__}, but got {type(paras[k]).__name__}.")
         return action['func'](**paras)
@@ -143,7 +150,7 @@ class AInterpreter():
         else:
             return f"Variable name {varName} NOT FOUND, did you mean to use a string but forgot the quotation marks?"
 
-    def EvalVar(self, varName: str, content: str):
+    def EvalVar(self, varName: str, content: Any):
         self.env[varName] = content
         return
     
@@ -154,5 +161,25 @@ class AInterpreter():
             ret += self.Eval(match.group(0))
         return ret
     
+    def EvalObjDefault(self, typeBra: str, args: str, typeKet: str) -> Any:
+        if typeBra != typeKet:
+            raise ValueError(f"The left and right types in braket should be the same. But in fact the left side is ({typeBra}), and the right side is ({typeKet}). Please correct your syntax.")
+        if typeBra not in [t.__name__ for t in typeInfo.keys()]+['&', '!']:
+            raise ValueError(f"The specified object type ({typeBra}) is not supported. Please check your input.")
+        if "!" == typeBra.strip():
+            return args
+        elif "&" == typeBra.strip():
+            return self.env.get(args.strip())
+        else:
+            raise ValueError(f"It looks like you are trying to create an object of type ({typeBra}), but syntax parsing fails for unrecognized reasons. Please check your syntax.")
+    
     def EvalPrint(self, txt: str) -> str:
         return txt
+    
+    def CreateObjCB(self, dataType):
+        def callback(*args,**kwargs):
+            return dataType(*args,**kwargs)
+        newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(dataType.__init__).parameters.items() if t.name != 'self'],
+                                         return_annotation=dataType)
+        callback.__signature__ = newSignature
+        return callback

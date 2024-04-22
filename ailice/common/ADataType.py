@@ -48,5 +48,5 @@ class AImageLocation():
         image.save(imageByte, format='JPEG')
         return AImage(format="JPEG", data=imageByte.getvalue())
 
-typeInfo = {AImage: {"modal": "image"},
-            AImageLocation: {"modal": "image"}}
+typeInfo = {AImage: {"modal": "image", "tag": False},
+            AImageLocation: {"modal": "image", "tag": True}}
