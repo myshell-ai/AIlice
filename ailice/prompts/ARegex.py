@@ -11,8 +11,8 @@ ARegexMap = {"str": r"(?<!\\)'''(?:\\.|'(?!'')|[^'\\])*?'''|(?<!\\)\"\"\"(?:\\.|
 
 ARegexMap["expr_cat"] = f"(?:{ARegexMap['ref']}|{ARegexMap['str']})(?:\s*\+\s*(?:{ARegexMap['ref']}|{ARegexMap['str']}))+"
 
-EXPR_OBJ = r"<(?P<typeBra>([a-zA-Z0-9_&]+))\|(?P<args>(.*?))\|(?P<typeKet>([a-zA-Z0-9_&]+))>"
-VAR_DEF = r"(?P<varName>([a-zA-Z0-9_]+))[ ]*:=[ ]*(?P<content>(?:<([a-zA-Z0-9_&]+)\|(?:.*?)\|([a-zA-Z0-9_&]+)>))"
+EXPR_OBJ = r"<(?P<typeBra>([a-zA-Z0-9_&!]+))\|(?P<args>(.*?))\|(?P<typeKet>([a-zA-Z0-9_&!]+))>"
+VAR_DEF = r"(?P<varName>([a-zA-Z0-9_]+))[ ]*:=[ ]*(?P<content>(?:<([a-zA-Z0-9_&!]+)\|(?:.*?)\|([a-zA-Z0-9_&!]+)>))"
 
 def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> str:
     #signature: "FUNC<!|ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...|!> -> RETURN_TYPE"
@@ -28,7 +28,7 @@ def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> 
     
     reMap = {k: v for k,v in ARegexMap.items()}
     reMap["str"] = r"(?:.*?(?=\|!>))" if (faultTolerance and 1==len(typePairs) and "str"==typePairs[0][1]) else ARegexMap['str']
-    refOrcatOrObj = f"{reMap['ref']}|{reMap['expr_cat']}|(?:<([a-zA-Z0-9_&]+)\|(?:.*?)\|([a-zA-Z0-9_&]+)>)"
+    refOrcatOrObj = f"{reMap['ref']}|{reMap['expr_cat']}|(?:<([a-zA-Z0-9_&!]+)\|(?:.*?)\|([a-zA-Z0-9_&!]+)>)"
     patternArgs = '\s*,\s*'.join([f"(?:({arg}|\"{arg}\"|\'{arg}\')\s*[:=]\s*)?(?P<{arg}>({reMap[tp]+'|' if tp in reMap else ''}{refOrcatOrObj}))" for arg,tp in typePairs])
     return rf"!{funcName}<!\|[ ]*{patternArgs}[ ]*\|!>"
 
