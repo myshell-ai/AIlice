@@ -41,28 +41,41 @@ class AConfig():
                     #"model/": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False}
                 }
             },
-            "oai": {"modelWrapper": "AModelChatGPT",
-                    "apikey": None,
-                    "baseURL": None,
-                    "modelList": {
-                        "gpt-4-turbo": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-turbo-2024-04-09": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-0125-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-turbo-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-1106-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4-vision-preview": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
-                        "gpt-4": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
-                        "gpt-4-32k": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
-                        "gpt-4-0613": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
-                        "gpt-4-32k-0613": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
-                        "gpt-4-0314": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
-                        "gpt-4-32k-0314": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
-                        "gpt-3.5-turbo-1106": {"formatter": "AFormatterGPT", "contextWindow": 16385, "systemAsUser": False},
-                        "gpt-3.5-turbo": {"formatter": "AFormatterGPT", "contextWindow": 4096, "systemAsUser": False},
-                        "gpt-3.5-turbo-16k": {"formatter": "AFormatterGPT", "contextWindow": 16385, "systemAsUser": False},
-                        "gpt-3.5-turbo-instruct": {"formatter": "AFormatterGPT", "contextWindow": 4096, "systemAsUser": False}
-                        }
-                    },
+            "oai": {
+                "modelWrapper": "AModelChatGPT",
+                "apikey": None,
+                "baseURL": None,
+                "modelList": {
+                    "gpt-4-turbo": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
+                    "gpt-4-turbo-2024-04-09": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
+                    "gpt-4-0125-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
+                    "gpt-4-turbo-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
+                    "gpt-4-1106-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
+                    "gpt-4-vision-preview": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
+                    "gpt-4": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                    "gpt-4-32k": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                    "gpt-4-0613": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                    "gpt-4-32k-0613": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                    "gpt-4-0314": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                    "gpt-4-32k-0314": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                    "gpt-3.5-turbo-1106": {"formatter": "AFormatterGPT", "contextWindow": 16385, "systemAsUser": False},
+                    "gpt-3.5-turbo": {"formatter": "AFormatterGPT", "contextWindow": 4096, "systemAsUser": False},
+                    "gpt-3.5-turbo-16k": {"formatter": "AFormatterGPT", "contextWindow": 16385, "systemAsUser": False},
+                    "gpt-3.5-turbo-instruct": {"formatter": "AFormatterGPT", "contextWindow": 4096, "systemAsUser": False}
+                }
+            },
+            "groq": {
+                "modelWrapper": "AModelChatGPT",
+                "apikey": None,
+                "baseURL": "https://api.groq.com/openai/v1",
+                "modelList": {
+                    "llama3-8b-8192": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                    "llama3-70b-8192": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False},
+                    "llama2-70b-4096": {"formatter": "AFormatterGPT", "contextWindow": 4096, "systemAsUser": False},
+                    "mixtral-8x7b-32768": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                    "gemma-7b-it": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False}
+                }
+            },
             "mistral": {
                     "modelWrapper": "AModelMistral",
                     "apikey": None,
