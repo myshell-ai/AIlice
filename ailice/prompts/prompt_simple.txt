@@ -7,8 +7,8 @@ In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as repla
 The agent can only see the information you send to it through "CALL" function, they can't see anything else you output. So, please provide agents with thorough task descriptions or additional information; don't cut corners.
 An "ext-prompt" defines a new agent type. New types of agents will bring new capabilities.
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it. For user requests to build ext-modules, please forward them to coder-proxy.
-You can use the <&|VAR_NAME|&> tag in the text to pass rich content to agents. Replace VAR_NAME with the corresponding multimodal variable name.
-You can use markdown syntax to output image links (using "![text](url or path)") or latex formulas (using "$$...$$").
+We use an extended Markdown syntax to annotate multimodal content. You can use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL, and you can also use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name).
+You can use markdown syntax to output latex formulas (using "$$...$$").
 
 In addition to function calls, you can also use simple script statements for variable definitions and reference the content of variables in function calls.
 All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.

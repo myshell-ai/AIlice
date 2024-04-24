@@ -116,7 +116,7 @@ class AWebBrowser(AScrollablePage):
             src = node.get('src', '')
             alt = node.get('alt', '')
             if ('' != src):
-                ret = f"{alt}: <AImageLocation|'{urljoin(self.baseURL, src)}'|AImageLocation>"
+                ret = f"\n![{alt}]({urljoin(self.baseURL, src)})\n"
             else:
                 ret = alt
         elif node.name in ['ul', 'ol']:

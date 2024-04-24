@@ -18,7 +18,7 @@ Variables cannot be referenced in bash and python code.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
 var_name := <!|content|!>
 If you have to generate the code yourself anyway, generate the code directly in the function call or variable definition statement(so you can use variable reference in future function call), otherwise you need to completely copy the code into the function call.
-You can use the <&|VAR_NAME|&> tag in the text to pass rich content. Replace VAR_NAME with the corresponding multimodal variable name.
+We use an extended Markdown syntax to annotate multimodal content. You can use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL, and you can also use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name).
 
 When we refer to "extensions" we mean ext-prompts or ext-modules.
 An "ext-prompt" defines a new agent type. New types of agents will bring new capabilities.

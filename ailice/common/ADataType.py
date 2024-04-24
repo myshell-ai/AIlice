@@ -1,8 +1,16 @@
 import io
 import base64
+import mimetypes
 import requests
 from urllib.parse import urlparse
 from PIL import Image
+
+def GuessMediaType(pathOrUrl: str) -> str:
+    mimetype, _ = mimetypes.guess_type(pathOrUrl)
+    if None != mimetype:
+        return mimetype
+    r=requests.head(pathOrUrl)
+    return r.headers.get("content-type")
 
 class AImage():
     def __init__(self, format: str, data: bytes):

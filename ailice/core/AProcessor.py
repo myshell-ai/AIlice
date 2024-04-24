@@ -138,18 +138,15 @@ class AProcessor():
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
             self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
-            matches = [m for m in re.findall(f'<&\\|({ARegexMap["ref"]})\\|&>', msg)]
-            for varName in matches:
-                if varName in self.interpreter.env:
-                    self.subProcessors[agentName].interpreter.env[varName] = self.interpreter.env[varName]
-                else:
-                    return f"variable name {varName} not defined in current env. please check and correct."
+        
+        for varName in self.interpreter.env:
+            if varName in msg:
+                self.subProcessors[agentName].interpreter.env[varName] = self.interpreter.env[varName]
         
         resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg)}"
 
-        matches = [m for m in re.findall(f'<&\\|({ARegexMap["ref"]})\\|&>', resp)]
-        for varName in matches:
-            if varName in self.subProcessors[agentName].interpreter.env:
+        for varName in self.interpreter.env:
+            if varName in resp:
                 self.interpreter.env[varName] = self.subProcessors[agentName].interpreter.env[varName]
         return resp
     

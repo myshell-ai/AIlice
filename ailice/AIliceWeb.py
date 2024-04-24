@@ -112,7 +112,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 json.dump(processor.ToJson(), f, indent=2, default=serialize)
         
         if str != type(history[-1][0]):
-            msg = f'Please observe this image. <AImageLocation|"{history[-1][0][0]}"|AImageLocation>'
+            msg = f'Please observe this image. \n![]({history[-1][0][0]})\n'
         else:
             msg = history[-1][0]
         threadLLM = threading.Thread(target=processor, args=(msg,))
