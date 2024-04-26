@@ -54,7 +54,7 @@ ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
 
 <a name="cool-things-we-can-do"></a>
 ### COOL things we can do
-Let's list some typical use cases. I frequently employ these examples to test AIlice during development, ensuring stable performance. However, even with these tests, the execution results are influenced by the chosen model, code version, and even the testing time. (GPT-4 may experience a decrease in performance under high loads, while open-source models, of course, don't have this issue; they don't have much room for degradation) Additionally, AIlice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when AIlice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success. Furthermore, if the task execution falls short, you can guide her in the right direction, and she will rectify her approach.
+Let's list some typical use cases. I frequently employ these examples to test AIlice during development, ensuring stable performance. However, even with these tests, the execution results are influenced by the chosen model, code version, and even the testing time. (GPT-4 may experience a decrease in performance under high loads. Some random factors can also lead to different results from running the model multiple times. Sometimes the LLM performs very intelligently, but other times it does not) Additionally, AIlice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when AIlice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success. Furthermore, if the task execution falls short, you can guide her in the right direction, and she will rectify her approach.
 
 The last point to note is that AIlice currently lacks a run time control mechanism, so she might get stuck in a loop or run for an extended period. When using a commercial LLM, you need to monitor her operation closely.
 
@@ -153,10 +153,10 @@ Now that the environment configuration has been done.
 You can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
-ailice_main --modelID=oai:gpt-4-1106-preview --prompt="main"
-ailice_main --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./trace
-ailice_main --modelID=oai:gpt-4-turbo-preview --prompt="main"
-ailice_main --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
+ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
+ailice_web --modelID=oai:gpt-4-1106-preview --prompt="researcher" --trace=./trace
+ailice_web --modelID=oai:gpt-4-turbo-preview --prompt="main"
+ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:openchat/openchat_3.5 --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
@@ -169,7 +169,7 @@ When you run it for the first time, you will be asked to enter the api-key of op
 
 When you turn on the speechOn switch for the first time, you may need to wait for a long time at startup. This is because the weights of the speech recognition and TTS models are being downloaded in the background.
 
-As shown in the examples, you can use the Agent through AIliceMain.py or AIliceWeb.py. The former is a command line program, and the latter provides a web dialogue interface based on gradio. Both are used in the same way.
+As shown in the examples, you can use the Agent through ailice_web, it provides a web dialogue interface based on gradio.
 
 - --**modelID** specifies the model. The currently supported models can be seen in config.json. We will implement a simpler model specification method
 in the future.
@@ -218,13 +218,13 @@ Among the open-source models, the ones that usually perform well include:
 - hf:openchat/openchat_3.5
 - hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO
 - hf:Phind/Phind-CodeLlama-34B-v2
-- Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF
+- hf:meta-llama/Meta-Llama-3-70B-Instruct
 
 ### The Most Outstanding Open-source Model
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
-- The best among all models: **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF**. This is a model with capabilities close to GPT-4! It is also a model with stable practical value, a very exciting advancement!
+- The best among all models: **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
 
 - The second-best performing model: **NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
 
@@ -287,16 +287,16 @@ Then, add support for this service in the config.json file (the location of this
 Now we can run AIlice:
 
 ```bash
-ailice_main --modelID=ollama:mistral-openorca --prompt="main"
+ailice_web --modelID=ollama:mistral-openorca --prompt="main"
 ```
 
 ##### Example 2: LM Studio
 
-In this example, we will use LM Studio to run the currently most powerful open-source model **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF**, powering AIlice to run on a local machine.
+In this example, we will use LM Studio to run a powerful model **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF**, powering AIlice to run on a local machine. This model is a leaked version of Mistral-Medium, which once caused a sensation in the open-source community and was the first model I found that approached GPT-4 capabilities (though there are still differences). While we no longer recommend using it, this example is still useful as an introduction to using LM Studio as an inference engine to run AIlice. Therefore, we won't make any further modifications.
 
 Download model weights of **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF** using LM Studio.
 
-In the LM Studio's "LocalServer" window, set n_gpu_layers to -1 if you want to use GPU only. Adjust the 'Context Length' parameter on the left to 16384(or a smaller value based on your available memory), and change the 'Context Overflow Policy' to 'Stop at limit.' We will allow AIlice to manage the context on its own.
+In the LM Studio's "LocalServer" window, set n_gpu_layers to -1 if you want to use GPU only. Adjust the 'Context Length' parameter on the left to 16384(or a smaller value based on your available memory), and change the 'Context Overflow Policy' to 'Keep the system prompt and the first user message, truncate middle.' We will allow AIlice to manage the context on its own.
 
 Run the service. We assume the address of the service is "http://localhost:1234/v1/".
 
@@ -331,7 +331,7 @@ Then, we open config.json and make the following modifications:
 Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on your available VRAM or memory space. The larger the parameter, the more VRAM space is required.
 
 ```bash
-ailice_main --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
+ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
 ```
 
 ##### Example 3: Add open source multimodal model support
