@@ -185,6 +185,25 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
+### If You Need to Frequently Use Google
+By default, the Google module in AIlice is restricted, and repeated usage can lead to errors requiring some time to resolve. This is an awkward reality in the AI era; traditional search engines only allow access to genuine users, and AI agents currently don't fall within the category of 'genuine users'. While we have alternative solutions, they all require configuring an API key, which sets a high barrier for entry for ordinary users. However, for users who require frequent access to Google, I assume you'd be willing to endure the hassle of applying for an API key. For these users, please open config.json and use the following configuration:
+
+```
+{
+    ...
+    "services": {
+        ...
+        "google": {
+          "cmd": "python3 -m ailice.modules.AGoogleAPI --addr=ipc:///tmp/AGoogle.ipc --api_key=YOUR_API_KEY --cse_id=YOUR_CSE_ID",
+          "addr": "ipc:///tmp/AGoogle.ipc"
+        },
+        ...
+    }
+}
+```
+
+Then simply restart AIlice.
+
 
 ### Code Update
 
