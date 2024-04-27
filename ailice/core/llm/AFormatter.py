@@ -177,6 +177,26 @@ class AFormatterOpenChat():
     def Len(self, prompt) -> int:
         return len(prompt)
 
+class AFormatterCommandR():
+    def __init__(self, tokenizer=None, systemAsUser = False):
+        self.left={'USER': "<|START_OF_TURN_TOKEN|><|USER_TOKEN|>", 'ASSISTANT': "<|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>", 'SYSTEM': "<|START_OF_TURN_TOKEN|><|SYSTEM_TOKEN|>"}
+        self.right={'USER': "<|END_OF_TURN_TOKEN|>", 'ASSISTANT': "<|END_OF_TURN_TOKEN|>", 'SYSTEM': "<|END_OF_TURN_TOKEN|>"}
+        self.tokenizer = tokenizer
+        self.systemAsUser = systemAsUser
+    
+    def BuildMsg(self, role: str, msg: str):
+        if self.systemAsUser and "SYSTEM" == role:
+            role = "USER"
+        return f"{self.left[role]}{msg}{self.right[role]}"
+    
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = f"<BOS_TOKEN>{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"{self.left['ASSISTANT']}" if assistTag else "")
+        #print("prompt: ", ret)
+        return self.tokenizer.encode(ret) if encode else ret
+
+    def Len(self, prompt) -> int:
+        return len(prompt)
+
 class AFormatterGPT():
     def __init__(self, tokenizer=None, systemAsUser = False):
         self.systemAsUser = systemAsUser

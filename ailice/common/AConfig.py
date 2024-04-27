@@ -33,6 +33,7 @@ class AConfig():
                     "ehartford/dolphin-2.5-mixtral-8x7b": {"formatter": "AFormatterChatML", "contextWindow": 16000, "systemAsUser": False},
                     "openchat/openchat_3.5": {"formatter": "AFormatterOpenChat", "contextWindow": 8192, "systemAsUser": False},
                     "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": {"formatter": "AFormatterChatML", "contextWindow": 32000, "systemAsUser": False},
+                    "CohereForAI/c4ai-command-r-plus-4bit": {"formatter": "AFormatterCommandR", "contextWindow": 128000, "systemAsUser": False},
                 },
             },
             "peft": {
