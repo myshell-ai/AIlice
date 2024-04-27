@@ -119,7 +119,7 @@ You can run AIlice now! Use the commands in [Some Typical Use Cases for Launchin
 
 
 ### If You Need to Frequently Use Google
-By default, the Google module in AIlice is restricted, and repeated usage can lead to errors requiring some time to resolve. This is an awkward reality in the AI era; traditional search engines only allow access to genuine users, and AI agents currently don't fall within the category of 'genuine users'. While we have alternative solutions, they all require configuring an API key, which sets a high barrier for entry for ordinary users. However, for users who require frequent access to Google, I assume you'd be willing to endure the hassle of applying for an API key. For these users, please open config.json and use the following configuration:
+By default, the Google module in AIlice is restricted, and repeated usage can lead to errors requiring some time to resolve. This is an awkward reality in the AI era; traditional search engines only allow access to genuine users, and AI agents currently don't fall within the category of 'genuine users'. While we have alternative solutions, they all require configuring an API key, which sets a high barrier for entry for ordinary users. However, for users who require frequent access to Google, I assume you'd be willing to endure the hassle of applying for a Google's official API key for search tasks. For these users, please open config.json and use the following configuration:
 
 ```
 {
@@ -133,6 +133,12 @@ By default, the Google module in AIlice is restricted, and repeated usage can le
         ...
     }
 }
+```
+
+and install google-api-python-client: 
+
+```bash
+pip install google-api-python-client
 ```
 
 Then simply restart AIlice.
@@ -465,6 +471,26 @@ Separating computational tasks is, from a practical standpoint, due to our limit
 The third principle is what everyone is currently working on: having multiple intelligent agents interact and cooperate to complete more complex tasks. The implementation of this principle actually addresses the aforementioned issue of subtask failure. Multi-agent collaboration is crucial for the fault tolerance of agents in operation. In fact, this may be one of the biggest differences between the new computational paradigm and traditional computing: traditional computing is precise and error-free, assigning subtasks only through unidirectional communication (function calls), whereas the new computational paradigm is error-prone and requires bidirectional communication between computing units to correct errors. This will be explained in detail in the following section on the IACT framework.
 
 
+## Module Configuration
+
+The configuration file of AIlice is named config.json, and its location will be output to the command line when AIlice is started. In this section, we will introduce how to configure the external interaction modules through the configuration file.
+
+In AIlice, we use the term "module" to specifically refer to components that provide functions for interacting with the external world. Each module runs as an independent process; they can run in different software or hardware environments from the core process, making AIlice capable of being distributed. We provide a series of basic module configurations in the configuration file required for AIlice's operation (such as vector database, search, browser, code execution, etc.). You can also add configurations for any third-party modules and provide their module runtime address and port after AIlice is up and running to enable automatic loading. Module configuration is very simple, consisting of only two items:
+
+```json
+  "services": {
+    ...
+    "scripter": {"cmd": "python3 -m ailice.modules.AScripter --addr=tcp://127.0.0.1:59000",
+	               "addr": "tcp://127.0.0.1:59000"},
+    ...
+  }
+```
+
+Among these, under **"cmd"** is a command line used to start the module's process. When AIlice starts, it automatically runs these commands to launch the modules. Users can specify any command, providing significant flexibility. You can start a module's process locally or utilize Docker to start a process in a virtual environment, or even start a remote process. Some modules have multiple implementations (such as Google/Storage), and you can configure here to switch to another implementation.
+
+**"addr"** refers to the address and port number of the module process. Users might be confused by the fact that many modules in the default configuration have both "cmd" and "addr" containing addresses and port numbers, causing redundancy. This is because "cmd" can, in principle, contain any command (which may include addresses and port numbers, or none at all). Therefore, a separate "addr" item is necessary to inform AIlice how to access the module process.
+
+
 #### Computational Model: Interactive Agents Calling Tree
 ![IACT](./IACT.jpg)
 *IACT Architecture Diagram. A user requirement to build a page for image collection and display is dynamically decomposed into two tasks: coder_spider and coder_website. When coder_spider encounters difficulties, it proactively seeks assistance from its caller, proxy_cat_gallery. Proxy_cat_gallery then creates another agent, researcher_api, and employs it to address the issue.*
@@ -516,7 +542,7 @@ The design of agents in AIlice encompasses two fundamental aspects: **the logic 
 Generating prompts from dialogue history and the internal state is nearly a standardized process, although developers still have the freedom to choose entirely different generation logic. The primary challenge for developers is to create a system prompt template, which is pivotal for the agent and often demands the most effort to perfect. However, this task revolves entirely around crafting natural language prompts.
 
 #### Scripting Language: From Text to Reality
-AIlice utilizes a simple scripting language embedded within text to map the text-based capabilities of LLMs to the real world. **This straightforward scripting language includes non-nested function calls and mechanisms for creating and referencing variables, as well as operations for concatenating text content**. Its purpose is to enable LLMs to exert influence on the world more naturally: from smoother text manipulation abilities to simple function invocation mechanisms, and multimodal variable operation capabilities.
+AIlice utilizes a simple scripting language embedded within text to map the text-based capabilities of LLMs to the real world. **This straightforward scripting language includes non-nested function calls and mechanisms for creating and referencing variables, as well as operations for concatenating text content**. Its purpose is to enable LLMs to exert influence on the world more naturally: from smoother text manipulation abilities to simple function invocation mechanisms, and multimodal variable operation capabilities. Finally, it should be noted that for the designers of agents, they always have the freedom to extend new syntax for this scripting language. What is introduced here is a minimal standard syntax structure.
 
 The basic syntax is as follows:
 
