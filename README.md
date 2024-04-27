@@ -118,6 +118,26 @@ AIlice installed in this way also has voice conversation and fine-tuning functio
 You can run AIlice now! Use the commands in [Some Typical Use Cases for Launching AIlice](#some-typical-use-cases-for-launching-ailice).
 
 
+### If You Need to Frequently Use Google
+By default, the Google module in AIlice is restricted, and repeated usage can lead to errors requiring some time to resolve. This is an awkward reality in the AI era; traditional search engines only allow access to genuine users, and AI agents currently don't fall within the category of 'genuine users'. While we have alternative solutions, they all require configuring an API key, which sets a high barrier for entry for ordinary users. However, for users who require frequent access to Google, I assume you'd be willing to endure the hassle of applying for an API key. For these users, please open config.json and use the following configuration:
+
+```
+{
+    ...
+    "services": {
+        ...
+        "google": {
+          "cmd": "python3 -m ailice.modules.AGoogleAPI --addr=ipc:///tmp/AGoogle.ipc --api_key=YOUR_API_KEY --cse_id=YOUR_CSE_ID",
+          "addr": "ipc:///tmp/AGoogle.ipc"
+        },
+        ...
+    }
+}
+```
+
+Then simply restart AIlice.
+
+
 ### Virtual Environment Settings for Code Execution
 By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify AIlice's configuration file (AIlice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
 
@@ -185,25 +205,6 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 
-### If You Need to Frequently Use Google
-By default, the Google module in AIlice is restricted, and repeated usage can lead to errors requiring some time to resolve. This is an awkward reality in the AI era; traditional search engines only allow access to genuine users, and AI agents currently don't fall within the category of 'genuine users'. While we have alternative solutions, they all require configuring an API key, which sets a high barrier for entry for ordinary users. However, for users who require frequent access to Google, I assume you'd be willing to endure the hassle of applying for an API key. For these users, please open config.json and use the following configuration:
-
-```
-{
-    ...
-    "services": {
-        ...
-        "google": {
-          "cmd": "python3 -m ailice.modules.AGoogleAPI --addr=ipc:///tmp/AGoogle.ipc --api_key=YOUR_API_KEY --cse_id=YOUR_CSE_ID",
-          "addr": "ipc:///tmp/AGoogle.ipc"
-        },
-        ...
-    }
-}
-```
-
-Then simply restart AIlice.
-
 
 ### Code Update
 
@@ -223,13 +224,18 @@ docker restart scripter
 
 <a name="choice-of-llm"></a>
 ## Choice of LLM
-AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, gpt-4 (include gpt-4-1106-preview, which is gpt-4 Turbo) can provide the best results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
+AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, gpt-4-1106-preview can provide the best results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
-gpt-3.5-turbo still has problems. It has relatively high requirements for prompts, and we have never been able to find a stable prompt expression.
+gpt-4-turbo/gpt-3.5-turbo is surprisingly lazy, and we have never been able to find a stable prompt expression.
+
+The Claude-3 series appears to have performance comparable to top-tier models, but I haven't had the opportunity to access these APIs, so I can't provide more information.
+
+The performance of mistral-small-latest/mistral-medium-latest/mistral-large-latest is in the second tier, but still not practical.
 
 The original intention of this project is to build agents based on open source LLM. Closed source models are not within the focus of support (so we bypass openai's function
-calling mechanism). It can be expected soon in the future, more powerful open source models suitable for agent applications will emerge to make up for this, so we will no
-longer spend effort on gpt-3.5-turbo compatibility.
+calling mechanism). So, despite commercial models offering better performance, our development efforts always revolve around open-source models.
+
+For users whose hardware capabilities are insufficient to run open-source models locally, they can try Groq: llama3-70b-8192. Of course, AIlice also supports other models under Groq. One issue with running under Groq is that it's easy to exceed rate limits, so it can only be used for simple experiments.
 
 Among the open-source models, the ones that usually perform well include:
 
@@ -238,6 +244,14 @@ Among the open-source models, the ones that usually perform well include:
 - hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO
 - hf:Phind/Phind-CodeLlama-34B-v2
 - hf:meta-llama/Meta-Llama-3-70B-Instruct
+
+Due to VRAM limitations, I'm unable to conduct detailed testing on the following models. I hope users with the necessary resources can share their test results in the discussion forum.
+
+- command-r-plus
+- DBRX
+- mixtral-8x22b
+- wizardlm2:8x22b
+
 
 ### The Most Outstanding Open-source Model
 
@@ -255,14 +269,14 @@ If you find a better model, please let me know.
 ### How to Add LLM Support
 For advanced players, it is inevitable to try more models. Fortunately, this is not difficult to achieve. 
 
-#### Models(or Services) compatible with OpenAI Interface
+#### Using LLM through Inference Services
 
-For openai models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:" prefix.
+For openai/mistral/anthropic/groq models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:"/"mistral:"/"anthropic:"/"groq:" prefix. If you need to use a model that is not included in AIlice's supported list, you can resolve this by adding an entry for this model in the config.json file. The method for adding is to directly reference the entry of a similar model, modify the **contextWindow** to the actual value, and keep the **systemAsUser** consistent with the similar model.
 
 You can use any third-party inference server compatible with the OpenAI API to replace the built-in LLM inference functionality in AIlice. 
-Just use the same configuration format as the openai models and modify the baseURL, apikey, contextWindow and other parameters.
+Just use the same configuration format as the openai models and modify the **baseURL, apikey, contextWindow and other parameters** (Actually, this is how AIlice supports Groq models).
 
-For inference servers that do not support the OpenAI API, you can try using litellm to convert them into an OpenAI-compatible API. 
+For inference servers that do not support the OpenAI API, you can try using **litellm** to convert them into an OpenAI-compatible API (we have an example below). 
 
 It's important to note that due to the presence of many SYSTEM messages in AIlice's conversation records, which is not a common use case for LLM, the level of support for this depends on the specific implementation of these inference servers. In this case,  you can set the systemAsUser parameter to true to circumvent the issue. Although this might prevent the model from running AIlice at its optimal performance, it also allows us to be compatible with various efficient inference servers. For the average user, the benefits outweigh the drawbacks.
 
