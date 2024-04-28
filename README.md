@@ -441,7 +441,7 @@ Open config.json, you should add the config of new LLM into models.hf.modelList,
   "quantization": null,
   "models": {
     "hf": {
-      "modelWrapper": "AModelLLAMA",
+      "modelWrapper": "AModelCausalLM",
       "modelList": {
         "meta-llama/Llama-2-13b-chat-hf": {
           "formatter": "AFormatterLLAMA2",

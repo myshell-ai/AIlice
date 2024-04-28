@@ -9,7 +9,7 @@ class AConfig():
         self.quantization = None
         self.models = {
             "hf": {
-                "modelWrapper": "AModelLLAMA",
+                "modelWrapper": "AModelCausalLM",
                 "modelList": {
                     "meta-llama/Llama-2-13b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False},
                     "meta-llama/Llama-2-70b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False},
@@ -37,7 +37,7 @@ class AConfig():
                 },
             },
             "peft": {
-                "modelWrapper": "AModelLLAMA",
+                "modelWrapper": "AModelCausalLM",
                 "modelList": {
                     #"model/": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False}
                 }

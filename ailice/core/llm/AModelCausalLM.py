@@ -13,7 +13,7 @@ from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import sentences_split
 from ailice.core.llm.AFormatter import CreateFormatter
 
-class AModelLLAMA():
+class AModelCausalLM():
     def __init__(self, modelType: str, modelName: str):
         self.modelType = modelType
         self.tokenizer = None
