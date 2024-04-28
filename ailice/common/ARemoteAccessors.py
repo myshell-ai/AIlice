@@ -7,22 +7,10 @@ class AClientPool():
         return
     
     def Init(self):
-        storage = config.services['storage']['addr']
-        browser = config.services['browser']['addr']
-        arxiv = config.services['arxiv']['addr']
-        google = config.services['google']['addr']
-        duckduckgo = config.services['duckduckgo']['addr']
-        speech = config.services['speech']['addr']
-        scripter = config.services['scripter']['addr']
-        
-        self.pool = {storage: makeClient(storage),
-                     browser: makeClient(browser),
-                     arxiv: makeClient(arxiv),
-                     google: makeClient(google),
-                     duckduckgo: makeClient(duckduckgo),
-                     scripter: makeClient(scripter)}
-        if config.speechOn:
-            self.pool[speech] = makeClient(speech)
+        for serviceName, cfg in config.services.items():
+            if not config.speechOn and 'speech' == serviceName:
+                continue
+            self.pool[cfg['addr']] = makeClient(cfg['addr'])
         return
     
     def GetClient(self, moduleAddr: str):
