@@ -643,9 +643,9 @@ AIlice's fundamental tasks are twofold: **one is to fully unleash the capabiliti
 
 If you are interested in the development of AIlice itself, you may consider the following directions:
 
-- Explore improved **long-term memory mechanisms** to enhance the capabilities of each Agent.
+- Explore improved **long-term memory mechanisms** to enhance the capabilities of each Agent. We need a long-term memory mechanism that **enables consistent understanding of large amounts of content and facilitates association**. The most feasible option at the moment is to replace vector database with knowledge graph, which will greatly benefit the comprehension of long texts/codes and enable us to build genuine personal AI assistants.
 
-- **Multimodal** support. The support for the multimodal model has been completed, and the current development focus is shifting towards the multimodal support of peripheral modules. In particular, we need a browser specially designed for AI agents. It should be able to retrieve webpage text and multimodal content, while also supporting the manipulation of web pages through function calls, such as user login.
+- **Multimodal** support. The support for the multimodal model has been completed, and the current development focus is shifting towards the multimodal support of peripheral modules. In particular, we need a browser specially designed for AI agents. It should be able to retrieve webpage text and multimodal content, while also supporting the manipulation of web pages through function calls, such as user login. We also need a module that operates computers based on screenshots and simulates mouse/keyboard actions.
 
 - **Self-expanding** support. Our goal is to enable language models to **autonomously code and implement new peripheral modules/agent types and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities. We've completed most of the functionality, but we still need to develop the capability to construct new types of agents.
 
@@ -655,6 +655,6 @@ If you are interested in the development of AIlice itself, you may consider the 
 
 - **Explore the application of IACT architecture on complex tasks.** By utilizing an interactive agents calling tree, we can break down large documents for improved reading comprehension, as well as decompose complex software engineering tasks into smaller modules, completing the entire project build and testing through iterations. This requires a series of intricate prompt designs and testing efforts, but it holds an exciting promise for the future. The IACT architecture significantly alleviates the resource constraints imposed by the context window, allowing us to dynamically adapt to more intricate tasks.
 
-- **Automated AI agents evaluation methods.**
+- **Build rich external interaction modules using self-expansion mechanisms! This will be accomplished in [AIliceEVO](https://github.com/stevenlu137/AIliceEVO).**
 
 In addition to the tasks mentioned above, we should also start actively contemplating the possibility of **creating a smaller LLM that possesses lower knowledge content but higher reasoning abilities**.
