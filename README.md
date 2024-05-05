@@ -332,6 +332,7 @@ Then, add support for this service in the config.json file (the location of this
       "baseURL": "http://localhost:8000",
       "modelList": {
         "mistral-openorca": {
+          "formatter": "AFormatterGPT",
           "contextWindow": 8192,
           "systemAsUser": false
         }
