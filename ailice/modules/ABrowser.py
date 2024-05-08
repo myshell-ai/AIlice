@@ -22,7 +22,7 @@ class ABrowser():
         return
 
     def ModuleInfo(self):
-        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content. You need to pass a session parameter as the session name, and you can reuse the same session to open new web pages.", "type": "primary"},
+        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.", "type": "primary"},
                                                "SCROLL_DOWN_BROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page.", "type": "supportive"},
                                                "SCROLL_UP_BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page.", "type": "supportive"},
                                                "SEARCH_DOWN_BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},

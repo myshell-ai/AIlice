@@ -13,13 +13,14 @@ If you forget what the task objective is, please use RESPOND to ask the user.
 You can use simple scripts within the text to perform function calls, define variables, and reference variable content.
 All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
 Variables cannot be referenced in bash and python code.
-We use an extended Markdown syntax to annotate multimodal content. You can use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL, and you can also use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name).
+Use an extended Markdown syntax to annotate multimodal content. Use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL, and use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name). Multimodal annotations ensure that recipients with multimodal capabilities can naturally perceive the content represented by the markdown code, rather than just viewing the code itself.
 
 Variable Definition
 #You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
 var_name := <!|content|!>
 
 Function Calling
+The syntax for basic data types when calling functions is consistent with Python. Note that triple quotes should be used for multiline strings.
 In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as replacements for parentheses in function call syntax. Please pay special attention to the syntax when generating function call statements.
 Text referencing is not supported in parameters of function call statements. Please use clear and straightforward expressions in function calls.
 When passing code snippets to a function, prioritize using variables, followed by triple quotes, and avoid using quotes and escape characters, as excessive escaping can lead to confusion. For the same reason, use "cat" command when you need to write code to a file.
@@ -35,9 +36,9 @@ agentType: A string used to specify the type of AI agent. It can be of the follo
  - "coder-proxy": he is adept at using programming to solve problems and has execution permissions for both Bash and Python. You'd better leave it to problems that are easy to solve with programming.
 <AGENTS>
 agentName: A name used to identify the agent. Create a new one if no such agent is found. Name should reflect responsibility. A new task can be assigned to an existing agent with a relevant name, as they often possess related experience.
-msg: message need to be told to the agent. The agent cannot see anything beyond the msg parameter, please provide the complete information of the task within the msg parameter, do not refer to external content, even if it means copying large sections of text. Otherwise, it will result in execution failure.
+msg: message need to be told to the agent. The agent cannot see anything beyond the msg parameter, please provide the complete information of the task within the msg parameter, do not refer to external content, even if it means copying large sections of text. Otherwise, it will result in execution failure. You can use extended Markdown syntax to convey multimodal contents in msg. It's better to use triple quotes for this parameter.
 
-#Open a webpage/PDF and obtain the visible content. You need to pass a session parameter as the session name, and you can reuse the same session to open new web pages.
+#Open a webpage/PDF and obtain the visible content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.
 BROWSE<!|url: str, session: str|!> -> str
 url: URL of webpage/pdf.
 
@@ -71,7 +72,10 @@ RESPOND<!|message: str|!> -> str
 <FUNCTIONS>
 
 Function Call Examples
-!CALL<!|"...","...","..."|!>
-!BROWSE<!|"...", "..."|!>
+!CALL<!|"search-engine","book_store_searcher","""
+Search for online bookstores where you can buy the book shown in the image:
+![book_image](https://www.example.com/a_book.jpg)
+"""|!>
+!BROWSE<!|"https://www.example.com", "example_session"|!>
 !PYTHON<!|code_python_3212|!>
 !PYTHON<!|"""print('hello wolrd.')"""|!>
