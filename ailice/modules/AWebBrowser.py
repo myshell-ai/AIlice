@@ -1,4 +1,5 @@
 import random
+import difflib
 import subprocess
 from urllib.parse import urljoin
 from selenium import webdriver
@@ -49,7 +50,14 @@ class AWebBrowser(AScrollablePage):
         return self.txt if (self.txt != None) else ""
     
     def GetLink(self, text: str) -> str:
-        return self.urls.get(text, "No url found on specified text.")
+        if text in self.urls:
+            return self.urls[text]
+        else:
+            similars = '\n'.join(['[' + key + '](' + self.urls[key] + ')' for key in difflib.get_close_matches(text, self.urls, n=3)])
+            if "" == similars:
+                return "No url found on specified text."
+            else:
+                return f"No exact match found, the most similar URLs are as follows:\n {similars}"
     
     def ScrollDown(self) -> str:
         return super(AWebBrowser, self).ScrollDown() + self.prompt
