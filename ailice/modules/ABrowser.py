@@ -19,6 +19,7 @@ class ABrowser():
                           "SCROLLUP": "#scroll up the page: \nSCROLL_UP_BROWSER<!|session: str|!>",
                           "SEARCHDOWN": "#search the content downward and jumps the page to the next matching point(Just like the F3 key normally does): \nSEARCH_DOWN_BROWSER<!|query: str, session: str|!>",
                           "SEARCHUP": "#search the content upward and jumps the page to the next matching point: \nSEARCH_UP_BROWSER<!|query: str, session: str|!>"}
+        self.prompt = "The browser is running in headless mode, mouse and keyboard operations are not supported. All operations on the page must be accomplished using the functions listed after the page content."
         return
 
     def ModuleInfo(self):
@@ -27,7 +28,7 @@ class ABrowser():
                                                "SCROLL_UP_BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page.", "type": "supportive"},
                                                "SEARCH_DOWN_BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},
                                                "SEARCH_UP_BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location.", "type": "supportive"},
-                                               "GET_LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to come from the part of the page enclosed by square brackets.", "type": "supportive"}}}
+                                               "GET_LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to be one of those text fragments enclosed by square brackets on the page (excluding the square brackets themselves).", "type": "supportive"}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()
@@ -81,14 +82,14 @@ class ABrowser():
             if url is not None:
                 if self.URLIsPDF(url):
                     self.sessions[session] = APDFBrowser(self.pdfOutputDir, functions=self.functions)
-                    return self.sessions[session].Browse(url)  + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
                 else:
                     self.sessions[session] = AWebBrowser(functions=self.functions)
-                    return self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
             elif path is not None:
                 if self.PathIsPDF(path):
                     self.sessions[session] = APDFBrowser(self.pdfOutputDir, functions=self.functions)
-                    return self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
                 else:
                     return "File format not supported. Please check your input."
             else:
@@ -102,16 +103,16 @@ class ABrowser():
         return self.sessions[session].GetFullText()
 
     def ScrollDown(self, session: str) -> str:
-        return self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n--------------" + "\n" + self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
     
     def ScrollUp(self, session: str) -> str:
-        return self.sessions[session].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n--------------" + "\n" + self.sessions[session].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
 
     def SearchDown(self, query: str, session: str) -> str:
-        return self.sessions[session].SearchDown(query=query) + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n--------------" + "\n" + self.sessions[session].SearchDown(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
     def SearchUp(self, query: str, session: str) -> str:
-        return self.sessions[session].SearchUp(query=query) + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n--------------" + "\n" + self.sessions[session].SearchUp(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
     def GetLink(self, text: str, session: str) -> str:
         return self.sessions[session].GetLink(text) if hasattr(self.sessions[session], "GetLink") else "GetLink not supported in current browser."
