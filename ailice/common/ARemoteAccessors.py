@@ -10,7 +10,11 @@ class AClientPool():
         for serviceName, cfg in config.services.items():
             if not config.speechOn and 'speech' == serviceName:
                 continue
-            self.pool[cfg['addr']] = makeClient(cfg['addr'])
+            try:
+                self.pool[cfg['addr']] = makeClient(cfg['addr'])
+            except Exception as e:
+                print(f"Connecting module {serviceName} FAILED. You can try running the module manually and observe its error messages.")
+                raise e
         return
     
     def GetClient(self, moduleAddr: str):
