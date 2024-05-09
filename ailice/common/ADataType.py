@@ -28,7 +28,10 @@ class AImage():
         if format == self.format:
             return self
         imageBytes = io.BytesIO()
-        Image.open(io.BytesIO(self.data)).save(imageBytes, format=format)
+        image = Image.open(io.BytesIO(self.data))
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        image.save(imageBytes, format=format)
         return AImage(format=format, data=imageBytes.getvalue())
     
     def Standardize(self):
@@ -52,6 +55,8 @@ class AImageLocation():
 
     def Standardize(self):
         image = self.GetImage(self.urlOrPath)
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
         imageByte = io.BytesIO()
         image.save(imageByte, format='JPEG')
         return AImage(format="JPEG", data=imageByte.getvalue())
