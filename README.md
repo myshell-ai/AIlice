@@ -182,6 +182,7 @@ You can directly copy a command from the typical use cases below to run AIlice.
 ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
 ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher" --trace=./trace
 ailice_web --modelID=mistral:mistral-large-latest --prompt="main"
+ailice_web --modelID=deepseek:deepseek-chat --prompt="main"
 ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6

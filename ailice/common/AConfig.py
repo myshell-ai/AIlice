@@ -77,6 +77,15 @@ class AConfig():
                     "gemma-7b-it": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False}
                 }
             },
+            "deepseek": {
+                "modelWrapper": "AModelChatGPT",
+                "apikey": None,
+                "baseURL": "https://api.deepseek.com",
+                "modelList": {
+                    "deepseek-chat": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False},
+                    "deepseek-coder": {"formatter": "AFormatterGPT", "contextWindow": 16384, "systemAsUser": False}
+                }
+            },
             "mistral": {
                     "modelWrapper": "AModelMistral",
                     "apikey": None,
