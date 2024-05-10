@@ -241,6 +241,7 @@ rm ~/.config/ailice/config.json
 cd AIlice
 docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
 docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
+docker cp ailice/common/ADataType.py scripter:scripter/ailice/common/ADataType.py
 docker cp ailice/common/lightRPC.py scripter:scripter/ailice/common/lightRPC.py
 docker cp ailice/modules/__init__.py scripter:scripter/ailice/modules/__init__.py
 docker cp ailice/modules/AScripter.py scripter:scripter/ailice/modules/AScripter.py
