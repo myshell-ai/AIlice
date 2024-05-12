@@ -201,7 +201,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
         interruptTxt.submit(interrupt, [interruptTxt], []).then(lambda: gr.Textbox(value="", interactive=False, visible=False), [], [interruptTxt]).then(lambda: gr.Button("Interrupt", interactive=True), [], [interruptBtn])
         
     demo.queue()
-    demo.launch()
+    demo.launch(allowed_paths=["/"])
     return
 
 def main():
