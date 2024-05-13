@@ -5,7 +5,7 @@ from ailice.prompts.ATools import ConstructOptPrompt
 
 class APromptCoder():
     PROMPT_NAME = "coder"
-    PROMPT_DESCRIPTION = "An excellent coder. They can produce high-quality code for various programming requests, but they lack the ability to execute code themselves or interact with the local disk or the internet."
+    PROMPT_DESCRIPTION = "An excellent coder, they can produce high-quality code for various programming requests, access information locally or from the internet, and read documents. However, they lack execution capability; for example, they cannot execute code or create files."
     PROMPT_PROPERTIES = {"type": "supportive"}
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
