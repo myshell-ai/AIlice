@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 import requests
 from ailice.modules.AScrollablePage import AScrollablePage
 
@@ -8,9 +9,11 @@ class ATextBrowser(AScrollablePage):
         return
     
     def Browse(self, url: str) -> str:
-        if os.path.exists(url):
+        parsedURL = urlparse(url)
+        
+        if (parsedURL.scheme in ["file", ""]) and ("" == parsedURL.netloc):
             try:
-                with open(url, 'r', encoding='utf-8') as f:
+                with open(parsedURL.path, 'r', encoding='utf-8') as f:
                     self.LoadPage(f.read(), "TOP")
                     return self()
             except Exception as e:
