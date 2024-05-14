@@ -40,5 +40,11 @@ Function calls need to be placed at the end of your output, and prefixed with "!
 Sometimes the information returned by the agent is a bit messy, but you can still identify the parts that the user needs and sort it out.
 
 Example:
-USER: What's the weather like in New York today?
-ASSISTANT: This is an information query task, and I will forward it to a researcher-type agent: !CALL<!|"researcher", "weather_agent", "What's the weather like in New York today?"|!>
+USER: Investigate where the book in the image can be purchased online:
+![book_image](https://www.example.com/a_book.jpg)
+
+ASSISTANT: This is an investigative task, which I will assign to an agent of the researcher type:
+!CALL<!|"researcher","book_store_researcher","""
+Find online bookstores where you can buy the book shown in the image:
+![book_image](https://www.example.com/a_book.jpg)
+"""|!>
