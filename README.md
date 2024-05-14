@@ -179,6 +179,7 @@ Now that the environment configuration has been done.
 You can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
+ailice_web --modelID=oai:gpt-4o --prompt="main"
 ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
 ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher" --trace=./trace
 ailice_web --modelID=mistral:mistral-large-latest --prompt="main"
@@ -252,33 +253,31 @@ docker restart scripter
 
 <a name="choice-of-llm"></a>
 ## Choice of LLM
-AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, gpt-4-1106-preview can provide the best results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
+AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, **gpt-4-1106-preview** and **gpt-4o** can provide the best results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
-gpt-4-turbo/gpt-3.5-turbo is surprisingly lazy, and we have never been able to find a stable prompt expression.
+**gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
 
-The Claude-3 series appears to have performance comparable to top-tier models, but I haven't had the opportunity to access these APIs, so I can't provide more information.
+The **Claude-3** series appears to have performance comparable to top-tier models, but I haven't had the opportunity to access these APIs, so I can't provide more information.
 
-The performance of mistral-small-latest/mistral-medium-latest/mistral-large-latest is in the second tier, but still not practical.
+The performance of **mistral-small-latest**/**mistral-medium-latest**/**mistral-large-latest** is in the second tier, but still not practical.
 
 The original intention of this project is to build agents based on open source LLM. Closed source models are not within the focus of support (so we bypass openai's function
 calling mechanism). So, despite commercial models offering better performance, our development efforts always revolve around open-source models.
 
-For users whose hardware capabilities are insufficient to run open-source models locally, they can try Groq: llama3-70b-8192. Of course, AIlice also supports other models under Groq. One issue with running under Groq is that it's easy to exceed rate limits, so it can only be used for simple experiments.
+For users whose hardware capabilities are insufficient to run open-source models locally, they can try **groq:llama3-70b-8192**. Of course, AIlice also supports other models under Groq. One issue with running under Groq is that it's easy to exceed rate limits, so it can only be used for simple experiments.
 
 Among the open-source models, the ones that usually perform well include:
 
-- hf:Open-Orca/Mistral-7B-OpenOrca
-- hf:openchat/openchat_3.5
-- hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO
-- hf:Phind/Phind-CodeLlama-34B-v2
-- hf:meta-llama/Meta-Llama-3-70B-Instruct
+- **hf:Phind/Phind-CodeLlama-34B-v2**
+- **hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
+- **hf:meta-llama/Meta-Llama-3-70B-Instruct**
 
 Due to VRAM limitations, I'm unable to conduct detailed testing on the following models. I hope users with the necessary resources can share their test results in the discussion forum.
 
-- command-r-plus
-- DBRX
-- mixtral-8x22b
-- wizardlm2:8x22b
+- **command-r-plus**
+- **DBRX**
+- **mixtral-8x22b**
+- **wizardlm2:8x22b**
 
 
 ### The Most Outstanding Open-source Model
