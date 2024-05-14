@@ -45,7 +45,7 @@ Install and run AIlice with the following commands. Once AIlice is launched, use
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 pip install -e .
-ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
+ailice_web --modelID=oai:gpt-4o --prompt="main"
 ```
 
 - For a more detailed understanding of the installation and configuration methods, please visit the [Environment Configuration and Running](#environment-configuration-and-running) section and the [Choice of LLM](#choice-of-llm) section.
@@ -253,7 +253,7 @@ docker restart scripter
 
 <a name="choice-of-llm"></a>
 ## Choice of LLM
-AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, **gpt-4-1106-preview** and **gpt-4o** can provide the best results, but due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
+AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, **gpt-4o** provides the best performance, followed by **gpt-4-1106-preview**. But due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
 **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
 
