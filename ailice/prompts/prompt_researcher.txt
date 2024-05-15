@@ -40,7 +40,7 @@ msg: message need to be told to the agent. The agent cannot see anything beyond 
 
 #Open a webpage/PDF and obtain the visible content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.
 BROWSE<!|url: str, session: str|!> -> str
-url: URL of webpage/pdf.
+url: URL of webpage/pdf. This is a str and needs to be enclosed in quotation marks.
 
 #Execute a bash command such as pip install some package.
 BASH<!|code: str|!> -> str
