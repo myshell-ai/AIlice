@@ -7,12 +7,12 @@ ARegexMap = {"str": r"(?<!\\)'''(?:\\.|'(?!'')|[^'\\])*?'''|(?<!\\)\"\"\"(?:\\.|
              "uint": r"[0-9]+",
              "float": r"[+-]?(?:[0-9]*[.])?[0-9]+",
              "path": r"(?:\/|(?:[A-Za-z]:)?[\\|\/])?(?:[\w\-\s\.]+[\|\/]?)*",
-             "ref": r"[a-zA-Z0-9_]+"}
+             "ref": r"[a-zA-Z0-9_\-]+"}
 
 ARegexMap["expr_cat"] = rf"(?:{ARegexMap['ref']}|{ARegexMap['str']})(?:\s*\+\s*(?:{ARegexMap['ref']}|{ARegexMap['str']}))+"
 
 EXPR_OBJ = r"<(?P<typeBra>([a-zA-Z0-9_&!]+))\|(?P<args>(.*?))\|(?P<typeKet>([a-zA-Z0-9_&!]+))>"
-VAR_DEF = r"(?P<varName>([a-zA-Z0-9_]+))\s*:=\s*(?P<content>(?:<([a-zA-Z0-9_&!]+)\|(?:.*?)\|([a-zA-Z0-9_&!]+)>))"
+VAR_DEF = r"(?P<varName>([a-zA-Z0-9_\-]+))\s*:=\s*(?P<content>(?:<([a-zA-Z0-9_&!]+)\|(?:.*?)\|([a-zA-Z0-9_&!]+)>))"
 
 def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> str:
     #signature: "FUNC<!|ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...|!> -> RETURN_TYPE"

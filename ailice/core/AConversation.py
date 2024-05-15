@@ -24,7 +24,7 @@ class AConversations():
             if 0 < len(vars):
                 record['msg'] += f"\nSystem notification: The code snippets within the triple backticks in this message have been saved as variables, in accordance with their order in the text, the variable names are as follows: {vars}\n"
             
-            matches = [m for m in re.findall(r"(!\[([^\]]*?)\]\((.*?)\)(?:<([a-zA-Z0-9_&]+)>)?)", msg)]
+            matches = [m for m in re.findall(r"(!\[([^\]]*?)\]\((.*?)\)(?:<([a-zA-Z0-9_\-&]+)>)?)", msg)]
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = [executor.submit(self.ProcessMultimodalTags, m, param, label, env) for m, txt, param, label in matches]
                 for future, match in zip(concurrent.futures.as_completed(futures), matches):
