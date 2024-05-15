@@ -188,6 +188,7 @@ ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantiza
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ailice_web --modelID=groq:llama3-70b-8192 --prompt="main"
+ailice_web --modelID=openrouter:openrouter/auto --prompt="main"
 ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
 ```
 
@@ -257,28 +258,24 @@ AIlice is not yet fully developed, and prompts have not been optimized for each 
 
 **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
 
-The **Claude-3** series appears to have performance comparable to top-tier models, but I haven't had the opportunity to access these APIs, so I can't provide more information.
+The **Claude-3** series appears to have performance comparable to top-tier models, however, I haven't conducted thorough testing on this model yet, so I can't provide more information.
 
 The performance of **mistral-small-latest**/**mistral-medium-latest**/**mistral-large-latest** is in the second tier, but still not practical.
 
 The original intention of this project is to build agents based on open source LLM. Closed source models are not within the focus of support (so we bypass openai's function
 calling mechanism). So, despite commercial models offering better performance, our development efforts always revolve around open-source models.
 
-For users whose hardware capabilities are insufficient to run open-source models locally, they can try **groq:llama3-70b-8192**. Of course, AIlice also supports other models under Groq. One issue with running under Groq is that it's easy to exceed rate limits, so it can only be used for simple experiments.
-
 Among the open-source models, the ones that usually perform well include:
 
-- **hf:Phind/Phind-CodeLlama-34B-v2**
 - **hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
+- **mixtral-8x22b**
 - **hf:meta-llama/Meta-Llama-3-70B-Instruct**
 
-Due to VRAM limitations, I'm unable to conduct detailed testing on the following models. I hope users with the necessary resources can share their test results in the discussion forum.
+For users whose hardware capabilities are insufficient to run open-source models locally and who are unable to obtain API keys for commercial models, they can try the following options:
 
-- **command-r-plus**
-- **DBRX**
-- **mixtral-8x22b**
-- **wizardlm2:8x22b**
+- **openrouter** This service can route your inference requests to various open-source or commercial models without the need to deploy open-source models locally or apply for API keys for various commercial models. It's a fantastic choice. AIlice automatically supports all models in OpenRouter. You can choose autorouter:openrouter/auto to let the autorouter automatically route for you, or you can specify any specific model configured in the config.json file. Thank @babybirdprd for recommending OpenRouter to me.
 
+- **groq:llama3-70b-8192** Of course, AIlice also supports other models under Groq. One issue with running under Groq is that it's easy to exceed rate limits, so it can only be used for simple experiments.
 
 ### The Most Outstanding Open-source Model
 
@@ -286,9 +283,7 @@ We will select the currently best-performing open-source model to provide a refe
 
 - The best among all models: **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
 
-- The second-best performing model: **NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
-
-- The best among 7B models: **Open-Orca/Mistral-7B-OpenOrca**
+- The second-best performing model: **mixtral-8x22b**
 
 If you find a better model, please let me know.
 
