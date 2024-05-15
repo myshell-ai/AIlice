@@ -1,6 +1,7 @@
 import os
 import json
 import appdirs
+import requests
 from termcolor import colored
 
 class AConfig():
@@ -79,6 +80,12 @@ class AConfig():
                     "gemma-7b-it": {"formatter": "AFormatterGPT", "contextWindow": 8192, "systemAsUser": False}
                 }
             },
+            "openrouter": {
+                "modelWrapper": "AModelChatGPT",
+                "apikey": None,
+                "baseURL": "https://openrouter.ai/api/v1",
+                "modelList": {}
+            },
             "deepseek": {
                 "modelWrapper": "AModelChatGPT",
                 "apikey": None,
@@ -110,6 +117,7 @@ class AConfig():
                     }
             }
         }
+        self.InitOpenRouterCfg()
         self.temperature = 0.0
         self.flashAttention2 = False
         self.speechOn = False
@@ -138,6 +146,19 @@ class AConfig():
             }
         return
 
+    def InitOpenRouterCfg(self):
+        try:
+            response = requests.get("https://openrouter.ai/api/v1/models")
+            response.raise_for_status()
+            json = response.json()
+            for model in json['data']:
+                self.models['openrouter']['modelList'][model['id']] = {"formatter": {"text": "AFormatterGPT", "multimodal": "AFormatterGPTVision"}[model['architecture']['modality']],
+                                                                       "contextWindow": int(model['context_length']),
+                                                                       "systemAsUser": False}
+        except Exception as e:
+            print("InitOpenRouterCfg() FAILED, skip this part and do not set it again.")
+        return
+    
     def Initialize(self, modelID):
         configFile = appdirs.user_config_dir("ailice", "Steven Lu")
         print(f"config.json is located at {configFile}")
