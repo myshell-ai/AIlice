@@ -33,6 +33,7 @@ class APromptResearcher():
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "CHECK_OUTPUT": [{"re": GenerateRE4FunctionCalling("CHECK_OUTPUT<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLL_UP_TERM": [{"re": GenerateRE4FunctionCalling("SCROLL_UP_TERM<!|session: str|!> -> str"), "isEntry": True}],
+                         "WAIT": [{"re": GenerateRE4FunctionCalling("WAIT<!|duration: int|!> -> str"), "isEntry": True}],
                          "STORE": [{"re": GenerateRE4FunctionCalling("STORE<!|txt: str|!> -> None", faultTolerance = True), "isEntry": True}],
                          "QUERY": [{"re": GenerateRE4FunctionCalling("QUERY<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS = {}

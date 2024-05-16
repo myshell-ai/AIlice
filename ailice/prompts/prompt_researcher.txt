@@ -48,6 +48,12 @@ BASH<!|code: str|!> -> str
 #Execute python code.
 PYTHON<!|code: str|!> -> str
 
+#Wait for some seconds. The unit of the "duration" parameter is seconds. Useful when waiting for script or command execution to complete. 
+WAIT<!|duration: int|!> -> str
+
+#Obtain script execution output result.
+CHECK_OUTPUT<!|session: str|!> -> str
+
 #Store a piece of text / Retrieve text semantically associated with keywords.
 STORE<!|txt: str|!> -> None
 QUERY<!|keywords: str|!> -> str
