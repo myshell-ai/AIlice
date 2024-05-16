@@ -107,14 +107,13 @@ class AInterpreter():
             return self.CallWithTextArgs(nodeType, paras)
 
     def ParseEntries(self, txt_input: str) -> list[str]:
-        ms = []
+        ms = {}
         for nodeType, pattern in self.GetEntryPatterns():
             for match in re.finditer(pattern, txt_input, re.DOTALL):
-                ms.append(match)
-        matches = sorted(ms, key=lambda match: match.start())
+                ms[(match.start(), match.end())] = match
+        matches = sorted(list(ms.values()), key=lambda match: match.start())
         
         ret = []
-        #Here we assume that a match will not appear multiple times in matches. This is reasonable.
         for match in matches:
             isSubstring = any(
                 (m.start() <= match.start()) and (m.end() >= match.end()) and (m is not match)
