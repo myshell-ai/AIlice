@@ -112,7 +112,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 json.dump(processor.ToJson(), f, indent=2, default=serialize)
         
         if str != type(history[-1][0]):
-            msg = f'Please observe this image. \n![]({history[-1][0][0]})\n'
+            msg = f'\n![]({history[-1][0][0]})\n'
         else:
             msg = history[-1][0]
         threadLLM = threading.Thread(target=processor, args=(msg,))
@@ -173,7 +173,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 placeholder="Enter text and press enter, or upload an image",
                 container=False,
             )
-            btn = gr.UploadButton("📁", file_types=["image"])
+            btn = gr.UploadButton("📁", file_types=["image", "video"])
             if speechOn:
                 audio = gr.Audio(sources=["microphone"], type="numpy", editable=False)
 

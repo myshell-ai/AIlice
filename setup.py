@@ -27,6 +27,7 @@ setup(
         'mistralai',
         'anthropic',
         'pillow',
+        'av',
         'gradio',
         'importlib-metadata',
         'googlesearch-python',

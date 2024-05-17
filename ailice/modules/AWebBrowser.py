@@ -127,6 +127,17 @@ class AWebBrowser(AScrollablePage):
                 ret = f"\n![{alt}]({urljoin(self.baseURL, src)})\n"
             else:
                 ret = alt
+        elif node.name == 'video':
+            videoURL = None
+            if node.has_attr('src'):
+                videoURL = node.get('src', '')
+            else:
+                for source in node.find_all('source'):
+                    videoURL = source.get('src', '')
+                    if videoURL:
+                        break
+            if videoURL:
+                ret = f"\n\n[Video]({urljoin(self.baseURL, videoURL)})\n\n"
         elif node.name in ['ul', 'ol']:
             ret += "\n\n"
             for child in node.children:
