@@ -14,7 +14,7 @@ from ailice.common.ARemoteAccessors import clientPool
 from ailice.common.AMessenger import messenger
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
-from ailice.prompts.ARegex import ARegexMap, GenerateRE4FunctionCalling
+from ailice.prompts.ARegex import ARegexMap, GenerateRE4FunctionCalling, FUNCTION_CALL_DEFAULT
 
 
 class AProcessor():
@@ -97,6 +97,8 @@ class AProcessor():
         for nodeType, patterns in self.prompt.GetPatterns().items():
             for p in patterns:
                 self.interpreter.RegisterPattern(nodeType, p["re"], p["isEntry"])
+        self.interpreter.RegisterPattern("_FUNCTION_CALL_DEFAULT", FUNCTION_CALL_DEFAULT, True, True)
+        self.interpreter.RegisterAction("_FUNCTION_CALL_DEFAULT", {"func": self.EvalFunctionCallDefault, "noEval": ["funcName", "paras"]})
         return
     
     def __call__(self, txt: str) -> str:
@@ -204,6 +206,12 @@ class AProcessor():
         except Exception as e:
             ret = f"Exception: {str(e)}"
         return ret
+    
+    def EvalFunctionCallDefault(self, funcName: str, paras: str) -> str:
+        if funcName not in self.interpreter.actions:
+            return f"Error: Function call detected, but function name '{funcName}' does not exist."
+        else:
+            return f"Error: The function call to '{funcName}' failed, please check whether the number and type of parameters are correct. For example, the session name/agent type/url need to be of str type, and the str type needs to be enclosed in quotation marks, etc."
     
     def EnvSummary(self) -> str:
         return "\n".join([f"{varName}: {type(var).__name__}  {str(var)[:50]}{'...[The remaining content is not shown]' if len(str(var)) > 50 else ''}" for varName, var in self.interpreter.env.items()]) + \

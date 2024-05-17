@@ -14,7 +14,7 @@ def HasReturnValue(action):
 class AInterpreter():
     def __init__(self):
         self.actions = {}#nodeType: {"func": func}
-        self.patterns = {}#nodeType: [(pattern,isEntry)]
+        self.patterns = {}#nodeType: [{re,isEntry,noTrunc}]
         self.env = {}
 
         self.RegisterPattern("_STR", f"(?P<txt>({ARegexMap['str']}))", False)
@@ -44,10 +44,10 @@ class AInterpreter():
         self.actions[nodeType]["signature"] = signature
         return
     
-    def RegisterPattern(self, nodeType: str, pattern: str, isEntry: bool):
+    def RegisterPattern(self, nodeType: str, pattern: str, isEntry: bool, noTrunc: bool = False):
         if nodeType not in self.patterns:
             self.patterns[nodeType] = []
-        p = {"re": pattern, "isEntry": isEntry}
+        p = {"re": pattern, "isEntry": isEntry, "noTrunc": noTrunc}
         if p not in self.patterns[nodeType]:
             self.patterns[nodeType].append(p)
         return
@@ -58,7 +58,7 @@ class AInterpreter():
         return varName
     
     def EndChecker(self, txt: str) -> bool:
-        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (HasReturnValue(self.actions[nodeType]) if nodeType in self.actions else False)]
+        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (not p['noTrunc']) and (HasReturnValue(self.actions[nodeType]) if nodeType in self.actions else False)]
         return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns]) or (None != messenger.Get())
     
     def GetEntryPatterns(self) -> dict[str,str]:
