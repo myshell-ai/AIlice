@@ -3,7 +3,7 @@ import random
 import concurrent.futures
 
 from typing import Any
-from ailice.common.ADataType import typeInfo, AImageLocation, GuessMediaType
+from ailice.common.ADataType import typeInfo, GuessMediaType, AImageLocation, AVideoLocation
 
 
 class AConversations():
@@ -56,7 +56,10 @@ class AConversations():
         else:
             mimeType = GuessMediaType(param)
             if "image" in mimeType:
-                return {"type": 'image', "content": AImageLocation(param).Standardize()}
+                return {"type": "image", "content": AImageLocation(param).Standardize()}
+            elif "video" in mimeType:
+                return {"type": "video", "content": AVideoLocation(param).Standardize()}
+            return
     
     def GetConversations(self, frm=0):
         s = (2*frm) if (frm >= 0) or ('ASSISTANT' == self.conversations[-1]['role']) else (2*frm+1)
