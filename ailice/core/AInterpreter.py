@@ -147,7 +147,7 @@ class AInterpreter():
         if varName in self.env:
             return self.env[varName]
         else:
-            raise ValueError(f"Variable name {varName} NOT FOUND, did you mean to use a string but forgot the quotation marks?")
+            raise ValueError(f'Variable name {varName} NOT FOUND, did you mean to use a string "{varName}" but forgot the quotation marks?')
 
     def EvalVar(self, varName: str, content: Any):
         self.env[varName] = content
