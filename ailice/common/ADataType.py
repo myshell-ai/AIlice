@@ -40,10 +40,20 @@ def ConvertVideoFormat(bytesSrc, format):
     return bytesDst.getvalue()
 
 class AImage():
-    def __init__(self, format: str, data: bytes):
-        self.format = format
+    def __init__(self, data: bytes):
         self.data = data
+        meta = self.GetMeta()
+        self.format = meta['format']
+        self.width = meta['width']
+        self.height = meta['height']
         return
+    
+    def GetMeta(self):
+        if self.data:
+            image = Image.open(io.BytesIO(self.data))
+            return {"width": image.width, "height": image.height, "format": image.format}
+        else:
+            return {"width": 0, "height": 0, "format": None}
     
     def __str__(self) -> str:
         return f"< AImage object in {self.format} format. >"
@@ -59,7 +69,7 @@ class AImage():
         if image.mode != 'RGB':
             image = image.convert('RGB')
         image.save(imageBytes, format=format)
-        return AImage(format=format, data=imageBytes.getvalue())
+        return AImage(data=imageBytes.getvalue())
     
     def Standardize(self):
         return self.Convert(format="JPEG")
@@ -86,13 +96,24 @@ class AImageLocation():
             image = image.convert('RGB')
         imageByte = io.BytesIO()
         image.save(imageByte, format='JPEG')
-        return AImage(format="JPEG", data=imageByte.getvalue())
+        return AImage(data=imageByte.getvalue())
 
 class AVideo():
-    def __init__(self, format: str, data: bytes):
-        self.format = format
+    def __init__(self, data: bytes):
         self.data = data
+        meta = self.GetMeta()
+        self.format = meta['format']
         return
+    
+    def GetMeta(self):
+        ret = {"width": 0, "height": 0, "fps": 0, "format": None}
+        if self.data:
+            video = av.open(io.BytesIO(self.data))
+            stream = next((s for s in video.streams if s.type == 'video'), None)
+            if stream is not None:
+                ret = {"width": stream.codec_context.width, "height": stream.codec_context.height, "fps": stream.average_rate, "format": video.format}
+        video.close()
+        return ret
     
     def __str__(self) -> str:
         return f"< AVideo object in {self.format} format. >"
@@ -101,7 +122,7 @@ class AVideo():
         return {'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
     
     def Standardize(self):
-        return AVideo(format="mp4", data=ConvertVideoFormat(self.data, 'mp4'))
+        return AVideo(data=ConvertVideoFormat(self.data, 'mp4'))
 
 class AVideoLocation():
     def __init__(self, urlOrPath: str):
@@ -122,7 +143,7 @@ class AVideoLocation():
                 return videoBytes.getvalue()
 
     def Standardize(self):
-        return AImage(format="mp4", data=ConvertVideoFormat(self.GetVideo(self.urlOrPath), "mp4"))
+        return AVideo(data=ConvertVideoFormat(self.GetVideo(self.urlOrPath), "mp4"))
     
 typeInfo = {AImage: {"modal": "image", "tag": False},
             AImageLocation: {"modal": "image", "tag": True},

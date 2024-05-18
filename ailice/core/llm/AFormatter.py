@@ -232,7 +232,7 @@ class AFormatterGPTVision():
                 frame = next(video.decode(video=0)).to_image()
                 bytesDst = io.BytesIO()
                 frame.save(bytesDst, format='JPEG')
-                image = AImage(format=frame.format, data=bytesDst.getvalue())
+                image = AImage(data=bytesDst.getvalue())
                 ret.append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image.Standardize().ToJson()['data']}"}})
             video.close()
             return ret

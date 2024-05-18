@@ -44,7 +44,7 @@ class AComputer():
     def ScreenShot(self) -> AImage:
         imageByte = io.BytesIO()
         ImageGrab.grab().save(imageByte, format="JPEG")
-        return AImage(format="JPEG", data=imageByte.getvalue())
+        return AImage(data=imageByte.getvalue())
     
     def LocateAndClick(self, txt: str, clickType: str) -> str:
         if 0 != len(needList):
@@ -87,10 +87,10 @@ class AComputer():
             image = Image.open(path)
             imageByte = io.BytesIO()
             image.save(imageByte, format='JPEG')
-            return AImage(format="JPEG", data=imageByte.getvalue())
+            return AImage(data=imageByte.getvalue())
         except Exception as e:
             print("ReadImage() excetption: ", e)
-        return AImage(format=None, data=None)
+        return AImage(data=None)
     
     def WriteImage(self, image: AImage, path: str):
         try:
