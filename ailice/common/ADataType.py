@@ -101,7 +101,7 @@ class AVideo():
         return {'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
     
     def Standardize(self):
-        return  AVideo(format=format, data=ConvertVideoFormat(self.data, 'mp4'))
+        return AVideo(format="mp4", data=ConvertVideoFormat(self.data, 'mp4'))
 
 class AVideoLocation():
     def __init__(self, urlOrPath: str):
