@@ -3,6 +3,7 @@ import inspect
 import io
 import av
 from ailice.common.ADataType import AImage
+from ailice.core.llm.ATokenEstimator import TokenEstimatorOAI
 
 class AFormatterVicuna():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -14,10 +15,8 @@ class AFormatterVicuna():
         roleMap = {"USER": "USER", "ASSISTANT": "ASSISTANT", "SYSTEM": "SYSTEM" if not self.systemAsUser else "USER"}
         ret = prompt0 + "\n" + "".join([roleMap[c['role']] + ": " + c['msg'] + sep[roleMap[c['role']]] for c in conversations]) + (" ASSISTANT:" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-    
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
     
 class AFormatterLLAMA2():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -36,29 +35,25 @@ class AFormatterLLAMA2():
         conv[0]['msg'] = (B_SYS + prompt0 + E_SYS + conv[0]["msg"]) if self.systemAsUser or ("SYSTEM" != conv[0]['role']) else (prompt0 + conv[0]["msg"])
         conv = [{"role": c["role"], "msg": B_SYS + c["msg"] + E_SYS} if "SYSTEM" == c["role"] else c for c in conv]
 
-        if encode:
-            assert len(conversations) % 2 == 1, "conversations has an even length. "
-            
+        assert len(conversations) % 2 == 1, "conversations has an even length. "
+        
+        self.tokenizer.add_bos_token=True
+        self.tokenizer.add_eos_token=True
+        
+        tokens = sum([self.tokenizer.encode(f"{B_INST} {prompt['msg'].strip()} {E_INST} {answer['msg'].strip()} ") for prompt,answer in zip(conv[0::2], conv[1::2])],
+                    [])
+        if assistTag and (1 == (len(conv) % 2)):
             self.tokenizer.add_bos_token=True
-            self.tokenizer.add_eos_token=True
-            
-            ret = sum([self.tokenizer.encode(f"{B_INST} {prompt['msg'].strip()} {E_INST} {answer['msg'].strip()} ") for prompt,answer in zip(conv[0::2], conv[1::2])],
-                        [])
-            if assistTag and (1 == (len(conv) % 2)):
-                self.tokenizer.add_bos_token=True
-                self.tokenizer.add_eos_token=False
-                ret += self.tokenizer.encode(f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}")
-            #print("\n prompt: ", self.tokenizer.decode(ret))
-        else:
+            self.tokenizer.add_eos_token=False
+            tokens += self.tokenizer.encode(f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}")
+        #print("\n prompt: ", self.tokenizer.decode(ret))
+        if not encode:
             ret = sum([f"{B_INST} {prompt['msg'].strip()} {E_INST} {answer['msg'].strip()} " for prompt,answer in zip(conv[0::2], conv[1::2])],
                         [])
             if assistTag and (1 == (len(conv) % 2)):
                 ret += f"{B_INST} {conv[-1]['msg'].strip()} {E_INST}"
             #print("\n prompt: ", ret)
-        return ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
 
 class AFormatterLLAMA3():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -74,10 +69,8 @@ class AFormatterLLAMA3():
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n{prompt0}<|eot_id|>" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"<|start_header_id|>{self.roles['ASSISTANT']}<|end_header_id|>\n" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
     
 class AFormatterSimple():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -90,10 +83,8 @@ class AFormatterSimple():
 
         ret = prompt0 + "\n" + "".join([f"### {roleMap[c['role']]}:\n{c['msg']}{seps[c['role']]}" for c in conversations]) + (f"### {roleMap['ASSISTANT']}:\n" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
 
 class AFormatterChatML():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -113,10 +104,8 @@ class AFormatterChatML():
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = f"{self.START}system\n{prompt0}\n{self.END}\n" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"{self.START}assistant\n" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
 
 class AFormatterAMAZON():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -134,10 +123,8 @@ class AFormatterAMAZON():
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = f"{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"<|assistant|>" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
 
 class AFormatterZephyr():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -155,10 +142,8 @@ class AFormatterZephyr():
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = f"{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"<|assistant|>" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
 
 class AFormatterOpenChat():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -175,10 +160,8 @@ class AFormatterOpenChat():
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = f"{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"{self.left['ASSISTANT']}" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
 
 class AFormatterCommandR():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -195,10 +178,8 @@ class AFormatterCommandR():
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = f"<BOS_TOKEN>{self.left['SYSTEM']}{prompt0}{self.right['SYSTEM']}" + "".join([self.BuildMsg(c["role"], c["msg"]) for c in conversations]) + (f"{self.left['ASSISTANT']}" if assistTag else "")
         #print("prompt: ", ret)
-        return self.tokenizer.encode(ret) if encode else ret
-
-    def Len(self, prompt) -> int:
-        return len(prompt)
+        tokens = self.tokenizer.encode(ret)
+        return (tokens, len(tokens)) if encode else (ret, len(tokens))
 
 class AFormatterGPT():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -209,10 +190,7 @@ class AFormatterGPT():
         roleMap = {"SYSTEM": "system" if not self.systemAsUser else "user", "USER": "user", "ASSISTANT": "assistant"}
         ret = [{"role": "system", "content": prompt0}] + [{"role": roleMap[c['role']], "content": c['msg']} for c in conversations]
         #print("prompt: ", ret)
-        return ret
-
-    def Len(self, prompt) -> int:
-        return len(str(prompt)) // 4
+        return ret, len(str(ret)) // 4
 
 class AFormatterGPTVision():
     def __init__(self, tokenizer=None, systemAsUser = False):
@@ -246,10 +224,8 @@ class AFormatterGPTVision():
     def __call__(self, prompt0, conversations, encode = True, assistTag = True):
         ret = [{"role": "system", "content": [{"type": "text", "text": prompt0}]}] + [self.BuildMsg(c['role'], c['msg'], c['attachments']) for c in conversations]
         #print("prompt: ", ret)
-        return ret
-
-    def Len(self, prompt) -> int:
-        return len(str(prompt)) // 4
+        return ret, TokenEstimatorOAI(conversations)
+    
 
 def CreateFormatter(formatterClsName: str, tokenizer, systemAsUser):
     formatterList = [obj for name, obj in inspect.getmembers(inspect.getmodule(inspect.currentframe())) if inspect.isclass(obj) and name.startswith("AFormatter")]

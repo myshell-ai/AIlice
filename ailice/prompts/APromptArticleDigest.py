@@ -72,8 +72,7 @@ RELEVANT INFORMATION: {self.Recall(context).strip()}
 
 """
         #print(prompt)
-        ret = self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
-        return ret, self.formatter.Len(ret)
+        return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
     
     def BuildPrompt(self):
         prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))

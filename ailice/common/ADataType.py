@@ -103,6 +103,9 @@ class AVideo():
         self.data = data
         meta = self.GetMeta()
         self.format = meta['format']
+        self.width = meta['width']
+        self.height = meta['height']
+        self.fps = meta['fps']
         return
     
     def GetMeta(self):

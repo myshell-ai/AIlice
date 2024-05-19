@@ -90,7 +90,7 @@ def finetune(modelID, dataset: str, dataDir: str, epochs: int, maxWindow: int, o
         modelCfg = config.models[modelType]["modelList"][modelName]
         formatter = CreateFormatter(modelCfg["formatter"], tokenizer=None, systemAsUser = modelCfg['systemAsUser'])
         concatenatedSamples = [
-            formatter(prompt0="",conversations=[{"role": role, "msg": msg} for role,msg in zip(conv['role'], conv['msg'])], encode=False, assistTag=False)
+            formatter(prompt0="",conversations=[{"role": role, "msg": msg} for role,msg in zip(conv['role'], conv['msg'])], encode=False, assistTag=False)[0]
             for conv in batch['conversations']
         ]
         tokenizedInputs = tokenizer(
