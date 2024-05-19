@@ -45,7 +45,7 @@ Install and run AIlice with the following commands. Once AIlice is launched, use
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 pip install -e .
-ailice_web --modelID=oai:gpt-4o --prompt="main"
+ailice_web --modelID=oai:gpt-4o
 ```
 
 - For a more detailed understanding of the installation and configuration methods, please visit the [Environment Configuration and Running](#environment-configuration-and-running) section and the [Choice of LLM](#choice-of-llm) section.
@@ -179,17 +179,18 @@ Now that the environment configuration has been done.
 You can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
-ailice_web --modelID=oai:gpt-4o --prompt="main"
-ailice_web --modelID=oai:gpt-4-1106-preview --prompt="main"
+ailice_web --modelID=oai:gpt-4o
+ailice_web --modelID=oai:gpt-4-1106-preview
 ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher" --trace=./trace
-ailice_web --modelID=mistral:mistral-large-latest --prompt="main"
-ailice_web --modelID=deepseek:deepseek-chat --prompt="main"
-ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --prompt="main" --quantization=8bit --contextWindowRatio=0.6
-ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --prompt="main" --quantization=4bit --contextWindowRatio=0.3
+ailice_web --modelID=mistral:mistral-large-latest
+ailice_web --modelID=deepseek:deepseek-chat
+ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --contextWindowRatio=0.6
+ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
-ailice_web --modelID=groq:llama3-70b-8192 --prompt="main"
-ailice_web --modelID=openrouter:openrouter/auto --prompt="main"
-ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
+ailice_web --modelID=groq:llama3-70b-8192
+ailice_web --modelID=openrouter:openrouter/auto
+ailice_web --modelID=openrouter:openrouter/mistralai/mixtral-8x22b-instruct
+ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
 ```
 
 It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster AIlice startup speed, making it more suitable for ordinary users.
@@ -268,8 +269,8 @@ calling mechanism). So, despite commercial models offering better performance, o
 Among the open-source models, the ones that usually perform well include:
 
 - **hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
-- **mixtral-8x22b**
 - **hf:meta-llama/Meta-Llama-3-70B-Instruct**
+- **mixtral-8x22b**
 
 For users whose hardware capabilities are insufficient to run open-source models locally and who are unable to obtain API keys for commercial models, they can try the following options:
 
@@ -281,9 +282,9 @@ For users whose hardware capabilities are insufficient to run open-source models
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
-- The best among all models: **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
+- The best among all models: **mixtral-8x22b**
 
-- The second-best performing model: **mixtral-8x22b**
+- The second-best performing model: **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
 
 If you find a better model, please let me know.
 
@@ -343,7 +344,7 @@ Then, add support for this service in the config.json file (the location of this
 Now we can run AIlice:
 
 ```bash
-ailice_web --modelID=ollama:mistral-openorca --prompt="main"
+ailice_web --modelID=ollama:mistral-openorca
 ```
 
 ##### Example 2: LM Studio
@@ -387,7 +388,7 @@ Then, we open config.json and make the following modifications:
 Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on your available VRAM or memory space. The larger the parameter, the more VRAM space is required.
 
 ```bash
-ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --prompt="main" --contextWindowRatio=0.5
+ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.5
 ```
 
 ##### Example 3: Add open source multimodal model support
