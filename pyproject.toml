@@ -1,0 +1,60 @@
+[tool.poetry]
+name = "ailice"
+version = "0.4.0"
+description = "AIlice is a fully autonomous, general-purpose AI agent. This project aims to create a standalone artificial intelligence assistant, similar to JARVIS, based on the open-source LLM."
+authors = ["Steven Lu <stevenlu1729@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+include = ["LICENSE", "ailice/prompts/*.txt"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyzmq = "*"
+termcolor = "*"
+simplejson = "*"
+transformers = "^4"
+torch = "^2"
+accelerate = "^0"
+bitsandbytes = "^0"
+appdirs = "^1"
+openai = "^1"
+mistralai = "^0"
+anthropic = "^0"
+pillow = "^10"
+av = "^12"
+gradio = "^4"
+importlib-metadata = "^7"
+googlesearch-python = "^1"
+duckduckgo-search = "^5"
+urlextract = "^1"
+selenium = "^4"
+bs4 = "^0"
+scipy = "^1"
+scikit-learn = "^1"
+arxiv = "^2"
+einops = "^0"
+peft = {version = "^0", optional = true}
+datasets = {version = "^2", optional = true}
+tensorboard = {version = "^2", optional = true}
+typeguard = {version = "2.13.3", optional = true}
+sounddevice = {version = "^0", optional = true}
+numpy = {version = "^1", optional = true}
+librosa = {version = "^0", optional = true}
+espnet = {version = "202207", optional = true}
+espnet-model-zoo = {version = "0.1.7", optional = true}
+espnet-tts-frontend = {version = "0.0.3", optional = true}
+torchaudio = {version = "^2", optional = true}
+nougat-ocr = {version = "^0", optional = true}
+
+[tool.poetry.extras]
+finetuning = ["peft", "datasets", "tensorboard"]
+speech = ["typeguard", "sounddevice", "numpy", "librosa", "espnet", "espnet-model-zoo", "espnet-tts-frontend", "torchaudio"]
+pdf-reading = ["nougat-ocr"]
+
+[tool.poetry.scripts]
+ailice_main = "ailice.AIliceMain:main"
+ailice_web = "ailice.AIliceWeb:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
