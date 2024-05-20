@@ -1,12 +1,8 @@
 import importlib.util
 import io
 
-needList = []
-for x in ["pyautogui", "easyocr", "numpy"]:
-    if None == importlib.util.find_spec(x):
-        needList.append(x)
-
-if 0 == len(needList):
+requirements = [x for x in ["pyautogui", "easyocr", "numpy"] if (None == importlib.util.find_spec(x))]
+if 0 == len(requirements):
     import easyocr
     import pyautogui
     import numpy
@@ -17,7 +13,7 @@ from ailice.common.ADataType import AImage
 
 class AComputer():
     def __init__(self):
-        if 0 == len(needList):
+        if 0 == len(requirements):
             self.clicks = {"click": pyautogui.click, "double-click": pyautogui.doubleClick, "right-click": pyautogui.rightClick, "middle": pyautogui.middleClick}
             self.reader = easyocr.Reader(['en'])
         return
@@ -47,8 +43,8 @@ class AComputer():
         return AImage(data=imageByte.getvalue())
     
     def LocateAndClick(self, txt: str, clickType: str) -> str:
-        if 0 != len(needList):
-            return f"python package(s) {[x for x in needList]} not found. Please install it before using this feature."
+        if 0 != len(requirements):
+            return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
         
         if clickType not in self.clicks:
             return f"LOCATEANDCLICK ERROR. clickType: {clickType} can only be one of 'click', 'double-click', 'right-click' or 'middle'."
@@ -63,8 +59,8 @@ class AComputer():
             return f"'''{txt}''' not found. It may be because the text has been segmented into different boxes by the OCR software. Please try a shorter and distinctive substring."
 
     def LocateAndScroll(self, txt: str, clicks: float) -> str:
-        if 0 != len(needList):
-            return f"python package(s) {[x for x in needList]} not found. Please install it before using this feature."
+        if 0 != len(requirements):
+            return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
         
         ret = self.Locate(txt)
         if None != ret:
@@ -76,8 +72,8 @@ class AComputer():
             return f"'''{txt}''' not found. It may be because the text has been segmented into different boxes by the OCR software. Please try a shorter and distinctive substring."
     
     def TypeWrite(self, txt: str) -> str:
-        if 0 != len(needList):
-            return f"python package(s) {[x for x in needList]} not found. Please install it before using this feature."
+        if 0 != len(requirements):
+            return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
         
         pyautogui.typewrite(txt)
         return f"'''{txt}''' the string has already been typed."

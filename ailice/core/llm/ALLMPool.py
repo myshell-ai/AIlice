@@ -1,5 +1,11 @@
+import sys
+import importlib.util
+
 from ailice.common.AConfig import config
-from ailice.core.llm.AModelCausalLM import AModelCausalLM
+
+requirements = [x for x in ["torch", "transformers"] if (None == importlib.util.find_spec(x))]
+if 0 == len(requirements):
+    from ailice.core.llm.AModelCausalLM import AModelCausalLM
 from ailice.core.llm.AModelChatGPT import AModelChatGPT
 from ailice.core.llm.AModelMistral import AModelMistral
 from ailice.core.llm.AModelAnthropic import AModelAnthropic
@@ -15,9 +21,15 @@ class ALLMPool():
         return id[:split], id[split+1:]
     
     def Init(self, llmIDs: list[str]):
-        MODEL_WRAPPER_MAP = {"AModelCausalLM": AModelCausalLM, "AModelLLAMA": AModelCausalLM, "AModelChatGPT": AModelChatGPT, "AModelMistral": AModelMistral, "AModelAnthropic": AModelAnthropic}
+        MODEL_WRAPPER_MAP = {"AModelChatGPT": AModelChatGPT, "AModelMistral": AModelMistral, "AModelAnthropic": AModelAnthropic}
+        if 0 == len(requirements):
+            MODEL_WRAPPER_MAP["AModelCausalLM"] = AModelCausalLM
+            MODEL_WRAPPER_MAP["AModelLLAMA"] = AModelCausalLM
         for id in llmIDs:
             modelType, modelName = self.ParseID(id)
+            if (0 != len(requirements)) and (config.models[modelType]["modelWrapper"] in ["AModelCausalLM", "AModelLLAMA"]):
+                print(f"The specified modelID {id} requires the installation of the following dependencies: {requirements}. Please execute the following command to install: pip install {' '.join([requirements])}")
+                sys.exit(0)
             self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
         return
     
