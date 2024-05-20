@@ -193,7 +193,7 @@ ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --quantizati
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ailice_web --modelID=groq:llama3-70b-8192
 ailice_web --modelID=openrouter:openrouter/auto
-ailice_web --modelID=openrouter:openrouter/mistralai/mixtral-8x22b-instruct
+ailice_web --modelID=openrouter:mistralai/mixtral-8x22b-instruct
 ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
 ```
 
