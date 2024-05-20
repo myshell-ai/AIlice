@@ -47,7 +47,6 @@ torchaudio = {version = "^2", optional = true}
 nougat-ocr = {version = "^0", optional = true}
 
 [tool.poetry.extras]
-inference = ["torch", "transformers"]
 finetuning = ["peft", "datasets", "tensorboard"]
 speech = ["typeguard", "sounddevice", "numpy", "librosa", "espnet", "espnet-model-zoo", "espnet-tts-frontend", "torchaudio"]
 pdf-reading = ["nougat-ocr"]
