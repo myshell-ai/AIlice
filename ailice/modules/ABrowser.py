@@ -1,5 +1,4 @@
 import re
-import random
 import requests
 import tempfile
 import traceback
@@ -67,12 +66,8 @@ class ABrowser():
         return url
 
     def URLIsPDF(self, url: str) -> bool:
-        response = requests.get(url, allow_redirects=True)
-        if response.status_code == 200:
-            finalURL = response.url
-            return finalURL.endswith('.pdf')
-        else:
-            return False
+        response = requests.head(url, allow_redirects=True)
+        return ("pdf" in response.headers.get("content-type"))
     
     def PathIsPDF(self, path: str) -> bool:
         return (path[-4:] == ".pdf")

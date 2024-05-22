@@ -44,12 +44,12 @@ espnet = {version = "202207", optional = true}
 espnet-model-zoo = {version = "0.1.7", optional = true}
 espnet-tts-frontend = {version = "0.0.3", optional = true}
 torchaudio = {version = "^2", optional = true}
-nougat-ocr = {version = "^0", optional = true}
+pix2text = {version = "^1", optional = true}
 
 [tool.poetry.extras]
 finetuning = ["peft", "datasets", "tensorboard"]
 speech = ["typeguard", "sounddevice", "numpy", "librosa", "espnet", "espnet-model-zoo", "espnet-tts-frontend", "torchaudio"]
-pdf-reading = ["nougat-ocr"]
+pdf-reading = ["pix2text"]
 
 [tool.poetry.scripts]
 ailice_main = "ailice.AIliceMain:main"
