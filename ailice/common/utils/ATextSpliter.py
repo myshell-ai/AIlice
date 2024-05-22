@@ -1,7 +1,7 @@
 import re
 
 def sentences_split(paragraph):
-    for sent in re.findall(u'[^?。；，\.\?\;\,]+[?。；，\.\?\;\,]?', paragraph, flags=re.U):
+    for sent in re.split(u'[^?。；，\.\?\;\,]+[?。；，\.\?\;\,]?', paragraph, flags=re.U):
         yield sent
 
 def paragraph_generator(text):
