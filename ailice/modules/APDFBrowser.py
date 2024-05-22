@@ -1,17 +1,25 @@
 import os
 import shutil
 import requests
-from pix2text import Pix2Text
+import importlib.util
+
+requirements = [x for x in ["pix2text"] if (None == importlib.util.find_spec(x))]
+if 0 == len(requirements):
+    from pix2text import Pix2Text
 from ailice.modules.AScrollablePage import AScrollablePage
 
 class APDFBrowser(AScrollablePage):
     def __init__(self, pdfOutputDir: str, functions: dict[str, str]):
         super(APDFBrowser, self).__init__(functions=functions)
         self.pdfOutputDir = pdfOutputDir
-        self.p2t = Pix2Text.from_config()
+        if 0 == len(requirements):
+            self.p2t = Pix2Text.from_config()
         return
     
     def Browse(self, url: str) -> str:
+        if 0 != len(requirements):
+            self.LoadPage(f"python packages {[x for x in requirements]} not found. Please install it before using PDF OCR.", "BOTTOM")
+            return self()
         try:
             fullName = url.split('/')[-1]
             fileName = fullName[:fullName.rfind('.')]
