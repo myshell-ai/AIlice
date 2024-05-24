@@ -28,7 +28,7 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, trace: str):
+def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, trace: str, share: bool):
     config.Initialize(modelID = modelID)
     config.quantization = quantization
     config.maxMemory = maxMemory
@@ -201,7 +201,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
         interruptTxt.submit(interrupt, [interruptTxt], []).then(lambda: gr.Textbox(value="", interactive=False, visible=False), [], [interruptTxt]).then(lambda: gr.Button("Interrupt", interactive=True), [], [interruptBtn])
         
     demo.queue()
-    demo.launch(allowed_paths=["/"])
+    demo.launch(allowed_paths=["/"], share=share)
     return
 
 def main():
@@ -218,6 +218,7 @@ def main():
     parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
+    parser.add_argument('--share',type=bool,default=False, help="Whether to create a publicly shareable link for AIlice.")
     kwargs = vars(parser.parse_args())
 
     try:
