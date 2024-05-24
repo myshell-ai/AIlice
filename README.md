@@ -218,7 +218,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
-
+- --**share** create a publicly shareable link for AIlice.
 
 ### Module Configuration
 
