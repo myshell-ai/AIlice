@@ -105,6 +105,7 @@ pip install -e .
 For users who need to use the voice dialogue or model fine-tuning or pdf reading functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
 
 ```bash
+pip install -e .[huggingface]
 pip install -e .[speech]
 pip install -e .[finetuning]
 pip install -e .[pdf-reading]
