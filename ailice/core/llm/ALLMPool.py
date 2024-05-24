@@ -3,7 +3,7 @@ import importlib.util
 
 from ailice.common.AConfig import config
 
-requirements = [x for x in ["torch", "transformers"] if (None == importlib.util.find_spec(x))]
+requirements = [x for x in ["torch", "transformers", "accelerate", "bitsandbytes"] if (None == importlib.util.find_spec(x))]
 if 0 == len(requirements):
     from ailice.core.llm.AModelCausalLM import AModelCausalLM
 from ailice.core.llm.AModelChatGPT import AModelChatGPT
@@ -28,7 +28,7 @@ class ALLMPool():
         for id in llmIDs:
             modelType, modelName = self.ParseID(id)
             if (0 != len(requirements)) and (config.models[modelType]["modelWrapper"] in ["AModelCausalLM", "AModelLLAMA"]):
-                print(f"The specified modelID {id} requires the installation of the following dependencies: {requirements}. Please execute the following command to install: pip install {' '.join([requirements])}")
+                print(f"The specified modelID {id} requires the installation of the following dependencies: {str(requirements)}. Please execute the following command to install: pip install {' '.join(requirements)}")
                 sys.exit(0)
             self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
         return
