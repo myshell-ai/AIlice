@@ -94,6 +94,8 @@ Agents need to interact with various aspects of the surrounding environment, the
 
 To run AIlice, you need to ensure that **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
 
+If you want to run AIlice in a virtual machine, ensure Hyper-V is turned off(otherwise llama.cpp cannot be installed). In a VirtualBox environment, you can disable it by following these steps: disable PAE/NX and VT-X/AMD-V ( Hyper-V) on VirtualBox settings for the VM. Set paravirtualization Interface to Default, disable nested paging.
+
 You can use the following command to install AIlice (It is strongly recommended to use tools such as conda to create a new virtual environment to install AIlice, so as to avoid dependency conflicts):
 
 ```bash
