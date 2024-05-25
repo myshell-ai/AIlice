@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import appdirs
 import requests
@@ -173,6 +174,11 @@ class AConfig():
         self.__dict__ = {k: oldDict[k] if k in oldDict else v for k,v in self.__dict__.items()}
         
         modelType = modelID[:modelID.find(":")]
+        modelName = modelID[modelID.find(":")+1:]
+        if (modelType not in self.models) or (modelName not in self.models[modelType]['modelList']):
+            print(f"The specified model ID '{modelID}' was not found in the configuration; you need to configure it in '{configFile}' beforehand")
+            sys.exit(0)
+            
         needAPIKey = ("apikey" in self.models[modelType] and (self.models[modelType]["apikey"] is None))
         needUpdate = (needUpdate or needAPIKey)
         
@@ -187,11 +193,11 @@ class AConfig():
         return
 
     def Load(self, configFile: str) -> dict:
-        if os.path.exists(configFile):
-            with open(configFile, "r") as f:
-                return json.load(f)
-        else:
-            return dict()
+        if not os.path.exists(configFile):
+            print(f"config.json not found, let's create a new one: '{configFile}'.")
+            self.Store(configFile)
+        with open(configFile, "r") as f:
+            return json.load(f)
     
     def Store(self, configFile: str):
         with open(configFile, "w") as f:
