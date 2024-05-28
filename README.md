@@ -277,7 +277,7 @@ Among the open-source models, the ones that usually perform well include:
 
 - **hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
 - **hf:meta-llama/Meta-Llama-3-70B-Instruct**
-- **mixtral-8x22b**
+- **mixtral-8x22b-instruct**
 
 For users whose hardware capabilities are insufficient to run open-source models locally and who are unable to obtain API keys for commercial models, they can try the following options:
 
@@ -289,7 +289,7 @@ For users whose hardware capabilities are insufficient to run open-source models
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
-- The best among all models: **mixtral-8x22b**
+- The best among all models: **mixtral-8x22b-instruct**
 
 - The second-best performing model: **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
 
