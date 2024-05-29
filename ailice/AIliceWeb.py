@@ -77,8 +77,8 @@ use the provided Dockerfile to build an image and container, and modify the rele
     else:
         speech = None
     
-    timestamp = str(time.time())
-    collection = "ailice" + timestamp
+    timestamp = str(int(time.time()))
+    collection = "ailice_" + timestamp
 
     promptsManager.Init(storage=storage, collection=collection)
     for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
