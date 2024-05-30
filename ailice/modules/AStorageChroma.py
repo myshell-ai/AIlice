@@ -1,6 +1,6 @@
 import chromadb
 import uuid
-
+from typing import Union
 from ailice.common.lightRPC import makeServer
 
 class AStorageChromaDB():
@@ -27,10 +27,10 @@ class AStorageChromaDB():
         self.chroma_client.reset()
         return "chroma database reseted."
     
-    def Store(self, collection: str, txt: str) -> bool:
+    def Store(self, collection: str, content: Union[str,list[str]]) -> bool:
         try:
-            print("collection: ", collection,". store: ", txt)
-            self.chroma_client.get_or_create_collection(name=collection).add(documents = [txt],
+            print("collection: ", collection,". store: ", content)
+            self.chroma_client.get_or_create_collection(name=collection).add(documents = [content] if type(content) != list else content,
                                                                              ids = [str(uuid.uuid4())])
         except Exception as e:
             print("store() EXCEPTION: ", e)

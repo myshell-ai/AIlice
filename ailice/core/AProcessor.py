@@ -26,6 +26,8 @@ class AProcessor():
         self.conversation = AConversations()
         self.subProcessors = dict()
         self.modules = {}
+        self.outputCB = outputCB
+        self.collection = "ailice" + str(time.time()) if collection is None else collection
         
         self.RegisterModules([config.services['storage']['addr']])
         self.interpreter.RegisterAction("CALL", {"func": self.EvalCall})
@@ -37,8 +39,6 @@ class AProcessor():
         self.interpreter.RegisterAction("LOADEXTMODULE", {"func": self.LoadExtModule})
         self.interpreter.RegisterAction("LOADEXTPROMPT", {"func": self.LoadExtPrompt})
         
-        self.outputCB = outputCB
-        self.collection = "ailice" + str(time.time()) if collection is None else collection
         self.prompt = promptsManager[promptName](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
         self.result = "None."
 
@@ -71,11 +71,13 @@ class AProcessor():
                 raise Exception("EXCEPTION: 'ACTIONS' is not found in module info.")
             
             self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
+            funcList = []
             for actionName, actionMeta in info["ACTIONS"].items():
                 sig = actionName + str(inspect.signature(getattr(module, actionMeta['func']))).replace('(', '<!|').replace(')', '|!>')
                 ret.append({"action": actionName, "signature": sig, "prompt": actionMeta["prompt"]})
                 self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionMeta["func"])})
-                self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"module": info["NAME"], "action": actionName, "signature": sig, "prompt": actionMeta["prompt"], "type": actionMeta["type"]}))
+                funcList.append(json.dumps({"module": info["NAME"], "action": actionName, "signature": sig, "prompt": actionMeta["prompt"], "type": actionMeta["type"]}))
+            self.modules['storage']['module'].Store(self.collection + "_functions", funcList)
         return ret
     
     def CreateActionCB(self, actionName, module, actionFunc):

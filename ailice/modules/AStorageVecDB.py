@@ -2,6 +2,7 @@ import os
 import pickle
 import traceback
 import numpy as np
+from typing import Union
 from huggingface_hub import hf_hub_download
 from llama_cpp import Llama
 
@@ -65,14 +66,17 @@ class AStorageVecDB():
         self.data["collections"].clear()
         return "vector database reseted."
     
-    def Store(self, collection: str, txt: str) -> bool:
+    def Store(self, collection: str, content: Union[str,list[str]]) -> bool:
         try:
-            print("collection: ", collection,". store: ", txt)
+            print("collection: ", collection,". store: ", content)
 
             if collection not in self.data["collections"]:
                 self.data["collections"][collection] = dict()
-            if txt not in self.data["collections"][collection]:
-                self.data["collections"][collection][txt] = self.CalcEmbeddings([txt])[0]
+            texts = [content] if type(content) != list else content
+            embeddings = self.CalcEmbeddings(texts)
+            for txt, emb in zip(texts, embeddings):
+                if txt not in self.data["collections"][collection]:
+                    self.data["collections"][collection][txt] = emb
             self.Dump(self.dir)
         except Exception as e:
             print("store() EXCEPTION: ", e, traceback.print_tb(e.__traceback__))
