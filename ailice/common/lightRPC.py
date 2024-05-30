@@ -10,6 +10,7 @@ import sys
 import threading
 import numpy
 import inspect
+import typing
 import zmq
 import pickle
 import traceback
@@ -85,6 +86,17 @@ def AddMethod(kls,methodName,signature):
   tempNamespace = {k.__name__: k for k in typeInfo}
   tempNamespace["ailice"] = ailice
   tempNamespace["numpy"] = numpy
+  tempNamespace["Any"] = typing.Any
+  tempNamespace["Union"] = typing.Union
+  tempNamespace["Optional"] = typing.Optional
+  tempNamespace["List"] = typing.List
+  tempNamespace["Tuple"] = typing.Tuple
+  tempNamespace["Dict"] = typing.Dict
+  tempNamespace["Set"] = typing.Set
+  tempNamespace["Callable"] = typing.Callable
+  tempNamespace["TypeVar"] = typing.TypeVar
+  tempNamespace["Generic"] = typing.Generic
+  
   exec(f"def tempFunc{signature}: pass", tempNamespace)
   tempFunc = tempNamespace['tempFunc']
   newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(tempFunc).parameters.items()],
