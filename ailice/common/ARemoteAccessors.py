@@ -13,7 +13,7 @@ class AClientPool():
             try:
                 self.pool[cfg['addr']] = makeClient(cfg['addr'])
             except Exception as e:
-                print(f"Connecting module {serviceName} FAILED. You can try running the module manually and observe its error messages.")
+                print(f"Connecting module {serviceName} FAILED. You can try running the module manually and observe its error messages. EXCEPTION: {str(e)}")
                 raise e
         return
     
