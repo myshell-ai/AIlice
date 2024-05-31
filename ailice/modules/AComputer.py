@@ -23,8 +23,8 @@ class AComputer():
                                              "LOCATEANDCLICK": {"func": "LocateAndClick", "prompt": "Locate the control containing a piece of text on the screenshot and click on it. clickType is a string, and its value can only be one of 'click', 'double-click', 'right-click' or 'middle'.", "type": "primary"},
                                              "LOCATEANDSCROLL": {"func": "LocateAndScroll", "prompt": "Move to the position marked by the text and scroll the mouse wheel.", "type": "primary"},
                                              "TYPEWRITE": {"func": "TypeWrite", "prompt": "Simulate keyboard input for the string. Please ensure that the focus has been moved to the location where input is expected.", "type": "primary"},
-                                             "READ_IMAGE": {"func": "ReadImage", "prompt": "Read the content of an image file into a variable.", "type": "primary"},
-                                             "WRITE_IMAGE": {"func": "WriteImage", "prompt": "Write a variable of image type into a file.", "type": "primary"}}}
+                                             "READ-IMAGE": {"func": "ReadImage", "prompt": "Read the content of an image file into a variable.", "type": "primary"},
+                                             "WRITE-IMAGE": {"func": "WriteImage", "prompt": "Write a variable of image type into a file.", "type": "primary"}}}
     
     def Locate(self, txt: str):
         image = ImageGrab.grab()

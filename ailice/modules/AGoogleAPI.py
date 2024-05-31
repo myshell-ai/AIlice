@@ -23,7 +23,7 @@ class AGoogle():
         self.cse_id = cse_id
         self.service = build("customsearch", "v1", developerKey=self.api_key)
         self.sessions = {}
-        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL_DOWN_GOOGLE<!|session: str|!>"}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL-DOWN-GOOGLE<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
@@ -31,14 +31,14 @@ class AGoogle():
             "NAME": "google",
             "ACTIONS": {
                 "GOOGLE": {"func": "Google", "prompt": "Use Google to search the web.", "type": "primary"},
-                "SCROLL_DOWN_GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the search results.", "type": "supportive"}
+                "SCROLL-DOWN-GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the search results.", "type": "supportive"}
             }
         }
     
     def GetSessionID(self) -> str:
-        id = f"session_{str(random.randint(0,99999999))}"
+        id = f"session-{str(random.randint(0,99999999))}"
         while id in self.sessions:
-            id = f"session_{str(random.randint(0,99999999))}"
+            id = f"session-{str(random.randint(0,99999999))}"
         return id
     
     def Google(self, keywords: str) -> str:

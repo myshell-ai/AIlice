@@ -13,20 +13,20 @@ class AScripter():
     def __init__(self, incontainer = False):
         self.incontainer = incontainer
         self.sessions = {}
-        self.functions = {"SCROLLUP": "#scroll up the page: \nSCROLL_UP_TERM<!|session: str|!>"}
+        self.functions = {"SCROLLUP": "#scroll up the page: \nSCROLL-UP-TERM<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
         return {"NAME": "scripter", "ACTIONS": {"BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time.", "type": "primary"},
                                                 "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references.", "type": "primary"},
-                                                "CHECK_OUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result.", "type": "supportive"},
-                                                "SCROLL_UP_TERM": {"func": "ScrollUp", "prompt": "Scroll up the results.", "type": "supportive"},
-                                                "SAVE_TO_FILE": {"func": "Save2File", "prompt": "Save text or code to file.", "type": "primary"}}}
+                                                "CHECK-OUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result.", "type": "supportive"},
+                                                "SCROLL-UP-TERM": {"func": "ScrollUp", "prompt": "Scroll up the results.", "type": "supportive"},
+                                                "SAVE-TO-FILE": {"func": "Save2File", "prompt": "Save text or code to file.", "type": "primary"}}}
     
     def GetSessionID(self) -> str:
-        id = f"session_{str(random.randint(0,99999999))}"
+        id = f"session-{str(random.randint(0,99999999))}"
         while id in self.sessions:
-            id = f"session_{str(random.randint(0,99999999))}"
+            id = f"session-{str(random.randint(0,99999999))}"
         return id
     
     def RunCMD(self, session: str, cmd: list[str], timeout: int = 30):
@@ -76,7 +76,7 @@ class AScripter():
         try:
             output, completed = self.CheckProcOutput(session=session)
             res += output
-            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK_OUTPUT function to get new output." if not completed else "\nExecution completed."
+            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
         except Exception as e:
             res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
@@ -96,7 +96,7 @@ class AScripter():
         try:
             output, completed = self.CheckProcOutput(session=session)
             res += output
-            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK_OUTPUT function to get new output." if not completed else "\nExecution completed."
+            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
         except Exception as e:
             res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
             print(res)
@@ -119,7 +119,7 @@ class AScripter():
         try:
             output, completed = self.CheckProcOutput(session=session)
             res += output
-            res += "\nThe python script takes longer to complete. You can use WAIT to wait for a while and then use CHECK_OUTPUT function to get new output." if not completed else "\nExecution completed."
+            res += "\nThe python script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
         except Exception as e:
             res += f"Exception when check the output of python execution: {str(e)}\n {traceback.format_exc()}"
             print(res)

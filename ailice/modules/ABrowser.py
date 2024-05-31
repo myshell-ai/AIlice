@@ -15,20 +15,20 @@ class ABrowser():
     def __init__(self, pdfOutputDir: str):
         self.pdfOutputDir = pdfOutputDir
         self.sessions = {}
-        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL_DOWN_BROWSER<!|session: str|!>",
-                          "SCROLLUP": "#scroll up the page: \nSCROLL_UP_BROWSER<!|session: str|!>",
-                          "SEARCHDOWN": "#search the content downward and jumps the page to the next matching point(Just like the F3 key normally does): \nSEARCH_DOWN_BROWSER<!|query: str, session: str|!>",
-                          "SEARCHUP": "#search the content upward and jumps the page to the next matching point: \nSEARCH_UP_BROWSER<!|query: str, session: str|!>"}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL-DOWN-BROWSER<!|session: str|!>",
+                          "SCROLLUP": "#scroll up the page: \nSCROLL-UP-BROWSER<!|session: str|!>",
+                          "SEARCHDOWN": "#search the content downward and jumps the page to the next matching point(Just like the F3 key normally does): \nSEARCH-DOWN-BROWSER<!|query: str, session: str|!>",
+                          "SEARCHUP": "#search the content upward and jumps the page to the next matching point: \nSEARCH-UP-BROWSER<!|query: str, session: str|!>"}
         self.prompt = "The browser is running in headless mode, mouse and keyboard operations are not supported. All operations on the page must be accomplished using the functions listed after the page content."
         return
 
     def ModuleInfo(self):
         return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF and obtain the visible content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.", "type": "primary"},
-                                               "SCROLL_DOWN_BROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page.", "type": "supportive"},
-                                               "SCROLL_UP_BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page.", "type": "supportive"},
-                                               "SEARCH_DOWN_BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},
-                                               "SEARCH_UP_BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location.", "type": "supportive"},
-                                               "GET_LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to be one of those text fragments enclosed by square brackets on the page (excluding the square brackets themselves).", "type": "supportive"}}}
+                                               "SCROLL-DOWN-BROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page.", "type": "supportive"},
+                                               "SCROLL-UP-BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page.", "type": "supportive"},
+                                               "SEARCH-DOWN-BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},
+                                               "SEARCH-UP-BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location.", "type": "supportive"},
+                                               "GET-LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to be one of those text fragments enclosed by square brackets on the page (excluding the square brackets themselves).", "type": "supportive"}}}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()

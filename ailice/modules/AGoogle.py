@@ -7,17 +7,17 @@ from ailice.modules.AScrollablePage import AScrollablePage
 class AGoogle():
     def __init__(self):
         self.sessions = {}
-        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL_DOWN_GOOGLE<!|session: str|!>"}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL-DOWN-GOOGLE<!|session: str|!>"}
         return
     
     def ModuleInfo(self):
         return {"NAME": "google", "ACTIONS": {"GOOGLE": {"func": "Google", "prompt": "Use google to search internet content.", "type": "primary"},
-                                              "SCROLL_DOWN_GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the results.", "type": "supportive"}}}
+                                              "SCROLL-DOWN-GOOGLE": {"func": "ScrollDown", "prompt": "Scroll down the results.", "type": "supportive"}}}
     
     def GetSessionID(self) -> str:
-        id = f"session_{str(random.randint(0,99999999))}"
+        id = f"session-{str(random.randint(0,99999999))}"
         while id in self.sessions:
-            id = f"session_{str(random.randint(0,99999999))}"
+            id = f"session-{str(random.randint(0,99999999))}"
         return id
     
     def Google(self, keywords: str) -> str:

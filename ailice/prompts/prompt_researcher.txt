@@ -52,7 +52,7 @@ PYTHON<!|code: str|!> -> str
 WAIT<!|duration: int|!> -> str
 
 #Obtain script execution output result.
-CHECK_OUTPUT<!|session: str|!> -> str
+CHECK-OUTPUT<!|session: str|!> -> str
 
 #Store a piece of text / Retrieve text semantically associated with keywords.
 STORE<!|txt: str|!> -> None
@@ -65,10 +65,10 @@ PRINT<!|txt: str|!> -> str
 SCREENSHOT<!||!> -> AImage
 
 #Read the content of an image file into a variable.
-READ_IMAGE<!|path: str|!> -> AImage
+READ-IMAGE<!|path: str|!> -> AImage
 
 #Write a variable of image type into a file.
-WRITE_IMAGE<!|image: AImage, path: str|!> -> None
+WRITE-IMAGE<!|image: AImage, path: str|!> -> None
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!> -> str

@@ -11,22 +11,22 @@ class AArxiv():
         #All interfaces exposed by the ext-module to users should be stateless. We use sessions to handle state operations.
         self.sessions = {}
         #The parameter is a dict, used to map the keys("SCROLLUP" / "SCROLLDOWN" / "SEARCHUP" / "SEARCHDOWN", you can choose a subset based on the convenience for users) to a prompt including corresponding ACTION names. The ACTION name is decided by you, but it needs to be consistent with the one in ModuleInfo().
-        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL_DOWN_ARXIV<!|session: str|!>"}
+        self.functions = {"SCROLLDOWN": "#scroll down the page: \nSCROLL-DOWN-ARXIV<!|session: str|!>"}
         return
     
     #This is a standard interface for ext-module that must be implemented. It allows users to dynamically load and use modules at runtime. 
     def ModuleInfo(self):
         #The ACTIONS dictionary contains a series of methods to be registered with the client. The key of this dictionary is the name of the ACTION(in other words, method).
         #Under the "func" key is the name of the member function that implements this action.
-        #"prompt" provides a description of the functionality associated with this ACTION, which will appear at the end of each paragraph returned to the user, indicating the available ACTIONS (e.g., prompting the user to use SCROLL_DOWN_ARXIV to scroll through the remaining content at the end of the text).
+        #"prompt" provides a description of the functionality associated with this ACTION, which will appear at the end of each paragraph returned to the user, indicating the available ACTIONS (e.g., prompting the user to use SCROLL-DOWN-ARXIV to scroll through the remaining content at the end of the text).
         #The "type" field contains two choices: "primary" or "supportive". The former represents the ACTION corresponding to the main functionality, while the latter is for auxiliary functions, such as scroll down. The key difference between the two is that the "supportive" type of ACTION will appear in the prompt at the end of the text returned by the "primary" type, prompting the user to further perform certain operations (e.g., scroll down).
         return {"NAME": "arxiv", "ACTIONS": {"ARXIV": {"func": "ArxivSearch", "prompt": "Use arxiv to search academic literatures.", "type": "primary"},
-                                             "SCROLL_DOWN_ARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results.", "type": "supportive"}}}
+                                             "SCROLL-DOWN-ARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results.", "type": "supportive"}}}
     
     def GetSessionID(self) -> str:
-        id = f"session_{str(random.randint(0,99999999))}"
+        id = f"session-{str(random.randint(0,99999999))}"
         while id in self.sessions:
-            id = f"session_{str(random.randint(0,99999999))}"
+            id = f"session-{str(random.randint(0,99999999))}"
         return id
     
     def ArxivSearch(self, keywords: str) -> str:

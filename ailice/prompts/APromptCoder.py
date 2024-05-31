@@ -17,11 +17,11 @@ class APromptCoder():
         self.outputCB = outputCB
         self.prompt0 = read_text("ailice.prompts", "prompt_coder.txt")
         self.PATTERNS = {"BROWSE": [{"re": GenerateRE4FunctionCalling("BROWSE<!|url: str, session: str|!> -> str"), "isEntry": True}],
-                         "SCROLL_DOWN_BROWSER": [{"re": GenerateRE4FunctionCalling("SCROLL_DOWN_BROWSER<!|session: str|!> -> str"), "isEntry": True}],
-                         "SCROLL_UP_BROWSER": [{"re": GenerateRE4FunctionCalling("SCROLL_UP_BROWSER<!|session: str|!> -> str"), "isEntry": True}],
-                         "SEARCH_DOWN_BROWSER": [{"re": GenerateRE4FunctionCalling("SEARCH_DOWN_BROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
-                         "SEARCH_UP_BROWSER": [{"re": GenerateRE4FunctionCalling("SEARCH_UP_BROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
-                         "GET_LINK": [{"re": GenerateRE4FunctionCalling("GET_LINK<!|text: str, session: str|!> -> str"), "isEntry": True}]}
+                         "SCROLL-DOWN-BROWSER": [{"re": GenerateRE4FunctionCalling("SCROLL-DOWN-BROWSER<!|session: str|!> -> str"), "isEntry": True}],
+                         "SCROLL-UP-BROWSER": [{"re": GenerateRE4FunctionCalling("SCROLL-UP-BROWSER<!|session: str|!> -> str"), "isEntry": True}],
+                         "SEARCH-DOWN-BROWSER": [{"re": GenerateRE4FunctionCalling("SEARCH-DOWN-BROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
+                         "SEARCH-UP-BROWSER": [{"re": GenerateRE4FunctionCalling("SEARCH-UP-BROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
+                         "GET-LINK": [{"re": GenerateRE4FunctionCalling("GET-LINK<!|text: str, session: str|!> -> str"), "isEntry": True}]}
         self.ACTIONS= {}
 
         return

@@ -32,9 +32,9 @@ class ASpeech():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "speech", "ACTIONS": {"SPEECH_TO_TEXT": {"func": "Speech2Text", "prompt": "Speech to text.", "type": "primary"},
-                                              "TEXT_TO_SPEECH": {"func": "Text2Speech", "prompt": "Text to speech.", "type": "primary"},
-                                              "GET_AUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone.", "type": "primary"},
+        return {"NAME": "speech", "ACTIONS": {"SPEECH-TO-TEXT": {"func": "Speech2Text", "prompt": "Speech to text.", "type": "primary"},
+                                              "TEXT-TO-SPEECH": {"func": "Text2Speech", "prompt": "Text to speech.", "type": "primary"},
+                                              "GET-AUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone.", "type": "primary"},
                                               "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play.", "type": "primary"}}}
     
     def PrepareModel(self):
