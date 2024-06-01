@@ -17,7 +17,7 @@ FUNCTION_CALL_DEFAULT = r"!(?P<funcName>([a-zA-Z0-9_\-]+))<!\|(?P<paras>([\s\S]*
 
 def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> str:
     #signature: "FUNC<!|ARG1: ARG1_TYPE, ARG2: ARG2_TYPE...|!> -> RETURN_TYPE"
-    pattern = r"(\w+)<!\|((?:\w+\s*:\s*[\w,\. ]+)*)\|!>((?:\s*->\s*)([\w\.]+))?"
+    pattern = r"([a-zA-Z0-9_\-]+)<!\|((?:\w+\s*:\s*[\w,\. ]+)*)\|!>((?:\s*->\s*)([\w\.]+))?"
     matches = re.search(pattern, signature)
     if matches is None:
         print("signature invalid. exit. ", signature)
