@@ -554,7 +554,7 @@ Variable Definition:
 VAR_NAME := <!|"SOME_CONTENT"|!>
 
 Function Calls/Variable References/Text Concatenation:
-!FUNC_NAME<!|"...", '...', VAR_NAME1, "Execute the following code: \n" + VAR_NAME2, ...|!>
+!FUNC-NAME<!|"...", '...', VAR_NAME1, "Execute the following code: \n" + VAR_NAME2, ...|!>
 
 The basic variable types are str/AImage/various multimodal types. The str type is consistent with Python's string syntax, supporting triple quotes and escape characters.
 
