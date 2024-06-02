@@ -32,7 +32,7 @@ class AProcessor():
         self.RegisterModules([config.services['storage']['addr']])
         self.interpreter.RegisterAction("CALL", {"func": self.EvalCall})
         self.interpreter.RegisterAction("RESPOND", {"func": self.EvalRespond})
-        self.interpreter.RegisterAction("COMPLETE", {"func": self.EvalComplete})
+        self.interpreter.RegisterAction("RETURN", {"func": self.Return})
         self.interpreter.RegisterAction("STORE", {"func": self.EvalStore})
         self.interpreter.RegisterAction("QUERY", {"func": self.EvalQuery})
         self.interpreter.RegisterAction("WAIT", {"func": self.EvalWait})
@@ -170,10 +170,8 @@ class AProcessor():
             return "Nothing found."
         return "QUERY_RESULT={" + res[0][0] +"}"
     
-    def EvalComplete(self, result: str):
-        self.result = result
-        self.prompt.Reset()
-        return
+    def Return(self) -> str:
+        return ""
     
     def EvalWait(self, duration: int) -> str:
         time.sleep(duration)
