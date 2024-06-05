@@ -1,4 +1,5 @@
 import time
+import os
 import simplejson as json
 import re
 import traceback
@@ -8,7 +9,6 @@ from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
-from ailice.common.utils.AFileUtils import serialize
 from ailice.common.ARemoteAccessors import clientPool
 from ailice.AServices import StartServices, TerminateSubprocess
 
@@ -33,7 +33,7 @@ def GetInput(speech) -> str:
         inp = input(colored("USER: ", "green"))
     return inp
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, trace: str):
+def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, session: str):
     config.Initialize(modelID = modelID)
     config.quantization = quantization
     config.maxMemory = maxMemory
@@ -98,10 +98,17 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['duckduckgo']['addr'],
                                config.services['scripter']['addr'],
                                config.services['computer']['addr']] + ([config.services['speech']['addr']] if config.speechOn else []))
+
+    if "" != session.strip():
+        os.makedirs(session, exist_ok=True)
+    if os.path.exists(os.path.join(session, "ailice_history.json")):
+        with open(os.path.join(session, "ailice_history.json"), "r") as f:
+            processor.FromJson(json.load(f))
+    
     while True:
-        if "" != trace.strip():
-            with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
-                json.dump(processor.ToJson(), f, indent=2, default=serialize)
+        if "" != session.strip():
+            with open(os.path.join(session, "ailice_history.json"), "w") as f:
+                    json.dump(processor.ToJson(), f, indent=2)
         inpt = GetInput(speech)
         processor(inpt)
     return
@@ -119,7 +126,7 @@ def main():
     parser.add_argument('--speechOn',action='store_true', help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.")
     parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
+    parser.add_argument('--session',type=str,default='', help="session is used to specify the session storage path, if the directory is not empty, the conversation history stored in that directory will be loaded and updated.")
     kwargs = vars(parser.parse_args())
 
     try:

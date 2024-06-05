@@ -3,7 +3,7 @@ import random
 import concurrent.futures
 
 from typing import Any
-from ailice.common.ADataType import typeInfo, GuessMediaType, AImageLocation, AVideoLocation
+from ailice.common.ADataType import typeInfo, GuessMediaType, ToJson, FromJson, AImageLocation, AVideoLocation
 
 
 class AConversations():
@@ -68,5 +68,14 @@ class AConversations():
     def __len__(self):
         return (len(self.conversations)+1) // 2
     
+    def FromJson(self, data):
+        self.conversations = [{'role': d['role'],
+                               'msg': d['msg'],
+                               'attachments': [{'type': a['type'], 'content': FromJson(a['content'])} for a in d['attachments']]} for d in data]
+        return
+    
     def ToJson(self) -> str:
-        return self.conversations
+        return [{'role': record['role'],
+                 'msg': record['msg'],
+                 'attachments': [{'type': a['type'],
+                                  'content': ToJson(a['content'])} for a in record['attachments']]} for record in self.conversations]

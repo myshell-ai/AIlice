@@ -58,8 +58,12 @@ class AImage():
     def __str__(self) -> str:
         return f"< AImage object in {self.format} format. >"
     
+    @classmethod
+    def FromJson(cls, data):
+        return cls(data=base64.b64decode(data['data'].encode('utf-8')))
+    
     def ToJson(self):
-        return {'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
+        return {'type': 'AImage', 'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
     
     def Convert(self, format: str):
         if format == self.format:
@@ -90,6 +94,13 @@ class AImageLocation():
         else:
             return Image.open(ident)
 
+    @classmethod
+    def FromJson(cls, data):
+        return cls(urlOrPath=data['urlOrPath'])
+    
+    def ToJson(self):
+        return {'type': 'AImageLocation', 'urlOrPath': self.urlOrPath}
+    
     def Standardize(self):
         image = self.GetImage(self.urlOrPath)
         if image.mode != 'RGB':
@@ -121,8 +132,12 @@ class AVideo():
     def __str__(self) -> str:
         return f"< AVideo object in {self.format} format. >"
     
+    @classmethod
+    def FromJson(cls, data):
+        return cls(data=base64.b64decode(data['data'].encode('utf-8')))
+    
     def ToJson(self):
-        return {'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
+        return {'type': 'AVideo', 'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
     
     def Standardize(self):
         return AVideo(data=ConvertVideoFormat(self.data, 'mp4'))
@@ -144,10 +159,27 @@ class AVideoLocation():
             with open(ident, "rb") as f:
                 videoBytes = io.BytesIO(f.read())
                 return videoBytes.getvalue()
+    
+    @classmethod
+    def FromJson(cls, data):
+        return cls(urlOrPath=data['urlOrPath'])
+    
+    def ToJson(self):
+        return {'type': 'AVideoLocation', 'urlOrPath': self.urlOrPath}
 
     def Standardize(self):
         return AVideo(data=ConvertVideoFormat(self.GetVideo(self.urlOrPath), "mp4"))
     
+def ToJson(obj):
+    return obj.ToJson() if hasattr(obj, "ToJson") else {'type': type(obj).__name__, 'data': obj}
+
+def FromJson(data):
+    typeMap = {"AImage": AImage, "AImageLocation": AImageLocation, "AVideo": AVideo, "AVideoLocation": AVideoLocation}
+    if data['type'] in typeMap:
+        return typeMap[data['type']].FromJson(data)
+    else:
+        return data['data']
+        
 typeInfo = {AImage: {"modal": "image", "tag": False},
             AImageLocation: {"modal": "image", "tag": True},
             AVideo: {"modal": "video", "tag": False},

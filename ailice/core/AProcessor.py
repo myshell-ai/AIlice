@@ -218,10 +218,23 @@ class AProcessor():
         return "\n".join([f"{varName}: {type(var).__name__}  {str(var)[:50]}{'...[The remaining content is not shown]' if len(str(var)) > 50 else ''}" for varName, var in self.interpreter.env.items()]) + \
             ("\nTo save context space, only the first fifty characters of each variable are shown here. You can use the PRINT function to view its complete contents." if self.interpreter.env else "")
     
+    def FromJson(self, data):
+        self.name = data["name"]
+        #self.modelID = data["modelID"]
+        self.interpreter.FromJson(data['interpreter'])
+        self.conversation.FromJson(data["conversation"])
+        self.collection = data['collection']
+        self.RegisterModules([m['addr'] for k,m in data["modules"].items()])
+        for agentName, state in data['subProcessors'].items():
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], outputCB=self.outputCB, collection=self.collection)
+        return
+    
     def ToJson(self) -> str:
         return {"name": self.name,
                 "modelID": self.modelID,
-                "conversations": self.conversation.ToJson(),
-                "subProcessors": {k: p.ToJson() for k, p in self.subProcessors.items()},
+                "agentType": self.prompt.PROMPT_NAME,
+                "interpreter": self.interpreter.ToJson(),
+                "conversation": self.conversation.ToJson(),
+                "collection": self.collection,
                 "modules": {k:{'addr': m['addr']} for k, m in self.modules.items()},
-                "collection": self.collection}
+                "subProcessors": {k: p.ToJson() for k, p in self.subProcessors.items()}}

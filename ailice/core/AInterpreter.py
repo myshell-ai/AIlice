@@ -4,7 +4,7 @@ import random
 import ast
 import traceback
 from typing import Any
-from ailice.common.ADataType import typeInfo
+from ailice.common.ADataType import typeInfo, ToJson, FromJson
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling, GenerateRE4ObjectExpr, ARegexMap, VAR_DEF, EXPR_OBJ
 from ailice.common.AMessenger import messenger
 
@@ -182,3 +182,10 @@ class AInterpreter():
                                          return_annotation=dataType)
         callback.__signature__ = newSignature
         return callback
+    
+    def ToJson(self):
+        return {"env": {k: ToJson(v) for k,v in self.env.items()}}
+    
+    def FromJson(self, data):
+        self.env = {k: FromJson(v) for k,v in data['env'].items()}
+        return

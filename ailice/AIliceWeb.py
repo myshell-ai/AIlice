@@ -11,7 +11,6 @@ from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
-from ailice.common.utils.AFileUtils import serialize
 from ailice.common.ARemoteAccessors import clientPool
 from ailice.common.AMessenger import messenger
 from ailice.AServices import StartServices, TerminateSubprocess
@@ -28,7 +27,7 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, trace: str, share: bool):
+def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, session: str, share: bool):
     config.Initialize(modelID = modelID)
     config.quantization = quantization
     config.maxMemory = maxMemory
@@ -95,6 +94,12 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['scripter']['addr'],
                                config.services['computer']['addr']])
     
+    if "" != session.strip():
+        os.makedirs(session, exist_ok=True)
+    if os.path.exists(os.path.join(session, "ailice_history.json")):
+        with open(os.path.join(session, "ailice_history.json"), "r") as f:
+            processor.FromJson(json.load(f))
+        
     audioQue = queue.Queue(maxsize=100)
 
     def playAudio():
@@ -107,9 +112,9 @@ use the provided Dockerfile to build an image and container, and modify the rele
         threadPlayer.start()
     
     def bot(history):
-        if "" != trace.strip():
-            with open(trace + "/ailice-trace-" + timestamp + ".json", "w") as f:
-                json.dump(processor.ToJson(), f, indent=2, default=serialize)
+        if "" != session.strip():
+            with open(os.path.join(session, "ailice_history.json"), "w") as f:
+                json.dump(processor.ToJson(), f, indent=2)
         
         if str != type(history[-1][0]):
             msg = f'\n![]({history[-1][0][0]})\n'
@@ -217,7 +222,7 @@ def main():
     parser.add_argument('--speechOn',action='store_true', help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.")
     parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--trace',type=str,default='', help="trace is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.")
+    parser.add_argument('--session',type=str,default='', help="session is used to specify the session storage path, if the directory is not empty, the conversation history stored in that directory will be loaded and updated.")
     parser.add_argument('--share',type=bool,default=False, help="Whether to create a publicly shareable link for AIlice.")
     kwargs = vars(parser.parse_args())
 
