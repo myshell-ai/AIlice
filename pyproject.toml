@@ -22,7 +22,8 @@ mistralai = "^0"
 anthropic = "^0"
 pillow = "^10"
 av = "^12"
-gradio = "^4"
+flask = "^3"
+werkzeug = "^3"
 importlib-metadata = "^7"
 googlesearch-python = "^1"
 duckduckgo-search = "^5"
@@ -33,6 +34,7 @@ scipy = "^1"
 scikit-learn = "^1"
 arxiv = "^2"
 einops = "^0"
+librosa = "^0"
 torch = {version = "^2", optional = true}
 transformers = {version = "^4", optional = true}
 accelerate = {version = "^0", optional = true}
@@ -42,7 +44,6 @@ datasets = {version = "^2", optional = true}
 tensorboard = {version = "^2", optional = true}
 typeguard = {version = "2.13.3", optional = true}
 sounddevice = {version = "^0", optional = true}
-librosa = {version = "^0", optional = true}
 espnet = {version = "202207", optional = true}
 espnet-model-zoo = {version = "0.1.7", optional = true}
 espnet-tts-frontend = {version = "0.0.3", optional = true}
@@ -52,12 +53,12 @@ pix2text = {version = "^1", optional = true}
 [tool.poetry.extras]
 huggingface = ["torch", "transformers", "accelerate", "bitsandbytes"]
 finetuning = ["peft", "datasets", "tensorboard"]
-speech = ["typeguard", "sounddevice", "librosa", "espnet", "espnet-model-zoo", "espnet-tts-frontend", "torchaudio"]
+speech = ["typeguard", "sounddevice", "espnet", "espnet-model-zoo", "espnet-tts-frontend", "torchaudio"]
 pdf-reading = ["pix2text"]
 
 [tool.poetry.scripts]
 ailice_main = "ailice.AIliceMain:main"
-ailice_web = "ailice.AIliceWeb:main"
+ailice_web = "ailice.ui.app:main"
 
 [build-system]
 requires = ["poetry-core"]

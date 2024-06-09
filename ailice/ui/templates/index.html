@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: row;
+            height: 80vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 20%;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
+        .chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .input-section {
+            display: flex;
+            padding: 10px;
+            background-color: #f7f9fc;
+            border-top: 1px solid #e0e0e0;
+        }
+        .input-section input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-right: 10px;
+            font-size: 16px;
+            color: #333;
+            background-color: #fff;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .input-section button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .input-section button:hover {
+            background-color: #0056b3;
+        }
+        .input-section button:last-child {
+            margin-right: 0;
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .message.user {
+            justify-content: flex-start;
+        }
+        .message.bot {
+            justify-content: flex-end;
+        }
+        .message .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .message.bot .avatar {
+            margin-left: 10px;
+            margin-right: 0;
+        }
+        .message .bubble {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 12px;
+            background-color: #f1f1f1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .message.user .bubble {
+            background-color: #007bff;
+            color: #fff;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"></script>
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-highlight/lib/index.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/default.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar" id="history-list">
+            <!-- History records will be listed here -->
+        </div>
+        <div class="main-content">
+            <div class="chat-window" id="chat-window">
+                <!-- Chat messages will be displayed here -->
+            </div>
+            <div class="input-section">
+                <input type="text" id="text-input" placeholder="Type a message...">
+                <button id="interrupt-button" style="display: none;">⏹️</button>
+                <button id="audio-button">🎤</button>
+                <button id="image-button">📷</button>
+                <input type="file" id="image-input" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isInterrupted = false;
+        let isUpdating = false;  // State variable indicating whether readResponse is in a data update state.
+        
+        const { Marked } = window.marked;
+        const { markedHighlight } = window.markedHighlight;
+        const marked = new Marked(
+            markedHighlight({
+                langPrefix: 'hljs language-',
+                highlight(code, lang, info) {
+                    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                    return hljs.highlight(code, { language }).value;
+                }
+            })
+        );
+        
+        function convertToProxyURL(href) {
+            if (href.startsWith("/proxy?href=")) {
+                return href
+            }
+            else if (href.startsWith("blob:")) {
+                return href
+            }
+            else {
+                return `/proxy?href=${href}`;
+            }
+        }
+
+        function getContentType(url) {
+            try {
+                const extension = url.split('.').pop().toLowerCase();
+                if (['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac', 'aiff', 'wma', 'opus', 'ra', 'mid'].includes(extension)) {
+                    return `audio/${extension}`;
+                } else if (['mp4', 'webm', 'ogg', 'wmv', 'mov', 'avi', 'flv', 'mkv', 'mpeg', 'vob', 'rm', '3gp', 'ogv', 'm4v', 'h264', 'ts', 'm2ts', 'divx'].includes(extension)) {
+                    return `video/${extension}`;
+                } else if (['jpg', 'jpeg', 'bmp', 'png', 'gif', 'tiff', 'tif', 'webp', 'svg', 'heif', 'heic', 'raw'].includes(extension)) {
+                    return 'image/jpeg';
+                }
+                
+                const xhr = new XMLHttpRequest();
+                xhr.open("HEAD", url, false);
+                xhr.send();
+                if (xhr.status === 200) {
+                    return xhr.getResponseHeader("Content-Type");
+                } else {
+                    throw new Error("Failed to fetch Content-Type.");
+                }
+            } catch (error) {
+                console.error(error);
+                return "";
+            }
+        }
+
+        function mathsExpression(expr) {
+            if (expr.match(/^\$\$[\s\S]*\$\$$/)) {
+                expr = expr.substr(2, expr.length - 4);
+                return katex.renderToString(expr, { displayMode: true });
+            } else if (expr.match(/^\$[\s\S]*\$$/)) {
+                expr = expr.substr(1, expr.length - 2);
+                return katex.renderToString(expr, { isplayMode: false });
+            }
+        }
+        
+        const renderer = new marked.Renderer();
+        const rendererCode = renderer.code;
+        const rendererCodespan = renderer.codespan;
+
+        renderer.image = function(href, title, text) {
+                let mediaType = "";
+                if (href.startsWith("blob:")) {
+                    mediaType = text;
+                }
+                else {
+                    mediaType = getContentType(convertToProxyURL(href));
+                }
+                
+                if (mediaType.startsWith('image')) {
+                    return `<img src="${convertToProxyURL(href)}" alt="${text}" title="${title}" style="max-width: 100%; height: auto; display: block;">`;
+                }
+                else if (mediaType.startsWith('audio')) {
+                    return `<audio controls><source src="${convertToProxyURL(href)}" type="${mediaType}">Your browser does not support the audio element.</audio>`;
+                }
+                else if (mediaType.startsWith('video')) {
+                    return `<video controls><source src="${convertToProxyURL(href)}" type="${mediaType}">Your browser does not support the video element.</video>`;
+                }
+                else
+                {
+                    return `![${text}](${href}) ${title}`;
+                }
+            };
+
+        renderer.code = function(code, lang, escaped) {
+                if (!lang) {
+                        const math = mathsExpression(code);
+                        if (math) {
+                        return math;
+                    }
+                }
+                return rendererCode(code, lang, escaped);
+            };
+
+        renderer.codespan = function(text) {
+                const math = mathsExpression(text);
+                if (math) {
+                    return math;
+                }
+                return rendererCodespan(text);
+            }
+
+        marked.use({ renderer });
+
+        function renderMarkdown(message) {
+            return marked.parse(message);
+        }
+
+        function readResponse(reader) {
+            const decoder = new TextDecoder();
+            let inputDisabled = false;  // Flag variable used to track whether the input field has been disabled.
+            let content = '';
+            let lastBotMessageElement = null;
+            
+            function read() {
+                reader.read().then(({ done, value }) => {
+                    if (done) {
+                        document.getElementById('text-input').disabled = false;
+                        document.getElementById('audio-button').disabled = false;
+                        document.getElementById('image-button').disabled = false;
+                        document.getElementById('interrupt-button').style.display = 'none';
+                        isUpdating = false;  // End of data updating.
+                        return;
+                    }
+                    if (!inputDisabled) {
+                        document.getElementById('text-input').disabled = true;
+                        document.getElementById('audio-button').disabled = true;
+                        document.getElementById('image-button').disabled = true;
+                        document.getElementById('interrupt-button').style.display = 'inline-block';
+                        inputDisabled = true;  // Setting the flag variable to true indicates that the input field has been disabled.
+                        isUpdating = true;  // Start data updating.
+                    }
+                    const text = decoder.decode(value, { stream: true });
+                    const lines = text.split('\n');
+                    
+                    lines.forEach(line => {
+                        if (line.startsWith('data: ')) {
+                            const jsonString = line.replace('data: ', '');
+                            try {
+                                const responseObject = JSON.parse(jsonString);
+                                const responseMessage = responseObject.message;
+                                setTimeout(() => {
+                                        lastBotMessageElement = chatWindow.querySelector('.message.bot:last-child .bubble');
+                                    }, 0);
+                                if (lastBotMessageElement) {
+                                    content += responseMessage
+                                    lastBotMessageElement.innerHTML = renderMarkdown(content);
+                                } else {
+                                    content = responseMessage
+                                    const chatWindow = document.getElementById('chat-window');
+                                    chatWindow.innerHTML += `
+                                        <div class="message bot">
+                                            <img src="/static/AIlice.png" class="avatar">
+                                            <div class="bubble">${renderMarkdown(content)}</div>
+                                        </div>`;
+                                }
+                                const chatWindow = document.getElementById('chat-window');
+                                chatWindow.scrollTop = chatWindow.scrollHeight;
+                            } catch (e) {
+                                console.error("Error parsing JSON:", e);
+                            }
+                        }
+                    });
+                    read();
+                });
+            }
+            read();
+        }
+
+        function interrupt() {
+            isInterrupted = true;
+            document.getElementById('text-input').disabled = false;
+            document.getElementById('interrupt-button').textContent = 'Send';
+            fetch('/interrupt', {
+                method: 'POST'
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function sendmsg(msg) {
+            fetch('/sendmsg', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: msg })
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            }).then(data => {
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.innerHTML += `
+                    <div class="message user">
+                        <img src="/static/User.JPG" class="avatar">
+                        <div class="bubble">${msg}</div>
+                    </div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                isInterrupted = false;
+                if (isUpdating) {
+                    document.getElementById('text-input').disabled = true;
+                }
+                document.getElementById('interrupt-button').textContent = '⏹️';
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        document.getElementById('interrupt-button').addEventListener('click', function() {
+            if (isInterrupted) {
+                const message = document.getElementById('text-input').value;
+                document.getElementById('text-input').value = '';
+                sendmsg(message);
+            } else {
+                interrupt();
+            }
+        });
+
+        document.getElementById('text-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                if (isInterrupted) {
+                    const message = event.target.value;
+                    event.target.value = '';
+                    sendmsg(message);
+                } else {
+                    const message = event.target.value;
+                    event.target.value = '';
+                    const chatWindow = document.getElementById('chat-window');
+                    chatWindow.innerHTML += `
+                        <div class="message user">
+                            <img src="/static/User.JPG" class="avatar">
+                            <div class="bubble">${renderMarkdown(message)}</div>
+                        </div>`;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                    fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ message: message })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.body.getReader();
+                    })
+                    .then(reader => {
+                        readResponse(reader);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+            }
+        });
+
+        document.getElementById('audio-button').addEventListener('click', function() {
+            console.log('Audio button clicked');
+            if (isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                this.textContent = '🎤';
+            } else {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.start();
+                        isRecording = true;
+                        this.textContent = '⏹️';
+
+                        mediaRecorder.addEventListener('dataavailable', event => {
+                            audioChunks.push(event.data);
+                        });
+
+                        mediaRecorder.addEventListener('stop', () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            const formData = new FormData();
+                            formData.append('audio', audioBlob, 'recording.wav');
+
+                            // Update the chat window to display the audio uploaded by the user.
+                            const chatWindow = document.getElementById('chat-window');
+                            const audioUrl = URL.createObjectURL(audioBlob);
+                            chatWindow.innerHTML += `
+                                <div class="message user">
+                                    <img src="/static/User.JPG" class="avatar">
+                                    <div class="bubble">${renderMarkdown(`![audio/wav](${audioUrl})`)}</div>
+                                </div>`;
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                            fetch('/upload_audio', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.body.getReader();
+                            })
+                            .then(reader => {
+                                readResponse(reader);
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+
+                            audioChunks = [];
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error accessing microphone:', error);
+                    });
+            }
+        });
+
+        document.getElementById('image-button').addEventListener('click', function() {
+            console.log('Image button clicked');
+            document.getElementById('image-input').click();
+        });
+
+        document.getElementById('image-input').addEventListener('change', function() {
+            console.log('Image input changed');
+            const file = this.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+
+            // Update the chat window to display the image uploaded by the user.
+            const chatWindow = document.getElementById('chat-window');
+            const imageUrl = URL.createObjectURL(file);
+            chatWindow.innerHTML += `
+                <div class="message user">
+                    <img src="/static/User.JPG" class="avatar">
+                    <div class="bubble">${renderMarkdown(`![image](${imageUrl})`)}</div>
+                </div>`;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            fetch('/upload_image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.body.getReader();
+            })
+            .then(reader => {
+                readResponse(reader);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Load history list on page load
+        window.onload = function() {
+            fetch('/list_histories')
+                .then(response => response.json())
+                .then(data => {
+                    const historyList = document.getElementById('history-list');
+                    data.forEach(history => {
+                        const historyItem = document.createElement('div');
+                        historyItem.textContent = history;
+                        historyItem.classList.add('history-item');
+                        historyItem.addEventListener('click', () => loadHistory(history));
+                        historyList.appendChild(historyItem);
+                    });
+                });
+        };
+
+        // Load selected history
+        function loadHistory(historyName) {
+            fetch(`/load_history?name=${historyName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const chatWindow = document.getElementById('chat-window');
+                    chatWindow.innerHTML = '';
+                    data.forEach(([sender, message]) => {
+                        chatWindow.innerHTML += `
+                            <div class="message ${sender}">
+                                <img src="/static/${sender === 'user' ? 'User.JPG' : 'AIlice.png'}" class="avatar">
+                                <div class="bubble">${renderMarkdown(message)}</div>
+                            </div>`;
+                    });
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                });
+        }
+    </script>
+</body>
+</html>
