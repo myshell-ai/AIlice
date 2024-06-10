@@ -34,7 +34,7 @@ class AConversations():
                         if isinstance(result, Exception):
                             msgNew = msg.replace(m, f"{m}\n(System notification: Unable to get multimodal content: {e})")
                             record["msg"] = msgNew
-                        else:
+                        elif None != result:
                             record["attachments"].append(result)
                     except Exception as e:
                         record["msg"] += f"\nSystem notification: Exception encountered while processing multimodal tags: {str(e)}"
