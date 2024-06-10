@@ -38,8 +38,9 @@ class ASpeech():
                                               "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play.", "type": "primary"}}}
     
     def PrepareModel(self):
-        self.t2s = T2S_LJS()
-        self.s2t = S2T_WhisperLarge()
+        if None in [self.t2s, self.s2t]:
+            self.t2s = T2S_LJS()
+            self.s2t = S2T_WhisperLarge()
         return
     
     def SetDevices(self, deviceMap: dict[str,str]):
