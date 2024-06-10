@@ -7,6 +7,7 @@ from termcolor import colored
 
 class AConfig():
     def __init__(self):
+        self.chatHistoryPath = appdirs.user_data_dir("ailice", "Steven Lu")
         self.maxMemory = {}
         self.quantization = None
         self.models = {

@@ -83,10 +83,10 @@
             align-items: flex-start;
             margin-bottom: 10px;
         }
-        .message.user {
+        .message.USER {
             justify-content: flex-start;
         }
-        .message.bot {
+        .message.ASSISTANT {
             justify-content: flex-end;
         }
         .message .avatar {
@@ -95,7 +95,7 @@
             border-radius: 50%;
             margin-right: 10px;
         }
-        .message.bot .avatar {
+        .message.ASSISTANT .avatar {
             margin-left: 10px;
             margin-right: 0;
         }
@@ -106,7 +106,7 @@
             background-color: #f1f1f1;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        .message.user .bubble {
+        .message.USER .bubble {
             background-color: #007bff;
             color: #fff;
         }
@@ -126,6 +126,7 @@
 <body>
     <div class="container">
         <div class="sidebar" id="history-list">
+            <button id="new-chat-button">➕</button>
             <!-- History records will be listed here -->
         </div>
         <div class="main-content">
@@ -294,7 +295,7 @@
                                 const responseObject = JSON.parse(jsonString);
                                 const responseMessage = responseObject.message;
                                 setTimeout(() => {
-                                        lastBotMessageElement = chatWindow.querySelector('.message.bot:last-child .bubble');
+                                        lastBotMessageElement = chatWindow.querySelector('.message.ASSISTANT:last-child .bubble');
                                     }, 0);
                                 if (lastBotMessageElement) {
                                     content += responseMessage
@@ -303,7 +304,7 @@
                                     content = responseMessage
                                     const chatWindow = document.getElementById('chat-window');
                                     chatWindow.innerHTML += `
-                                        <div class="message bot">
+                                        <div class="message ASSISTANT">
                                             <img src="/static/AIlice.png" class="avatar">
                                             <div class="bubble">${renderMarkdown(content)}</div>
                                         </div>`;
@@ -347,7 +348,7 @@
             }).then(data => {
                 const chatWindow = document.getElementById('chat-window');
                 chatWindow.innerHTML += `
-                    <div class="message user">
+                    <div class="message USER">
                         <img src="/static/User.JPG" class="avatar">
                         <div class="bubble">${msg}</div>
                     </div>`;
@@ -383,7 +384,7 @@
                     event.target.value = '';
                     const chatWindow = document.getElementById('chat-window');
                     chatWindow.innerHTML += `
-                        <div class="message user">
+                        <div class="message USER">
                             <img src="/static/User.JPG" class="avatar">
                             <div class="bubble">${renderMarkdown(message)}</div>
                         </div>`;
@@ -435,11 +436,11 @@
                             const formData = new FormData();
                             formData.append('audio', audioBlob, 'recording.wav');
 
-                            // Update the chat window to display the audio uploaded by the user.
+                            // Update the chat window to display the audio uploaded by the USER.
                             const chatWindow = document.getElementById('chat-window');
                             const audioUrl = URL.createObjectURL(audioBlob);
                             chatWindow.innerHTML += `
-                                <div class="message user">
+                                <div class="message USER">
                                     <img src="/static/User.JPG" class="avatar">
                                     <div class="bubble">${renderMarkdown(`![audio/wav](${audioUrl})`)}</div>
                                 </div>`;
@@ -482,11 +483,11 @@
             const formData = new FormData();
             formData.append('image', file);
 
-            // Update the chat window to display the image uploaded by the user.
+            // Update the chat window to display the image uploaded by the USER.
             const chatWindow = document.getElementById('chat-window');
             const imageUrl = URL.createObjectURL(file);
             chatWindow.innerHTML += `
-                <div class="message user">
+                <div class="message USER">
                     <img src="/static/User.JPG" class="avatar">
                     <div class="bubble">${renderMarkdown(`![image](${imageUrl})`)}</div>
                 </div>`;
@@ -510,6 +511,22 @@
             });
         });
 
+        document.getElementById('new-chat-button').addEventListener('click', function() {
+            console.log('New chat button clicked');
+            fetch('/new_chat')
+            .then(response => response.json())
+            .then(data => {
+                const historyList = document.getElementById('history-list');
+                const historyItem = document.createElement('div');
+                historyItem.textContent = 'New Chat';
+                historyItem.classList.add('history-item');
+                historyItem.addEventListener('click', () => loadHistory(data.sessionName));
+                historyList.appendChild(historyItem);
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.innerHTML = '';
+            })
+        });
+        
         // Load history list on page load
         window.onload = function() {
             fetch('/list_histories')
@@ -518,9 +535,9 @@
                     const historyList = document.getElementById('history-list');
                     data.forEach(history => {
                         const historyItem = document.createElement('div');
-                        historyItem.textContent = history;
+                        historyItem.textContent = history[1];
                         historyItem.classList.add('history-item');
-                        historyItem.addEventListener('click', () => loadHistory(history));
+                        historyItem.addEventListener('click', () => loadHistory(history[0]));
                         historyList.appendChild(historyItem);
                     });
                 });
@@ -536,7 +553,7 @@
                     data.forEach(([sender, message]) => {
                         chatWindow.innerHTML += `
                             <div class="message ${sender}">
-                                <img src="/static/${sender === 'user' ? 'User.JPG' : 'AIlice.png'}" class="avatar">
+                                <img src="/static/${sender === 'USER' ? 'User.JPG' : 'AIlice.png'}" class="avatar">
                                 <div class="bubble">${renderMarkdown(message)}</div>
                             </div>`;
                     });

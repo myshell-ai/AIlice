@@ -8,7 +8,9 @@ import librosa
 import requests
 import mimetypes
 import threading
+import appdirs
 import logging
+import traceback
 
 from termcolor import colored
 from flask import Flask, render_template, request, jsonify, Response, send_file
@@ -36,19 +38,17 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = './static/uploads'
-LOG_FILE = './logs/app.log'
-
 processor = None
-sessionDir = None
 logger = None
 speech = None
 audioQue = None
+sessionName = None
+kwargs = None
+lock = threading.Lock()
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, session: str):
-    global processor, sessionDir, logger, speech, audioQue
-    
+def Init(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, chatHistoryPath: str):
     config.Initialize(modelID = modelID)
+    config.chatHistoryPath = chatHistoryPath
     config.quantization = quantization
     config.maxMemory = maxMemory
     config.temperature = temperature
@@ -56,8 +56,6 @@ def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temp
     config.speechOn = speechOn
     config.contextWindowRatio = contextWindowRatio
 
-    sessionDir = session
-    
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
@@ -75,12 +73,15 @@ use the provided Dockerfile to build an image and container, and modify the rele
             time.sleep(5)
             continue
 
-    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
-    print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
-    storage = clientPool.GetClient(config.services['storage']['addr'])
-    msg = storage.Open("")
-    print(f"Vector database has been started. returned msg: {msg}")
-    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+    llmPool.Init([modelID])
+
+    InitSpeech(speechOn, ttsDevice, sttDevice)
+    
+    InitServer()
+    return
+
+def InitSpeech(speechOn: bool, ttsDevice: str, sttDevice: str):
+    global speech, audioQue
     
     if speechOn:
         import sounddevice as sd
@@ -97,30 +98,6 @@ use the provided Dockerfile to build an image and container, and modify the rele
             speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
     else:
         speech = None
-    
-    timestamp = str(int(time.time()))
-    collection = "ailice_" + timestamp
-
-    promptsManager.Init(storage=storage, collection=collection)
-    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
-        promptsManager.RegisterPrompt(promptCls)
-    
-    llmPool.Init([modelID])
-    
-    logger = ALogger(speech=None)
-    processor = AProcessor(name="AIlice", modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection=collection)
-    processor.RegisterModules([config.services['browser']['addr'],
-                               config.services['arxiv']['addr'],
-                               config.services['google']['addr'],
-                               config.services['duckduckgo']['addr'],
-                               config.services['scripter']['addr'],
-                               config.services['computer']['addr']])
-    
-    if "" != session.strip():
-        os.makedirs(session, exist_ok=True)
-    if os.path.exists(os.path.join(session, "ailice_history.json")):
-        with open(os.path.join(session, "ailice_history.json"), "r") as f:
-            processor.FromJson(json.load(f))
         
     audioQue = queue.Queue(maxsize=100)
 
@@ -133,7 +110,53 @@ use the provided Dockerfile to build an image and container, and modify the rele
         threadPlayer.start()
     return
 
+def LoadSession(sessionName: str, prompt: str, chatHistoryPath: str):
+    global processor, logger
+    
+    sessionPath = os.path.join(config.chatHistoryPath, sessionName)
+    
+    os.makedirs(sessionPath, exist_ok=True)
+    os.makedirs(os.path.join(sessionPath, "storage"), exist_ok=True)
+    app.config['UPLOAD_FOLDER'] = f'{str(sessionPath)}/static/uploads'
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+    print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
+    storage = clientPool.GetClient(config.services['storage']['addr'])
+    msg = storage.Open(os.path.join(sessionPath, "storage"))
+    print(f"Vector database has been started. returned msg: {msg}")
+    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+
+    promptsManager.Init(storage=storage, collection=sessionName)
+    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
+        promptsManager.RegisterPrompt(promptCls)
+    
+    logger = ALogger(speech=None)
+    processor = AProcessor(name="AIlice", modelID=kwargs['modelID'], promptName=prompt, outputCB=logger.Receiver, collection=sessionName)
+    processor.RegisterModules([config.services['browser']['addr'],
+                               config.services['arxiv']['addr'],
+                               config.services['google']['addr'],
+                               config.services['duckduckgo']['addr'],
+                               config.services['scripter']['addr'],
+                               config.services['computer']['addr']])
+    
+    p = os.path.join(sessionPath, "ailice_history.json")
+    if os.path.exists(p):
+        with open(p, "r") as f:
+            processor.FromJson(json.load(f))
+    return
+
+def InitServer():
+    os.makedirs(f'{config.chatHistoryPath}/logs', exist_ok=True)
+    handler = RotatingFileHandler(f'{config.chatHistoryPath}/logs/app.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
+    return
+
 def main():
+    global kwargs
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--modelID',type=str,default='', help="modelID specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method in the future.")
@@ -146,22 +169,12 @@ def main():
     parser.add_argument('--speechOn',action='store_true', help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.")
     parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
     parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--session',type=str,default='', help="session is used to specify the session storage path, if the directory is not empty, the conversation history stored in that directory will be loaded and updated.")
+    parser.add_argument('--chatHistoryPath',type=str,default=appdirs.user_data_dir("ailice", "Steven Lu"), help="chatHistoryPath is used to specify the chat history storage path.")
     #parser.add_argument('--share',type=bool,default=False, help="Whether to create a publicly shareable link for AIlice.")
     kwargs = vars(parser.parse_args())
 
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
-    if not os.path.exists('./logs'):
-        os.makedirs('./logs')
-    handler = RotatingFileHandler(LOG_FILE, maxBytes=10000, backupCount=1)
-    handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    app.logger.addHandler(handler)
-
     try:
-        mainLoop(**kwargs)
+        Init(**kwargs)
         app.run(debug=True, use_reloader=False)
     except Exception as e:
         print(f"Encountered an exception, AIlice is exiting: {str(e)}")
@@ -171,9 +184,8 @@ def main():
 
 def generate_response(message):
     try:
-        if "" != sessionDir.strip():
-            with open(os.path.join(sessionDir, "ailice_history.json"), "w") as f:
-                json.dump(processor.ToJson(), f, indent=2)
+        with open(os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json"), "w") as f:
+            json.dump(processor.ToJson(), f, indent=2)
         
         threadLLM = threading.Thread(target=processor, args=(message,))
         threadLLM.start()
@@ -189,49 +201,80 @@ def generate_response(message):
             msg = json.dumps({'message': ret})
             yield f"data: {msg}\n\n"
     except Exception as e:
-        app.logger.error(f"Error in generate_response: {e}")
+        app.logger.error(f"Error in generate_response: {e} {traceback.print_tb(e.__traceback__)}")
         yield f"data: Error occurred: {e}\n\n"
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    with lock:
+        return render_template('index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    message = request.get_json().get('message', '')
-    return Response(generate_response(message), mimetype='text/event-stream')
+    with lock:
+        message = request.get_json().get('message', '')
+        return Response(generate_response(message), mimetype='text/event-stream')
 
 @app.route('/upload_audio', methods=['POST'])
 def upload_audio():
-    if 'audio' not in request.files:
-        return jsonify({'error': 'No audio file provided'}), 400
-    audio = request.files['audio']
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(audio.filename))
-    audio.save(filepath)
-    
-    if config.speechOn:
-        audio_data, sample_rate = librosa.load(filepath)
-        message = speech.Speech2Text(audio_data, sample_rate)
-    else:
-        message = f"![audio]({str(filepath)})"
-    return Response(generate_response(f"{message}"), mimetype='text/event-stream')
+    with lock:
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file provided'}), 400
+        audio = request.files['audio']
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(audio.filename))
+        audio.save(filepath)
+        
+        if config.speechOn:
+            audio_data, sample_rate = librosa.load(filepath)
+            message = speech.Speech2Text(audio_data, sample_rate)
+        else:
+            message = f"![audio]({str(filepath)})"
+        return Response(generate_response(f"{message}"), mimetype='text/event-stream')
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image file provided'}), 400
-    image = request.files['image']
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(image.filename))
-    image.save(filepath)
-    return Response(generate_response(f"![image]({str(filepath)})"), mimetype='text/event-stream')
+    with lock:
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image file provided'}), 400
+        image = request.files['image']
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(image.filename))
+        image.save(filepath)
+        return Response(generate_response(f"![image]({str(filepath)})"), mimetype='text/event-stream')
+
+@app.route('/new_chat')
+def new_chat():
+    global sessionName
+    with lock:
+        sessionName = "ailice_" + str(int(time.time()))
+        LoadSession(sessionName=sessionName, prompt=kwargs['prompt'], chatHistoryPath=config.chatHistoryPath)
+        return jsonify({"sessionName": sessionName})
 
 @app.route('/load_history')
-def load_history_route():
-    return jsonify([])
+def load_history():
+    global sessionName
+    with lock:
+        sessionName = request.args.get('name')
+        LoadSession(sessionName=sessionName, prompt=kwargs['prompt'], chatHistoryPath=config.chatHistoryPath)
+        historyPath = os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json")
+        if os.path.exists(historyPath):
+            with open(historyPath, "r") as f:
+                conversations = [(conv['role'], conv['msg']) for conv in json.load(f)['conversation']]
+        else:
+            conversations = []
+        return jsonify(conversations)
 
 @app.route('/list_histories')
-def list_histories_route():
-    return jsonify([])
+def list_histories():
+    with lock:
+        histories = []
+        for d in os.listdir(config.chatHistoryPath):
+            p = os.path.join(config.chatHistoryPath, d, "ailice_history.json")
+            if os.path.exists(p):
+                with open(p, "r") as f:
+                    content = json.load(f)
+                    if len(content.get('conversation', [])) > 0:
+                        histories.append((d, content.get('conversation')[0]['msg'][:10]))
+        return jsonify(sorted(histories, key=lambda x: os.path.getmtime(os.path.join(config.chatHistoryPath, x[0], "ailice_history.json")), reverse = True))
 
 @app.route('/interrupt', methods=['POST'])
 def interrupt():
