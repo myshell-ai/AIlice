@@ -30,7 +30,8 @@ class ALLMPool():
             if (0 != len(requirements)) and (config.models[modelType]["modelWrapper"] in ["AModelCausalLM", "AModelLLAMA"]):
                 print(f"The specified modelID {id} requires the installation of the following dependencies: {str(requirements)}. Please execute the following command to install: pip install {' '.join(requirements)}")
                 sys.exit(0)
-            self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
+            if id not in self.pool:
+                self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
         return
     
     def GetModel(self, modelID: str):
