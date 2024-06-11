@@ -27,18 +27,19 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 import gradio as gr
 
-def mainLoop(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, session: str, share: bool):
-    config.Initialize(modelID = modelID)
-    config.quantization = quantization
-    config.maxMemory = maxMemory
-    config.temperature = temperature
-    config.flashAttention2 = flashAttention2
-    config.speechOn = speechOn
-    config.contextWindowRatio = contextWindowRatio
-    
+def mainLoop(session: str, share: bool):
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
+
+    if "" != session.strip():
+        sessionPath = os.path.join(config.chatHistoryPath, session)
+        storagePath = os.path.join(sessionPath, "storage")
+        historyPath = os.path.join(sessionPath, "ailice_history.json")
+        os.makedirs(sessionPath, exist_ok=True)
+        os.makedirs(storagePath, exist_ok=True)
+    else:
+        storagePath = ""
 
     StartServices()
     for i in range(5):
@@ -56,11 +57,11 @@ use the provided Dockerfile to build an image and container, and modify the rele
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
     print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
     storage = clientPool.GetClient(config.services['storage']['addr'])
-    msg = storage.Open("")
+    msg = storage.Open(storagePath)
     print(f"Vector database has been started. returned msg: {msg}")
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
     
-    if speechOn:
+    if config.speechOn:
         import sounddevice as sd
         speech = clientPool.GetClient(config.services['speech']['addr'])
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
@@ -68,11 +69,11 @@ use the provided Dockerfile to build an image and container, and modify the rele
         speech.PrepareModel()
         print("The speech module model preparation work is completed.")
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
-        if any([re.fullmatch(r"(cuda|cpu)(:(\d+))?", s) == None for s in [ttsDevice, sttDevice]]):
+        if any([re.fullmatch(r"(cuda|cpu)(:(\d+))?", s) == None for s in [config.ttsDevice, config.sttDevice]]):
             print("the value of ttsDevice and sttDevice should be a valid cuda device, such as cuda, cuda:0, or cpu, the default is cpu.")
             exit(-1)
         else:
-            speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
+            speech.SetDevices({"tts": config.ttsDevice, "stt": config.sttDevice})
     else:
         speech = None
     
@@ -83,10 +84,10 @@ use the provided Dockerfile to build an image and container, and modify the rele
     for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
         promptsManager.RegisterPrompt(promptCls)
     
-    llmPool.Init([modelID])
+    llmPool.Init([config.modelID])
     
     logger = ALogger(speech=None)
-    processor = AProcessor(name="AIlice", modelID=modelID, promptName=prompt, outputCB=logger.Receiver, collection=collection)
+    processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
@@ -95,10 +96,9 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['computer']['addr']])
     
     if "" != session.strip():
-        os.makedirs(session, exist_ok=True)
-    if os.path.exists(os.path.join(session, "ailice_history.json")):
-        with open(os.path.join(session, "ailice_history.json"), "r") as f:
-            processor.FromJson(json.load(f))
+        if os.path.exists(historyPath):
+            with open(historyPath, "r") as f:
+                processor.FromJson(json.load(f))
         
     audioQue = queue.Queue(maxsize=100)
 
@@ -107,13 +107,13 @@ use the provided Dockerfile to build an image and container, and modify the rele
             sr, audio = audioQue.get()
             sd.play(audio, sr)
             sd.wait()
-    if speechOn:
+    if config.speechOn:
         threadPlayer = threading.Thread(target=playAudio, args=())
         threadPlayer.start()
     
     def bot(history):
         if "" != session.strip():
-            with open(os.path.join(session, "ailice_history.json"), "w") as f:
+            with open(historyPath, "w") as f:
                 json.dump(processor.ToJson(), f, indent=2)
         
         if str != type(history[-1][0]):
@@ -130,7 +130,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 return
             history[-1][1] += "\r\r" if "open"==action else ""
             history[-1][1] += txt
-            if speechOn:
+            if config.speechOn:
                 audioQue.put(tts(txt))
             yield history
 
@@ -179,7 +179,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                 container=False,
             )
             btn = gr.UploadButton("📁", file_types=["image", "video"])
-            if speechOn:
+            if config.speechOn:
                 audio = gr.Audio(sources=["microphone"], type="numpy", editable=False)
 
         txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(bot, chatbot, chatbot, api_name="bot_response"
@@ -187,7 +187,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
         
         btn.upload(add_file, [chatbot, btn], [chatbot], queue=False).then(bot, chatbot, chatbot)
         
-        if speechOn:
+        if config.speechOn:
             audio.stop_recording(stt, [chatbot, audio], [chatbot], queue=False).then(
                 bot, chatbot, chatbot)
             
@@ -210,24 +210,30 @@ use the provided Dockerfile to build an image and container, and modify the rele
     return
 
 def main():
+    config.Initialize()
+    
     import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--modelID',type=str,default='', help="modelID specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method in the future.")
-    parser.add_argument('--quantization',type=str,default='', help="quantization is the quantization option, you can choose 4bit or 8bit. The default is not quantized.")
-    parser.add_argument('--maxMemory',type=dict,default=None, help='maxMemory is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".')
-    parser.add_argument('--prompt',type=str,default='main', help="prompt specifies the prompt to be executed, which is the type of agent. The default is 'main', this agent will decide to call the appropriate agent type according to your needs. You can also specify a special type of agent and interact with it directly.")
-    parser.add_argument('--temperature',type=float,default=0.0, help="temperature sets the temperature parameter of LLM reasoning, the default is zero.")
-    parser.add_argument('--flashAttention2',action='store_true', help="flashAttention2 is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality.")
-    parser.add_argument('--contextWindowRatio',type=float,default=0.6, help="contextWindowRatio is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. The default value is 0.6.")
-    parser.add_argument('--speechOn',action='store_true', help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.")
-    parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--session',type=str,default='', help="session is used to specify the session storage path, if the directory is not empty, the conversation history stored in that directory will be loaded and updated.")
+    parser = argparse.ArgumentParser()    
+    parser.add_argument('--modelID',type=str,default=config.modelID, help="modelID specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method in the future. Default: %(default)s")
+    parser.add_argument('--quantization',type=str,default=config.quantization, help="quantization is the quantization option, you can choose 4bit or 8bit. Default: %(default)s")
+    parser.add_argument('--maxMemory',type=dict,default=config.maxMemory, help='maxMemory is the memory video memory capacity constraint, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}". Default: %(default)s')
+    parser.add_argument('--prompt',type=str,default=config.prompt, help="prompt specifies the prompt to be executed, which is the type of agent. Default: %(default)s")
+    parser.add_argument('--temperature',type=float,default=config.temperature, help="temperature sets the temperature parameter of LLM reasoning. Default: %(default)s")
+    parser.add_argument('--flashAttention2',type=bool,default=config.flashAttention2, help="flashAttention2 is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality. Default: %(default)s")
+    parser.add_argument('--contextWindowRatio',type=float,default=config.contextWindowRatio, help="contextWindowRatio is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. Default: %(default)s")
+    parser.add_argument('--speechOn',type=bool,default=config.speechOn, help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet. Default: %(default)s")
+    parser.add_argument('--ttsDevice',type=str,default=config.ttsDevice,help='ttsDevice specifies the computing device used by the text-to-speech model. You can set it to "cuda" if there is enough video memory. Default: %(default)s')
+    parser.add_argument('--sttDevice',type=str,default=config.sttDevice,help='sttDevice specifies the computing device used by the speech-to-text model. You can set it to "cuda" if there is enough video memory. Default: %(default)s')
+    parser.add_argument('--chatHistoryPath',type=str,default=config.chatHistoryPath, help="chatHistoryPath is used to specify the chat history storage path. Default: %(default)s")
+    parser.add_argument('--session',type=str,default='', help="session is used to specify the session storage path, if the directory is not empty, the conversation history stored in that directory will be loaded and updated. Default: %(default)s")
     parser.add_argument('--share',type=bool,default=False, help="Whether to create a publicly shareable link for AIlice.")
     kwargs = vars(parser.parse_args())
 
+    config.Update(kwargs)
+    config.Check4Update(kwargs['modelID'])
+    
     try:
-        mainLoop(**kwargs)
+        mainLoop(session = kwargs['session'], share = kwargs['share'])
     except Exception as e:
         print(f"Encountered an exception, AIlice is exiting: {str(e)}")
         traceback.print_tb(e.__traceback__)
