@@ -635,7 +635,7 @@ The number of lines of code is calculated in the latest code base via the "git l
 
 ### How Developers Should Get Started
 
-- For developing Agents, the main loop of AIlice is located in the AIliceMain.py or AIliceWeb.py files. To further understand the construction of an agent, you need to read the code in the "prompts" folder, by reading these code you can understand how an agent's prompts are dynamically constructed.
+- For developing Agents, the main loop of AIlice is located in the AIliceMain.py or ui/app.py files. To further understand the construction of an agent, you need to read the code in the "prompts" folder, by reading these code you can understand how an agent's prompts are dynamically constructed.
 
 - For developers who want to understand the internal operation logic of AIlice, please read core/AProcessor.py and core/Interpreter.py. These two files contain approximately three
 hundred lines of code in total, but they contain the basic framework of AIlice.
