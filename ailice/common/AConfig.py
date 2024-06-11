@@ -172,7 +172,7 @@ class AConfig():
             os.makedirs(configFile)
         except OSError as e:
             pass
-        configFile += "/config.json"
+        configFile = os.path.join(configFile, "config.json")
         
         oldDict = self.Load(configFile)
         needUpdate = (set(oldDict.keys()) != set(self.__dict__))
@@ -186,7 +186,7 @@ class AConfig():
         return
 
     def Check4Update(self, modelID):
-        configFile = appdirs.user_config_dir("ailice", "Steven Lu")
+        configFile = os.path.join(appdirs.user_config_dir("ailice", "Steven Lu"), "config.json")
         modelType = modelID[:modelID.find(":")]
         modelName = modelID[modelID.find(":")+1:]
         if (modelType not in self.models) or (modelName not in self.models[modelType]['modelList']):
