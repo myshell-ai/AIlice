@@ -43,19 +43,9 @@ logger = None
 speech = None
 audioQue = None
 sessionName = None
-kwargs = None
 lock = threading.Lock()
 
-def Init(modelID: str, quantization: str, maxMemory: dict, prompt: str, temperature: float, flashAttention2: bool, speechOn: bool, ttsDevice: str, sttDevice: str, contextWindowRatio: float, chatHistoryPath: str):
-    config.Initialize(modelID = modelID)
-    config.chatHistoryPath = chatHistoryPath
-    config.quantization = quantization
-    config.maxMemory = maxMemory
-    config.temperature = temperature
-    config.flashAttention2 = flashAttention2
-    config.speechOn = speechOn
-    config.contextWindowRatio = contextWindowRatio
-
+def Init():
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
@@ -73,17 +63,17 @@ use the provided Dockerfile to build an image and container, and modify the rele
             time.sleep(5)
             continue
 
-    llmPool.Init([modelID])
+    llmPool.Init([config.modelID])
 
-    InitSpeech(speechOn, ttsDevice, sttDevice)
+    InitSpeech()
     
     InitServer()
     return
 
-def InitSpeech(speechOn: bool, ttsDevice: str, sttDevice: str):
+def InitSpeech():
     global speech, audioQue
     
-    if speechOn:
+    if config.speechOn:
         import sounddevice as sd
         speech = clientPool.GetClient(config.services['speech']['addr'])
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
@@ -91,11 +81,11 @@ def InitSpeech(speechOn: bool, ttsDevice: str, sttDevice: str):
         speech.PrepareModel()
         print("The speech module model preparation work is completed.")
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
-        if any([re.fullmatch(r"(cuda|cpu)(:(\d+))?", s) == None for s in [ttsDevice, sttDevice]]):
+        if any([re.fullmatch(r"(cuda|cpu)(:(\d+))?", s) == None for s in [config.ttsDevice, config.sttDevice]]):
             print("the value of ttsDevice and sttDevice should be a valid cuda device, such as cuda, cuda:0, or cpu, the default is cpu.")
             exit(-1)
         else:
-            speech.SetDevices({"tts": ttsDevice, "stt": sttDevice})
+            speech.SetDevices({"tts": config.ttsDevice, "stt": config.sttDevice})
     else:
         speech = None
         
@@ -105,12 +95,12 @@ def InitSpeech(speechOn: bool, ttsDevice: str, sttDevice: str):
         while True:
             sd.play(*audioQue.get())
             sd.wait()
-    if speechOn:
+    if config.speechOn:
         threadPlayer = threading.Thread(target=playAudio, args=())
         threadPlayer.start()
     return
 
-def LoadSession(sessionName: str, prompt: str, chatHistoryPath: str):
+def LoadSession(sessionName: str):
     global processor, logger
     
     sessionPath = os.path.join(config.chatHistoryPath, sessionName)
@@ -132,7 +122,7 @@ def LoadSession(sessionName: str, prompt: str, chatHistoryPath: str):
         promptsManager.RegisterPrompt(promptCls)
     
     logger = ALogger(speech=None)
-    processor = AProcessor(name="AIlice", modelID=kwargs['modelID'], promptName=prompt, outputCB=logger.Receiver, collection=sessionName)
+    processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=sessionName)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
@@ -156,25 +146,29 @@ def InitServer():
     return
 
 def main():
-    global kwargs
+    config.Initialize()
+    
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--modelID',type=str,default='', help="modelID specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method in the future.")
-    parser.add_argument('--quantization',type=str,default='', help="quantization is the quantization option, you can choose 4bit or 8bit. The default is not quantized.")
-    parser.add_argument('--maxMemory',type=dict,default=None, help='maxMemory is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".')
-    parser.add_argument('--prompt',type=str,default='main', help="prompt specifies the prompt to be executed, which is the type of agent. The default is 'main', this agent will decide to call the appropriate agent type according to your needs. You can also specify a special type of agent and interact with it directly.")
-    parser.add_argument('--temperature',type=float,default=0.0, help="temperature sets the temperature parameter of LLM reasoning, the default is zero.")
-    parser.add_argument('--flashAttention2',action='store_true', help="flashAttention2 is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality.")
-    parser.add_argument('--contextWindowRatio',type=float,default=0.6, help="contextWindowRatio is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. The default value is 0.6.")
-    parser.add_argument('--speechOn',action='store_true', help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet.")
-    parser.add_argument('--ttsDevice',type=str,default='cpu',help='ttsDevice specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--sttDevice',type=str,default='cpu',help='sttDevice specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.')
-    parser.add_argument('--chatHistoryPath',type=str,default=appdirs.user_data_dir("ailice", "Steven Lu"), help="chatHistoryPath is used to specify the chat history storage path.")
+    parser.add_argument('--modelID',type=str,default=config.modelID, help="modelID specifies the model. The currently supported models can be seen in llm/ALLMPool.py, just copy it directly. We will implement a simpler model specification method in the future. Default: %(default)s")
+    parser.add_argument('--quantization',type=str,default=config.quantization, help="quantization is the quantization option, you can choose 4bit or 8bit. Default: %(default)s")
+    parser.add_argument('--maxMemory',type=dict,default=config.maxMemory, help='maxMemory is the memory video memory capacity constraint, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}". Default: %(default)s')
+    parser.add_argument('--prompt',type=str,default=config.prompt, help="prompt specifies the prompt to be executed, which is the type of agent. Default: %(default)s")
+    parser.add_argument('--temperature',type=float,default=config.temperature, help="temperature sets the temperature parameter of LLM reasoning. Default: %(default)s")
+    parser.add_argument('--flashAttention2',type=bool,default=config.flashAttention2, help="flashAttention2 is the switch to enable flash attention 2 to speed up inference. It may have a certain impact on output quality. Default: %(default)s")
+    parser.add_argument('--contextWindowRatio',type=float,default=config.contextWindowRatio, help="contextWindowRatio is a user-specified proportion coefficient, which determines the proportion of the upper limit of the prompt length constructed during inference to the LLM context window in some cases. Default: %(default)s")
+    parser.add_argument('--speechOn',type=bool,default=config.speechOn, help="speechOn is the switch to enable voice conversation. Please note that the voice dialogue is currently not smooth yet. Default: %(default)s")
+    parser.add_argument('--ttsDevice',type=str,default=config.ttsDevice,help='ttsDevice specifies the computing device used by the text-to-speech model. You can set it to "cuda" if there is enough video memory. Default: %(default)s')
+    parser.add_argument('--sttDevice',type=str,default=config.sttDevice,help='sttDevice specifies the computing device used by the speech-to-text model. You can set it to "cuda" if there is enough video memory. Default: %(default)s')
+    parser.add_argument('--chatHistoryPath',type=str,default=config.chatHistoryPath, help="chatHistoryPath is used to specify the chat history storage path. Default: %(default)s")
     #parser.add_argument('--share',type=bool,default=False, help="Whether to create a publicly shareable link for AIlice.")
     kwargs = vars(parser.parse_args())
 
+    config.Update(kwargs)
+    config.Check4Update(kwargs['modelID'])
+
     try:
-        Init(**kwargs)
+        Init()
         app.run(debug=True, use_reloader=False)
     except Exception as e:
         print(f"Encountered an exception, AIlice is exiting: {str(e)}")
@@ -246,7 +240,7 @@ def new_chat():
     global sessionName
     with lock:
         sessionName = "ailice_" + str(int(time.time()))
-        LoadSession(sessionName=sessionName, prompt=kwargs['prompt'], chatHistoryPath=config.chatHistoryPath)
+        LoadSession(sessionName=sessionName)
         return jsonify({"sessionName": sessionName})
 
 @app.route('/load_history')
@@ -254,7 +248,7 @@ def load_history():
     global sessionName
     with lock:
         sessionName = request.args.get('name')
-        LoadSession(sessionName=sessionName, prompt=kwargs['prompt'], chatHistoryPath=config.chatHistoryPath)
+        LoadSession(sessionName=sessionName)
         historyPath = os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json")
         if os.path.exists(historyPath):
             with open(historyPath, "r") as f:

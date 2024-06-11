@@ -7,6 +7,8 @@ from termcolor import colored
 
 class AConfig():
     def __init__(self):
+        self.modelID = ""
+        self.prompt = "main"
         self.chatHistoryPath = appdirs.user_data_dir("ailice", "Steven Lu")
         self.maxMemory = {}
         self.quantization = None
@@ -123,6 +125,8 @@ class AConfig():
         self.temperature = 0.0
         self.flashAttention2 = False
         self.speechOn = False
+        self.ttsDevice = "cpu"
+        self.sttDevice = "cpu"
         self.contextWindowRatio = 0.6
         if 'nt' == os.name:
             self.services = {
@@ -161,7 +165,7 @@ class AConfig():
             print("InitOpenRouterCfg() FAILED, skip this part and do not set it again.")
         return
     
-    def Initialize(self, modelID):
+    def Initialize(self):
         configFile = appdirs.user_config_dir("ailice", "Steven Lu")
         print(f"config.json is located at {configFile}")
         try:
@@ -172,27 +176,32 @@ class AConfig():
         
         oldDict = self.Load(configFile)
         needUpdate = (set(oldDict.keys()) != set(self.__dict__))
-        self.__dict__ = {k: oldDict[k] if k in oldDict else v for k,v in self.__dict__.items()}
+        self.Update(oldDict)
         
+        if needUpdate:
+            print("config.json need to be updated.")
+            print(colored("********************** Initialize *****************************", "yellow"))
+            self.Store(configFile)
+            print(colored("********************** End of Initialization *****************************", "yellow"))
+        return
+
+    def Check4Update(self, modelID):
+        configFile = appdirs.user_config_dir("ailice", "Steven Lu")
         modelType = modelID[:modelID.find(":")]
         modelName = modelID[modelID.find(":")+1:]
         if (modelType not in self.models) or (modelName not in self.models[modelType]['modelList']):
             print(f"The specified model ID '{modelID}' was not found in the configuration; you need to configure it in '{configFile}' beforehand")
             sys.exit(0)
-            
-        needAPIKey = ("apikey" in self.models[modelType] and (self.models[modelType]["apikey"] is None))
-        needUpdate = (needUpdate or needAPIKey)
-        
-        if needUpdate:
-            print("config.json need to be updated.")
-            print(colored("********************** Initialize *****************************", "yellow"))
-            if needAPIKey:
-                key = input(colored(f"Your {modelType} api-key (press Enter if not): ", "green"))
-                self.models[modelType]["apikey"] = key if 1 < len(key) else None
+        if ("apikey" in self.models[modelType] and (self.models[modelType]["apikey"] is None)):
+            key = input(colored(f"Your {modelType} api-key (press Enter if not): ", "green"))
+            self.models[modelType]["apikey"] = key if 1 < len(key) else None
             self.Store(configFile)
-            print(colored("********************** End of Initialization *****************************", "yellow"))
         return
-
+    
+    def Update(self, cfgDict: dict):
+        self.__dict__ = {k: cfgDict[k] if k in cfgDict else v for k,v in self.__dict__.items()}
+        return
+    
     def Load(self, configFile: str) -> dict:
         if not os.path.exists(configFile):
             print(f"config.json not found, let's create a new one: '{configFile}'.")

@@ -197,7 +197,7 @@ ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --qu
 ailice_web --modelID=groq:llama3-70b-8192
 ailice_web --modelID=openrouter:openrouter/auto
 ailice_web --modelID=openrouter:mistralai/mixtral-8x22b-instruct
-ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.4 --speechOn --ttsDevice=cuda --sttDevice=cuda
+ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.4 --speechOn=True --ttsDevice=cuda --sttDevice=cuda
 ```
 
 It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster AIlice startup speed, making it more suitable for ordinary users.
