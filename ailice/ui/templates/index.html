@@ -301,6 +301,7 @@
                         document.getElementById('text-input').disabled = false;
                         document.getElementById('audio-button').disabled = false;
                         document.getElementById('image-button').disabled = false;
+                        document.getElementById('new-chat-button').disabled = false;
                         document.getElementById('interrupt-button').style.display = 'none';
                         isUpdating = false;  // End of data updating.
                         return;
@@ -309,6 +310,7 @@
                         document.getElementById('text-input').disabled = true;
                         document.getElementById('audio-button').disabled = true;
                         document.getElementById('image-button').disabled = true;
+                        document.getElementById('new-chat-button').disabled = true;
                         document.getElementById('interrupt-button').style.display = 'inline-block';
                         inputDisabled = true;  // Setting the flag variable to true indicates that the input field has been disabled.
                         isUpdating = true;  // Start data updating.
@@ -399,11 +401,7 @@
                         const historyItem = document.createElement('li');
                         historyItem.textContent = 'New Chat';
                         historyItem.classList.add('history-item');
-                        historyItem.addEventListener('click', () => {
-                            const allItems = document.querySelectorAll('#history-list li');
-                            allItems.forEach(item => item.classList.remove('selected'));
-                            historyItem.classList.add('selected');
-                            loadHistory(data.sessionName)});
+                        historyItem.addEventListener('click', () => {loadHistory(data.sessionName, historyItem)});
                         historyList.insertBefore(historyItem, historyList.firstChild);
                         
                         const allItems = document.querySelectorAll('#history-list li');
@@ -591,18 +589,21 @@
                         const historyItem = document.createElement('li');
                         historyItem.textContent = history[1];
                         historyItem.classList.add('history-item');
-                        historyItem.addEventListener('click', () => {
-                            const allItems = document.querySelectorAll('#history-list li');
-                            allItems.forEach(item => item.classList.remove('selected'));
-                            historyItem.classList.add('selected');
-                            loadHistory(history[0])});
+                        historyItem.addEventListener('click', () => {loadHistory(history[0], historyItem)});
                         historyList.appendChild(historyItem);
                     });
                 });
         };
         
         // Load selected history
-        function loadHistory(historyName) {
+        function loadHistory(historyName, historyItem) {
+            if (isUpdating) {
+                return;
+            }
+            const allItems = document.querySelectorAll('#history-list li');
+            allItems.forEach(item => item.classList.remove('selected'));
+            historyItem.classList.add('selected');
+            
             fetch(`/load_history?name=${historyName}`)
                 .then(response => response.json())
                 .then(data => {
