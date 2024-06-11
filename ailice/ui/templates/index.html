@@ -391,6 +391,30 @@
             });
         }
 
+        async function newchat() {
+            return fetch('/new_chat')
+                    .then(response => response.json())
+                    .then(data => {
+                        const historyList = document.getElementById('history-list');
+                        const historyItem = document.createElement('li');
+                        historyItem.textContent = 'New Chat';
+                        historyItem.classList.add('history-item');
+                        historyItem.addEventListener('click', () => {
+                            const allItems = document.querySelectorAll('#history-list li');
+                            allItems.forEach(item => item.classList.remove('selected'));
+                            historyItem.classList.add('selected');
+                            loadHistory(data.sessionName)});
+                        historyList.insertBefore(historyItem, historyList.firstChild);
+                        
+                        const allItems = document.querySelectorAll('#history-list li');
+                        allItems.forEach(item => item.classList.remove('selected'));
+                        historyItem.classList.add('selected');
+                        
+                        const chatWindow = document.getElementById('chat-window');
+                        chatWindow.innerHTML = '';
+                    })
+        }
+
         document.getElementById('interrupt-button').addEventListener('click', function() {
             if (isInterrupted) {
                 const message = document.getElementById('text-input').value;
@@ -403,29 +427,40 @@
 
         document.getElementById('text-input').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
+                const message = event.target.value;
+                event.target.value = '';
+
                 if (isInterrupted) {
-                    const message = event.target.value;
-                    event.target.value = '';
                     sendmsg(message);
                 } else {
-                    const message = event.target.value;
-                    event.target.value = '';
-                    const chatWindow = document.getElementById('chat-window');
-                    chatWindow.innerHTML += `
-                        <div class="message USER">
-                            <img src="/static/User.JPG" class="avatar">
-                            <div class="bubble">${renderMarkdown(message)}</div>
-                        </div>`;
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                    const selectedItem = document.querySelector('#history-list .selected');
+                    let newChatPromise = Promise.resolve();
 
-                    document.querySelector('#history-list li').textContent = message;
+                    if (selectedItem == null) {
+                        newChatPromise = newchat();
+                    }
 
-                    fetch('/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ message: message })
+                    newChatPromise.then(() => {
+                        const chatWindow = document.getElementById('chat-window');
+                        chatWindow.innerHTML += `
+                            <div class="message USER">
+                                <img src="/static/User.JPG" class="avatar">
+                                <div class="bubble">${renderMarkdown(message)}</div>
+                            </div>`;
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                        
+                        const firstListItem = document.querySelector('#history-list li');
+                        if (firstListItem.textContent === "New Chat") {
+                            firstListItem.textContent = message;
+                        }
+
+                        return fetch('/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ message: message })
+                        })
                     })
                     .then(response => {
                         if (!response.ok) {
@@ -543,27 +578,7 @@
         
         document.getElementById('new-chat-button').addEventListener('click', function() {
             console.log('New chat button clicked');
-            fetch('/new_chat')
-            .then(response => response.json())
-            .then(data => {
-                const historyList = document.getElementById('history-list');
-                const historyItem = document.createElement('li');
-                historyItem.textContent = 'New Chat';
-                historyItem.classList.add('history-item');
-                historyItem.addEventListener('click', () => {
-                    const allItems = document.querySelectorAll('#history-list li');
-                    allItems.forEach(item => item.classList.remove('selected'));
-                    historyItem.classList.add('selected');
-                    loadHistory(data.sessionName)});
-                historyList.insertBefore(historyItem, historyList.firstChild);
-                
-                const allItems = document.querySelectorAll('#history-list li');
-                allItems.forEach(item => item.classList.remove('selected'));
-                historyItem.classList.add('selected');
-                
-                const chatWindow = document.getElementById('chat-window');
-                chatWindow.innerHTML = '';
-            })
+            newchat()
         });
         
         // Load history list on page load
