@@ -41,6 +41,9 @@
             font-size: 18px;
             padding: 10px 0;
             cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .sidebar li.selected {
             padding: 8px 12px;
@@ -415,6 +418,8 @@
                         </div>`;
                     chatWindow.scrollTop = chatWindow.scrollHeight;
 
+                    document.querySelector('#history-list li').textContent = message;
+
                     fetch('/chat', {
                         method: 'POST',
                         headers: {
@@ -551,6 +556,11 @@
                     historyItem.classList.add('selected');
                     loadHistory(data.sessionName)});
                 historyList.insertBefore(historyItem, historyList.firstChild);
+                
+                const allItems = document.querySelectorAll('#history-list li');
+                allItems.forEach(item => item.classList.remove('selected'));
+                historyItem.classList.add('selected');
+                
                 const chatWindow = document.getElementById('chat-window');
                 chatWindow.innerHTML = '';
             })
