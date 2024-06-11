@@ -38,6 +38,15 @@ def mainLoop(session: str):
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
     
+    if "" != session.strip():
+        sessionPath = os.path.join(config.chatHistoryPath, session)
+        storagePath = os.path.join(sessionPath, "storage")
+        historyPath = os.path.join(sessionPath, "ailice_history.json")
+        os.makedirs(sessionPath, exist_ok=True)
+        os.makedirs(storagePath, exist_ok=True)
+    else:
+        storagePath = ""
+    
     StartServices()
     for i in range(5):
         try:
@@ -54,7 +63,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
     print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
     storage = clientPool.GetClient(config.services['storage']['addr'])
-    msg = storage.Open("")
+    msg = storage.Open(storagePath)
     print(f"Vector database has been started. returned msg: {msg}")
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
@@ -91,10 +100,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
                                config.services['scripter']['addr'],
                                config.services['computer']['addr']] + ([config.services['speech']['addr']] if config.speechOn else []))
 
-    sessionPath = os.path.join(config.chatHistoryPath, session)
-    historyPath = os.path.join(sessionPath, "ailice_history.json")
     if "" != session.strip():
-        os.makedirs(sessionPath, exist_ok=True)
         if os.path.exists(historyPath):
             with open(historyPath, "r") as f:
                 processor.FromJson(json.load(f))
