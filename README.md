@@ -150,6 +150,13 @@ pip install google-api-python-client
 
 Then simply restart AIlice.
 
+### Use GPU for Vector Database
+AIlice defaults to using CPU to run the embedding model of the vector database. You can reinstall llama-cpp-python to leverage GPU computing for accelerated vector database operations.
+
+```bash
+pip uninstall llama-cpp-python
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python
+```
 
 ### Virtual Environment Settings for Code Execution
 By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify AIlice's configuration file (AIlice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
