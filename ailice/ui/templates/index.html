@@ -33,6 +33,29 @@
             padding: 20px;
             background-color: #f0f4f8;
         }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar li {
+            font-size: 18px;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+        .sidebar li.selected {
+            padding: 8px 12px;
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+        }
+        .sidebar li:hover {
+            padding: 8px 12px;
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+        }
         .main-content {
             flex: 1;
             display: flex;
@@ -125,9 +148,11 @@
 </head>
 <body>
     <div class="container">
-        <div class="sidebar" id="history-list">
+        <div class="sidebar" id="history-bar">
             <button id="new-chat-button">➕</button>
-            <!-- History records will be listed here -->
+            <ul id="history-list">
+                <!-- History records will be listed here -->
+            </ul>
         </div>
         <div class="main-content">
             <div class="chat-window" id="chat-window">
@@ -510,18 +535,22 @@
                 console.error('Error:', error);
             });
         });
-
+        
         document.getElementById('new-chat-button').addEventListener('click', function() {
             console.log('New chat button clicked');
             fetch('/new_chat')
             .then(response => response.json())
             .then(data => {
                 const historyList = document.getElementById('history-list');
-                const historyItem = document.createElement('div');
+                const historyItem = document.createElement('li');
                 historyItem.textContent = 'New Chat';
                 historyItem.classList.add('history-item');
-                historyItem.addEventListener('click', () => loadHistory(data.sessionName));
-                historyList.appendChild(historyItem);
+                historyItem.addEventListener('click', () => {
+                    const allItems = document.querySelectorAll('#history-list li');
+                    allItems.forEach(item => item.classList.remove('selected'));
+                    historyItem.classList.add('selected');
+                    loadHistory(data.sessionName)});
+                historyList.insertBefore(historyItem, historyList.firstChild);
                 const chatWindow = document.getElementById('chat-window');
                 chatWindow.innerHTML = '';
             })
@@ -534,15 +563,19 @@
                 .then(data => {
                     const historyList = document.getElementById('history-list');
                     data.forEach(history => {
-                        const historyItem = document.createElement('div');
+                        const historyItem = document.createElement('li');
                         historyItem.textContent = history[1];
                         historyItem.classList.add('history-item');
-                        historyItem.addEventListener('click', () => loadHistory(history[0]));
+                        historyItem.addEventListener('click', () => {
+                            const allItems = document.querySelectorAll('#history-list li');
+                            allItems.forEach(item => item.classList.remove('selected'));
+                            historyItem.classList.add('selected');
+                            loadHistory(history[0])});
                         historyList.appendChild(historyItem);
                     });
                 });
         };
-
+        
         // Load selected history
         function loadHistory(historyName) {
             fetch(`/load_history?name=${historyName}`)

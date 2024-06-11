@@ -8,7 +8,6 @@ import librosa
 import requests
 import mimetypes
 import threading
-import appdirs
 import logging
 import traceback
 
@@ -247,8 +246,11 @@ def new_chat():
 def load_history():
     global sessionName
     with lock:
-        sessionName = request.args.get('name')
-        LoadSession(sessionName=sessionName)
+        sessionNameNew = request.args.get('name')
+        needLoading = (sessionNameNew != sessionName)
+        sessionName = sessionNameNew
+        if needLoading:
+            LoadSession(sessionName=sessionName)
         historyPath = os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json")
         if os.path.exists(historyPath):
             with open(historyPath, "r") as f:
