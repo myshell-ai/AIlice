@@ -177,15 +177,14 @@ def main():
 
 def generate_response(message):
     try:
-        with open(os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json"), "w") as f:
-            json.dump(processor.ToJson(), f, indent=2)
-        
         threadLLM = threading.Thread(target=processor, args=(message,))
         threadLLM.start()
         while True:
             channel, txt, action = logger.queue.get()
             if ">" == channel:
                 threadLLM.join()
+                with open(os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json"), "w") as f:
+                    json.dump(processor.ToJson(), f, indent=2)
                 return
             ret = "\r\r" if "open"==action else ""
             ret += txt
