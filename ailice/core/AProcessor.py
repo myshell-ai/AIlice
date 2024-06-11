@@ -150,7 +150,7 @@ class AProcessor():
         
         resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg)}"
 
-        for varName in self.interpreter.env:
+        for varName in self.subProcessors[agentName].interpreter.env:
             if varName in resp:
                 self.interpreter.env[varName] = self.subProcessors[agentName].interpreter.env[varName]
         return resp
