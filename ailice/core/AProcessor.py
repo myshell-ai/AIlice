@@ -226,15 +226,18 @@ class AProcessor():
         self.collection = data['collection']
         self.RegisterModules([m['addr'] for k,m in data["modules"].items()])
         self.prompt = promptsManager[data['agentType']](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
+        if hasattr(self.prompt, "FromJson"):
+            self.prompt.FromJson(data['prompt'])
         for agentName, state in data['subProcessors'].items():
             self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].FromJson(state)
         return
     
-    def ToJson(self) -> str:
+    def ToJson(self):
         return {"name": self.name,
                 "modelID": self.modelID,
                 "agentType": self.prompt.PROMPT_NAME,
+                "prompt": self.prompt.ToJson() if hasattr(self.prompt, "ToJson") else {},
                 "interpreter": self.interpreter.ToJson(),
                 "conversation": self.conversation.ToJson(),
                 "collection": self.collection,
