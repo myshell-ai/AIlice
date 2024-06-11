@@ -194,7 +194,7 @@ You can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
 ailice_web --modelID=oai:gpt-4o
-ailice_web --modelID=oai:gpt-4-1106-preview
+ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history
 ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher" --trace=./trace
 ailice_web --modelID=mistral:mistral-large-latest
 ailice_web --modelID=deepseek:deepseek-chat
@@ -213,7 +213,13 @@ When you run it for the first time, you will be asked to enter the api-key of op
 
 When you turn on the speechOn switch for the first time, you may need to wait for a long time at startup. This is because the weights of the speech recognition and TTS models are being downloaded in the background.
 
-As shown in the examples, you can use the Agent through ailice_web, it provides a web dialogue interface based on gradio.
+As shown in the examples, you can use the Agent through ailice_web, it provides a web dialogue interface. You can view the default value of each parameter by using
+
+```bash
+ailice_web --help
+```
+
+The default values for all command line arguments can be customized by modifying the corresponding parameters in config.json.
 
 - --**modelID** specifies the model. The currently supported models can be seen in config.json. We will implement a simpler model specification method
 in the future.
@@ -228,6 +234,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
+- --**chatHistoryPath** is used to specify the directory where chat history data is stored.
 - --**share** create a publicly shareable link for AIlice.
 
 ### Module Configuration

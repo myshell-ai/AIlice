@@ -268,7 +268,7 @@ def list_histories():
                 with open(p, "r") as f:
                     content = json.load(f)
                     if len(content.get('conversation', [])) > 0:
-                        histories.append((d, content.get('conversation')[0]['msg'][:10]))
+                        histories.append((d, content.get('conversation')[0]['msg']))
         return jsonify(sorted(histories, key=lambda x: os.path.getmtime(os.path.join(config.chatHistoryPath, x[0], "ailice_history.json")), reverse = True))
 
 @app.route('/interrupt', methods=['POST'])
