@@ -1,5 +1,6 @@
 import random
 import difflib
+import traceback
 import subprocess
 from urllib.parse import urljoin
 from selenium import webdriver
