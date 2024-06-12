@@ -106,7 +106,7 @@ def LoadSession(sessionName: str):
     
     os.makedirs(sessionPath, exist_ok=True)
     os.makedirs(os.path.join(sessionPath, "storage"), exist_ok=True)
-    app.config['UPLOAD_FOLDER'] = f'{str(sessionPath)}/static/uploads'
+    app.config['UPLOAD_FOLDER'] = f'{str(sessionPath)}/uploads'
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
