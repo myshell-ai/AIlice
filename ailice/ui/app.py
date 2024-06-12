@@ -289,8 +289,8 @@ def proxy():
     if os.path.exists(href):
         if request.method == 'HEAD':
             mime_type, _ = mimetypes.guess_type(href)
-            return send_file(href, mimetype=mime_type), 200
-        return send_file(href)
+            return send_file(os.path.abspath(href), mimetype=mime_type), 200
+        return send_file(os.path.abspath(href))
     else:
         try:
             method = request.method
