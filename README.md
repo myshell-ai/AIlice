@@ -235,7 +235,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 - --**chatHistoryPath** is used to specify the directory where chat history data is stored.
-- --**share** create a publicly shareable link for AIlice.
+- --**share** create a publicly shareable link for AIlice. (For security reasons, we have temporarily removed this feature. It will be re-enabled once more security measures are implemented in the UI. Please ensure that the services provided by app.py are not exposed to any untrusted networks)
 
 ### Module Configuration
 
