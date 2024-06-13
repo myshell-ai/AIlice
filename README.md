@@ -202,7 +202,7 @@ You can directly copy a command from the typical use cases below to run AIlice.
 ```bash
 ailice_web --modelID=oai:gpt-4o
 ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history
-ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher" --trace=./trace
+ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher"
 ailice_web --modelID=mistral:mistral-large-latest
 ailice_web --modelID=deepseek:deepseek-chat
 ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --contextWindowRatio=0.6
@@ -240,7 +240,6 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**speechOn** is the switch to enable voice conversation.
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
-- --**trace** is used to specify the output directory for the execution history data. This option is empty by default, indicating that the execution history recording feature is not enabled.
 - --**chatHistoryPath** is used to specify the directory where chat history data is stored.
 - --**certificate** Certificate settings for the web interface. The simplest option is an empty string, which will use the HTTP protocol for the UI web page. Setting it to 'adhoc' will use a self-generated certificate, providing encryption for the data flow between the UI and server, but it requires dismissing browser security warnings. The most secure method is to apply for a certificate and set this parameter to '{"cert": "your_cert.pem", "key": "your_key.pem")'.
 - --**share** create a publicly shareable link for AIlice. (For security reasons, we have temporarily removed this feature. It will be re-enabled once more security measures are implemented in the UI. Please ensure that the services provided by app.py are not exposed to any untrusted networks)
