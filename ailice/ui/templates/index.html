@@ -243,6 +243,9 @@
                 expr = expr.substr(1, expr.length - 2);
                 return katex.renderToString(expr, { isplayMode: false });
             }
+            else {
+                return expr
+            }
         }
         
         const renderer = new marked.Renderer();
@@ -275,12 +278,11 @@
 
         renderer.code = function(code, lang, escaped) {
                 if (!lang) {
-                        const math = mathsExpression(code);
-                        if (math) {
-                        return math;
-                    }
+                        return mathsExpression(code);
                 }
-                return rendererCode(code, lang, escaped);
+                else {
+                    return rendererCode(code, lang, escaped);
+                }
             };
 
         renderer.codespan = function(text) {
@@ -625,6 +627,9 @@
                             </div>`;
                     });
                     chatWindow.scrollTop = chatWindow.scrollHeight;
+                })
+                .catch(error => {
+                    console.error(error);
                 });
         }
     </script>
