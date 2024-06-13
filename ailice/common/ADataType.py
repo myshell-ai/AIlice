@@ -63,10 +63,10 @@ class AImage():
         return cls(data=base64.b64decode(data['data'].encode('utf-8')))
     
     def ToJson(self):
-        return {'type': 'AImage', 'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
+        return {'type': 'AImage', 'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8') if self.data else self.data}
     
     def Convert(self, format: str):
-        if format == self.format:
+        if (format == self.format) or (not self.data):
             return self
         imageBytes = io.BytesIO()
         image = Image.open(io.BytesIO(self.data))
@@ -126,7 +126,7 @@ class AVideo():
             stream = next((s for s in video.streams if s.type == 'video'), None)
             if stream is not None:
                 ret = {"width": stream.codec_context.width, "height": stream.codec_context.height, "fps": stream.average_rate, "format": video.format}
-        video.close()
+            video.close()
         return ret
     
     def __str__(self) -> str:
@@ -137,10 +137,10 @@ class AVideo():
         return cls(data=base64.b64decode(data['data'].encode('utf-8')))
     
     def ToJson(self):
-        return {'type': 'AVideo', 'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8')}
+        return {'type': 'AVideo', 'format': self.format, 'data': base64.b64encode(self.data).decode('utf-8') if self.data else self.data}
     
     def Standardize(self):
-        return AVideo(data=ConvertVideoFormat(self.data, 'mp4'))
+        return AVideo(data=ConvertVideoFormat(self.data, 'mp4')) if self.data else self
 
 class AVideoLocation():
     def __init__(self, urlOrPath: str):
