@@ -281,7 +281,10 @@ def list_histories():
             p = os.path.join(config.chatHistoryPath, d, "ailice_history.json")
             if os.path.exists(p):
                 with open(p, "r") as f:
-                    content = json.load(f)
+                    try:
+                        content = json.load(f)
+                    except Exception as e:
+                        continue
                     if len(content.get('conversation', [])) > 0:
                         histories.append((d, content.get('conversation')[0]['msg']))
         return jsonify(sorted(histories, key=lambda x: os.path.getmtime(os.path.join(config.chatHistoryPath, x[0], "ailice_history.json")), reverse = True))
