@@ -88,6 +88,13 @@ can give us a glimpse of how mature geometric intuition can be in LLM's world vi
 - **"Please write an ext-module. The function of the module is to obtain the content of related pages on the wiki through keywords."** AIlice can construct external interaction modules (we call it ext-modules) on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Once the module is constructed, you can instruct AIlice by saying, "Please load the newly implemented wiki module and utilize it to query the entry on relativity."
 
 
+### Useful Tips
+The most important tip might be to **first use GPT-4 to successfully run some simple use cases, then restart AIlice with a less powerful (but cheaper/open-source) model to continue running new tasks based on the previous conversation history**. This way, the history provided by GPT-4 serves as a successful example, offering valuable reference for other models and significantly increasing the chances of success.
+
+The second important technique is the use of interrupts. **Interrupts are the second interaction mode supported by AIlice, which allows you to interrupt and provide prompts to AIlice's agents at any time to correct errors or provide guidance**. In ailice_web, during AIlice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses AIlice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
+Proficient use of this feature requires a good understanding of AIlice's workings, especially the agent calling tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during AIlice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
+
+
 <a name="environment-configuration-and-running"></a>
 ## Environment Configuration and Running
 Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. It may take us a long time to install the dependencies, but fortunately, this is basically done automatically.
