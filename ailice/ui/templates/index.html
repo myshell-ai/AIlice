@@ -67,10 +67,12 @@
             flex-direction: column;
             background-color: #fff;
             max-width: 100%;
+            overflow: hidden;
         }
         .chat-window {
             flex: 1;
             padding: 20px;
+            overflow-x: auto;
             overflow-y: auto;
             border-bottom: 1px solid #e0e0e0;
         }
@@ -139,6 +141,9 @@
             border-radius: 12px;
             background-color: #f1f1f1;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-all;
         }
         .message.USER .bubble {
             background-color: #007bff;
