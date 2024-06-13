@@ -229,8 +229,8 @@ def main():
     parser.add_argument('--share',type=bool,default=False, help="Whether to create a publicly shareable link for AIlice.")
     kwargs = vars(parser.parse_args())
 
-    config.Update(kwargs)
     config.Check4Update(kwargs['modelID'])
+    config.Update(kwargs)
     
     try:
         mainLoop(session = kwargs['session'], share = kwargs['share'])

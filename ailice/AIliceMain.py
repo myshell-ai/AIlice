@@ -132,8 +132,8 @@ def main():
     parser.add_argument('--session',type=str,default='', help="session is used to specify the session storage path, if the directory is not empty, the conversation history stored in that directory will be loaded and updated. Default: %(default)s")
     kwargs = vars(parser.parse_args())
 
-    config.Update(kwargs)
     config.Check4Update(kwargs['modelID'])
+    config.Update(kwargs)
     
     try:
         mainLoop(session = kwargs['session'])
