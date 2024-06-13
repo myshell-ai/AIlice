@@ -82,7 +82,7 @@ class AComputer():
         try:
             image = Image.open(path)
             imageByte = io.BytesIO()
-            image.save(imageByte, format='JPEG')
+            image.convert('RGB').save(imageByte, format='JPEG')
             return AImage(data=imageByte.getvalue())
         except Exception as e:
             print("ReadImage() excetption: ", e)
