@@ -41,11 +41,19 @@
         }
         .sidebar li {
             font-size: 18px;
-            padding: 10px 0;
+            padding: 10px 10px 10px 0;
             cursor: pointer;
             white-space: nowrap;
+            overflow: visible;
+            position: relative;
+            display: flex;
+        }
+        .sidebar li .history-span {
+            flex: 1;
+            display: inline-block;
             overflow: hidden;
             text-overflow: ellipsis;
+            max-width: calc(100% - 40px);
         }
         .sidebar li.selected {
             padding: 8px 12px;
@@ -60,6 +68,44 @@
             color: #333;
             border: 1px solid #ccc;
             border-radius: 12px;
+        }
+        .sidebar li .menu-button {
+            display: none;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            float: 'right';
+        }
+        .sidebar li:hover .menu-button {
+            display: inline-block;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 10px;
+            top: 30px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            z-index: 1000;
+        }
+        .dropdown-menu a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .dropdown-menu a:hover {
+            background-color: #f0f0f0;
+        }
+        .dropdown-menu a:last-child {
+            border-bottom: none;
         }
         .main-content {
             flex: 1;
@@ -304,6 +350,28 @@
             return marked.parse(message);
         }
 
+        function disableInput() {
+            document.getElementById('text-input').disabled = true;
+            document.getElementById('audio-button').disabled = true;
+            document.getElementById('image-button').disabled = true;
+            document.getElementById('new-chat-button').disabled = true;
+            var menubtns = document.getElementsByClassName('menu-button');
+            for (var i=0; i<menubtns.length; i++) {
+                menubtns[i].disabled = true;
+            }
+        }
+        
+        function enableInput() {
+            document.getElementById('text-input').disabled = false;
+            document.getElementById('audio-button').disabled = false;
+            document.getElementById('image-button').disabled = false;
+            document.getElementById('new-chat-button').disabled = false;
+            var menubtns = document.getElementsByClassName('menu-button');
+            for (var i=0; i<menubtns.length; i++) {
+                menubtns[i].disabled = false;
+            }
+        }
+
         function readResponse(reader) {
             const decoder = new TextDecoder();
             let inputDisabled = false;  // Flag variable used to track whether the input field has been disabled.
@@ -313,19 +381,13 @@
             function read() {
                 reader.read().then(({ done, value }) => {
                     if (done) {
-                        document.getElementById('text-input').disabled = false;
-                        document.getElementById('audio-button').disabled = false;
-                        document.getElementById('image-button').disabled = false;
-                        document.getElementById('new-chat-button').disabled = false;
+                        enableInput();
                         document.getElementById('interrupt-button').style.display = 'none';
                         isUpdating = false;  // End of data updating.
                         return;
                     }
                     if (!inputDisabled) {
-                        document.getElementById('text-input').disabled = true;
-                        document.getElementById('audio-button').disabled = true;
-                        document.getElementById('image-button').disabled = true;
-                        document.getElementById('new-chat-button').disabled = true;
+                        disableInput();
                         document.getElementById('interrupt-button').style.display = 'inline-block';
                         inputDisabled = true;  // Setting the flag variable to true indicates that the input field has been disabled.
                         isUpdating = true;  // Start data updating.
@@ -413,10 +475,7 @@
                     .then(response => response.json())
                     .then(data => {
                         const historyList = document.getElementById('history-list');
-                        const historyItem = document.createElement('li');
-                        historyItem.textContent = 'New Chat';
-                        historyItem.classList.add('history-item');
-                        historyItem.addEventListener('click', () => {loadHistory(data.sessionName, historyItem)});
+                        const historyItem = createHistoryItem('New Chat', data.sessionName);
                         historyList.insertBefore(historyItem, historyList.firstChild);
                         
                         const allItems = document.querySelectorAll('#history-list li');
@@ -462,9 +521,9 @@
                             </div>`;
                         chatWindow.scrollTop = chatWindow.scrollHeight;
                         
-                        const firstListItem = document.querySelector('#history-list li');
-                        if (firstListItem.textContent === "New Chat") {
-                            firstListItem.textContent = message;
+                        const currentHistory = document.querySelector('#history-list .selected');
+                        if (currentHistory.querySelector('span').textContent === "New Chat") {
+                            currentHistory.querySelector('span').textContent = message;
                         }
 
                         return fetch('/chat', {
@@ -601,17 +660,14 @@
                 .then(data => {
                     const historyList = document.getElementById('history-list');
                     data.forEach(history => {
-                        const historyItem = document.createElement('li');
-                        historyItem.textContent = history[1];
-                        historyItem.classList.add('history-item');
-                        historyItem.addEventListener('click', () => {loadHistory(history[0], historyItem)});
+                        const historyItem = createHistoryItem(history[1], history[0]);
                         historyList.appendChild(historyItem);
                     });
                 });
         };
         
         // Load selected history
-        function loadHistory(historyName, historyItem) {
+        function loadHistory(sessionName, historyItem) {
             if (isUpdating) {
                 return;
             }
@@ -619,7 +675,7 @@
             allItems.forEach(item => item.classList.remove('selected'));
             historyItem.classList.add('selected');
             
-            fetch(`/load_history?name=${historyName}`)
+            fetch(`/load_history?name=${sessionName}`)
                 .then(response => response.json())
                 .then(data => {
                     const chatWindow = document.getElementById('chat-window');
@@ -636,6 +692,67 @@
                 .catch(error => {
                     console.error(error);
                 });
+        }
+
+        function createHistoryItem(txt, sessionName) {
+            const historyItem = document.createElement('li');
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = txt;
+            textSpan.classList.add('history-span');
+            
+            const menuButton = document.createElement('button');
+            menuButton.textContent = '⋮';
+            menuButton.classList.add('menu-button');
+            
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.classList.add('dropdown-menu');
+            const deleteOption = document.createElement('a');
+            deleteOption.textContent = 'Delete';
+            deleteOption.href = '#';
+            deleteOption.addEventListener('click', (event) => {
+                event.stopPropagation();
+                event.preventDefault();
+                deleteHistory(sessionName, historyItem);
+            });
+            dropdownMenu.appendChild(deleteOption);
+
+            historyItem.appendChild(textSpan);
+            historyItem.appendChild(menuButton);
+            historyItem.appendChild(dropdownMenu);
+            historyItem.classList.add('history-item');
+            historyItem.addEventListener('click', () => {loadHistory(sessionName, historyItem)});
+            
+            menuButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!historyItem.contains(event.target)) {
+                    dropdownMenu.style.display = 'none';
+                }
+            });
+            
+            return historyItem;
+        }
+
+        function deleteHistory(sessionName, historyItem) {
+            fetch(`/delete_history/${sessionName}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    disableInput();
+                    if (historyItem.classList.contains('selected')) {
+                        const chatWindow = document.getElementById('chat-window');
+                        chatWindow.innerHTML = '';
+                    }
+                    historyItem.remove();
+                    enableInput();
+                } else {
+                    console.error('Failed to delete history item');
+                }
+            });
         }
     </script>
 </body>

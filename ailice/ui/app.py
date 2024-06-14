@@ -1,5 +1,6 @@
 import time
 import os
+import shutil
 import sys
 import re
 import simplejson as json
@@ -272,6 +273,16 @@ def load_history():
         else:
             conversations = []
         return jsonify(conversations)
+
+@app.route('/delete_history/<string:sessionName>', methods=['DELETE'])
+def delete_history(sessionName):
+    with lock:
+        historyDir = os.path.join(config.chatHistoryPath, sessionName)
+        if os.path.exists(historyDir):
+            shutil.rmtree(historyDir)
+            return '', 204
+        else:
+            return jsonify({'error': 'History item not found'}), 404
 
 @app.route('/list_histories')
 def list_histories():
