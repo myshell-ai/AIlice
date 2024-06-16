@@ -405,16 +405,11 @@
                                         lastBotMessageElement = chatWindow.querySelector('.message.ASSISTANT:last-child .bubble');
                                     }, 0);
                                 if (lastBotMessageElement) {
-                                    content += responseMessage
+                                    content += responseMessage;
                                     lastBotMessageElement.innerHTML = renderMarkdown(content);
                                 } else {
-                                    content = responseMessage
-                                    const chatWindow = document.getElementById('chat-window');
-                                    chatWindow.innerHTML += `
-                                        <div class="message ASSISTANT">
-                                            <img src="/static/AIlice.png" class="avatar">
-                                            <div class="bubble">${renderMarkdown(content)}</div>
-                                        </div>`;
+                                    content = responseMessage;
+                                    displayMsg("ASSISTANT", content);
                                 }
                                 const chatWindow = document.getElementById('chat-window');
                                 chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -453,13 +448,7 @@
                 }
                 return response.json();
             }).then(data => {
-                const chatWindow = document.getElementById('chat-window');
-                chatWindow.innerHTML += `
-                    <div class="message USER">
-                        <img src="/static/User.JPG" class="avatar">
-                        <div class="bubble">${msg}</div>
-                    </div>`;
-                chatWindow.scrollTop = chatWindow.scrollHeight;
+                displayMsg("USER", msg);
                 isInterrupted = false;
                 if (isUpdating) {
                     document.getElementById('text-input').disabled = true;
@@ -497,6 +486,20 @@
             return newChatPromise;
         }
         
+        function displayMsg(role, message) {
+            const roleMap = {
+                "USER": "/static/User.JPG",
+                "ASSISTANT": "/static/AIlice.png",
+            };
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.innerHTML += `
+                <div class="message ${role}">
+                    <img src=${roleMap[role]} class="avatar">
+                    <div class="bubble">${renderMarkdown(message)}</div>
+                </div>`;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
         document.getElementById('interrupt-button').addEventListener('click', function() {
             if (isInterrupted) {
                 const message = document.getElementById('text-input').value;
@@ -518,13 +521,7 @@
                     let newChatPromise = ensureChat();
 
                     newChatPromise.then(() => {
-                        const chatWindow = document.getElementById('chat-window');
-                        chatWindow.innerHTML += `
-                            <div class="message USER">
-                                <img src="/static/User.JPG" class="avatar">
-                                <div class="bubble">${renderMarkdown(message)}</div>
-                            </div>`;
-                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                        displayMsg("USER", message);
                         
                         const currentHistory = document.querySelector('#history-list .selected');
                         if (currentHistory.querySelector('span').textContent === "New Chat") {
@@ -581,14 +578,8 @@
                             let newChatPromise = ensureChat();
                             newChatPromise.then(() => {
                                 // Update the chat window to display the audio uploaded by the USER.
-                                const chatWindow = document.getElementById('chat-window');
                                 const audioUrl = URL.createObjectURL(audioBlob);
-                                chatWindow.innerHTML += `
-                                    <div class="message USER">
-                                        <img src="/static/User.JPG" class="avatar">
-                                        <div class="bubble">${renderMarkdown(`![audio/wav](${audioUrl})`)}</div>
-                                    </div>`;
-                                chatWindow.scrollTop = chatWindow.scrollHeight;
+                                displayMsg("USER", `![audio/wav](${audioUrl})`);
 
                                 fetch('/upload_audio', {
                                     method: 'POST',
@@ -631,14 +622,8 @@
             let newChatPromise = ensureChat();
             newChatPromise.then(() => {
                 // Update the chat window to display the image uploaded by the USER.
-                const chatWindow = document.getElementById('chat-window');
                 const imageUrl = URL.createObjectURL(file);
-                chatWindow.innerHTML += `
-                    <div class="message USER">
-                        <img src="/static/User.JPG" class="avatar">
-                        <div class="bubble">${renderMarkdown(`![image](${imageUrl})`)}</div>
-                    </div>`;
-                chatWindow.scrollTop = chatWindow.scrollHeight;
+                displayMsg("USER", `![image](${imageUrl})`);
 
                 fetch('/upload_image', {
                     method: 'POST',
@@ -692,13 +677,8 @@
                     const chatWindow = document.getElementById('chat-window');
                     chatWindow.innerHTML = '';
                     data.forEach(([sender, message]) => {
-                        chatWindow.innerHTML += `
-                            <div class="message ${sender}">
-                                <img src="/static/${sender === 'USER' ? 'User.JPG' : 'AIlice.png'}" class="avatar">
-                                <div class="bubble">${renderMarkdown(message)}</div>
-                            </div>`;
+                        displayMsg(sender, message);
                     });
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
                 })
                 .catch(error => {
                     console.error(error);
