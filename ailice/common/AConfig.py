@@ -167,6 +167,7 @@ class AConfig():
         return
     
     def Initialize(self):
+        print(colored("********************** Initialize *****************************", "yellow"))
         configFile = appdirs.user_config_dir("ailice", "Steven Lu")
         print(f"config.json is located at {configFile}")
         try:
@@ -176,14 +177,10 @@ class AConfig():
         configFile = os.path.join(configFile, "config.json")
         
         oldDict = self.Load(configFile)
-        needUpdate = (set(oldDict.keys()) != set(self.__dict__))
         self.Update(oldDict)
-        
-        if needUpdate:
-            print("config.json need to be updated.")
-            print(colored("********************** Initialize *****************************", "yellow"))
-            self.Store(configFile)
-            print(colored("********************** End of Initialization *****************************", "yellow"))
+        self.Store(configFile)
+
+        print(colored("********************** End of Initialization *****************************", "yellow"))
         return
 
     def Check4Update(self, modelID):
@@ -200,8 +197,17 @@ class AConfig():
         return
     
     def Update(self, cfgDict: dict):
-        self.__dict__ = {k: cfgDict[k] if k in cfgDict else v for k,v in self.__dict__.items()}
+        self.__dict__ = self.Merge("", self.__dict__, cfgDict)
         return
+    
+    def Merge(self, key, template, reference):
+        if (type(template) == dict) and (type(reference)==dict):
+            if key in ['models', 'modelList', 'services']:
+                return {k: self.Merge(k, template[k], reference[k]) if ((k in template) and (k in reference)) else v for k, v in {**reference, **template}.items()}
+            else:
+                return {k: self.Merge(k, v, reference[k]) if k in reference else v for k,v in template.items()}
+        else:
+            return reference
     
     def Load(self, configFile: str) -> dict:
         if not os.path.exists(configFile):
