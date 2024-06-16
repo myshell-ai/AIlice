@@ -487,6 +487,16 @@
                     })
         }
 
+        async function ensureChat() {
+            const selectedItem = document.querySelector('#history-list .selected');
+            let newChatPromise = Promise.resolve();
+
+            if (selectedItem == null) {
+                newChatPromise = newchat();
+            }
+            return newChatPromise;
+        }
+        
         document.getElementById('interrupt-button').addEventListener('click', function() {
             if (isInterrupted) {
                 const message = document.getElementById('text-input').value;
@@ -505,12 +515,7 @@
                 if (isInterrupted) {
                     sendmsg(message);
                 } else {
-                    const selectedItem = document.querySelector('#history-list .selected');
-                    let newChatPromise = Promise.resolve();
-
-                    if (selectedItem == null) {
-                        newChatPromise = newchat();
-                    }
+                    let newChatPromise = ensureChat();
 
                     newChatPromise.then(() => {
                         const chatWindow = document.getElementById('chat-window');
@@ -573,32 +578,35 @@
                             const formData = new FormData();
                             formData.append('audio', audioBlob, 'recording.wav');
 
-                            // Update the chat window to display the audio uploaded by the USER.
-                            const chatWindow = document.getElementById('chat-window');
-                            const audioUrl = URL.createObjectURL(audioBlob);
-                            chatWindow.innerHTML += `
-                                <div class="message USER">
-                                    <img src="/static/User.JPG" class="avatar">
-                                    <div class="bubble">${renderMarkdown(`![audio/wav](${audioUrl})`)}</div>
-                                </div>`;
-                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                            let newChatPromise = ensureChat();
+                            newChatPromise.then(() => {
+                                // Update the chat window to display the audio uploaded by the USER.
+                                const chatWindow = document.getElementById('chat-window');
+                                const audioUrl = URL.createObjectURL(audioBlob);
+                                chatWindow.innerHTML += `
+                                    <div class="message USER">
+                                        <img src="/static/User.JPG" class="avatar">
+                                        <div class="bubble">${renderMarkdown(`![audio/wav](${audioUrl})`)}</div>
+                                    </div>`;
+                                chatWindow.scrollTop = chatWindow.scrollHeight;
 
-                            fetch('/upload_audio', {
-                                method: 'POST',
-                                body: formData
+                                fetch('/upload_audio', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.body.getReader();
+                                })
+                                .then(reader => {
+                                    readResponse(reader);
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });  
                             })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                return response.body.getReader();
-                            })
-                            .then(reader => {
-                                readResponse(reader);
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                            });
 
                             audioChunks = [];
                         });
@@ -620,32 +628,35 @@
             const formData = new FormData();
             formData.append('image', file);
 
-            // Update the chat window to display the image uploaded by the USER.
-            const chatWindow = document.getElementById('chat-window');
-            const imageUrl = URL.createObjectURL(file);
-            chatWindow.innerHTML += `
-                <div class="message USER">
-                    <img src="/static/User.JPG" class="avatar">
-                    <div class="bubble">${renderMarkdown(`![image](${imageUrl})`)}</div>
-                </div>`;
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+            let newChatPromise = ensureChat();
+            newChatPromise.then(() => {
+                // Update the chat window to display the image uploaded by the USER.
+                const chatWindow = document.getElementById('chat-window');
+                const imageUrl = URL.createObjectURL(file);
+                chatWindow.innerHTML += `
+                    <div class="message USER">
+                        <img src="/static/User.JPG" class="avatar">
+                        <div class="bubble">${renderMarkdown(`![image](${imageUrl})`)}</div>
+                    </div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
 
-            fetch('/upload_image', {
-                method: 'POST',
-                body: formData
+                fetch('/upload_image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.body.getReader();
+                })
+                .then(reader => {
+                    readResponse(reader);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.body.getReader();
-            })
-            .then(reader => {
-                readResponse(reader);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
         });
         
         document.getElementById('new-chat-button').addEventListener('click', function() {
