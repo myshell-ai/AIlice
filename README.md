@@ -212,6 +212,7 @@ ailice_web --modelID=groq:llama3-70b-8192
 ailice_web --modelID=openrouter:openrouter/auto
 ailice_web --modelID=openrouter:mistralai/mixtral-8x22b-instruct
 ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.4 --speechOn=True --ttsDevice=cuda --sttDevice=cuda
+ailice_web --modelID=openrouter:qwen/qwen-2-72b-instruct
 ```
 
 It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster AIlice startup speed, making it more suitable for ordinary users.
@@ -310,9 +311,9 @@ For users whose hardware capabilities are insufficient to run open-source models
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
-- The best among all models: **mixtral-8x22b-instruct**
+- The best among all models: **qwen-2-72b-instruct**. This is **the first open-source model with practical value**. It's a great advancement! It has reasoning capabilities close to GPT-4, though not quite there yet. With active user intervention through the interrupt feature, many more complex tasks can be successfully completed.
 
-- The second-best performing model: **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
+- The second-best performing models: **mixtral-8x22b-instruct** and **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
 
 If you find a better model, please let me know.
 
