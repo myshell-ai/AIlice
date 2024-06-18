@@ -297,9 +297,9 @@ calling mechanism). So, despite commercial models offering better performance, o
 
 Among the open-source models, the ones that usually perform well include:
 
-- **hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO**
 - **hf:meta-llama/Meta-Llama-3-70B-Instruct**
 - **mixtral-8x22b-instruct**
+- **Qwen/Qwen2-72B-Instruct**
 
 For users whose hardware capabilities are insufficient to run open-source models locally and who are unable to obtain API keys for commercial models, they can try the following options:
 
