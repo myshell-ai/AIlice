@@ -21,7 +21,7 @@ class AProcessor():
     def __init__(self, name, modelID, promptName, outputCB, collection = None):
         self.name = name
         self.modelID = modelID
-        self.llm = llmPool.GetModel(modelID)
+        self.llm = llmPool.GetModel(modelID, promptName)
         self.interpreter = AInterpreter()
         self.conversation = AConversations()
         self.subProcessors = dict()

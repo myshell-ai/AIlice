@@ -8,6 +8,8 @@ from termcolor import colored
 class AConfig():
     def __init__(self):
         self.modelID = ""
+        self.agentModelConfig = {"DEFAULT": "openrouter:qwen/qwen-2-72b-instruct",
+                                 "coder": "deepseek/deepseek-coder"}
         self.prompt = "main"
         self.chatHistoryPath = appdirs.user_data_dir("ailice", "Steven Lu")
         self.certificate = ""
@@ -184,16 +186,18 @@ class AConfig():
         return
 
     def Check4Update(self, modelID):
+        modelIDs = [modelID] if "" != modelID else list(self.agentModelConfig.values())
         configFile = os.path.join(appdirs.user_config_dir("ailice", "Steven Lu"), "config.json")
-        modelType = modelID[:modelID.find(":")]
-        modelName = modelID[modelID.find(":")+1:]
-        if (modelType not in self.models) or (modelName not in self.models[modelType]['modelList']):
-            print(f"The specified model ID '{modelID}' was not found in the configuration; you need to configure it in '{configFile}' beforehand")
-            sys.exit(0)
-        if ("apikey" in self.models[modelType] and (self.models[modelType]["apikey"] is None)):
-            key = input(colored(f"Your {modelType} api-key (press Enter if not): ", "green"))
-            self.models[modelType]["apikey"] = key if 1 < len(key) else None
-            self.Store(configFile)
+        for id in modelIDs:
+            modelType = id[:id.find(":")]
+            modelName = id[id.find(":")+1:]
+            if (modelType not in self.models) or (modelName not in self.models[modelType]['modelList']):
+                print(f"The specified model ID '{id}' was not found in the configuration; you need to configure it in '{configFile}' beforehand.")
+                sys.exit(0)
+            if ("apikey" in self.models[modelType] and (self.models[modelType]["apikey"] is None)):
+                key = input(colored(f"Your {modelType} api-key (press Enter if not): ", "green"))
+                self.models[modelType]["apikey"] = key if 1 < len(key) else None
+                self.Store(configFile)
         return
     
     def Update(self, cfgDict: dict):
@@ -204,6 +208,8 @@ class AConfig():
         if (type(template) == dict) and (type(reference)==dict):
             if key in ['models', 'modelList', 'services']:
                 return {k: self.Merge(k, template[k], reference[k]) if ((k in template) and (k in reference)) else v for k, v in {**reference, **template}.items()}
+            elif key in ['agentModelConfig']:
+                return reference
             else:
                 return {k: self.Merge(k, v, reference[k]) if k in reference else v for k,v in template.items()}
         else:

@@ -25,6 +25,9 @@ class ALLMPool():
         if 0 == len(requirements):
             MODEL_WRAPPER_MAP["AModelCausalLM"] = AModelCausalLM
             MODEL_WRAPPER_MAP["AModelLLAMA"] = AModelCausalLM
+        
+        llmIDs = list(set([id for k,id in config.agentModelConfig.items()] + [id for id in llmIDs if "" != id])) if "" in llmIDs else llmIDs
+
         for id in llmIDs:
             modelType, modelName = self.ParseID(id)
             if (0 != len(requirements)) and (config.models[modelType]["modelWrapper"] in ["AModelCausalLM", "AModelLLAMA"]):
@@ -34,7 +37,12 @@ class ALLMPool():
                 self.pool[id] = MODEL_WRAPPER_MAP[config.models[modelType]["modelWrapper"]](modelType=modelType, modelName=modelName)
         return
     
-    def GetModel(self, modelID: str):
+    def GetModel(self, modelID: str, agentType: str):
+        if "" == modelID:
+            if 'DEFAULT' not in config.agentModelConfig:
+                print('You did not configure a default modelID (agentModelConfig["DEFAULT"]), which makes config.json invalid and unable to start. Please update your configuration.')
+                sys.exit(0)
+            modelID = config.agentModelConfig.get(agentType, config.agentModelConfig['DEFAULT'])
         return self.pool[modelID]
     
 llmPool = ALLMPool()
