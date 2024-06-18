@@ -9,7 +9,7 @@ class AConfig():
     def __init__(self):
         self.modelID = ""
         self.agentModelConfig = {"DEFAULT": "openrouter:qwen/qwen-2-72b-instruct",
-                                 "coder": "deepseek/deepseek-coder"}
+                                 "coder": "openrouter:codellama/codellama-70b-instruct"}
         self.prompt = "main"
         self.chatHistoryPath = appdirs.user_data_dir("ailice", "Steven Lu")
         self.certificate = ""
