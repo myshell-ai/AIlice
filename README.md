@@ -209,6 +209,7 @@ ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --cont
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --quantization=4bit --contextWindowRatio=0.3
 ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ailice_web --modelID=groq:llama3-70b-8192
+ailice_web   #Use models configured individually for different agents under the agentModelConfig field in config.json.
 ailice_web --modelID=openrouter:openrouter/auto
 ailice_web --modelID=openrouter:mistralai/mixtral-8x22b-instruct
 ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.4 --speechOn=True --ttsDevice=cuda --sttDevice=cuda
@@ -229,8 +230,7 @@ ailice_web --help
 
 The default values for all command line arguments can be customized by modifying the corresponding parameters in config.json.
 
-- --**modelID** specifies the model. The currently supported models can be seen in config.json. We will implement a simpler model specification method
-in the future.
+- --**modelID** There are two modes for model configuration. In the first mode, the model is uniformly specified by modelID. In the second mode, different types of agents will run on different models. When this parameter is an empty string (unspecified), the second mode will be used automatically, i.e., the models configured individually for different agents under the agentModelConfig field in config.json will be used. The currently supported models can be seen in config.json.
 - --**quantization** is the quantization option, you can choose 4bit or 8bit. The default is not quantized.
 - --**maxMemory** is the memory video memory capacity constraint, the default is not set, the format when set is like "{0:"23GiB", 1:"24GiB", "cpu": "64GiB"}".
 - --**prompt** specifies the prompt to be executed, which is the type of agent. The default is 'main', this agent will decide to call the appropriate agent type according to your
