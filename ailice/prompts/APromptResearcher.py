@@ -28,7 +28,7 @@ class APromptResearcher():
                          "GET-LINK": [{"re": GenerateRE4FunctionCalling("GET-LINK<!|text: str, session: str|!> -> str"), "isEntry": True}],
                          "SCREENSHOT": [{"re": GenerateRE4FunctionCalling("SCREENSHOT<!||!> -> AImage"), "isEntry": True}],
                          "READ-IMAGE": [{"re": GenerateRE4FunctionCalling("READ-IMAGE<!|path: str|!> -> AImage", faultTolerance = True), "isEntry": True}],
-                         "WRITE-IMAGE": [{"re": GenerateRE4FunctionCalling("WRITE-IMAGE<!|image: AImage, path: str|!>"), "isEntry": True}],
+                         "WRITE-IMAGE": [{"re": GenerateRE4FunctionCalling("WRITE-IMAGE<!|image: AImage, path: str|!> -> str"), "isEntry": True}],
                          "BASH": [{"re": GenerateRE4FunctionCalling("BASH<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "PYTHON": [{"re": GenerateRE4FunctionCalling("PYTHON<!|code: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "CHECK-OUTPUT": [{"re": GenerateRE4FunctionCalling("CHECK-OUTPUT<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],

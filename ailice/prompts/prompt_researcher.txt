@@ -68,7 +68,7 @@ SCREENSHOT<!||!> -> AImage
 READ-IMAGE<!|path: str|!> -> AImage
 
 #Write a variable of image type into a file.
-WRITE-IMAGE<!|image: AImage, path: str|!> -> None
+WRITE-IMAGE<!|image: AImage, path: str|!> -> str
 
 #Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to report the current results to user.
 RESPOND<!|message: str|!> -> str

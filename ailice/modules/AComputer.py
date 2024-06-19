@@ -9,7 +9,7 @@ if 0 == len(requirements):
 
 from PIL import Image, ImageGrab
 from ailice.common.lightRPC import makeServer
-from ailice.common.ADataType import AImage
+from ailice.common.ADataType import AImage, AImageLocation
 
 class AComputer():
     def __init__(self):
@@ -80,19 +80,18 @@ class AComputer():
     
     def ReadImage(self, path: str) -> AImage:
         try:
-            image = Image.open(path)
-            imageByte = io.BytesIO()
-            image.convert('RGB').save(imageByte, format='JPEG')
-            return AImage(data=imageByte.getvalue())
+            return AImageLocation(path).Standardize()
         except Exception as e:
             print("ReadImage() excetption: ", e)
         return AImage(data=None)
     
-    def WriteImage(self, image: AImage, path: str):
+    def WriteImage(self, image: AImage, path: str) -> str:
         try:
             Image.open(io.BytesIO(image.data)).save(path)
+            return f"The image has been written to {path}."
         except Exception as e:
             print("WriteImage() excetption: ", e)
+            return f"WriteImage() excetption: {str(e)}"
         return
 
 def main():
