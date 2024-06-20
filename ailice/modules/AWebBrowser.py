@@ -54,11 +54,12 @@ class AWebBrowser(AScrollablePage):
         if text in self.urls:
             return self.urls[text]
         else:
+            prompt = "Please note that the text you use to query the URL should be the part enclosed in square brackets (excluding the square brackets themselves), otherwise the search will not yield results."
             similars = '\n'.join(['[' + key + '](' + self.urls[key] + ')' for key in difflib.get_close_matches(text, self.urls, n=3)])
             if "" == similars:
-                return "No url found on specified text."
+                return "No url found on specified text. \n" + prompt
             else:
-                return f"No exact match found, the most similar URLs are as follows:\n {similars}"
+                return f"No exact match found, the most similar URLs are as follows:\n {similars} \n{prompt}"
     
     def ScrollDown(self) -> str:
         return super(AWebBrowser, self).ScrollDown() + self.prompt
@@ -125,7 +126,10 @@ class AWebBrowser(AScrollablePage):
             src = node.get('src', '')
             alt = node.get('alt', '')
             if ('' != src):
-                ret = f"\n![{alt}]({urljoin(self.baseURL, src)})\n"
+                textUni = self.EnsureUnique(alt)
+                url = urljoin(self.baseURL, src)
+                self.urls[textUni] = url
+                ret = f"\n![{textUni}]({url})\n"
             else:
                 ret = alt
         elif node.name == 'video':
