@@ -120,7 +120,8 @@ class AConfig():
                         "claude-2.0": {"formatter": "AFormatterGPT", "contextWindow": 100000, "systemAsUser": True},
                         "claude-2.1": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True},
                         "claude-3-sonnet-20240229": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True},
-                        "claude-3-opus-20240229": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True}
+                        "claude-3-opus-20240229": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True},
+                        "claude-3-5-sonnet-20240620": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True}
                     }
             }
         }
