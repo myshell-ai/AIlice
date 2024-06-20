@@ -129,7 +129,7 @@ pip install -e .
 
 AIlice installed in this way also has voice conversation and fine-tuning functions.
 
-You can run AIlice now! Use the commands in [Some Typical Use Cases for Launching AIlice](#some-typical-use-cases-for-launching-ailice).
+You can run AIlice now! Use the commands in [Usage](#usage).
 
 
 ### If You Need to Frequently Use Google
@@ -194,8 +194,8 @@ Modify "scripter" under "services":
 
 Now that the environment configuration has been done.
 
-<a name="some-typical-use-cases-for-launching-ailice"></a>
-### Some Typical Use Cases for Launching AIlice
+<a name="usage"></a>
+### Usage
 
 You can directly copy a command from the typical use cases below to run AIlice.
 
@@ -244,6 +244,26 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**chatHistoryPath** is used to specify the directory where chat history data is stored.
 - --**certificate** Certificate settings for the web interface. The simplest option is an empty string, which will use the HTTP protocol for the UI web page. Setting it to 'adhoc' will use a self-generated certificate, providing encryption for the data flow between the UI and server, but it requires dismissing browser security warnings. The most secure method is to apply for a certificate and set this parameter to '{"cert": "your_cert.pem", "key": "your_key.pem")'.
 - --**share** create a publicly shareable link for AIlice. (For security reasons, we have temporarily removed this feature. It will be re-enabled once more security measures are implemented in the UI. Please ensure that the services provided by app.py are not exposed to any untrusted networks)
+
+### Using Different Models in Different Agents
+
+AIlice has two operating modes. One mode uses a single LLM to drive all agents, while the other allows each type of agent to specify a corresponding LLM. The latter mode enables us to better combine the capabilities of open-source models and commercial models, achieving better performance at a lower cost. To use the second mode, you need to configure the agentModelConfig item in config.json first:
+
+```json
+  "modelID": "",
+  "agentModelConfig": {
+    "DEFAULT": "openrouter:qwen/qwen-2-72b-instruct",
+    "coder": "openrouter:phind/phind-codellama-34b"
+  },
+```
+
+First, ensure that the default value for modelID is set to an empty string, then configure the corresponding LLM for each type of agent in agentModelConfig.
+
+Finally, you can achieve the second operating mode by not specifying a modelID:
+
+```bash
+ailice_web
+```
 
 ### Module Configuration
 
