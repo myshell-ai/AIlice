@@ -90,7 +90,7 @@ class AWebBrowser(AScrollablePage):
                 return ""
             else:
                 # Handle text nodes
-                return node.string if node.string else ''
+                return node.string.strip() if node.string else ''
         elif node.name == 'li':
             li = ''
             for child in node.children:
@@ -124,7 +124,7 @@ class AWebBrowser(AScrollablePage):
                 ret = text
         elif node.name == 'img':
             src = node.get('src', '')
-            alt = node.get('alt', '')
+            alt = node.get('alt', '').strip()
             if ('' != src):
                 textUni = self.EnsureUnique(alt)
                 url = urljoin(self.baseURL, src)
