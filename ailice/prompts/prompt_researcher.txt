@@ -38,7 +38,7 @@ agentType: A string used to specify the type of AI agent. It can be of the follo
 agentName: A name used to identify the agent. Create a new one if no such agent is found. Name should reflect responsibility. A new task can be assigned to an existing agent with a relevant name, as they often possess related experience.
 msg: message need to be told to the agent. The agent cannot see anything beyond the msg parameter, please provide the complete information of the task within the msg parameter, do not refer to external content, even if it means copying large sections of text. Otherwise, it will result in execution failure. You can use extended Markdown syntax to convey multimodal contents in msg. It's better to use triple quotes for this parameter.
 
-#Open a webpage/PDF and obtain the visible content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.
+#Open a webpage/PDF in headless mode and obtain the content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.
 BROWSE<!|url: str, session: str|!> -> str
 url: URL of webpage/pdf. This is a str and needs to be enclosed in quotation marks.
 

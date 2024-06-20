@@ -17,7 +17,7 @@ Text referencing is not supported in parameters of function call statements. Ple
 If you need to call a function, place it at the end of the message, and use '!' as a prefix to trigger its execution.
 
 Available Functions
-#Open a text file(including various code files)/webpage/PDF and obtain the visible content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.
+#Open a text file(including various code files)/webpage/PDF in headless mode and obtain the content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.
 BROWSE<!|url: str, session: str|!> -> str
 url: URL of webpage/pdf.
 
