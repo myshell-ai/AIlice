@@ -37,12 +37,12 @@ class AScrollablePage():
     def SearchDown(self, query: str) -> str:
         loc = self.txt.lower().find(query.lower(), self.currentIdx if 0 < self.currentIdx else 0)
         self.currentIdx = (loc - STEP//2) if -1 != loc else self.currentIdx
-        return self() if (-1 != loc) else "NOT FOUND."
+        return self() if (-1 != loc) else "NOT FOUND. \nSince this is an exact match search for text fragments, you can try using shorter query phrases to increase the success rate."
     
     def SearchUp(self, query: str) -> str:
         loc = self.txt.lower().rfind(query.lower(), 0, (self.currentIdx + 1) if 0 < (self.currentIdx + 1) else 0)
         self.currentIdx = (loc - STEP//2) if -1 != loc else self.currentIdx
-        return self() if (-1 != loc) else "NOT FOUND."
+        return self() if (-1 != loc) else "NOT FOUND. \nSince this is an exact match search for text fragments, you can try using shorter query phrases to increase the success rate."
     
     def __call__(self) -> str:
         if (self.currentIdx >= len(self.txt)):
