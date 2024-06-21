@@ -57,6 +57,7 @@ speech = ["typeguard", "sounddevice", "espnet", "espnet-model-zoo", "espnet-tts-
 pdf-reading = ["pix2text"]
 
 [tool.poetry.scripts]
+ailice = "ailice.ui.app:main"
 ailice_main = "ailice.AIliceMain:main"
 ailice_web = "ailice.ui.app:main"
 
