@@ -128,11 +128,11 @@ can give us a glimpse of how mature geometric intuition can be in LLM's world vi
 
 <a name="useful-tips"></a>
 ### Useful Tips
-The most important tip might be to **first use GPT-4 to successfully run some simple use cases, then restart AIlice with a less powerful (but cheaper/open-source) model to continue running new tasks based on the previous conversation history**. This way, the history provided by GPT-4 serves as a successful example, offering valuable reference for other models and significantly increasing the chances of success.
 
-The second important technique is the use of interrupts. **Interrupts are the second interaction mode supported by AIlice, which allows you to interrupt and provide prompts to AIlice's agents at any time to correct errors or provide guidance**. In ailice_web, during AIlice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses AIlice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
+Interrupts. **Interrupts are the second interaction mode supported by AIlice, which allows you to interrupt and provide prompts to AIlice's agents at any time to correct errors or provide guidance**. In ailice_web, during AIlice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses AIlice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
 Proficient use of this feature requires a good understanding of AIlice's workings, especially the agent calling tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during AIlice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
 
+**First use GPT-4 to successfully run some simple use cases, then restart AIlice with a less powerful (but cheaper/open-source) model to continue running new tasks based on the previous conversation history**. This way, the history provided by GPT-4 serves as a successful example, offering valuable reference for other models and significantly increasing the chances of success.
 
 <a name="installation-and-usage"></a>
 ## Installation and Usage
@@ -143,7 +143,7 @@ Agents need to interact with various aspects of the surrounding environment, the
 
 To run AIlice, you need to ensure that **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
 
-If you want to run AIlice in a virtual machine, ensure Hyper-V is turned off(otherwise llama.cpp cannot be installed). In a VirtualBox environment, you can disable it by following these steps: disable PAE/NX and VT-X/AMD-V ( Hyper-V) on VirtualBox settings for the VM. Set paravirtualization Interface to Default, disable nested paging.
+If you want to run AIlice in a virtual machine, ensure **Hyper-V** is turned off(otherwise llama.cpp cannot be installed). In a VirtualBox environment, you can disable it by following these steps: disable PAE/NX and VT-X/AMD-V ( Hyper-V) on VirtualBox settings for the VM. Set paravirtualization Interface to Default, disable nested paging.
 
 You can use the following command to install AIlice (It is strongly recommended to use tools such as conda to create a new virtual environment to install AIlice, so as to avoid dependency conflicts):
 
@@ -203,7 +203,7 @@ Then simply restart AIlice.
 
 <a name="use-gpu-for-vector-database"></a>
 ### Use GPU for Vector Database
-AIlice defaults to using CPU to run the embedding model of the vector database. You can reinstall llama-cpp-python to leverage GPU computing for accelerated vector database operations.
+The vector database is currently AIlice's sole long-term memory mechanism, accessed frequently during runtime. We currently use CPU as the default device for embedding vector calculations, which may result in high CPU usage and slower response times. If you have GPU support for llama.cpp, switching to the GPU version of llama-cpp-python is the optimal choice:
 
 ```bash
 pip uninstall llama-cpp-python
