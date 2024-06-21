@@ -332,7 +332,7 @@
                         return mathsExpression(code);
                 }
                 else {
-                    return rendererCode(code, lang, escaped);
+                    return rendererCode({text: code, lang: lang, escaped: escaped});
                 }
             };
 
