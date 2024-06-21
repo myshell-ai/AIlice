@@ -1,4 +1,5 @@
 import re
+import time
 import random
 import concurrent.futures
 
@@ -12,7 +13,7 @@ class AConversations():
         return
     
     def Add(self, role: str, msg: str, env: dict[str,Any]):
-        record = {"role": role, "msg": msg, "attachments": []}
+        record = {"role": role, "time": time.time(), "msg": msg, "attachments": []}
         
         if role in ["USER", "SYSTEM"]:
             matches = re.findall(r"```(\w*)\n([\s\S]*?)```", msg)
@@ -70,12 +71,14 @@ class AConversations():
     
     def FromJson(self, data):
         self.conversations = [{'role': d['role'],
+                               'time': d.get('time', None),
                                'msg': d['msg'],
                                'attachments': [{'type': a['type'], 'tag': a.get('tag', None), 'content': FromJson(a['content'])} for a in d['attachments']]} for d in data]
         return
     
     def ToJson(self) -> str:
         return [{'role': record['role'],
+                 'time': record['time'],
                  'msg': record['msg'],
                  'attachments': [{'type': a['type'],
                                   'tag': a['tag'],
