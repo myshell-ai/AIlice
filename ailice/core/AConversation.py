@@ -46,19 +46,19 @@ class AConversations():
         if ("&" == label):
             if ("" == param) or (param not in env):
                 raise ValueError(f"variable name ({param}) not defined.")
-            return {"type": typeInfo[type(env[param])]['modal'], "content": env[param].Standardize()}
+            return {"type": typeInfo[type(env[param])]['modal'], "tag": m, "content": env[param].Standardize()}
         elif "" != label:
             targetType = [t for t in typeInfo if (t.__name__ == label)]
             if 0 == len(targetType):
                 raise ValueError(f"modal type: {label} not found. supported modal type list: {[str(t.__name__) for t in typeInfo]}. please check your input.")
             else:
-                return {"type": typeInfo[targetType[0]]['modal'], "content": targetType[0](param).Standardize()}
+                return {"type": typeInfo[targetType[0]]['modal'], "tag": m, "content": targetType[0](param).Standardize()}
         else:
             mimeType = GuessMediaType(param)
             if "image" in mimeType:
-                return {"type": "image", "content": AImageLocation(param).Standardize()}
+                return {"type": "image", "tag": m, "content": AImageLocation(param).Standardize()}
             elif "video" in mimeType:
-                return {"type": "video", "content": AVideoLocation(param).Standardize()}
+                return {"type": "video", "tag": m, "content": AVideoLocation(param).Standardize()}
             return
     
     def GetConversations(self, frm=0):
@@ -71,11 +71,12 @@ class AConversations():
     def FromJson(self, data):
         self.conversations = [{'role': d['role'],
                                'msg': d['msg'],
-                               'attachments': [{'type': a['type'], 'content': FromJson(a['content'])} for a in d['attachments']]} for d in data]
+                               'attachments': [{'type': a['type'], 'tag': a.get('tag', None), 'content': FromJson(a['content'])} for a in d['attachments']]} for d in data]
         return
     
     def ToJson(self) -> str:
         return [{'role': record['role'],
                  'msg': record['msg'],
                  'attachments': [{'type': a['type'],
+                                  'tag': a['tag'],
                                   'content': ToJson(a['content'])} for a in record['attachments']]} for record in self.conversations]
