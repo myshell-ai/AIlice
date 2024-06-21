@@ -28,14 +28,16 @@ To understand AIlice's present abilities, watch the following videos:
 - [Quick Start](#quick-start)
   - [COOL things we can do](#cool-things-we-can-do)
   - [Useful Tips](#useful-tips)
-- [Environment Configuration and Running](#environment-configuration-and-running)
+- [Installation and Usage](#installation-and-usage)
+  - [Environment Configuration and Installation](#environment-configuration-and-installation)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
   - [Use GPU for Vector Database](#use-gpu-for-vector-database)
   - [Usage](#usage)
   - [Using Different Models in Different Agents](#using-different-models-in-different-agents)
   - [Module Configuration](#module-configuration)
   - [Code Update](#code-update)
-- [Choice of LLM](#choice-of-llm)
+- [Selection and Configuration of LLM](#selection-and-configuration-of-LLM)
+  - [Guide to Choosing an LLM](#guide-to-choosing-an-llm)
   - [The Most Outstanding Open-source Model](#the-most-outstanding-open-source-model)
   - [How to Add LLM Support](#how-to-add-llm-support)
     - [Using LLM through Inference Services](#using-llm-through-inference-services)
@@ -84,7 +86,7 @@ pip install -e .
 ailice_web --modelID=oai:gpt-4o
 ```
 
-- For a more detailed understanding of the installation and configuration methods, please visit the [Environment Configuration and Running](#environment-configuration-and-running) section and the [Choice of LLM](#choice-of-llm) section.
+- For a more detailed understanding of the installation and configuration methods, please visit the [Installation and Usage](#installation-and-usage) section and the [Selection and Configuration of LLM](#selection-and-configuration-of-LLM) section.
 - To grasp the basic design principles of AIlice, navigate to the [Design](#design) section.
 
 
@@ -132,8 +134,11 @@ The second important technique is the use of interrupts. **Interrupts are the se
 Proficient use of this feature requires a good understanding of AIlice's workings, especially the agent calling tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during AIlice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
 
 
-<a name="environment-configuration-and-running"></a>
-## Environment Configuration and Running
+<a name="installation-and-usage"></a>
+## Installation and Usage
+
+<a name="environment-configuration-and-installation"></a>
+### Environment Configuration and Installation
 Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. It may take us a long time to install the dependencies, but fortunately, this is basically done automatically.
 
 To run AIlice, you need to ensure that **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
@@ -346,8 +351,12 @@ docker cp ailice/modules/AScrollablePage.py scripter:scripter/ailice/modules/ASc
 docker restart scripter
 ```
 
-<a name="choice-of-llm"></a>
-## Choice of LLM
+<a name="selection-and-configuration-of-LLM"></a>
+## Selection and Configuration of LLM
+
+<a name="guide-to-choosing-an-llm"></a>
+### Guide to Choosing an LLM
+
 AIlice is not yet fully developed, and prompts have not been optimized for each model. Currently, **gpt-4o** provides the best performance, followed by **gpt-4-1106-preview**. But due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution.
 
 **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
