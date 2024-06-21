@@ -318,8 +318,9 @@ def proxy():
     if os.path.exists(href):
         if request.method == 'HEAD':
             mime_type, _ = mimetypes.guess_type(href)
-            return send_file(os.path.abspath(href), mimetype=mime_type), 200
-        return send_file(os.path.abspath(href))
+            response = send_file(os.path.abspath(href), mimetype=mime_type), 200
+        else:
+            response = send_file(os.path.abspath(href))
     else:
         try:
             method = request.method
@@ -332,6 +333,9 @@ def proxy():
             
             response = Response(resp.content if method != 'HEAD' else None, content_type=resp.headers['Content-Type'])
             response.headers = {key: value for key, value in resp.headers.items()}
-            return response
         except requests.exceptions.RequestException as e:
             return f'Error fetching the URL: {e}', 500
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
