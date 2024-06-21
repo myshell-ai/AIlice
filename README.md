@@ -26,16 +26,18 @@ To understand AIlice's present abilities, watch the following videos:
 
 - [Features](#features)
 - [Quick Start](#quick-start)
+  - [Quick Installation](#quick-installation)
   - [COOL things we can do](#cool-things-we-can-do)
-  - [Useful Tips](#useful-tips)
 - [Installation and Usage](#installation-and-usage)
   - [Environment Configuration and Installation](#environment-configuration-and-installation)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
   - [Use GPU for Vector Database](#use-gpu-for-vector-database)
+  - [Virtual Environment Settings for Code Execution](#virtual-environment-settings-for-code-execution)
+  - [Code Update](#code-update)
   - [Usage](#usage)
   - [Using Different Models in Different Agents](#using-different-models-in-different-agents)
   - [Module Configuration](#module-configuration)
-  - [Code Update](#code-update)
+  - [Useful Tips](#useful-tips)
 - [Selection and Configuration of LLM](#selection-and-configuration-of-LLM)
   - [Guide to Choosing an LLM](#guide-to-choosing-an-llm)
   - [The Most Outstanding Open-source Model](#the-most-outstanding-open-source-model)
@@ -76,6 +78,9 @@ Key technical features of AIlice include:
 
 <a name="quick-start"></a>
 ## Quick Start
+
+<a name="quick-installation"></a>
+### Quick Installation
 
 Install and run AIlice with the following commands. Once AIlice is launched, use a browser to open the web page it provides, a dialogue interface will appear. Issue commands to AIlice through the conversation to accomplish various tasks. For your first use, you can try the commands provided in the [COOL things we can do](#cool-things-we-can-do) section to quickly get familiarized.
 
@@ -125,14 +130,6 @@ can give us a glimpse of how mature geometric intuition can be in LLM's world vi
 
 - **"Please write an ext-module. The function of the module is to obtain the content of related pages on the wiki through keywords."** AIlice can construct external interaction modules (we call it ext-modules) on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Once the module is constructed, you can instruct AIlice by saying, "Please load the newly implemented wiki module and utilize it to query the entry on relativity."
 
-
-<a name="useful-tips"></a>
-### Useful Tips
-
-Interrupts. **Interrupts are the second interaction mode supported by AIlice, which allows you to interrupt and provide prompts to AIlice's agents at any time to correct errors or provide guidance**. In ailice_web, during AIlice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses AIlice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
-Proficient use of this feature requires a good understanding of AIlice's workings, especially the agent calling tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during AIlice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
-
-**First use GPT-4 to successfully run some simple use cases, then restart AIlice with a less powerful (but cheaper/open-source) model to continue running new tasks based on the previous conversation history**. This way, the history provided by GPT-4 serves as a successful example, offering valuable reference for other models and significantly increasing the chances of success.
 
 <a name="installation-and-usage"></a>
 ## Installation and Usage
@@ -240,6 +237,26 @@ Modify "scripter" under "services":
 
 Now that the environment configuration has been done.
 
+
+<a name="code-update"></a>
+### Code Update
+
+Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration file and Docker container with the new code. The most thorough solution for this scenario is to delete the configuration file (making sure to save any API keys beforehand) and the container, and then perform a complete reinstall. However, for most situations, you can address the issue by simply **deleting the configuration file** and **updating the AIlice module within the container**.
+
+```bash
+rm ~/.config/ailice/config.json
+cd AIlice
+docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
+docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
+docker cp ailice/common/ADataType.py scripter:scripter/ailice/common/ADataType.py
+docker cp ailice/common/lightRPC.py scripter:scripter/ailice/common/lightRPC.py
+docker cp ailice/modules/__init__.py scripter:scripter/ailice/modules/__init__.py
+docker cp ailice/modules/AScripter.py scripter:scripter/ailice/modules/AScripter.py
+docker cp ailice/modules/AScrollablePage.py scripter:scripter/ailice/modules/AScrollablePage.py
+docker restart scripter
+```
+
+
 <a name="usage"></a>
 ### Usage
 
@@ -333,23 +350,14 @@ Among these, under **"cmd"** is a command line used to start the module's proces
 **"addr"** refers to the address and port number of the module process. Users might be confused by the fact that many modules in the default configuration have both "cmd" and "addr" containing addresses and port numbers, causing redundancy. This is because "cmd" can, in principle, contain any command (which may include addresses and port numbers, or none at all). Therefore, a separate "addr" item is necessary to inform AIlice how to access the module process.
 
 
-<a name="code-update"></a>
-### Code Update
+<a name="useful-tips"></a>
+### Useful Tips
 
-Due to the ongoing development status of AIlice, updating the code may result in incompatibility issues between existing configuration file and Docker container with the new code. The most thorough solution for this scenario is to delete the configuration file (making sure to save any API keys beforehand) and the container, and then perform a complete reinstall. However, for most situations, you can address the issue by simply **deleting the configuration file** and **updating the AIlice module within the container**.
+Interrupts. **Interrupts are the second interaction mode supported by AIlice, which allows you to interrupt and provide prompts to AIlice's agents at any time to correct errors or provide guidance**. In ailice_web, during AIlice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses AIlice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
+Proficient use of this feature requires a good understanding of AIlice's workings, especially the agent calling tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during AIlice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
 
-```bash
-rm ~/.config/ailice/config.json
-cd AIlice
-docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
-docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
-docker cp ailice/common/ADataType.py scripter:scripter/ailice/common/ADataType.py
-docker cp ailice/common/lightRPC.py scripter:scripter/ailice/common/lightRPC.py
-docker cp ailice/modules/__init__.py scripter:scripter/ailice/modules/__init__.py
-docker cp ailice/modules/AScripter.py scripter:scripter/ailice/modules/AScripter.py
-docker cp ailice/modules/AScrollablePage.py scripter:scripter/ailice/modules/AScrollablePage.py
-docker restart scripter
-```
+**First use GPT-4 to successfully run some simple use cases, then restart AIlice with a less powerful (but cheaper/open-source) model to continue running new tasks based on the previous conversation history**. This way, the history provided by GPT-4 serves as a successful example, offering valuable reference for other models and significantly increasing the chances of success.
+
 
 <a name="selection-and-configuration-of-LLM"></a>
 ## Selection and Configuration of LLM
