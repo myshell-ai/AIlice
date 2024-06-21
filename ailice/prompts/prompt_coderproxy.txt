@@ -89,5 +89,6 @@ EXAMPLE:
 !CALL<!|"coder", "website_coder", """Build a website page as shown in the following image.
 ![simple_website](var_image_simple_website_sketch)<&>
 """|!>
+!SAVE-TO-FILE<!|"hello_world.py", code_python_9404|!>
 !PYTHON<!|code_python_3212|!>
 !PYTHON<!|"""print('hello wolrd.')"""|!>
