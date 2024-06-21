@@ -21,7 +21,7 @@ We will ultimately achieve **self-evolution of AI agents**. That is, AI agents w
 
 To understand AIlice's present abilities, watch the following videos:
 
-[![Document searching and downloading, financial data downloading and analysis with plotting, OpenGL texture rendering](https://img.youtube.com/vi/4yLO_AnaNmw/0.jpg)](https://www.youtube.com/watch?v=4yLO_AnaNmw)
+[![Document searching and downloading, financial data downloading and analysis with plotting, OpenGL texture rendering](https://img.youtube.com/vi/8OqBgJE6ETQ/0.jpg)](https://www.youtube.com/watch?v=8OqBgJE6ETQ)
 
 Key technical features of AIlice include:
 
