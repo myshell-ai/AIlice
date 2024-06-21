@@ -473,7 +473,9 @@
                         
                         const chatWindow = document.getElementById('chat-window');
                         chatWindow.innerHTML = '';
-                    })
+                    }).catch(error => {
+                        console.error('Error:', error);
+                    });
         }
 
         async function ensureChat() {
@@ -494,7 +496,7 @@
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML += `
                 <div class="message ${role}">
-                    <img src=${roleMap[role]} class="avatar">
+                    <img src=${roleMap[role] || "/static/AIlice.png"} class="avatar">
                     <div class="bubble">${renderMarkdown(message)}</div>
                 </div>`;
             chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -659,7 +661,9 @@
                         const historyItem = createHistoryItem(history[1], history[0]);
                         historyList.appendChild(historyItem);
                     });
-                });
+                }).catch(error => {
+                        console.error('Error:', error);
+                    });
         };
         
         // Load selected history
@@ -743,7 +747,9 @@
                 } else {
                     console.error('Failed to delete history item');
                 }
-            });
+            }).catch(error => {
+                        console.error('Error:', error);
+                    });
         }
     </script>
 </body>
