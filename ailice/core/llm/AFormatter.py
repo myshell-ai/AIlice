@@ -226,6 +226,26 @@ class AFormatterGPTVision():
         #print("prompt: ", ret)
         return ret, TokenEstimatorOAI(conversations)
     
+class AFormatterClaudeVision():
+    def __init__(self, tokenizer=None, systemAsUser = False):
+        self.systemAsUser = systemAsUser
+        return
+    
+    def ProcessAttachements(self, a):
+        if "image" == a["type"]:
+            return [{"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": a['content'].ToJson()['data']}}]
+    
+    def BuildMsg(self, role: str, msg: str, attachments: list):
+        roleMap = {"SYSTEM": "system" if not self.systemAsUser else "user", "USER": "user", "ASSISTANT": "assistant"}
+        return {"role": roleMap[role],
+                "content": [{"type": "text", "text": msg}] +
+                           sum([self.ProcessAttachements(a) for a in attachments if (a['type'] in ["image"])], [])}
+        
+    def __call__(self, prompt0, conversations, encode = True, assistTag = True):
+        ret = [{"role": "system", "content": [{"type": "text", "text": prompt0}]}] + [self.BuildMsg(c['role'], c['msg'], c['attachments']) for c in conversations]
+        #print("prompt: ", ret)
+        return ret, TokenEstimatorOAI(conversations)
+    
 
 def CreateFormatter(formatterClsName: str, tokenizer, systemAsUser):
     formatterList = [obj for name, obj in inspect.getmembers(inspect.getmodule(inspect.currentframe())) if inspect.isclass(obj) and name.startswith("AFormatter")]
