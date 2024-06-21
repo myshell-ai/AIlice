@@ -212,7 +212,6 @@ ailice_web --modelID=groq:llama3-70b-8192
 ailice_web   #Use models configured individually for different agents under the agentModelConfig field in config.json.
 ailice_web --modelID=openrouter:openrouter/auto
 ailice_web --modelID=openrouter:mistralai/mixtral-8x22b-instruct
-ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.4 --speechOn=True --ttsDevice=cuda --sttDevice=cuda
 ailice_web --modelID=openrouter:qwen/qwen-2-72b-instruct
 ```
 
@@ -398,11 +397,11 @@ ailice_web --modelID=ollama:mistral-openorca
 
 ##### Example 2: LM Studio
 
-In this example, we will use LM Studio to run a powerful model **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF**, powering AIlice to run on a local machine. This model is a leaked version of Mistral-Medium, which once caused a sensation in the open-source community and was the first model I found that approached GPT-4 capabilities (though there are still differences). While we no longer recommend using it, this example is still useful as an introduction to using LM Studio as an inference engine to run AIlice. Therefore, we won't make any further modifications.
+In this example, we will use LM Studio to run the most open source model I've ever seen: **Qwen2-72B-Instruct-Q3_K_S.gguf**, powering AIlice to run on a local machine.
 
-Download model weights of **Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF** using LM Studio.
+Download model weights of **Qwen2-72B-Instruct-Q3_K_S.gguf** using LM Studio.
 
-In the LM Studio's "LocalServer" window, set n_gpu_layers to -1 if you want to use GPU only. Adjust the 'Context Length' parameter on the left to 16384(or a smaller value based on your available memory), and change the 'Context Overflow Policy' to 'Keep the system prompt and the first user message, truncate middle.' We will allow AIlice to manage the context on its own.
+In the LM Studio's "LocalServer" window, set n_gpu_layers to -1 if you want to use GPU only. Adjust the 'Context Length' parameter on the left to 16384(or a smaller value based on your available memory), and change the 'Context Overflow Policy' to 'Keep the system prompt and the first user message, truncate middle'.
 
 Run the service. We assume the address of the service is "http://localhost:1234/v1/".
 
@@ -421,7 +420,7 @@ Then, we open config.json and make the following modifications:
       "apikey": "fakekey",
       "baseURL": "http://localhost:1234/v1/",
       "modelList": {
-        "Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF": {
+        "qwen2-72b": {
           "formatter": "AFormatterGPT",
           "contextWindow": 32764,
           "systemAsUser": true
@@ -437,7 +436,7 @@ Then, we open config.json and make the following modifications:
 Finally, run AIlice. You can adjust the 'contextWindowRatio' parameter based on your available VRAM or memory space. The larger the parameter, the more VRAM space is required.
 
 ```bash
-ailice_web --modelID=lm-studio:Nexesenex/MIstral-QUantized-70b_Miqu-1-70b-iMat.GGUF --contextWindowRatio=0.5
+ailice_web --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
 ```
 
 ##### Example 3: Add open source multimodal model support
