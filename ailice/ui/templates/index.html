@@ -286,16 +286,18 @@
             }
         }
 
-        function mathsExpression(expr) {
+        function mathsExpression(expr, force) {
             if (expr.match(/^\$\$[\s\S]*\$\$$/)) {
                 expr = expr.substr(2, expr.length - 4);
-                return katex.renderToString(expr, { displayMode: true });
+                return [katex.renderToString(expr, { displayMode: true }), true];
             } else if (expr.match(/^\$[\s\S]*\$$/)) {
                 expr = expr.substr(1, expr.length - 2);
-                return katex.renderToString(expr, { isplayMode: false });
+                return [katex.renderToString(expr, { displayMode: false }), true];
+            } else if (force) {
+                return [katex.renderToString(expr, { displayMode: true }), true];
             }
             else {
-                return expr
+                return [expr, false]
             }
         }
         
@@ -329,17 +331,21 @@
 
         renderer.code = function(code, lang, escaped) {
                 if (!lang) {
-                        return mathsExpression(code);
+                    const r = mathsExpression(code, false);
+                    if (r[1] === true) {
+                        return r[0];
+                    }
                 }
-                else {
-                    return rendererCode({text: code, lang: lang, escaped: escaped});
+                else if ("latex" === lang) {
+                    return mathsExpression(code, true)[0];
                 }
+                return rendererCode({text: code, lang: lang, escaped: escaped});
             };
 
         renderer.codespan = function(text) {
-                const math = mathsExpression(text);
-                if (math) {
-                    return math;
+                const math = mathsExpression(text, false);
+                if (math[1]) {
+                    return math[0];
                 }
                 return rendererCodespan(text);
             }
