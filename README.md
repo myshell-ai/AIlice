@@ -4,6 +4,13 @@
     <h1>AIlice</h1>
 </div>
 
+[![forks](https://img.shields.io/github/forks/myshell-ai/AIlice)](https://github.com/myshell-ai/AIlice)
+[![stars](https://img.shields.io/github/stars/myshell-ai/AIlice)](https://github.com/myshell-ai/AIlice)
+[![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fmyshell-ai%2FAIlice&label=visitors&countColor=%23263759)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fmyshell-ai%2FAIlice)
+[![Twitter](https://img.shields.io/twitter/url?url=https%3A%2F%2Fx.com%2Fstevenlu1729)](https://x.com/stevenlu1729)
+[![license](https://img.shields.io/github/license/myshell-ai/AIlice)](./LICENSE)
+
+
 <p align="center">
   <a href="#quick-start">Quick Start</a> •
   <a href="https://www.youtube.com/@stevenlu-zh6ds">Demo</a> •
