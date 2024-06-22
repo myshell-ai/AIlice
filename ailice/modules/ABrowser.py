@@ -67,7 +67,8 @@ class ABrowser():
 
     def URLIsPDF(self, url: str) -> bool:
         response = requests.head(url, allow_redirects=True)
-        return ("pdf" in response.headers.get("content-type"))
+        contentType = response.headers.get("content-type")
+        return ("pdf" in contentType) if contentType else False
     
     def PathIsPDF(self, path: str) -> bool:
         return (path[-4:] == ".pdf")
