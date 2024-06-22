@@ -12,9 +12,7 @@
   <a href="https://www.reddit.com/r/AIlice/">Reddit</a>
 </p>
 
-----
-
-:fire: Jun 22, 2024: We have entered the era of locally running JARVIS-like AI assistants! The latest open-source LLMs enable us to perform complex tasks locally! Click [here](#the-most-outstanding-open-source-model) to learn more.
+:fire: Jun 22, 2024: We have entered the era of locally running JARVIS-like AI assistants! The latest open-source LLMs enable us to perform complex tasks locally! Click [here](#guide-to-choosing-an-llm) to learn more.
 
 ----
 
