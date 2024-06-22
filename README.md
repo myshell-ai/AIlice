@@ -34,7 +34,7 @@ To understand AIlice's present abilities, watch the following videos:
 - [Installation and Usage](#installation-and-usage)
   - [Environment Configuration and Installation](#environment-configuration-and-installation)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
-  - [Use GPU for Vector Database](#use-gpu-for-vector-database)
+  - [Accelerate using GPU](#accelerate-using-gpu)
   - [Virtual Environment Settings for Code Execution](#virtual-environment-settings-for-code-execution)
   - [Code Update](#code-update)
   - [Usage](#usage)
@@ -201,13 +201,20 @@ pip install google-api-python-client
 Then simply restart AIlice.
 
 
-<a name="use-gpu-for-vector-database"></a>
-### Use GPU for Vector Database
+<a name="accelerate-using-gpu"></a>
+### Accelerate using GPU
 The vector database is currently AIlice's sole long-term memory mechanism, accessed frequently during runtime. We currently use CPU as the default device for embedding vector calculations, which may result in high CPU usage and slower response times. If you have GPU support for llama.cpp, switching to the GPU version of llama-cpp-python is the optimal choice:
 
 ```bash
 pip uninstall llama-cpp-python
 CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python
+```
+
+For users requiring PDF document reading capabilities, it is recommended to use GPU for PDF OCR to avoid significantly slow OCR processes. Please install onnxruntime-gpu using the following command:
+
+```bash
+pip uninstall onnxruntime
+pip install onnxruntime-gpu
 ```
 
 <a name="virtual-environment-settings-for-code-execution"></a>
@@ -349,7 +356,7 @@ Proficient use of this feature requires a good understanding of AIlice's working
 
 Updated on Jun 22, 2024.
 
-Currently, AIlice can **handle more complex tasks using the locally run 72B open-source model (qwen-2-72b-instruct running on 4090x2)**, with performance approaching that of GPT-4 level models. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. For users whose GPU conditions are insufficient to run large models, this is not a problem. You can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). Although open-source models cannot yet fully rival commercial GPT-4 level models, you can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
+Currently, AIlice can **handle more complex tasks using the locally run 72B open-source model (qwen-2-72b-instruct running on 4090x2)**, with performance approaching that of GPT-4 level models. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. Click [here](#example-2-lm-studio) to learn how to run this model locally. For users whose GPU conditions are insufficient to run large models, this is not a problem. You can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). Although open-source models cannot yet fully rival commercial GPT-4 level models, you can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
 
 **gpt-4o** and **gpt-4-1106-preview** provides the best performance. But due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution. **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
 
