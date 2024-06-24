@@ -19,6 +19,7 @@ class APromptCoderProxy():
         self.prompt0 = read_text("ailice.prompts", "prompt_coderproxy.txt")
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
+                         "DEFINE-CODE-VARS": [{"re": GenerateRE4FunctionCalling("DEFINE-CODE-VARS<!||!> -> str"), "isEntry": True}],
                          "SAVE-TO-FILE": [{"re": GenerateRE4FunctionCalling("SAVE-TO-FILE<!|filePath: str, code: str|!> -> str"), "isEntry": True}],
                          "SCREENSHOT": [{"re": GenerateRE4FunctionCalling("SCREENSHOT<!||!> -> AImage"), "isEntry": True}],
                          "READ-IMAGE": [{"re": GenerateRE4FunctionCalling("READ-IMAGE<!|path: str|!> -> AImage", faultTolerance=True), "isEntry": True}],
