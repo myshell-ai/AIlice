@@ -5,6 +5,7 @@ import importlib
 import time
 import inspect
 import re
+import random
 import json
 from functools import partial
 from ailice.common.AConfig import config
@@ -36,6 +37,7 @@ class AProcessor():
         self.interpreter.RegisterAction("STORE", {"func": self.EvalStore})
         self.interpreter.RegisterAction("QUERY", {"func": self.EvalQuery})
         self.interpreter.RegisterAction("WAIT", {"func": self.EvalWait})
+        self.interpreter.RegisterAction("DEFINE-CODE-VARS", {"func": self.DefineCodeVars})
         self.interpreter.RegisterAction("LOADEXTMODULE", {"func": self.LoadExtModule})
         self.interpreter.RegisterAction("LOADEXTPROMPT", {"func": self.LoadExtPrompt})
         
@@ -176,6 +178,18 @@ class AProcessor():
     def EvalWait(self, duration: int) -> str:
         time.sleep(duration)
         return f"Waiting is over. It has been {duration} seconds."
+    
+    def DefineCodeVars(self) -> str:
+        matches = re.findall(r"```(\w*)\n([\s\S]*?)```", self.conversation.GetConversations(frm=-1)[1]["msg"])
+        vars = []
+        for language, code in matches:
+            varName = f"code_{language}_{str(random.randint(0,10000))}"
+            self.interpreter.env[varName] = code
+            vars.append(varName)
+        if 0 < len(vars):
+            return f"\nSystem notification: The code snippets within the triple backticks in last message have been saved as variables, in accordance with their order in the text, the variable names are as follows: {vars}\n"
+        else:
+            return "\nSystem notification: No code snippet found. Are you sure you wrapped them with triple backticks?"
     
     def LoadExtModule(self, addr: str) -> str:
         try:
