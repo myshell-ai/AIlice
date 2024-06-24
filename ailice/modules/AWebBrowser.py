@@ -82,7 +82,7 @@ class AWebBrowser(AScrollablePage):
             ret = txt + "   |" + str(random.randint(0, 10000000))
         return ret
     
-    def ProcessNode(self, node) -> str:
+    def ProcessNode(self, node, strip=True) -> str:
         ret = ''
         if node.name is None:  # This is a text node or a comment node
             if isinstance(node, Comment):
@@ -90,7 +90,7 @@ class AWebBrowser(AScrollablePage):
                 return ""
             else:
                 # Handle text nodes
-                return node.string.strip() if node.string else ''
+                return (node.string.strip() if strip else node.string) if node.string else ''
         elif node.name == 'li':
             li = ''
             for child in node.children:
@@ -101,7 +101,7 @@ class AWebBrowser(AScrollablePage):
             for child in node.children:
                 ret += self.ProcessNode(child)
         elif node.name == 'code':
-            ret = f"\n\n```\n{''.join([self.ProcessNode(child) for child in node.children])}\n```\n\n"
+            ret = f"\n\n```\n{''.join([self.ProcessNode(child, strip=False) for child in node.children])}\n```\n\n"
         elif node.name in ['span', 'div']:
             for child in node.children:
                 ret += self.ProcessNode(child)
@@ -124,7 +124,7 @@ class AWebBrowser(AScrollablePage):
                 ret = text
         elif node.name == 'img':
             src = node.get('src', '')
-            alt = node.get('alt', '').strip()
+            alt = node.get('alt', '').strip() if strip else node.get('alt', '')
             if ('' != src):
                 textUni = self.EnsureUnique(alt)
                 url = urljoin(self.baseURL, src)
