@@ -293,6 +293,7 @@ ailice_web   #Use models configured individually for different agents under the 
 ailice_web --modelID=openrouter:openrouter/auto
 ailice_web --modelID=openrouter:mistralai/mixtral-8x22b-instruct
 ailice_web --modelID=openrouter:qwen/qwen-2-72b-instruct
+ailice_web --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
 ```
 
 It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster AIlice startup speed, making it more suitable for ordinary users.
