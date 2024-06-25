@@ -74,16 +74,6 @@ WAIT<!|duration: int|!> -> str
 #Obtain script execution output result.
 CHECK-OUTPUT<!|session: str|!> -> str
 
-#The next two functions returning values of type AImage are only to prepare arguments for a function that accepts AImage type parameters, or when you can perceive multimodal data.
-#Take a screenshot and return as a image variable.
-SCREENSHOT<!||!> -> AImage
-
-#Read the content of an image file into a variable.
-READ-IMAGE<!|path: str|!> -> AImage
-
-#Write a variable of image type into a file.
-WRITE-IMAGE<!|image: AImage, path: str|!> -> str
-
 #Load the ext-module and get the list of callable functions in it.
 LOADEXTMODULE<!|addr: str|!> -> str
 
