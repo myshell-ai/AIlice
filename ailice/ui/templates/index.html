@@ -257,7 +257,8 @@
                 return href
             }
             else {
-                return `/proxy?href=${href}`;
+                const encodedURL = encodeURIComponent(href);
+                return `/proxy?href=${encodedURL}`;
             }
         }
 

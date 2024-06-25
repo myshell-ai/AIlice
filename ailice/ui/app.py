@@ -14,6 +14,7 @@ import tempfile
 import logging
 import traceback
 
+from urllib.parse import unquote
 from termcolor import colored
 from flask import Flask, render_template, request, jsonify, Response, send_file
 from werkzeug.utils import secure_filename
@@ -315,7 +316,7 @@ def sendmsg():
 
 @app.route('/proxy', methods=['GET', 'HEAD'])
 def proxy():
-    href = request.args.get('href')
+    href = unquote(request.args.get('href'))
     var = processor.interpreter.env.get(href, None)
     if var and (type(var).__name__ in ['AImage', 'AVideo']):
         with tempfile.NamedTemporaryFile(mode='bw', delete=True) as temp:
