@@ -10,6 +10,7 @@ import librosa
 import requests
 import mimetypes
 import threading
+import tempfile
 import logging
 import traceback
 
@@ -315,10 +316,20 @@ def sendmsg():
 @app.route('/proxy', methods=['GET', 'HEAD'])
 def proxy():
     href = request.args.get('href')
-    if os.path.exists(href):
+    var = processor.interpreter.env.get(href, None)
+    if var and (type(var).__name__ in ['AImage', 'AVideo']):
+        with tempfile.NamedTemporaryFile(mode='bw', delete=True) as temp:
+            temp.write(var.data)
+            temp.flush()
+            if request.method == 'HEAD':
+                mime_type = {"AImage": "image/jpeg", "AVideo": "video/mp4"}[type(var).__name__]
+                response = send_file(os.path.abspath(temp.name), mimetype=mime_type)
+            else:
+                response = send_file(os.path.abspath(temp.name))
+    elif os.path.exists(href):
         if request.method == 'HEAD':
             mime_type, _ = mimetypes.guess_type(href)
-            response = send_file(os.path.abspath(href), mimetype=mime_type), 200
+            response = send_file(os.path.abspath(href), mimetype=mime_type)
         else:
             response = send_file(os.path.abspath(href))
     else:
