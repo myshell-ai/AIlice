@@ -183,7 +183,7 @@ You can run AIlice now! Use the commands in [Usage](#usage).
 
 <a name="if-you-need-to-frequently-use-google"></a>
 ### If You Need to Frequently Use Google
-By default, the Google module in AIlice is restricted, and repeated usage can lead to errors requiring some time to resolve. This is an awkward reality in the AI era; traditional search engines only allow access to genuine users, and AI agents currently don't fall within the category of 'genuine users'. While we have alternative solutions, they all require configuring an API key, which sets a high barrier for entry for ordinary users. However, for users who require frequent access to Google, I assume you'd be willing to endure the hassle of applying for a Google's official API key for search tasks. For these users, please open config.json and use the following configuration:
+By default, the Google module in AIlice is restricted, and repeated usage can lead to errors requiring some time to resolve. This is an awkward reality in the AI era; traditional search engines only allow access to genuine users, and AI agents currently don't fall within the category of 'genuine users'. While we have alternative solutions, they all require configuring an API key, which sets a high barrier for entry for ordinary users. However, for users who require frequent access to Google, I assume you'd be willing to endure the hassle of applying for a Google's official API key (We are referring to [Custom Search JSON API](https://developers.google.com/custom-search/v1/overview), which requires you to specify searching the entire internet at the time of creation) for search tasks. For these users, please open config.json and use the following configuration:
 
 ```
 {
