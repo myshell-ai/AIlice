@@ -21,7 +21,7 @@ class AMessenger():
         return
     
     def Put(self, msg: str):
-        self.msg = msg
+        self.msg = msg if "" != msg.strip() else None
 
     def Unlock(self):
         self.lock.release()
