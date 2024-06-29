@@ -96,7 +96,7 @@ class AInterpreter():
         elif "_FLOAT" == nodeType:
             return float(txt)
         elif "_BOOL" ==nodeType:
-            return bool(txt)
+            return {"true": True, "false": False}[txt.strip().lower()]
         elif "_VAR" == nodeType:
             return self.EvalVar(varName=paras['varName'], content=self.Eval(paras['content']))
         elif "_VAR_REF" == nodeType:
