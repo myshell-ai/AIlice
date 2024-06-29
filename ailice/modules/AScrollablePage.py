@@ -44,6 +44,17 @@ class AScrollablePage():
         self.currentIdx = (loc - STEP//2) if -1 != loc else self.currentIdx
         return self() if (-1 != loc) else "NOT FOUND. \nSince this is an exact match search for text fragments, you can try using shorter query phrases to increase the success rate."
     
+    def ReplaceText(self, replacement: str, replaceAll: bool = False):
+        if (self.currentIdx >= len(self.txt)) or ((self.currentIdx + STEP) <= 0):
+            return
+        if replaceAll:
+            self.txt = replacement
+        else:
+            start = self.currentIdx if self.currentIdx >= 0 else 0
+            end = (self.currentIdx + STEP) if (self.currentIdx + STEP) >= 0 else 0
+            self.txt = self.txt[:start] + replacement + self.txt[end:]
+        return
+    
     def __call__(self) -> str:
         if (self.currentIdx >= len(self.txt)):
             return "EOF."

@@ -23,12 +23,16 @@ class ABrowser():
         return
 
     def ModuleInfo(self):
-        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open a webpage/PDF in headless mode and obtain the content. You need to give the page a name(the session parameter). You can reuse this session to open new webpages.", "type": "primary"},
+        return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open any PDFs, web pages in headless mode to retrieve their content. The 'url' parameter can be either a URL or a local path. You need to give the page a name(the session parameter). You can reuse this session to open new url/path.", "type": "primary"},
+                                               "BROWSE-EDIT": {"func": "Edit", "prompt": "Browse and edit any text document (including code files with various extensions) in headless mode. You need to give the page a name(the session parameter). You can reuse this session to open new file.", "type": "primary"},
                                                "SCROLL-DOWN-BROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page.", "type": "supportive"},
                                                "SCROLL-UP-BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page.", "type": "supportive"},
                                                "SEARCH-DOWN-BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},
                                                "SEARCH-UP-BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location.", "type": "supportive"},
-                                               "GET-LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to be one of those text fragments enclosed by square brackets on the page (excluding the square brackets themselves).", "type": "supportive"}}}
+                                               "GET-LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to be one of those text fragments enclosed by square brackets on the page (excluding the square brackets themselves).", "type": "supportive"},
+                                               "REPLACE": {"func": "Replace", "prompt": "Replace and edit content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.", "type": "supportive"},
+                                               "SAVETO": {"func": "SaveTo", "prompt": "Save the modified content to a file. If the dstPath parameter is an empty string, save it to the original file.", "type": "supportive"},
+                                               }}
     
     def ParseURL(self, txt: str) -> str:
         extractor = URLExtract()
@@ -97,6 +101,15 @@ class ABrowser():
             print("EXCEPTION. e: ", str(e))
             return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
     
+    def Edit(self, path: str, session: str) -> str:
+        try:
+            self.sessions[session] = ATextBrowser(functions=self.functions)
+            return self.prompt + "\n--------------" + "\n" + self.sessions[session].Edit(path) + "\n\n" + f'Session name: "{session}"\n'
+        except Exception as e:
+            print("EXCEPTION. e: ", str(e))
+            return f"Browser Exception. please check your path input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
+        return
+    
     def GetFullText(self, session: str) -> str:
         return self.sessions[session].GetFullText()
 
@@ -114,6 +127,12 @@ class ABrowser():
     
     def GetLink(self, text: str, session: str) -> str:
         return self.sessions[session].GetLink(text) if hasattr(self.sessions[session], "GetLink") else "GetLink not supported in current browser."
+    
+    def Replace(self, pattern: str, replacement: str, regexMode: bool, session: str) -> str:
+        return self.sessions[session].Replace(pattern, replacement, regexMode) if hasattr(self.sessions[session], "Replace") else "Replace not supported in current browser."
+    
+    def SaveTo(self, dstPath: str, session: str) -> str:
+        return self.sessions[session].SaveTo(dstPath) if hasattr(self.sessions[session], "SaveTo") else "SaveTo not supported in current browser."
 
 def main():
     import argparse
@@ -126,7 +145,7 @@ def main():
         makeServer(ABrowser,
                    {"pdfOutputDir": (args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)},
                    args.addr,
-                   ["ModuleInfo", "Browse", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink"]).Run()
+                   ["ModuleInfo", "Browse", "Edit", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink", "Replace", "SaveTo"]).Run()
 
 if __name__ == '__main__':
     main()
