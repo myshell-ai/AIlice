@@ -60,7 +60,7 @@ SAVETO<!|dstPath: str, session: str|!> -> str
     def SaveTo(self, dstPath: str) -> str:
         try:
             dstPath = self.path if ((dstPath.strip() == "") and (self.path != None)) else dstPath
-            os.makedirs(dstPath, exist_ok=True)
+            os.makedirs(os.path.dirname(dstPath), exist_ok=True)
             with open(dstPath, 'w') as f:
                 f.write(self.txt)
             return f"File {dstPath} saved."
