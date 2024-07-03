@@ -281,6 +281,7 @@ You can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
 ailice_web --modelID=oai:gpt-4o
+ailice_web --modelID=anthropic:claude-3-5-sonnet-20240620
 ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history
 ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher"
 ailice_web --modelID=mistral:mistral-large-latest
@@ -362,13 +363,13 @@ Proficient use of this feature requires a good understanding of AIlice's working
 <a name="guide-to-choosing-an-llm"></a>
 ### Guide to Choosing an LLM
 
-Updated on Jun 22, 2024.
+Updated on Jul 3, 2024.
 
 Currently, AIlice can **handle more complex tasks using the locally run 72B open-source model (qwen-2-72b-instruct running on 4090x2)**, with performance approaching that of GPT-4 level models. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. Click [here](#example-2-lm-studio) to learn how to run this model locally. For users whose GPU conditions are insufficient to run large models, this is not a problem. You can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). Although open-source models cannot yet fully rival commercial GPT-4 level models, you can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
 
-**gpt-4o** and **gpt-4-1106-preview** provides the best performance. But due to the long running time of the Agent and the great consumption of tokens, please use gpt-4 with caution. **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
+**gpt-4o** and **gpt-4-1106-preview** provides the best performance. But due to the long running time of the Agent and the great consumption of tokens, please use commercial models with caution. **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
 
-The **Claude-3** series appears to have performance comparable to top-tier models, however, I haven't conducted thorough testing on this model yet, so I can't provide more information.
+The **claude-3-5-sonnet-20240620** also offer top-level performance comparable to gpt-4o. and **Claude-3** series appears to have performance comparable to top-tier models, however, I haven't conducted thorough testing on this model yet, so I can't provide more information.
 
 The performance of **mistral-small-latest**/**mistral-medium-latest**/**mistral-large-latest** is in the second tier, but still not practical.
 
