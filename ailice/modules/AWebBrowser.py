@@ -5,6 +5,10 @@ import subprocess
 from urllib.parse import urljoin
 from selenium import webdriver
 from bs4 import BeautifulSoup, Comment
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from ailice.modules.AScrollablePage import AScrollablePage
 
 
@@ -41,6 +45,10 @@ class AWebBrowser(AScrollablePage):
             return msg
         
         self.driver.get(url)
+        WebDriverWait(self.driver, 30).until(
+            lambda d: d.execute_script("return document.readyState == 'complete'")
+        )
+
         self.baseURL = url
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
         body = soup.find('body')
@@ -100,6 +108,9 @@ class AWebBrowser(AScrollablePage):
             ret += "\n\n"
             for child in node.children:
                 ret += self.ProcessNode(child)
+        elif node.name == 'pre':
+            for child in node.children:
+                ret += self.ProcessNode(child, strip=False)
         elif node.name == 'code':
             ret = f"\n\n```\n{''.join([self.ProcessNode(child, strip=False) for child in node.children])}\n```\n\n"
         elif node.name in ['span', 'div']:
@@ -150,6 +161,18 @@ class AWebBrowser(AScrollablePage):
             ret += "\n\n"
         elif node.name in ['script', 'style', 'noscript']:
             ret = ""
+        elif node.name in ['iframe']:
+            iframeElement = WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, f'iframe[src="{node.get('src')}"]'))
+            )
+            
+            self.driver.switch_to.frame(iframeElement)
+            iframeContent = self.driver.page_source
+            self.driver.switch_to.parent_frame()
+            
+            soup = BeautifulSoup(iframeContent, 'html.parser')
+            body = soup.find('body')
+            ret += self.ProcessNode(body)
         else:
             for child in node.children:
                 ret += self.ProcessNode(child)
