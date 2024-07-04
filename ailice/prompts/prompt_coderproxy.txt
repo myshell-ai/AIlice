@@ -62,7 +62,7 @@ DEFINE-CODE-VARS<!||!> -> str
 #Save text or code to file.
 SAVE-TO-FILE<!|filePath: str, code: str|!> -> str
 
-#Execute bash script. A timeout error will occur for programs that have not been completed for a long time.
+#Execute bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state remaining from previous calls, such as the current directory, will not affect future calls.
 BASH<!|code: str|!> -> str
 
 #Execute python code. You need to copy the complete code here or use variable references. Only for code in string form, you will need BASH function to execute code saved in a file.

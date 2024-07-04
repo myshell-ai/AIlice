@@ -42,7 +42,7 @@ msg: message need to be told to the agent. The agent cannot see anything beyond 
 BROWSE<!|url: str, session: str|!> -> str
 url: URL of webpage/pdf. This is a str and needs to be enclosed in quotation marks.
 
-#Execute a bash command such as pip install some package.
+#Execute a bash command such as pip install some package. Different calls to a BASH function are independent of each other. The state remaining from previous calls, such as the current directory, will not affect future calls.
 BASH<!|code: str|!> -> str
 
 #Execute python code.
