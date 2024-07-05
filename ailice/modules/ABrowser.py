@@ -1,4 +1,5 @@
 import re
+import os
 import requests
 import tempfile
 import traceback
@@ -10,6 +11,7 @@ from ailice.common.lightRPC import makeServer
 from ailice.modules.AWebBrowser import AWebBrowser
 from ailice.modules.APDFBrowser import APDFBrowser
 from ailice.modules.ATextBrowser import ATextBrowser
+from ailice.modules.AFileBrowser import AFileBrowser
 
 class ABrowser():
     def __init__(self, pdfOutputDir: str):
@@ -88,7 +90,10 @@ class ABrowser():
                     self.sessions[session] = AWebBrowser(functions=self.functions)
                     return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
             elif path is not None:
-                if self.PathIsPDF(path):
+                if os.path.isdir(path):
+                    self.sessions[session] = AFileBrowser(functions=self.functions)
+                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
+                elif self.PathIsPDF(path):
                     self.sessions[session] = APDFBrowser(self.pdfOutputDir, functions=self.functions)
                     return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
                 else:
