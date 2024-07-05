@@ -55,7 +55,7 @@ SAVETO<!|dstPath: str, session: str|!> -> str
         else:
             textNew = self().replace(pattern, replacement)
         self.ReplaceText(textNew, replaceAll=False)
-        return textNew
+        return textNew + self.prompt
     
     def SaveTo(self, dstPath: str) -> str:
         try:
