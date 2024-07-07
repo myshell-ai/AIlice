@@ -163,7 +163,7 @@ class AWebBrowser(AScrollablePage):
             ret = ""
         elif node.name in ['iframe']:
             iframeElement = WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, f'iframe[src="{node.get('src')}"]'))
+                EC.presence_of_element_located((By.CSS_SELECTOR, f'''iframe[src="{node.get('src')}"]'''))
             )
             
             self.driver.switch_to.frame(iframeElement)
