@@ -61,8 +61,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
         except Exception as e:
             if i == 4:
                 print(f"It seems that some peripheral module services failed to start. EXCEPTION: {str(e)}")
-                traceback.print_tb(e.__traceback__)
-                exit(-1)
+                print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
             time.sleep(5)
             continue
 
@@ -106,37 +105,42 @@ def InitSpeech():
 def LoadSession(sessionName: str):
     global processor, logger
     
-    sessionPath = os.path.join(config.chatHistoryPath, sessionName)
-    
-    os.makedirs(sessionPath, exist_ok=True)
-    os.makedirs(os.path.join(sessionPath, "storage"), exist_ok=True)
-    app.config['UPLOAD_FOLDER'] = f'{str(sessionPath)}/uploads'
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    try:
+        sessionPath = os.path.join(config.chatHistoryPath, sessionName)
+        
+        os.makedirs(sessionPath, exist_ok=True)
+        os.makedirs(os.path.join(sessionPath, "storage"), exist_ok=True)
+        app.config['UPLOAD_FOLDER'] = f'{str(sessionPath)}/uploads'
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
-    print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
-    storage = clientPool.GetClient(config.services['storage']['addr'])
-    msg = storage.Open(os.path.join(sessionPath, "storage"))
-    print(f"Vector database has been started. returned msg: {msg}")
-    print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+        print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
+        print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
+        storage = clientPool.GetClient(config.services['storage']['addr'])
+        msg = storage.Open(os.path.join(sessionPath, "storage"))
+        print(f"Vector database has been started. returned msg: {msg}")
+        print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
-    promptsManager.Init(storage=storage, collection=sessionName)
-    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
-        promptsManager.RegisterPrompt(promptCls)
-    
-    logger = ALogger(speech=None)
-    processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=sessionName)
-    processor.RegisterModules([config.services['browser']['addr'],
-                               config.services['arxiv']['addr'],
-                               config.services['google']['addr'],
-                               config.services['duckduckgo']['addr'],
-                               config.services['scripter']['addr'],
-                               config.services['computer']['addr']])
-    
-    p = os.path.join(sessionPath, "ailice_history.json")
-    if os.path.exists(p):
-        with open(p, "r") as f:
-            processor.FromJson(json.load(f))
+        promptsManager.Init(storage=storage, collection=sessionName)
+        for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
+            promptsManager.RegisterPrompt(promptCls)
+        
+        logger = ALogger(speech=None)
+        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=sessionName)
+        processor.RegisterModules([config.services['browser']['addr'],
+                                config.services['arxiv']['addr'],
+                                config.services['google']['addr'],
+                                config.services['duckduckgo']['addr'],
+                                config.services['scripter']['addr'],
+                                config.services['computer']['addr']])
+        
+        p = os.path.join(sessionPath, "ailice_history.json")
+        if os.path.exists(p):
+            with open(p, "r") as f:
+                processor.FromJson(json.load(f))
+    except Exception as e:
+        print('Exception: ', str(e))
+        print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
+        exit(-1)
     return
 
 def InitServer():
@@ -189,7 +193,7 @@ def main():
         
     except Exception as e:
         print(f"Encountered an exception, AIlice is exiting: {str(e)}")
-        traceback.print_tb(e.__traceback__)
+        print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
         TerminateSubprocess()
         raise
 

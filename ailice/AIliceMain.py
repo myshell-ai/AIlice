@@ -55,7 +55,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
         except Exception as e:
             if i == 4:
                 print(f"It seems that some peripheral module services failed to start. EXCEPTION: {str(e)}")
-                traceback.print_tb(e.__traceback__)
+                print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
                 exit(-1)
             time.sleep(5)
             continue
@@ -139,7 +139,7 @@ def main():
         mainLoop(session = kwargs['session'])
     except Exception as e:
         print(f"Encountered an exception, AIlice is exiting: {str(e)}")
-        traceback.print_tb(e.__traceback__)
+        print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
         TerminateSubprocess()
         raise
 

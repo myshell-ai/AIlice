@@ -72,6 +72,7 @@ class GenesisRPCServer(object):
         else:
           ret={'ret':(getattr(self.serverObj,msg['function'])(*msg['args'], **msg['kwargs']))}
       except Exception as e:
+        e.tb = ''.join(traceback.format_tb(e.__traceback__))
         ret={'exception':e}
         traceback.print_tb(e.__traceback__)
         print('Exception. msg: ',str(msg),'. Except: ',str(e))
