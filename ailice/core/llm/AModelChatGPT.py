@@ -18,7 +18,7 @@ class AModelChatGPT():
         self.contextWindow = modelCfg["contextWindow"]
         return
     
-    def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float = 0.2) -> str:
+    def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
         proc(txt='', action='open')
         currentPosition = 0
         text = ""
