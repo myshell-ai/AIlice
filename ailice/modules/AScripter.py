@@ -3,6 +3,7 @@ import os
 import time
 import random
 import tempfile
+import platform
 import traceback
 
 from ailice.common.lightRPC import makeServer
@@ -17,7 +18,8 @@ class AScripter():
         return
     
     def ModuleInfo(self):
-        return {"NAME": "scripter", "ACTIONS": {"BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state remaining from previous calls, such as the current directory, will not affect future calls.", "type": "primary"},
+        return {"NAME": "scripter", "ACTIONS": {"PLATFORM-INFO": {"func": "PlatformInfo", "prompt": "Get the platform information of the current code execution environment.", "type": "primary"},
+                                                "BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state remaining from previous calls, such as the current directory, will not affect future calls.", "type": "primary"},
                                                 "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references.", "type": "primary"},
                                                 "CHECK-OUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result.", "type": "supportive"},
                                                 "SCROLL-UP-TERM": {"func": "ScrollUp", "prompt": "Scroll up the results.", "type": "supportive"},
@@ -83,7 +85,11 @@ class AScripter():
         finally:
             self.sessions[session]['pages'].LoadPage(res, "BOTTOM")
             return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
-        
+    
+    def PlatformInfo(self) -> str:
+        info = platform.uname()
+        return f"system: {info.system}, release: {info.release}, version: {info.version}, machine: {info.machine}"
+    
     def RunBash(self, code: str) -> str:
         res = ""
         try:
@@ -149,7 +155,7 @@ def main():
     parser.add_argument('--incontainer',action="store_true",help="Run in container. Please DO NOT turn on this switch on non-virtual machines, otherwise it will cause serious security risks.")
     args = parser.parse_args()
     #addr = "tcp://0.0.0.0:59000" if args.incontainer else "tcp://127.0.0.1:59000"
-    makeServer(AScripter, {"incontainer": args.incontainer}, args.addr, ["ModuleInfo", "CheckOutput", "RunBash", "RunPython", "ScrollUp", "Save2File"]).Run()
+    makeServer(AScripter, {"incontainer": args.incontainer}, args.addr, ["ModuleInfo", "PlatformInfo", "CheckOutput", "RunBash", "RunPython", "ScrollUp", "Save2File"]).Run()
 
 if __name__ == '__main__':
     main()

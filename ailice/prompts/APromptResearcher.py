@@ -63,6 +63,7 @@ class APromptResearcher():
         return self.ACTIONS
 
     def ParameterizedBuildPrompt(self, n: int):
+        self.platformInfo = self.processor.modules['scripter']['module'].PlatformInfo() if not hasattr(self, 'platformInfo') else self.platformInfo
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
         agents = FindRecords("academic, mathematics, search, investigation, analysis, logic.", lambda r: (r['properties']['type'] == 'primary'), 10, self.storage, self.collection + "_prompts")
@@ -73,6 +74,8 @@ class APromptResearcher():
 {prompt0}
 
 End of general instructions.
+
+Code Execution Environment: {self.platformInfo}
 
 Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
 
