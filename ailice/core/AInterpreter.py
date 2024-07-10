@@ -139,7 +139,7 @@ class AInterpreter():
                 if "unterminated string literal" in str(e):
                     r += "Please check if there are any issues with your string syntax. For instance, are you using a newline within a single-quoted string? Or should you use triple quotes to avoid error-prone escape sequences?"
             except Exception as e:
-                r = f"EXCEPTION: {str(e)}\n{traceback.format_exc()}"
+                r = f"EXCEPTION: {str(e)}\n{e.tb if hasattr(e, 'tb') else traceback.format_exc()}"
             if r not in ["", None]:
                 resp += (r + "\n")
         return resp
