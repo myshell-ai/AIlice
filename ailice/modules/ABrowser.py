@@ -116,7 +116,7 @@ class ABrowser():
         return
     
     def GetFullText(self, session: str) -> str:
-        return self.sessions[session].GetFullText()
+        return self.sessions[session].GetFullText() if session in self.sessions else f"ERROR: Invalid session name: {session}"
 
     def ScrollDown(self, session: str) -> str:
         return self.prompt + "\n--------------" + "\n" + self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
