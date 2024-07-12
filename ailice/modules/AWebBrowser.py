@@ -5,6 +5,7 @@ import subprocess
 from urllib.parse import urljoin
 from selenium import webdriver
 from bs4 import BeautifulSoup, Comment
+import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -162,9 +163,12 @@ class AWebBrowser(AScrollablePage):
         elif node.name in ['script', 'style', 'noscript']:
             ret = ""
         elif node.name in ['iframe']:
-            iframeElement = WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, f'''iframe[src="{node.get('src')}"]'''))
-            )
+            try:
+                iframeElement = WebDriverWait(self.driver, 30).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, f'''iframe[src="{node.get('src')}"]'''))
+                )
+            except selenium.common.exceptions.TimeoutException as e:
+                return ret
             
             self.driver.switch_to.frame(iframeElement)
             iframeContent = self.driver.page_source
