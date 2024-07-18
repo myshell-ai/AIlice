@@ -178,7 +178,7 @@ pip install -e .
 
 AIlice installed in this way also has voice conversation and fine-tuning functions.
 
-You can run AIlice now! Use the commands in [Usage](#usage).
+You can run AIlice now! Use the commands in [Usage](#usage). However, AIlice installed by default will run slowly because it uses CPU as the inference hardware of the long-term memory module. Therefore, it is strongly recommended to [configure it](#accelerate-using-gpu) to run on GPU according to your own circumstances.
 
 
 <a name="if-you-need-to-frequently-use-google"></a>
@@ -214,7 +214,12 @@ The vector database is currently AIlice's sole long-term memory mechanism, acces
 
 ```bash
 pip uninstall llama-cpp-python
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python
+# for Nvidia CUDA GPUs:
+CMAKE_ARGS="-DGGML_CUDA=on" FORCE_CMAKE=1 pip install llama-cpp-python
+# for AMD ROCM GPUs:
+CMAKE_ARGS="-DGGML_HIPBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python
+# use Vulkan:
+CMAKE_ARGS="-DGGML_VULKAN=on" FORCE_CMAKE=1 pip install llama-cpp-python
 ```
 
 For users requiring PDF document reading capabilities, it is recommended to use GPU for PDF OCR to avoid significantly slow OCR processes. Please install onnxruntime-gpu using the following command:
