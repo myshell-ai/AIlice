@@ -57,6 +57,8 @@ class AConfig():
                 "modelList": {
                     "gpt-4o": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": True},
                     "gpt-4o-2024-05-13": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": True},
+                    "gpt-4o-mini": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": True},
+                    "gpt-4o-mini-2024-07-18": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": True},
                     "gpt-4-turbo": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
                     "gpt-4-turbo-2024-04-09": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": False},
                     "gpt-4-0125-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": False},
