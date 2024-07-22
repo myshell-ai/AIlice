@@ -164,11 +164,11 @@ class AConfig():
             response.raise_for_status()
             json = response.json()
             for model in json['data']:
-                self.models['openrouter']['modelList'][model['id']] = {"formatter": {"text": "AFormatterGPT", "multimodal": "AFormatterGPTVision"}[model['architecture']['modality']],
+                self.models['openrouter']['modelList'][model['id']] = {"formatter": {"text->text": "AFormatterGPT", "text+image->text": "AFormatterGPTVision"}[model['architecture']['modality']],
                                                                        "contextWindow": int(model['context_length']),
                                                                        "systemAsUser": False}
         except Exception as e:
-            print("InitOpenRouterCfg() FAILED, skip this part and do not set it again.")
+            print(f"InitOpenRouterCfg() FAILED, skip this part and do not set it again. EXCEPTION: {str(e)}")
         return
     
     def Initialize(self):
