@@ -348,7 +348,7 @@
                 if (math[1]) {
                     return math[0];
                 }
-                return rendererCodespan(text);
+                return rendererCodespan({text: text});
             }
 
         marked.use({ renderer });
