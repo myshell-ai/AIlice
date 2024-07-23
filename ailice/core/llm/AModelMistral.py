@@ -22,9 +22,10 @@ class AModelMistral():
         proc(txt='', action='open')
         currentPosition = 0
         text = ""
+        extras = {"temperature": temperature} if None != temperature else {}
         for chunk in self.client.chat_stream(model=self.modelName,
                                              messages=[ChatMessage(**msg) for msg in prompt],
-                                             temperature=temperature):
+                                             **extras):
             text += (chunk.choices[0].delta.content or "")
 
             if endchecker(text):

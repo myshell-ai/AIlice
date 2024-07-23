@@ -22,11 +22,12 @@ class AModelAnthropic():
         proc(txt='', action='open')
         currentPosition = 0
         text = ""
+        extras = {"temperature": temperature} if None != temperature else {}
         with self.client.messages.stream(model=self.modelName,
                                          max_tokens=4096,
                                          system=prompt[0]["content"],
                                          messages=prompt[1:],
-                                         temperature=temperature) as stream:
+                                         **extras) as stream:
             for delta in stream.text_stream:
                 text += delta
 

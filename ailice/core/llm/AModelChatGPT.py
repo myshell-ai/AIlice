@@ -23,9 +23,10 @@ class AModelChatGPT():
         currentPosition = 0
         text = ""
         extras = {"max_tokens": 4096} if "vision" in self.modelName else {}
+        if None != temperature:
+            extras["temperature"] = temperature
         for chunk in self.client.chat.completions.create(model=self.modelName,
                                                          messages=prompt,
-                                                         temperature=temperature,
                                                          stream=True,
                                                          **extras):
             text += (chunk.choices[0].delta.content or "")

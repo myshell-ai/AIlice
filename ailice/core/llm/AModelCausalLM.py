@@ -69,7 +69,7 @@ class AModelCausalLM():
         self.model = PeftModel.from_pretrained(self.model, modelName)
         return
     
-    def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float) -> str:
+    def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float = 0.0) -> str:
         proc(txt='', action='open')
 
         predictedIDs = torch.tensor([prompt]).cuda() #(b, seq)
