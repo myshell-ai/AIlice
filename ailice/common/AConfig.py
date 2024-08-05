@@ -166,7 +166,7 @@ class AConfig():
             for model in json['data']:
                 self.models['openrouter']['modelList'][model['id']] = {"formatter": {"text->text": "AFormatterGPT", "text+image->text": "AFormatterGPTVision"}[model['architecture']['modality']],
                                                                        "contextWindow": int(model['context_length']),
-                                                                       "systemAsUser": False}
+                                                                       "systemAsUser": True}
         except Exception as e:
             print(f"InitOpenRouterCfg() FAILED, skip this part and do not set it again. EXCEPTION: {str(e)}")
         return
