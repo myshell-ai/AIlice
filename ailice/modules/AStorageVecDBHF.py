@@ -87,7 +87,7 @@ class AStorageVecDB():
             return False
         return True
     
-    def Query(self, collection: str, clue: str = "", keywords: list[str] = None, num_results:int=1):# -> list(tuple[str,float]):
+    def Query(self, collection: str, clue: str = "", keywords: list[str] = None, num_results:int=1) -> list[tuple[str,float]]:
         try:
             if collection not in self.data["collections"]:
                 return []
@@ -110,12 +110,15 @@ class AStorageVecDB():
             print("query() EXCEPTION: ", e, traceback.print_tb(e.__traceback__))
             return []
     
+    def Recall(self, collection: str, query: str, num_results:int=1) -> list[tuple[str,float]]:
+        return self.Query(collection=collection, clue=query, num_results=num_results)
+    
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AStorageVecDB, dict(), args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query"]).Run()
+    makeServer(AStorageVecDB, dict(), args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query", "Recall"]).Run()
 
 if __name__ == '__main__':
     main()

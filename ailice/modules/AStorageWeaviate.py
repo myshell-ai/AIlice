@@ -49,7 +49,7 @@ class AStorageWeaviate():
             return False
         return True
     
-    def Query(self, collection: str, clue: str, num_results:int=1):# -> list(tuple[str,float]):
+    def Query(self, collection: str, clue: str, num_results:int=1) -> list[tuple[str,float]]:
         try:
             response = self.client.collections.get(collection).query.near_text(
                 query=clue,
@@ -64,7 +64,10 @@ class AStorageWeaviate():
         except Exception as e:
             print("query() EXCEPTION: ", e)
             return []
-        
+
+    def Recall(self, collection: str, query: str, num_results:int=1) -> list[tuple[str,float]]:
+        return self.Query(collection=collection, clue=query, num_results=num_results)
+    
 def main():
     import argparse
     parser = argparse.ArgumentParser()
@@ -74,7 +77,7 @@ def main():
     parser.add_argument('--oaiKey',type=str, help="The OpenAI api key.")
 
     args = parser.parse_args()
-    makeServer(AStorageWeaviate, {"clusterURL": args.clusterURL, "apiKey": args.apiKey, "oaiKey": args.oaiKey}, args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query"]).Run()
+    makeServer(AStorageWeaviate, {"clusterURL": args.clusterURL, "apiKey": args.apiKey, "oaiKey": args.oaiKey}, args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query", "Recall"]).Run()
 
 if __name__ == '__main__':
     main()
