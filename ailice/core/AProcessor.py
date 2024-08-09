@@ -162,15 +162,12 @@ class AProcessor():
         return ""
     
     def EvalStore(self, txt: str):
-        if not self.modules['storage']['module'].Store(self.collection, txt):
-            return "STORE FAILED, please check your input."
+        self.modules['storage']['module'].Store(self.collection, txt)
         return
     
-    def EvalQuery(self, keywords: str) -> str:
-        res = self.modules['storage']['module'].Query(collection=self.collection, clue=keywords)
-        if (0 == len(res)) or (res[0][1] > 0.5):
-            return "Nothing found."
-        return "QUERY_RESULT={" + res[0][0] +"}"
+    def EvalQuery(self, query: str) -> str:
+        res = self.modules['storage']['module'].Recall(collection=self.collection, query=query)
+        return f"QUERY_RESULT=[{res}]"
     
     def Return(self) -> str:
         return ""

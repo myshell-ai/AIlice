@@ -4,6 +4,7 @@ from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import paragraph_generator
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
+from ailice.common.ARemoteAccessors import clientPool
 
 class APromptArticleDigest():
     PROMPT_NAME = "article-digest"
@@ -43,7 +44,7 @@ class APromptArticleDigest():
         return ret
     
     def Recall(self, keywords: str) -> str:
-        ret = self.storage.Query(collection=self.collection, clue=keywords, num_results=1)
+        ret = self.storage.Recall(collection=self.collection, query=keywords, num_results=1)
         if 0 != len(ret):
             return ret[0][0]
         else:

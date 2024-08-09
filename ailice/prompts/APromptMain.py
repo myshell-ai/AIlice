@@ -2,6 +2,7 @@ from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
+from ailice.common.ARemoteAccessors import clientPool
 
 class APromptMain():
     PROMPT_NAME = "main"
@@ -23,7 +24,7 @@ class APromptMain():
         return
     
     def Recall(self, key: str):
-        ret = self.storage.Query(collection=self.collection, clue=key, num_results=4)
+        ret = self.storage.Recall(collection=self.collection, query=key, num_results=4)
         for r in ret:
             if (key not in r[0]) and (r[0] not in key):
                 return r[0]
