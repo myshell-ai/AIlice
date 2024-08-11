@@ -2,6 +2,7 @@ import subprocess
 import os
 import time
 import random
+import threading
 import tempfile
 import platform
 import traceback
@@ -14,6 +15,9 @@ class AScripter():
     def __init__(self, incontainer = False):
         self.incontainer = incontainer
         self.sessions = {}
+        self.sessionsLock = threading.Lock()
+        self.reader = threading.Thread(target=self.OutputReader, args=())
+        self.reader.start()
         self.functions = {"SCROLLUP": "#scroll up the page: \nSCROLL-UP-TERM<!|session: str|!>"}
         return
     
@@ -73,17 +77,27 @@ class AScripter():
                     break
         return output, completed
     
+    def OutputReader(self):
+        while True:
+            with self.sessionsLock:
+                for session in self.sessions:
+                    if self.sessions[session]['completed']:
+                        continue
+                    try:
+                        output, completed = self.CheckProcOutput(session=session)
+                        self.sessions[session]['completed'] = completed
+                        self.sessions[session]['output'] += output
+                        p = "\nThe program takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
+                    except Exception as e:
+                        p = f"Exception when check the output of program execution: {str(e)}\n {traceback.format_exc()}"
+                        print(p)
+                    finally:
+                        self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
+            time.sleep(1.0)
+        return
+    
     def CheckOutput(self, session: str) -> str:
-        res = ""
-        try:
-            output, completed = self.CheckProcOutput(session=session)
-            res += output
-            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
-        except Exception as e:
-            res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
-            print(res)
-        finally:
-            self.sessions[session]['pages'].LoadPage(res, "BOTTOM")
+        with self.sessionsLock:
             return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
     
     def PlatformInfo(self) -> str:
@@ -91,50 +105,53 @@ class AScripter():
         return f"system: {info.system}, release: {info.release}, version: {info.version}, machine: {info.machine}"
     
     def RunBash(self, code: str) -> str:
-        res = ""
-        try:
-            session = self.GetSessionID()
-            self.sessions[session] = {"proc": None, "pages": AScrollablePage(functions=self.functions)}
-            self.RunCMD(session, ["bash", "-c", code])
-        except Exception as e:
-            res += f"Exception: {str(e)}\n {traceback.format_exc()}"
-        
-        try:
-            output, completed = self.CheckProcOutput(session=session)
-            res += output
-            res += "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
-        except Exception as e:
-            res += f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
-            print(res)
-        finally:
-            self.sessions[session]['pages'].LoadPage(res, "BOTTOM")
-            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
-    
-    def RunPython(self, code: str) -> str:
-        res = ""
-        with tempfile.NamedTemporaryFile(mode='w', delete=True) as temp:
-            temp.write(code)
-            temp.flush()
+        with self.sessionsLock:
             try:
                 session = self.GetSessionID()
-                self.sessions[session] = {"proc": None, "pages": AScrollablePage(functions=self.functions)}
-                self.RunCMD(session, ['python3', '-u', temp.name])
+                self.sessions[session] = {"proc": None, "pages": AScrollablePage(functions=self.functions), "output": "", "lock": threading.Lock()}
+                self.RunCMD(session, ["bash", "-c", code])
             except Exception as e:
-                res += f"Exception: {str(e)}\n {traceback.format_exc()}"
-        
-        try:
-            output, completed = self.CheckProcOutput(session=session)
-            res += output
-            res += "\nThe python script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
-        except Exception as e:
-            res += f"Exception when check the output of python execution: {str(e)}\n {traceback.format_exc()}"
-            print(res)
-        finally:
-            self.sessions[session]['pages'].LoadPage(res, "BOTTOM")
-            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
+                self.sessions[session]['output'] += f"Exception: {str(e)}\n {traceback.format_exc()}"
+            
+            try:
+                output, completed = self.CheckProcOutput(session=session)
+                self.sessions[session]['completed'] = completed
+                self.sessions[session]['output'] += output
+                p = "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
+            except Exception as e:
+                p = f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
+                print(p)
+            finally:
+                self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
+                return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
+    
+    def RunPython(self, code: str) -> str:
+        with self.sessionsLock:
+            with tempfile.NamedTemporaryFile(mode='w', delete=True) as temp:
+                temp.write(code)
+                temp.flush()
+                try:
+                    session = self.GetSessionID()
+                    self.sessions[session] = {"proc": None, "pages": AScrollablePage(functions=self.functions), "output": "", "lock": threading.Lock()}
+                    self.RunCMD(session, ['python3', '-u', temp.name])
+                except Exception as e:
+                    self.sessions[session]['output'] += f"Exception: {str(e)}\n {traceback.format_exc()}"
+            
+            try:
+                output, completed = self.CheckProcOutput(session=session)
+                self.sessions[session]['completed'] = completed
+                self.sessions[session]['output'] += output
+                p = "\nThe python script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
+            except Exception as e:
+                p = f"Exception when check the output of python execution: {str(e)}\n {traceback.format_exc()}"
+                print(p)
+            finally:
+                self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
+                return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
     
     def ScrollUp(self, session: str) -> str:
-        return self.sessions[session]['pages'].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
+        with self.sessionsLock:
+            return self.sessions[session]['pages'].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
     
     def Save2File(self, filePath: str, code: str) -> str:
         try:
