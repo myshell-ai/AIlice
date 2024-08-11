@@ -169,15 +169,6 @@ pip install -e .[finetuning]
 pip install -e .[pdf-reading]
 ```
 
-Sometimes the above installation steps cannot be completed successfully because some dependencies are conflicting. You can consider installing all the dependencies of requirements.txt in a new virtual environment to solve this problem:
-
-```bash
-pip install -r requirements.txt
-pip install -e .
-```
-
-AIlice installed in this way also has voice conversation and fine-tuning functions.
-
 You can run AIlice now! Use the commands in [Usage](#usage).
 
 AIlice installed by default will run slowly because it uses CPU as the inference hardware of the long-term memory module. Therefore, it is strongly recommended to [configure it](#accelerate-using-gpu) to run on GPU according to your own circumstances.
