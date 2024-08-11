@@ -77,22 +77,25 @@ class AScripter():
                     break
         return output, completed
     
+    def UpdateSession(self, session: str):
+        try:
+            output, completed = self.CheckProcOutput(session=session)
+            self.sessions[session]['completed'] = completed
+            self.sessions[session]['output'] += output
+            p = "\nThe program takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
+        except Exception as e:
+            p = f"Exception when check the output of program execution: {str(e)}\n {traceback.format_exc()}"
+            print(p)
+        finally:
+            self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
+                        
     def OutputReader(self):
         while True:
             with self.sessionsLock:
                 for session in self.sessions:
                     if self.sessions[session]['completed']:
                         continue
-                    try:
-                        output, completed = self.CheckProcOutput(session=session)
-                        self.sessions[session]['completed'] = completed
-                        self.sessions[session]['output'] += output
-                        p = "\nThe program takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
-                    except Exception as e:
-                        p = f"Exception when check the output of program execution: {str(e)}\n {traceback.format_exc()}"
-                        print(p)
-                    finally:
-                        self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
+                    self.UpdateSession(session)
             time.sleep(1.0)
         return
     
@@ -113,17 +116,8 @@ class AScripter():
             except Exception as e:
                 self.sessions[session]['output'] += f"Exception: {str(e)}\n {traceback.format_exc()}"
             
-            try:
-                output, completed = self.CheckProcOutput(session=session)
-                self.sessions[session]['completed'] = completed
-                self.sessions[session]['output'] += output
-                p = "\nThe bash script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
-            except Exception as e:
-                p = f"Exception when check the output of bash execution: {str(e)}\n {traceback.format_exc()}"
-                print(p)
-            finally:
-                self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
-                return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
+            self.UpdateSession(session)
+            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
     
     def RunPython(self, code: str) -> str:
         with self.sessionsLock:
@@ -137,17 +131,8 @@ class AScripter():
                 except Exception as e:
                     self.sessions[session]['output'] += f"Exception: {str(e)}\n {traceback.format_exc()}"
             
-            try:
-                output, completed = self.CheckProcOutput(session=session)
-                self.sessions[session]['completed'] = completed
-                self.sessions[session]['output'] += output
-                p = "\nThe python script takes longer to complete. You can use WAIT to wait for a while and then use CHECK-OUTPUT function to get new output." if not completed else "\nExecution completed."
-            except Exception as e:
-                p = f"Exception when check the output of python execution: {str(e)}\n {traceback.format_exc()}"
-                print(p)
-            finally:
-                self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
-                return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
+            self.UpdateSession(session)
+            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
     
     def ScrollUp(self, session: str) -> str:
         with self.sessionsLock:
