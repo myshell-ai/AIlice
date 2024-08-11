@@ -13,6 +13,7 @@ class AConversations():
         return
     
     def Add(self, role: str, msg: str, env: dict[str,Any]):
+        msg = "<EMPTY MSG>" if ("" == msg) else msg
         record = {"role": role, "time": time.time(), "msg": msg, "attachments": []}
         
         if role in ["USER", "SYSTEM"]:

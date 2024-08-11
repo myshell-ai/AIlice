@@ -115,7 +115,6 @@ class AProcessor():
             self.Prepare()
             prompt = self.prompt.BuildPrompt()
             ret = self.llm.Generate(prompt, proc=partial(self.outputCB, "ASSISTANT_" + self.name), endchecker=self.interpreter.EndChecker, temperature = config.temperature)
-            ret = " " if ("" == ret) else ret
             self.conversation.Add(role = "ASSISTANT", msg = ret, env = self.interpreter.env)
             self.EvalStore(ret)
             self.result = ret
