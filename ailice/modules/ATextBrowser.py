@@ -51,9 +51,9 @@ SAVETO<!|dstPath: str, session: str|!> -> str
     
     def Replace(self, pattern: str, replacement: str, regexMode: bool) -> str:
         if regexMode:
-            textNew = re.sub(pattern, replacement, self())
+            textNew = re.sub(pattern, replacement, self(prompt=False))
         else:
-            textNew = self().replace(pattern, replacement)
+            textNew = self(prompt=False).replace(pattern, replacement)
         self.ReplaceText(textNew, replaceAll=False)
         return textNew + self.prompt
     

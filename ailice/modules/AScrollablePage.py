@@ -55,12 +55,12 @@ class AScrollablePage():
             self.txt = self.txt[:start] + replacement + self.txt[end:]
         return
     
-    def __call__(self) -> str:
+    def __call__(self, prompt: bool = True) -> str:
         if (self.currentIdx >= len(self.txt)):
-            return "EOF."
+            return "EOF." if prompt else ""
         elif ((self.currentIdx + STEP) <= 0):
-            return "FILE HEADER REACHED."
+            return "FILE HEADER REACHED." if prompt else ""
         else:
             start = self.currentIdx if self.currentIdx >= 0 else 0
             end = (self.currentIdx + STEP) if (self.currentIdx + STEP) >= 0 else 0
-            return self.txt[start:end] + "\n\n" + self.ConstructPrompt()
+            return self.txt[start:end] + ("\n\n" + self.ConstructPrompt() if prompt else "")
