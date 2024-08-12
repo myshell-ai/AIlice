@@ -16,16 +16,14 @@
             color: #333;
         }
         .container {
-            width: 80%;
-            max-width: 1200px;
+            width: 98%;
+            height: 98vh;
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: row;
-            height: 80vh;
             overflow: hidden;
-            max-width: 100%;
         }
         .sidebar {
             width: 20%;
@@ -57,7 +55,7 @@
         }
         .sidebar li.selected {
             padding: 8px 12px;
-            background-color: #f1f1f1;
+            background-color: #e6e6e6;
             color: #333;
             border: 1px solid #ccc;
             border-radius: 12px;
@@ -130,7 +128,7 @@
             border-top: 1px solid #e0e0e0;
             justify-content: space-between;
         }
-        .input-section input[type="text"] {
+        .input-section textarea {
             flex: 1;
             max-width: calc(100% - 95px);
             padding: 10px;
@@ -141,6 +139,10 @@
             color: #333;
             background-color: #fff;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            resize: none;
+            overflow-y: auto;
+            min-height: 40px;
+            max-height: 200px;
         }
         .input-section button {
             padding: 10px 15px;
@@ -190,6 +192,7 @@
             overflow-wrap: break-word;
             word-wrap: break-word;
             word-break: break-all;
+            font-size: 18px;
         }
         .message.USER .bubble {
             background-color: #007bff;
@@ -221,7 +224,7 @@
                 <!-- Chat messages will be displayed here -->
             </div>
             <div class="input-section">
-                <input type="text" id="text-input" placeholder="Type a message...">
+                <textarea id="text-input" placeholder="Type a message... (Shift+Enter for new line)"></textarea>
                 <button id="interrupt-button" style="display: none;">⏹️</button>
                 <button id="audio-button">🎤</button>
                 <button id="image-button">📷</button>
@@ -519,46 +522,56 @@
             }
         });
 
-        document.getElementById('text-input').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                const message = event.target.value;
-                event.target.value = '';
-
-                if (isInterrupted) {
-                    sendmsg(message);
-                } else {
-                    let newChatPromise = ensureChat();
-
-                    newChatPromise.then(() => {
-                        displayMsg("USER", message);
+        document.getElementById('text-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const message = this.value.trim();
+                this.value = '';
+                this.style.height = 'auto';
+                
+                if (message) {
+                    if (isInterrupted) {
+                        sendmsg(message);
+                    } else {
+                        let newChatPromise = ensureChat();
                         
-                        const currentHistory = document.querySelector('#history-list .selected');
-                        if (currentHistory.querySelector('span').textContent === "New Chat") {
-                            currentHistory.querySelector('span').textContent = message;
-                        }
-
-                        return fetch('/chat', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ message: message })
+                        newChatPromise.then(() => {
+                            displayMsg("USER", message);
+                            
+                            const currentHistory = document.querySelector('#history-list .selected');
+                            if (currentHistory.querySelector('span').textContent === "New Chat") {
+                                currentHistory.querySelector('span').textContent = message;
+                            }
+                            
+                            return fetch('/chat', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ message: message })
+                            })
                         })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.body.getReader();
-                    })
-                    .then(reader => {
-                        readResponse(reader);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.body.getReader();
+                        })
+                        .then(reader => {
+                            readResponse(reader);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    }
                 }
             }
+        });
+
+        // Add this function to automatically resize the textarea
+        document.getElementById('text-input').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
         });
 
         document.getElementById('audio-button').addEventListener('click', function() {
