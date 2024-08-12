@@ -38,6 +38,9 @@ class AStorageVecDB():
 
     def PrepareModel(self):
         ggufFile = hf_hub_download(repo_id=self.data['model'],filename=self.data['file'])
+        if self.model and ggufFile == self.model.model_path:
+            return
+        
         self.model = Llama(
             model_path=ggufFile,
             embedding=True,
