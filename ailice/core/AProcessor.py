@@ -101,7 +101,7 @@ class AProcessor():
         for nodeType, patterns in self.prompt.GetPatterns().items():
             for p in patterns:
                 self.interpreter.RegisterPattern(nodeType, p["re"], p["isEntry"])
-        self.interpreter.RegisterPattern("_FUNCTION_CALL_DEFAULT", FUNCTION_CALL_DEFAULT, True, True)
+        self.interpreter.RegisterPattern("_FUNCTION_CALL_DEFAULT", FUNCTION_CALL_DEFAULT, True, True, 99999999)
         self.interpreter.RegisterAction("_FUNCTION_CALL_DEFAULT", {"func": self.EvalFunctionCallDefault, "noEval": ["funcName", "paras"]})
         return
     
@@ -192,7 +192,7 @@ class AProcessor():
             ret = self.RegisterModules([addr])
             prompts = []
             for r in ret:
-                self.interpreter.RegisterPattern(nodeType=r['action'], pattern=GenerateRE4FunctionCalling(r['signature'], faultTolerance = True), isEntry=True)
+                self.interpreter.RegisterPattern(nodeType=r['action'], pattern=GenerateRE4FunctionCalling(r['signature'], faultTolerance = False), isEntry=True)
                 prompts.append(f"{r['signature']}: {r['prompt']}")
             ret = "\n".join(prompts)
         except Exception as e:
