@@ -14,7 +14,7 @@ def HasReturnValue(action):
 class AInterpreter():
     def __init__(self):
         self.actions = {}#nodeType: {"func": func}
-        self.patterns = {}#nodeType: [{re,isEntry,noTrunc}]
+        self.patterns = []#[{nodeType,re,isEntry,noTrunc,priority}]
         self.env = {}
 
         self.RegisterPattern("_STR", f"(?P<txt>({ARegexMap['str']}))", False)
@@ -44,12 +44,14 @@ class AInterpreter():
         self.actions[nodeType]["signature"] = signature
         return
     
-    def RegisterPattern(self, nodeType: str, pattern: str, isEntry: bool, noTrunc: bool = False):
-        if nodeType not in self.patterns:
-            self.patterns[nodeType] = []
-        p = {"re": pattern, "isEntry": isEntry, "noTrunc": noTrunc}
-        if p not in self.patterns[nodeType]:
-            self.patterns[nodeType].append(p)
+    def RegisterPattern(self, nodeType: str, pattern: str, isEntry: bool, noTrunc: bool = False, priority: int = 0):
+        p = {"nodeType": nodeType, "re": pattern, "isEntry": isEntry, "noTrunc": noTrunc, "priority": priority}
+        if pattern not in [p["re"] for p in self.patterns]:
+            loc = 0
+            for loc in range(0, len(self.patterns)):
+                if self.patterns[loc]["priority"] > priority:
+                    break
+            self.patterns.insert(loc, p)
         return
     
     def CreateVar(self, content: Any, prefix: str) -> str:
@@ -58,18 +60,17 @@ class AInterpreter():
         return varName
     
     def EndChecker(self, txt: str) -> bool:
-        endPatterns = [p['re'] for nodeType,patterns in self.patterns.items() for p in patterns if p['isEntry'] and (not p['noTrunc']) and (HasReturnValue(self.actions[nodeType]) if nodeType in self.actions else False)]
+        endPatterns = [p['re'] for p in self.patterns if p['isEntry'] and (not p['noTrunc']) and (HasReturnValue(self.actions[p['nodeType']]) if p['nodeType'] in self.actions else False)]
         return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns]) or (None != messenger.Get())
     
     def GetEntryPatterns(self) -> dict[str,str]:
-        return [(nodeType, p['re']) for nodeType,patterns in self.patterns.items() for p in patterns if p["isEntry"]]
+        return [(p['nodeType'], p['re']) for p in self.patterns if p["isEntry"]]
     
     def Parse(self, txt: str) -> tuple[str,dict[str,str]]:
-        for nodeType, patterns in self.patterns.items():
-            for p in patterns:
-                m = re.fullmatch(p['re'], txt, re.DOTALL)
-                if m:
-                    return (nodeType, m.groupdict())
+        for p in self.patterns:
+            m = re.fullmatch(p['re'], txt, re.DOTALL)
+            if m:
+                return (p['nodeType'], m.groupdict())
         return (None, None)
 
     def CallWithTextArgs(self, nodeType, txtArgs) -> Any:
