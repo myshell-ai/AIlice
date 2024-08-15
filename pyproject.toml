@@ -48,13 +48,13 @@ espnet = {version = "202207", optional = true}
 espnet-model-zoo = {version = "0.1.7", optional = true}
 espnet-tts-frontend = {version = "0.0.3", optional = true}
 torchaudio = {version = "^2", optional = true}
-pix2text = {version = "^1", optional = true}
+marker-pdf = {version = "*", optional = true}
 
 [tool.poetry.extras]
 huggingface = ["torch", "transformers", "accelerate", "bitsandbytes"]
 finetuning = ["peft", "datasets", "tensorboard"]
 speech = ["typeguard", "sounddevice", "espnet", "espnet-model-zoo", "espnet-tts-frontend", "torchaudio"]
-pdf-reading = ["pix2text"]
+pdf-reading = ["marker-pdf"]
 
 [tool.poetry.scripts]
 ailice = "ailice.ui.app:main"

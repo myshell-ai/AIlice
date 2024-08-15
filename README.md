@@ -227,13 +227,6 @@ Use Vulkan:
 CMAKE_ARGS="-DGGML_VULKAN=on" FORCE_CMAKE=1 pip install llama-cpp-python
 ```
 
-For users requiring PDF document reading capabilities, it is recommended to use GPU for PDF OCR to avoid significantly slow OCR processes. Please install onnxruntime-gpu using the following command:
-
-```bash
-pip uninstall onnxruntime
-pip install onnxruntime-gpu
-```
-
 <a name="virtual-environment-settings-for-code-execution"></a>
 ### Virtual Environment Settings for Code Execution
 By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify AIlice's configuration file (AIlice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
