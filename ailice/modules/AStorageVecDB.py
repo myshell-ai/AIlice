@@ -1,10 +1,12 @@
 import os
+import time
 import pickle
 import traceback
 import numpy as np
 from typing import Union
 from huggingface_hub import hf_hub_download
 from llama_cpp import Llama
+from threading import Thread, Lock
 
 from ailice.common.lightRPC import makeServer
 
@@ -14,15 +16,40 @@ FILE_NAME = 'nomic-embed-text-v1.Q8_0.gguf'
 class AStorageVecDB():
     def __init__(self):
         self.model = None
+        self.modelLock = Lock()
         self.data = {"model": MODEL, "file": FILE_NAME, "collections": {}}
         self.dir = None
+        self.buffers = {}
+        self.buffersLock = Lock()
+        self.hippocampus = Thread(target=self.Hippocampus, args=())
+        self.hippocampus.start()
         return
 
     def ModuleInfo(self):
         return {"NAME": "storage", "ACTIONS": {}}
 
     def CalcEmbeddings(self, txts: list[str]):
-        return np.array(self.model.embed(txts))
+        with self.modelLock:
+            return np.array(self.model.embed(txts))
+    
+    def Hippocampus(self):
+        while True:
+            with self.buffersLock:
+                for collection in self.buffers:
+                    if len(self.buffers[collection]['texts']) == 0:
+                        continue
+                    
+                    with self.buffers[collection]['lock']:
+                        try:
+                            embeddings = self.CalcEmbeddings(self.buffers[collection]['texts'])
+                            for txt, emb in zip(self.buffers[collection]['texts'], embeddings):
+                                if txt not in self.data["collections"][collection]:
+                                    self.data["collections"][collection][txt] = emb
+                            self.Dump(self.dir)
+                            self.buffers[collection]['texts'] = []
+                        except Exception as e:
+                            continue #TODO.
+            time.sleep(0.1)
     
     def Dump(self, dir):
         if None != dir:
@@ -72,15 +99,14 @@ class AStorageVecDB():
     def Store(self, collection: str, content: Union[str,list[str]]) -> bool:
         try:
             print("collection: ", collection,". store: ", content)
-
             if collection not in self.data["collections"]:
                 self.data["collections"][collection] = dict()
+                with self.buffersLock:
+                    self.buffers[collection]={"texts": [], "lock": Lock()}
+            
             texts = [content] if type(content) != list else content
-            embeddings = self.CalcEmbeddings(texts)
-            for txt, emb in zip(texts, embeddings):
-                if txt not in self.data["collections"][collection]:
-                    self.data["collections"][collection][txt] = emb
-            self.Dump(self.dir)
+            with self.buffers[collection]['lock']:
+                self.buffers[collection]['texts'] += texts
         except Exception as e:
             print("store() EXCEPTION: ", e, traceback.print_tb(e.__traceback__))
             return False
@@ -90,6 +116,9 @@ class AStorageVecDB():
         try:
             if collection not in self.data["collections"]:
                 return []
+            
+            while len(self.buffers[collection]['texts']) > 0:
+                time.sleep(0.1)
             
             results = [txt for txt,_ in self.data['collections'][collection].items()]
             if None != keywords:
