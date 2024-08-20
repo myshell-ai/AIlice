@@ -62,6 +62,9 @@ class AProcessor():
     
     def RegisterModules(self, moduleAddrs):
         ret = []
+        modules = {}
+        funcList = []
+        actions = {}
         for moduleAddr in moduleAddrs:
             module = clientPool.GetClient(moduleAddr)
             if (not hasattr(module, "ModuleInfo")) or (not callable(getattr(module, "ModuleInfo"))):
@@ -72,14 +75,16 @@ class AProcessor():
             if "ACTIONS" not in info:
                 raise Exception("EXCEPTION: 'ACTIONS' is not found in module info.")
             
-            self.modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
-            funcList = []
+            modules[info['NAME']] = {'addr': moduleAddr, 'module': module}
             for actionName, actionMeta in info["ACTIONS"].items():
                 sig = actionName + str(inspect.signature(getattr(module, actionMeta['func']))).replace('(', '<!|').replace(')', '|!>')
                 ret.append({"action": actionName, "signature": sig, "prompt": actionMeta["prompt"]})
-                self.RegisterAction(nodeType=actionName, action={"func": self.CreateActionCB(actionName, module, actionMeta["func"])})
+                actions[actionName] = {"func": self.CreateActionCB(actionName, module, actionMeta["func"])}
                 funcList.append(json.dumps({"module": info["NAME"], "action": actionName, "signature": sig, "prompt": actionMeta["prompt"], "type": actionMeta["type"]}))
-            self.modules['storage']['module'].Store(self.collection + "_functions", funcList)
+        self.modules.get('storage', modules.get('storage', None))['module'].Store(self.collection + "_functions", funcList)
+        for actionName, action in actions.items():
+            self.RegisterAction(nodeType=actionName, action=action)
+        self.modules.update(modules)
         return ret
     
     def CreateActionCB(self, actionName, module, actionFunc):
@@ -211,7 +216,7 @@ class AProcessor():
             sys.modules[moduleName] = promptModule
             spec.loader.exec_module(promptModule)
             
-            ret += promptsManager.RegisterPrompt(promptModule.APrompt)
+            ret += promptsManager.RegisterPrompts([promptModule.APrompt])
             if "" == ret:
                 ret += f"Prompt module {promptModule.APrompt.PROMPT_NAME} has been loaded. Its description information is as follows:\n{promptModule.APrompt.PROMPT_DESCRIPTION}"
         except Exception as e:

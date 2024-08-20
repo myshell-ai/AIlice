@@ -121,8 +121,7 @@ def LoadSession(sessionName: str):
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
         promptsManager.Init(storage=storage, collection=sessionName)
-        for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
-            promptsManager.RegisterPrompt(promptCls)
+        promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
         
         logger = ALogger(speech=None)
         processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=sessionName)

@@ -12,16 +12,17 @@ class APromptsManager():
         self.collection = collection
         return
     
-    def RegisterPrompt(self, promptClass) -> str:
-        if promptClass.PROMPT_NAME in self.prompts:
-            return f"{promptClass.PROMPT_NAME} is already exist, please use another name."
-        self.prompts[promptClass.PROMPT_NAME] = promptClass
+    def RegisterPrompts(self, promptClasses) -> str:
+        for promptClass in promptClasses:
+            if promptClass.PROMPT_NAME in self.prompts:
+                return f"{promptClass.PROMPT_NAME} is already exist, please use another name."
         
         try:
-            self.storage.Store(self.collection + "_prompts", json.dumps({"name": promptClass.PROMPT_NAME, "desc": promptClass.PROMPT_DESCRIPTION, "properties": promptClass.PROMPT_PROPERTIES}))
+            self.storage.Store(self.collection + "_prompts", [json.dumps({"name": promptClass.PROMPT_NAME, "desc": promptClass.PROMPT_DESCRIPTION, "properties": promptClass.PROMPT_PROPERTIES}) for promptClass in promptClasses])
+            for promptClass in promptClasses:
+                self.prompts[promptClass.PROMPT_NAME] = promptClass
             return ""
         except Exception as e:
-            self.prompts.pop(promptClass.PROMPT_NAME)
             return f"STORE prompt to vecdb FAILED, there may be a problem with the vector database. Exception: {str(e)}"
 
     def __getitem__(self, promptName: str):

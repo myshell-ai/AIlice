@@ -86,8 +86,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     collection = "ailice_" + timestamp
 
     promptsManager.Init(storage=storage, collection=collection)
-    for promptCls in [APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest]:
-        promptsManager.RegisterPrompt(promptCls)
+    promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
     
     llmPool.Init([config.modelID])
     
