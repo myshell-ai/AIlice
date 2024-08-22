@@ -53,3 +53,37 @@ class ALogger():
         if (channel in [">"]) and (-1 == self.depth):
             self.SinkQueue(channel=channel, txt=None, action=None)
         return
+    
+class ALoggerSection:
+    def __init__(self, recv):
+        self.recv = recv
+        return
+    
+    def __enter__(self):
+        self.recv("<")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.recv(">")
+        return False
+    
+    def __call__(self, channel: str, txt: str = None, action: str = ""):
+        return self.recv(channel, txt, action)
+    
+class ALoggerMsg:
+    def __init__(self, recv, channel):
+        self.recv = recv
+        self.channel = channel
+        return
+    
+    def __enter__(self):
+        self.recv(channel = self.channel, txt = "", action = "open")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.recv(channel = self.channel, txt = "", action = "close")
+        return False
+    
+    def __call__(self, txt: str):
+        return self.recv(channel = self.channel, txt = txt, action = "append")
+    

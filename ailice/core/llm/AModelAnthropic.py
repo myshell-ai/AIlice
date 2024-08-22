@@ -19,7 +19,6 @@ class AModelAnthropic():
         return
     
     def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
-        proc(txt='', action='open')
         currentPosition = 0
         text = ""
         extras = {"temperature": temperature} if None != temperature else {}
@@ -36,7 +35,7 @@ class AModelAnthropic():
                 
                 sentences = [x for x in sentences_split(text[currentPosition:])]
                 if (2 <= len(sentences)) and ("" != sentences[0].strip()):
-                    proc(txt=sentences[0], action='append')
+                    proc(txt=sentences[0])
                     currentPosition += len(sentences[0])
-        proc(txt=text[currentPosition:], action='close')
+        proc(txt=text[currentPosition:])
         return text

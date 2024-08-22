@@ -70,8 +70,6 @@ class AModelCausalLM():
         return
     
     def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float = 0.0) -> str:
-        proc(txt='', action='open')
-
         predictedIDs = torch.tensor([prompt]).cuda() #(b, seq)
 
         generatedIDs = None
@@ -103,8 +101,8 @@ class AModelCausalLM():
 
             sentences = [x for x in sentences_split(text[currentPosition:])]
             if (2 <= len(sentences)) and ("" != sentences[0].strip()):
-                proc(txt=sentences[0], action='append')
+                proc(txt=sentences[0])
                 currentPosition += len(sentences[0])
 
-        proc(txt=text[currentPosition:], action='close')
+        proc(txt=text[currentPosition:])
         return text
