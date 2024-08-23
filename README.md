@@ -65,7 +65,6 @@ To understand AIlice's present abilities, watch the following videos:
     - [Scripting Language: From Text to Reality](#scripting-language-from-text-to-reality)
     - [Multimodal: Collaboration of Rich Text and Variable Mechanisms](#multimodal-collaboration-of-rich-text-and-variable-mechanisms)
     - [Self-Expansion: Growing Like a Tree](#self-expansion-growing-like-a-tree)
-  - [Comparison](#comparison)
   - [How Developers Should Get Started](#how-developers-should-get-started)
   - [Project Development Standards and Constraints](#project-development-standards-and-constraints)
   - [Future Development Roadmap](#future-development-roadmap)
@@ -725,45 +724,6 @@ Implementing self-expansion involves two parts. On one hand, new modules and new
 The dynamic loading mechanism itself is of great significance: it represents **a novel software update mechanism**. We can allow AIlice to search for its own extension code on the internet, check the code for security, fix bugs and compatibility issues, and ultimately run the extension as part of itself. Therefore, AIlice developers only need to place their contributed code on the internet, without the need to merge into the main codebase or consider any other installation methods. The implementation of the dynamic loading mechanism is continuously improving. Its core lies in the extension packages providing some text describing their functions. During runtime, each agent in AIlice finds suitable functions or agent types to solve sub-problems for itself through semantic matching and other means.
 
 Building new modules is a relatively simple task, as the interface constraints that modules need to meet are very straightforward. We can teach LLMs to construct new modules through an example. The more complex task is the self-construction of new agent types (APrompt class), which requires a good understanding of AIlice's overall architecture. The construction of system prompts is particularly delicate and is a challenging task even for humans. Therefore, we pin our hopes on more powerful LLMs in the future to achieve introspection, **allowing AIlice to understand herself by reading her own source code (for something as complex as a program, the best way to introduce it is to present itself), thereby constructing better new agents**.
-
-
-<a name="comparison"></a>
-### Comparison
-
-We have designed several dimensions to compare AIlice with mainstream AI agents. These include:
-
-- **Multi-agents**:
-Whether problems are addressed through multi-agent dialogues. This can enhance fault tolerance.
-
-- **Dynamic Creation**:
-The ability to dynamically create agents during task execution. This helps to break down tasks into subtasks, reducing context consumption within agents.
-
-- **Interactive Calling**:
-Whether dynamically created agents can interact with their creators (callers). This improves fault tolerance for subtask failures and allows users to naturally participate as collaborators.
-
-- **Long Term Memory**:
-The technical solutions used for long-term memory. Enabling LLM to surpass its context window constraints and accomplish more complex tasks.
-
-- **Function Call Syntax**:
-The syntax for function calls. Diverse syntax supports provide LLM with more flexible ways of external interaction.
-
-- **Self-expansion**:
-Modules for self-expansion. Allowing the agent to build more functionalities for itself, avoiding the manual development of numerous external interaction modules.
-
-- **Multimodal**:
-Support for multimodal models. The support for multimodal models will enable the agent to have a broader range of applications.
-
-- **Code Size**:
-The number of lines of code. A smaller codebase enables developers to better understand its internal logic and exert stronger control over the code. Ultimately, simple code implementation makes self-reflection and self-expansion for the agent simpler.
-
-Please note that this is an ongoing research, and the data in the table may be inaccurate due to oversights in my investigation or rapid progress in these projects. If any errors are identified, please point them out.
-
-|  | Multi-agents | Dynamic Creation | Interactive Calling | Long Term Memory | Function Call Syntax | Self-expansion | Multimodal | Code Size |
-|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
-| AutoGen | Y | Y | N | RAG and more | JSON | N | Y | 35419 |
-| AIlice | Y | Y | Y | RAG and more, in dev | Arbitrary | Y | Y | 3375 |
-
-The number of lines of code is calculated in the latest code base via the "git ls-files "*.py" | xargs wc -l" command.
 
 
 <a name="how-developers-should-get-started"></a>
