@@ -32,6 +32,7 @@ class ABrowser():
                                                "SEARCH-DOWN-BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},
                                                "SEARCH-UP-BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location.", "type": "supportive"},
                                                "GET-LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to be one of those text fragments enclosed by square brackets on the page (excluding the square brackets themselves).", "type": "supportive"},
+                                               "EXECUTE-JS": {"func": "ExecuteJS", "prompt": "Execute js code on the current web page, especially suitable for form operations such as entering text, clicking buttons, etc. Use triple quotes on your code.", "type": "supportive"},
                                                "REPLACE": {"func": "Replace", "prompt": "Replace and edit content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.", "type": "supportive"},
                                                "SAVETO": {"func": "SaveTo", "prompt": "Save the modified content to a file. If the dstPath parameter is an empty string, save it to the original file.", "type": "supportive"},
                                                }}
@@ -106,6 +107,9 @@ class ABrowser():
             print("EXCEPTION. e: ", str(e))
             return f"Browser Exception. please check your url input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
     
+    def ExecuteJS(self, js_code: str, session: str) -> str:
+        return self.sessions[session].ExecuteJS(js_code) if hasattr(self.sessions[session], "ExecuteJS") else "ExecuteJS not supported in current browser."
+    
     def Edit(self, path: str, session: str) -> str:
         try:
             self.sessions[session] = ATextBrowser(functions=self.functions)
@@ -150,7 +154,7 @@ def main():
         makeServer(ABrowser,
                    {"pdfOutputDir": (args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)},
                    args.addr,
-                   ["ModuleInfo", "Browse", "Edit", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink", "Replace", "SaveTo"]).Run()
+                   ["ModuleInfo", "Browse", "Edit", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink", "ExecuteJS", "Replace", "SaveTo"]).Run()
 
 if __name__ == '__main__':
     main()

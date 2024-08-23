@@ -18,9 +18,15 @@ class AWebBrowser(AScrollablePage):
         super(AWebBrowser, self).__init__(functions=functions)
         self.inited = False
         self.driver = None
-        self.baseURL = None
         self.urls = {}
-        self.prompt = "\nThe text with links are enclosed in square brackets to highlight it. If you need to open the page linked to a certain text, please call GET-LINK<!|text: str, session: str|!> function to get the url, and then call BROWSE<!|url: str, session: str|!>. Please note that the text parameter of GET-LINK must exactly match the content in the square brackets (excluding the square brackets themselves)."
+        self.prompt = '''
+The text with links are enclosed in square brackets to highlight it. If you need to open the page linked to a certain text, please call GET-LINK<!|text: str, session: str|!> function to get the url, and then call BROWSE<!|url: str, session: str|!>. Please note that the text parameter of GET-LINK must exactly match the content in the square brackets (excluding the square brackets themselves).
+The form in the web page is displayed in the original html code, and you can use the EXECUTE-JS<!|js_code: str, session: str|!> function to operate the form, such as entering text, clicking buttons, etc. Use triple quotes on your code. Example: 
+!EXECUTE-JS<!|"""
+document.querySelector('form.mini-search input[name="query"]').value = "hello world";
+document.querySelector('form.mini-search').submit();
+""", "arxiv_session"|!>
+'''
         return
     
     def Init(self):
@@ -50,7 +56,6 @@ class AWebBrowser(AScrollablePage):
             lambda d: d.execute_script("return document.readyState == 'complete'")
         )
 
-        self.baseURL = url
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
         body = soup.find('body')
         self.LoadPage(self.ProcessNode(body), "TOP")
@@ -82,8 +87,25 @@ class AWebBrowser(AScrollablePage):
     def SearchUp(self, query: str) -> str:
         return super(AWebBrowser, self).SearchUp(query) + self.prompt
     
-    def Action(self, action: str, paras: dict):
-        return
+    def ExecuteJS(self, js_code: dict):
+        try:
+            WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+            
+            result = self.driver.execute_script(js_code)
+            
+            WebDriverWait(self.driver, 30).until(
+                lambda d: d.execute_script("return document.readyState == 'complete'")
+            )
+            
+            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+            body = soup.find('body')
+            self.LoadPage(self.ProcessNode(body), "TOP")
+            result = "JavaScript executed successfully." if result is None else result
+            return f"JS execution returned: {result} \n\nThe current page content is as follows:\n\n{self() + self.prompt}"
+        except Exception as e:
+            return f"Error executing JavaScript: {str(e)}"
     
     def EnsureUnique(self, txt: str) -> str:
         ret = txt
@@ -100,6 +122,8 @@ class AWebBrowser(AScrollablePage):
             else:
                 # Handle text nodes
                 return (node.string.strip() if strip else node.string) if node.string else ''
+        elif node.name == 'form':
+            return f"\n\n```html\n{node.prettify()}\n```\n\n"
         elif node.name == 'li':
             li = ''
             for child in node.children:
@@ -128,7 +152,7 @@ class AWebBrowser(AScrollablePage):
             for child in node.children:
                 text += self.ProcessNode(child)
             if ('' != text) and ('' != href):
-                href = urljoin(self.baseURL, node.get('href', ''))
+                href = urljoin(self.driver.current_url, node.get('href', ''))
                 textUni = self.EnsureUnique(text)
                 self.urls[textUni] = href
                 ret = f"[{textUni}]"
@@ -139,7 +163,7 @@ class AWebBrowser(AScrollablePage):
             alt = node.get('alt', '').strip() if strip else node.get('alt', '')
             if ('' != src):
                 textUni = self.EnsureUnique(alt)
-                url = urljoin(self.baseURL, src)
+                url = urljoin(self.driver.current_url, src)
                 self.urls[textUni] = url
                 ret = f"\n![{textUni}]({url})\n"
             else:
@@ -154,7 +178,7 @@ class AWebBrowser(AScrollablePage):
                     if videoURL:
                         break
             if videoURL:
-                ret = f"\n\n[Video]({urljoin(self.baseURL, videoURL)})\n\n"
+                ret = f"\n\n[Video]({urljoin(self.driver.current_url, videoURL)})\n\n"
         elif node.name in ['ul', 'ol']:
             ret += "\n\n"
             for child in node.children:
