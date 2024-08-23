@@ -762,11 +762,11 @@ If you are interested in the development of AIlice itself, you may consider the 
 
 - Explore improved **long-term memory mechanisms** to enhance the capabilities of each Agent. We need a long-term memory mechanism that **enables consistent understanding of large amounts of content and facilitates association**. The most feasible option at the moment is to replace vector database with knowledge graph, which will greatly benefit the comprehension of long texts/codes and enable us to build genuine personal AI assistants.
 
-- **Multimodal** support. The support for the multimodal model has been completed, and the current development focus is shifting towards the multimodal support of peripheral modules. In particular, we need a browser specially designed for AI agents. It should be able to retrieve webpage text and multimodal content, while also supporting the manipulation of web pages through function calls, such as user login. We also need a module that operates computers based on screenshots and simulates mouse/keyboard actions.
+- **Multimodal** support. The support for the multimodal model has been completed, and the current development focus is shifting towards the multimodal support of peripheral modules. We need a module that operates computers based on screenshots and simulates mouse/keyboard actions.
 
 - **Self-expanding** support. Our goal is to enable language models to **autonomously code and implement new peripheral modules/agent types and dynamically load them for immediate use**. This capability will enable self-expansion, empowering the system to seamlessly integrate new functionalities. We've completed most of the functionality, but we still need to develop the capability to construct new types of agents.
 
-- **Richer UI interface**. Currently, we only have a rudimentary conversational web page. We need a more comprehensive and multimodal interface.
+- **Richer UI interface**. We need to organize the agents output into a tree structure in dialog window and dynamically update the output of all agents. And accept user input on the web interface and transfer it to scripter's standard input, which is especially needed when using sudo.
 
 - **Develop Agents** with various functionalities based on the current framework.
 
