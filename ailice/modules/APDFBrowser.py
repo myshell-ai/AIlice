@@ -33,7 +33,7 @@ class APDFBrowser(AScrollablePage):
     
     def Browse(self, url: str) -> str:
         if "None" == OCROption:
-            self.LoadPage(f"python packages marker or pix2text not found. Please install one of them before using PDF OCR.", "BOTTOM")
+            self.LoadPage(f"python packages marker-pdf or pix2text not found. Please install one of them before using PDF OCR.", "BOTTOM")
             return self()
         try:
             fullName = url.split('/')[-1]
