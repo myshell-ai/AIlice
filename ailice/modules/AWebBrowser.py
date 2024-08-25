@@ -21,7 +21,7 @@ class AWebBrowser(AScrollablePage):
         self.urls = {}
         self.prompt = '''
 The text with links are enclosed in square brackets to highlight it. If you need to open the page linked to a certain text, please call GET-LINK<!|text: str, session: str|!> function to get the url, and then call BROWSE<!|url: str, session: str|!>. Please note that the text parameter of GET-LINK must exactly match the content in the square brackets (excluding the square brackets themselves).
-The form in the web page is displayed in the original html code, and you can use the EXECUTE-JS<!|js_code: str, session: str|!> function to operate the form, such as entering text, clicking buttons, etc. Use triple quotes on your code. Example: 
+The forms on the webpage have been listed in text format, and you can use the EXECUTE-JS<!|js_code: str, session: str|!> function to operate the form, such as entering text, clicking buttons, etc. Use triple quotes on your code. Example: 
 !EXECUTE-JS<!|"""
 document.querySelector('form.mini-search input[name="query"]').value = "hello world";
 document.querySelector('form.mini-search').submit();
@@ -123,7 +123,7 @@ document.querySelector('form.mini-search').submit();
                 # Handle text nodes
                 return (node.string.strip() if strip else node.string) if node.string else ''
         elif node.name == 'form':
-            return f"\n\n```html\n{node.prettify()}\n```\n\n"
+            return f"\n\n```\n{self.ProcessForm(node)}\n```\n\n"
         elif node.name == 'li':
             li = ''
             for child in node.children:
@@ -205,3 +205,30 @@ document.querySelector('form.mini-search').submit();
             for child in node.children:
                 ret += self.ProcessNode(child)
         return ret
+
+    def ProcessForm(self, form_node):
+        form_info = []
+        form_info.append(f"Form:")
+        form_info.append(f"- Action: {form_node.get('action', '')}")
+        form_info.append(f"- Method: {form_node.get('method', 'GET')}")
+        if form_node.get('name'):
+            form_info.append(f"- Name: {form_node['name']}")
+        if form_node.get('id'):
+            form_info.append(f"- ID: {form_node['id']}")
+        
+        form_info.append("\nFields:")
+        for i, field in enumerate(form_node.find_all(['input', 'select', 'textarea', 'button']), 1):
+            form_info.append(f"{i}. {field.name.capitalize()}:")
+            for attr in ['type', 'name', 'id', 'placeholder', 'required']:
+                if field.get(attr):
+                    form_info.append(f"   - {attr.capitalize()}: {field[attr]}")
+            
+            if field.name == 'select':
+                form_info.append("   - Options:")
+                for option in field.find_all('option'):
+                    form_info.append(f"     * Value: {option.get('value', '')}, Text: {option.text.strip()}")
+            
+            if field.name == 'button' and field.text:
+                form_info.append(f"   - Text: {field.text.strip()}")
+
+        return "\n".join(form_info)
