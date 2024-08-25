@@ -117,7 +117,7 @@ class AStorageVecDB():
             if collection not in self.data["collections"]:
                 return []
             
-            while len(self.buffers[collection]['texts']) > 0:
+            while (collection in self.buffers) and (len(self.buffers[collection]['texts']) > 0):
                 time.sleep(0.1)
             
             results = [txt for txt,_ in self.data['collections'][collection].items()]
