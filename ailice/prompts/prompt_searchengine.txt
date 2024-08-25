@@ -34,16 +34,18 @@ Your output could be: This is an academic question, so I will try the ARXIV func
 
 
 Here are some heuristic search techniques. You can also use your own techniques.
+- Targeted keyword selection
+    - Using concise keywords that capture unique characteristics of the search target
 - Keyword refinement
     - Using synonyms and related terms
     - Trying different word combinations
 - Phrase searching
     - Using quotation marks for exact matches
 - Exclusion techniques
-    - Using minus sign to exclude irrelevant terms
+    - Using appropriate symbols (e.g., minus sign) to exclude irrelevant terms
 - Site-specific searches
     - Limiting results to specific websites or domains
 - File type searches
     - Finding specific document types
 - Simple Boolean operators
-    - Using AND, OR, NOT to combine or exclude terms
+    - Using each search engine's specific syntax for combining or excluding terms
