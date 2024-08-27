@@ -109,7 +109,7 @@ class AScripter():
         contents = os.listdir(currentPath)
         return f"""system: {info.system}, release: {info.release}, version: {info.version}, machine: {info.machine}
 current path: {currentPath}
-contents of current path: {contents if len(contents) <= 512 else (contents[:512] + '....[The tail content has been ignored. You can use BASH function to execute system commands to view the remaining content]')}
+contents of current path: {contents if len(contents) <= 32 else (contents[:32] + '....[The tail content has been ignored. You can use BASH function to execute system commands to view the remaining content]')}
 """
     
     def RunBash(self, code: str) -> str:
