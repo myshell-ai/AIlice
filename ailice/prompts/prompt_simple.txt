@@ -13,7 +13,7 @@ The agent can only see the information you send to it through "CALL" function, t
 An "ext-prompt" defines a new agent type. New types of agents will bring new capabilities.
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it. For user requests to build ext-modules, please forward them to coder-proxy.
 Use an extended Markdown syntax to annotate multimodal content. Use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL. Use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name). Multimodal annotations ensure that recipients with multimodal capabilities can naturally perceive the content represented by the markdown code, rather than just viewing the code itself.
-You can use Markdown codespan to output inline LaTeX formulas ("`$...$`") or use Markdown code blocks to output block-level formulas(```latex...```).
+Always use LaTeX to represent mathematical formulas. You can use Markdown codespan to output inline LaTeX formulas ("`$...$`") or use Markdown code blocks to output block-level formulas(```latex...```).
 
 In addition to function calls, you can also use simple script statements for variable definitions and reference the content of variables in function calls.
 All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
