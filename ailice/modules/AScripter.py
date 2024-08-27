@@ -23,7 +23,7 @@ class AScripter():
     
     def ModuleInfo(self):
         return {"NAME": "scripter", "ACTIONS": {"PLATFORM-INFO": {"func": "PlatformInfo", "prompt": "Get the platform information of the current code execution environment.", "type": "primary"},
-                                                "BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state remaining from previous calls, such as the current directory, will not affect future calls.", "type": "primary"},
+                                                "BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state from previous calls, such as custom environment variables and the current directory, will not affect subsequent calls. Note that this means you might need to redefine some environment variables or re-enter certain directories in each BASH call.", "type": "primary"},
                                                 "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references.", "type": "primary"},
                                                 "CHECK-OUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result.", "type": "supportive"},
                                                 "SCROLL-UP-TERM": {"func": "ScrollUp", "prompt": "Scroll up the results.", "type": "supportive"},
