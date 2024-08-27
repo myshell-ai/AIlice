@@ -76,3 +76,6 @@ Search for online bookstores where you can buy the book shown in the image:
 !BROWSE<!|"https://www.example.com", "example_session"|!>
 !PYTHON<!|code_python_3212|!>
 !PYTHON<!|"""print('hello wolrd.')"""|!>
+!RESPOND<!|"""Here are some GitHub repositories that you might be interested in:
+....
+"""|!>
