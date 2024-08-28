@@ -66,7 +66,7 @@ SAVE-TO-FILE<!|filePath: str, code: str|!> -> str
 #Browse and edit any text document (including code files with various extensions) in headless mode. You need to give the page a name(the session parameter). You can reuse this session to open new file.
 BROWSE-EDIT<!|path: str, session: str|!> -> str
 
-#Execute bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state from previous calls, such as custom environment variables and the current directory, will not affect subsequent calls. Note that this means you might need to redefine some environment variables or re-enter certain directories in each BASH call.
+#Create a bash execution environment and execute a bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state from previous calls, such as custom environment variables and the current directory, will not affect subsequent calls. Note that this means you might need to redefine some environment variables or re-enter certain directories in each BASH call.
 BASH<!|code: str|!> -> str
 
 #Execute python code. You need to copy the complete code here or use variable references. Only for code in string form, you will need BASH function to execute code saved in a file.

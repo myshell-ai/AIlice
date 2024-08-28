@@ -23,7 +23,7 @@ class AScripter():
     
     def ModuleInfo(self):
         return {"NAME": "scripter", "ACTIONS": {"PLATFORM-INFO": {"func": "PlatformInfo", "prompt": "Get the platform information of the current code execution environment.", "type": "primary"},
-                                                "BASH": {"func": "RunBash", "prompt": "Execute bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state from previous calls, such as custom environment variables and the current directory, will not affect subsequent calls. Note that this means you might need to redefine some environment variables or re-enter certain directories in each BASH call.", "type": "primary"},
+                                                "BASH": {"func": "RunBash", "prompt": "Create a bash execution environment and execute a bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state from previous calls, such as custom environment variables and the current directory, will not affect subsequent calls. Note that this means you might need to redefine some environment variables or re-enter certain directories in each BASH call.", "type": "primary"},
                                                 "PYTHON": {"func": "RunPython", "prompt": "Execute python code. Please note that you need to copy the complete code here, and you must not use references.", "type": "primary"},
                                                 "CHECK-OUTPUT": {"func": "CheckOutput", "prompt": "Obtain script execution output result.", "type": "supportive"},
                                                 "SCROLL-UP-TERM": {"func": "ScrollUp", "prompt": "Scroll up the results.", "type": "supportive"},
@@ -122,7 +122,12 @@ contents of current path: {'\n'.join(contents) if len(contents) <= 32 else ('\n'
                 self.sessions[session]['output'] += f"Exception: {str(e)}\n {traceback.format_exc()}"
             
             self.UpdateSession(session)
-            return self.sessions[session]['pages']() + "\n\n" + f'Session name: "{session}"\n'
+            return f"""{self.sessions[session]['pages']()}
+Note that each BASH function execution is independent, so if you want to use the state from the current execution (current directory / custom environment variables, etc.) in subsequent BASH functions, you need to redefine them.
+
+
+Session name: \"{session}\"
+"""
     
     def RunPython(self, code: str) -> str:
         with self.sessionsLock:

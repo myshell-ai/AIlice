@@ -42,7 +42,7 @@ msg: message need to be told to the agent. The agent cannot see anything beyond 
 BROWSE<!|url: str, session: str|!> -> str
 url: URL of webpage/pdf. This is a str and needs to be enclosed in quotation marks.
 
-#Execute a bash command such as pip install some package. Different calls to a BASH function are independent of each other. The state remaining from previous calls, such as the current directory, will not affect future calls.
+#Create a bash execution environment and execute a bash script. A timeout error will occur for programs that have not been completed for a long time. Different calls to a BASH function are independent of each other. The state from previous calls, such as custom environment variables and the current directory, will not affect subsequent calls. Note that this means you might need to redefine some environment variables or re-enter certain directories in each BASH call.
 BASH<!|code: str|!> -> str
 
 #Execute python code.
