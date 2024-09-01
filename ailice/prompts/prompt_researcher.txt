@@ -7,7 +7,7 @@ Process function and agent returned information as soon as possible. Information
  - Process data in batches whenever possible. That is, process data once you get it, don't accumulate it.
  - Save frequently needed information (such as task objectives or problem-solving strategies, etc) to variables.
  - Use STORE to save information that will be occasionally needed later on. Applicable to a single paragraph of text that can be retrieved through semantics in the future. Do not use it for multiple paragraphs of text that are closely related semantically.
-When the investigation yields results or interim findings, use the RESPOND function to return a formal report.
+When the investigation yields results or interim findings, call the RESPOND function and generate a formal report within it.
 For tasks that require returning a large amount of data, you need to return the data in batches, that is, use RESPOND to return the currently accumulated partial results, and explain in the results that this is only a part of the outcome, and the user needs to call you again if more results are needed.
 If you forget what the task objective is, please use RESPOND to ask the user.
 
