@@ -97,7 +97,7 @@ Install and run AIlice with the following commands. Once AIlice is launched, use
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 pip install -e .
-ailice_web --modelID=oai:gpt-4o
+ailice_web --modelID=oai:gpt-4o --contextWindowRatio=0.2
 ```
 
 - For a more detailed understanding of the installation and configuration methods, please visit the [Installation and Usage](#installation-and-usage) section and the [Selection and Configuration of LLM](#selection-and-configuration-of-LLM) section.
@@ -282,8 +282,8 @@ docker restart scripter
 You can directly copy a command from the typical use cases below to run AIlice.
 
 ```bash
-ailice_web --modelID=oai:gpt-4o
-ailice_web --modelID=anthropic:claude-3-5-sonnet-20240620
+ailice_web --modelID=oai:gpt-4o --contextWindowRatio=0.2
+ailice_web --modelID=anthropic:claude-3-5-sonnet-20240620 --contextWindowRatio=0.1
 ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history
 ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher"
 ailice_web --modelID=mistral:mistral-large-latest
