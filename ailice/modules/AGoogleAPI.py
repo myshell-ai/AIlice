@@ -44,7 +44,8 @@ class AGoogle():
     def Google(self, keywords: str) -> str:
         try:
             res = self.service.cse().list(q=keywords, cx=self.cse_id).execute()
-            ret = str(res.get('items', []))
+            results = res.get('items', [])
+            ret = str(results) if len(results) > 0 else "No search results were found. Please check if you used overly complex keywords or unsupported search syntax. Note that relaxing your search terms is an effective strategy when no valid search results are returned."
         except Exception as e:
             print("Google Search exception: ", e)
             ret = f"Google Search exception: {str(e)}"

@@ -27,7 +27,8 @@ class ADuckDuckGo():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             with DDGS() as ddgs:
-                ret = [r for r in ddgs.text(keywords, max_results=10)]
+                results = [r for r in ddgs.text(keywords, max_results=10)]
+            ret = str(results) if len(results) > 0 else "No search results were found. Please check if you used overly complex keywords or unsupported search syntax. Note that relaxing your search terms is an effective strategy when no valid search results are returned."
         except Exception as e:
             print(f"Error during the request: {e}")
             ret = str(e)

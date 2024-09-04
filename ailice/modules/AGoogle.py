@@ -23,7 +23,8 @@ class AGoogle():
     def Google(self, keywords: str) -> str:
         try:
             res = search(keywords, num_results=20, advanced=True, sleep_interval=5) #sleep_interval will work when num_results>100.
-            ret = list(res)
+            results = list(res)
+            ret = str(results) if len(results) > 0 else "No search results were found. Please check if you used overly complex keywords or unsupported search syntax. Note that relaxing your search terms is an effective strategy when no valid search results are returned."
         except Exception as e:
             print("google excetption: ", e)
             ret = f"google excetption: {str(e)}"

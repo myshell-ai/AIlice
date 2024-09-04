@@ -31,7 +31,8 @@ class AArxiv():
     
     def ArxivSearch(self, keywords: str) -> str:
         try:
-            ret = str(list(arxiv.Search(query=keywords, max_results=40).results()))
+            results = list(arxiv.Search(query=keywords, max_results=40).results())
+            ret = str(results) if len(results) > 0 else "No search results were found. Please check if you used overly complex keywords or unsupported search syntax. Note that relaxing your search terms is an effective strategy when no valid search results are returned."
         except Exception as e:
             print("arxiv excetption: ", e)
             #Regardless of whether the result is obtained or an error occurs, it is recommended to return the obtained information to the user in the form of a string so that the user can know the details.
