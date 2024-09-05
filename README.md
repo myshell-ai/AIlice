@@ -59,7 +59,7 @@ To understand AIlice's present abilities, watch the following videos:
   - [Using Different Models in Different Agents](#using-different-models-in-different-agents)
 - [Development](#development)
   - [Design](#design)
-    - [Computational Model: Interactive Agents Calling Tree](#computational-model-interactive-agents-calling-tree)
+    - [Computational Model: Interactive Agents Call Tree](#computational-model-interactive-agents-call-tree)
     - [Basic Computing Unit: Tai Chi Diagram of LLM and Interpreter](#basic-computing-unit-tai-chi-diagram-of-llm-and-interpreter)
     - [Agent Design: Implementing the Interpreter Framework](#agent-design-implementing-the-interpreter-framework)
     - [Scripting Language: From Text to Reality](#scripting-language-from-text-to-reality)
@@ -81,7 +81,7 @@ Key technical features of AIlice include:
 - **Compatibility with open-source models and seamless integration with commercial models like GPT-4.**
 - **A more intuitive and flexible approach to user interaction, allowing for seamless conversation participation as an agent or the ability to intervene during task execution.**
 - **Support for multi-modal models.**
-- **A natural and highly fault-tolerant Interactive Agents Calling Tree architecture.**
+- **A natural and highly fault-tolerant Interactive Agents Call Tree architecture.**
 - **Flexible parsing of LLM outputs, enabling a broader range of function call mechanisms.**
 - **The capability to self-construct and dynamically load modules for interacting with the environment, providing endless possibilities for expanding features.**
 
@@ -354,7 +354,7 @@ Among these, under **"cmd"** is a command line used to start the module's proces
 ### Useful Tips
 
 Interrupts. **Interrupts are the second interaction mode supported by AIlice, which allows you to interrupt and provide prompts to AIlice's agents at any time to correct errors or provide guidance**. In ailice_web, during AIlice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses AIlice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
-Proficient use of this feature requires a good understanding of AIlice's workings, especially the agent calling tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during AIlice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
+Proficient use of this feature requires a good understanding of AIlice's workings, especially the agent call tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during AIlice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
 
 **First use GPT-4 to successfully run some simple use cases, then restart AIlice with a less powerful (but cheaper/open-source) model to continue running new tasks based on the previous conversation history**. This way, the history provided by GPT-4 serves as a successful example, offering valuable reference for other models and significantly increasing the chances of success.
 
@@ -629,8 +629,8 @@ Separating computational tasks is, from a practical standpoint, due to our limit
 The third principle is what everyone is currently working on: having multiple intelligent agents interact and cooperate to complete more complex tasks. The implementation of this principle actually addresses the aforementioned issue of subtask failure. Multi-agent collaboration is crucial for the fault tolerance of agents in operation. In fact, this may be one of the biggest differences between the new computational paradigm and traditional computing: traditional computing is precise and error-free, assigning subtasks only through unidirectional communication (function calls), whereas the new computational paradigm is error-prone and requires bidirectional communication between computing units to correct errors. This will be explained in detail in the following section on the IACT framework.
 
 
-<a name="computational-model-interactive-agents-calling-tree"></a>
-#### Computational Model: Interactive Agents Calling Tree
+<a name="computational-model-interactive-agents-call-tree"></a>
+#### Computational Model: Interactive Agents Call Tree
 ![IACT](./IACT.jpg)
 *IACT Architecture Diagram. A user requirement to build a page for image collection and display is dynamically decomposed into two tasks: coder_spider and coder_website. When coder_spider encounters difficulties, it proactively seeks assistance from its caller, proxy_cat_gallery. Proxy_cat_gallery then creates another agent, researcher_api, and employs it to address the issue.*
 
@@ -770,7 +770,7 @@ If you are interested in the development of AIlice itself, you may consider the 
 
 - **Develop Agents** with various functionalities based on the current framework.
 
-- **Explore the application of IACT architecture on complex tasks.** By utilizing an interactive agents calling tree, we can break down large documents for improved reading comprehension, as well as decompose complex software engineering tasks into smaller modules, completing the entire project build and testing through iterations. This requires a series of intricate prompt designs and testing efforts, but it holds an exciting promise for the future. The IACT architecture significantly alleviates the resource constraints imposed by the context window, allowing us to dynamically adapt to more intricate tasks.
+- **Explore the application of IACT architecture on complex tasks.** By utilizing an interactive agents call tree, we can break down large documents for improved reading comprehension, as well as decompose complex software engineering tasks into smaller modules, completing the entire project build and testing through iterations. This requires a series of intricate prompt designs and testing efforts, but it holds an exciting promise for the future. The IACT architecture significantly alleviates the resource constraints imposed by the context window, allowing us to dynamically adapt to more intricate tasks.
 
 - **Build rich external interaction modules using self-expansion mechanisms! This will be accomplished in [AIliceEVO](https://github.com/stevenlu137/AIliceEVO).**
 
