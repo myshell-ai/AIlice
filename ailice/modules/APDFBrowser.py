@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import requests
 import subprocess
@@ -28,8 +29,14 @@ class APDFBrowser(AScrollablePage):
     def OCRMarker(self, pdfPath: str, outDir: str) -> str:
         subprocess.run(["marker_single", f"{pdfPath}", f"{outDir}", "--batch_multiplier", "2"])
         pdfName = Path(pdfPath).stem
+
         with open(Path(outDir) / pdfName / f"{pdfName}.md", "r") as f:
-            return f.read()
+            ret = f.read()
+        ret = re.sub(r'!\[([^\]]*)\]\(([^)]+)\)', lambda match: f'![{match.group(1)}]({str(os.path.join(outDir, pdfName, match.group(2)))})', ret)
+        with open(Path(outDir) / pdfName / f"{pdfName}.md", "w") as f:
+            f.write(ret)
+        return ret
+
     
     def Browse(self, url: str) -> str:
         if "None" == OCROption:
