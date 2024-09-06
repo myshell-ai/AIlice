@@ -31,6 +31,7 @@ The following list of functions is automatically retrieved and may be helpful fo
 
 Example for function calling:
 !GOOGLE<!|"new york weather"|!>
+!BROWSE<!|"https://scholar.google.com/scholar?as_ylo=2024&q=superconductivity&hl=en&as_sdt=0,5", "google_scholar_session"|!>
 
 An example of a simple search task:
 Input: The principle of pagerank algorithm.
