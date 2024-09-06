@@ -18,7 +18,8 @@ Use an extended Markdown syntax to annotate multimodal content. Use the "![...](
 
 Variable Definition
 #You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
-var_name := <!|content|!>
+var_name := <!|"""content"""|!>
+var_name := <!|var_name + """some_appendix"""|!> #Append content to an existing text variable
 
 Function Calling
 The syntax for basic data types when calling functions is consistent with Python. Note that triple quotes should be used for multiline strings.

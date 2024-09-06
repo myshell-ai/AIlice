@@ -21,7 +21,8 @@ In addition to function calls, you can also use simple script statements for var
 All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
 Variables cannot be referenced in bash and python code.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
-var_name := <!|content|!>
+var_name := <!|"""content"""|!>
+var_name := <!|var_name + """some_appendix"""|!> #Append content to an existing text variable
 If you have to generate the code yourself anyway, generate the code directly in the function call or variable definition statement(so you can use variable reference in future function call), otherwise you need to completely copy the code into the function call.
 Use an extended Markdown syntax to annotate multimodal content. Use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL, and use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name). Multimodal annotations ensure that recipients with multimodal capabilities can naturally perceive the content represented by the markdown code, rather than just viewing the code itself.
 

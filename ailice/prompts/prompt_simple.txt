@@ -19,7 +19,8 @@ In addition to function calls, you can also use simple script statements for var
 All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
 Variables cannot be referenced in bash and python code.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
-var_name := <!|content|!>
+var_name := <!|"""content"""|!>
+var_name := <!|var_name + """some_appendix"""|!> #Append content to an existing text variable
 
 #Use the following function to create or communicate with an AI agent:
 CALL<!|agentType: str, agentName: str, msg: str|!> -> str
