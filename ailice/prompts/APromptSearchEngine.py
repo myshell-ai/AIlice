@@ -31,6 +31,7 @@ class APromptSearchEngine():
                          "GET-LINK": [{"re": GenerateRE4FunctionCalling("GET-LINK<!|text: str, session: str|!> -> str"), "isEntry": True}],
                          "RETURN": [{"re": GenerateRE4FunctionCalling("RETURN<!||!> -> str", faultTolerance = True), "isEntry": True}]}
         self.ACTIONS= {}
+        self.overflowing = False
         return
     
     def Reset(self):
@@ -54,16 +55,22 @@ class APromptSearchEngine():
     
     def ParameterizedBuildPrompt(self, n: int):
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
+        notification = "System Notification: You have not responded to the user for a while, and the accumulated information is nearing the context length limit, which may lead to information loss. If you have saved the information using variables or other memory mechanisms, please disregard this reminder. Otherwise, please promptly reply to the user with the useful information or store it accordingly."
         prompt = f"""
 {prompt0}
 
 End of general instructions.
 
+{notification if self.overflowing else ''}
 """
         #prompt += "Conversations:"
         return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
     
     def BuildPrompt(self):
+        self.overflowing = False
+        _, s = self.ParameterizedBuildPrompt(-self.conversations.LatestEntry())
+        self.overflowing = (s > (self.processor.llm.contextWindow * config.contextWindowRatio * 0.8))
+
         prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
         if prompt is None:
             prompt, _ = self.ParameterizedBuildPrompt(1)

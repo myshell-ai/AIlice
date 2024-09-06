@@ -112,7 +112,7 @@ class AProcessor():
         return
     
     def __call__(self, txt: str) -> str:
-        self.conversation.Add(role = "USER", msg = txt, env = self.interpreter.env)
+        self.conversation.Add(role = "USER", msg = txt, env = self.interpreter.env, entry=True)
         self.EvalStore(txt)
         with ALoggerSection(recv=self.outputCB) as loggerSection:
             loggerSection(f"USER_{self.name}", txt)

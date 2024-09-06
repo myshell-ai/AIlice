@@ -12,9 +12,9 @@ class AConversations():
         self.conversations: list[dict] = []
         return
     
-    def Add(self, role: str, msg: str, env: dict[str,Any]):
+    def Add(self, role: str, msg: str, env: dict[str,Any], entry: bool = False):
         msg = "<EMPTY MSG>" if ("" == msg) else msg
-        record = {"role": role, "time": time.time(), "msg": msg, "attachments": []}
+        record = {"role": role, "time": time.time(), "entry": entry, "msg": msg, "attachments": []}
         
         if role in ["USER", "SYSTEM"]:
             matches = re.findall(r"```(\w*)\n([\s\S]*?)```", msg)
@@ -63,6 +63,12 @@ class AConversations():
                 return {"type": "video", "tag": m, "content": AVideoLocation(param).Standardize()}
             return
     
+    def LatestEntry(self):
+        for i in range(len(self.conversations)):
+            if self.conversations[-i-1]['entry']:
+                break
+        return (-(i+1)//2) if ('ASSISTANT' == self.conversations[-1]['role']) else ((-i-2)//2)
+    
     def GetConversations(self, frm=0):
         s = (2*frm) if (frm >= 0) or ('ASSISTANT' == self.conversations[-1]['role']) else (2*frm+1)
         return self.conversations[s:]
@@ -73,6 +79,7 @@ class AConversations():
     def FromJson(self, data):
         self.conversations = [{'role': d['role'],
                                'time': d.get('time', None),
+                               'entry': d.get('entry', None),
                                'msg': d['msg'],
                                'attachments': [{'type': a['type'], 'tag': a.get('tag', None), 'content': FromJson(a['content'])} for a in d['attachments']]} for d in data]
         return
@@ -80,6 +87,7 @@ class AConversations():
     def ToJson(self) -> str:
         return [{'role': record['role'],
                  'time': record['time'],
+                 'entry': record['entry'],
                  'msg': record['msg'],
                  'attachments': [{'type': a['type'],
                                   'tag': a['tag'],
