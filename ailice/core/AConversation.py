@@ -77,11 +77,21 @@ class AConversations():
         return (len(self.conversations)+1) // 2
     
     def FromJson(self, data):
-        self.conversations = [{'role': d['role'],
-                               'time': d.get('time', None),
-                               'entry': d.get('entry', None),
-                               'msg': d['msg'],
-                               'attachments': [{'type': a['type'], 'tag': a.get('tag', None), 'content': FromJson(a['content'])} for a in d['attachments']]} for d in data]
+        def AddRecord(role, time, entry, msg, attachments):
+            self.conversations.append({'role': role,
+                                       'time': time,
+                                       'entry': entry,
+                                       'msg': msg,
+                                       'attachments': attachments})
+        for i in range(0, len(data)):
+            d = data[i]
+            if i > 0:
+                assert not ({d['role'], data[i-1]['role']} <= {"ASSISTANT"}), f"Consecutive ASSISTANT messages were found in conversations. {str(d)}, {str(data[i-1])}"
+                if {d['role'], data[i-1]['role']} <= {"USER", "SYSTEM"}:
+                    AddRecord('ASSISTANT', None, False, '<EMPTY MSG>', [])
+            AddRecord(d['role'], d.get('time', None), d.get('entry', None), d['msg'] if '' != d['msg'] else '<EMPTY MSG>', [{'type': a['type'], 'tag': a.get('tag', None), 'content': FromJson(a['content'])} for a in d['attachments']])
+        if data[-1]['role'] in ['USER', 'SYSTEM']:
+            AddRecord('ASSISTANT', None, False, '<EMPTY MSG>', [])
         return
     
     def ToJson(self) -> str:
