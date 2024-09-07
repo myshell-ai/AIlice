@@ -32,25 +32,25 @@ class APromptArticleDigest():
         self.ACTIONS = {"READ": {"func": self.Read},
                         "RETRIEVE": {"func": self.Recall}}
         self.overflowing = False
+        self.session = ""
         return
     
     def Reset(self):
         return
 
     def Read(self, url: str) -> str:
-        session = f"webpage_{random.randint(0,99999999)}"
-        ret = self.processor.modules['browser']['module'].Browse(url, session)
-        fulltxt = self.processor.modules['browser']['module'].GetFullText(session)
+        self.session = f"session_{random.randint(0,99999999)}"
+        ret = self.processor.modules['browser']['module'].Browse(url, self.session)
+        fulltxt = self.processor.modules['browser']['module'].GetFullText(self.session)
         for txt in paragraph_generator(fulltxt):
             self.storage.Store(self.collection, txt)
         return ret
     
     def Recall(self, keywords: str) -> str:
-        ret = self.storage.Recall(collection=self.collection, query=keywords, num_results=1)
-        if 0 != len(ret):
-            return ret[0][0]
-        else:
-            return "None."
+        results = self.storage.Recall(collection=self.collection, query=keywords, num_results=10)
+        ret = "------\n\n"
+        ret += "\n\n".join([txt for txt, score in results])[:2000] + "\n\n------\n\nTo find more content of interest, search for the relevant text within the page, or use the RETRIEVE function for semantic search. Be sure to keep the keywords concise."
+        return "None." if "" == ret else ret
     
     def GetPatterns(self):
         return self.PATTERNS
@@ -71,6 +71,8 @@ Variables:
 
 Task Objective:
 {self.processor.interpreter.env.get('task_objective', 'Not set.')}
+
+Current Session: "{self.session}"
 
 RELEVANT INFORMATION: {self.Recall(context).strip()}
 
