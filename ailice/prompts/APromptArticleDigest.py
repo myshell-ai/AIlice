@@ -25,6 +25,7 @@ class APromptArticleDigest():
                          "SEARCH-DOWN-BROWSER": [{"re": GenerateRE4FunctionCalling("SEARCH-DOWN-BROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
                          "SEARCH-UP-BROWSER": [{"re": GenerateRE4FunctionCalling("SEARCH-UP-BROWSER<!|query: str, session: str|!> -> str"), "isEntry": True}],
                          "GET-LINK": [{"re": GenerateRE4FunctionCalling("GET-LINK<!|text: str, session: str|!> -> str"), "isEntry": True}],
+                         "EXECUTE-JS": [{"re": GenerateRE4FunctionCalling("EXECUTE-JS<!|js_code: str, session: str|!> -> str"), "isEntry": True}],
                          "RETRIEVE": [{"re": GenerateRE4FunctionCalling("RETRIEVE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "RESPOND": [{"re": GenerateRE4FunctionCalling("RESPOND<!|message: str|!> -> None", faultTolerance = True), "isEntry": True}],
                         }
