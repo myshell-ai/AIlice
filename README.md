@@ -41,7 +41,6 @@ To understand AIlice's present abilities, watch the following videos:
 - [Installation and Usage](#installation-and-usage)
   - [Environment Configuration and Installation](#environment-configuration-and-installation)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
-  - [Accelerate using GPU](#accelerate-using-gpu)
   - [Virtual Environment Settings for Code Execution](#virtual-environment-settings-for-code-execution)
   - [Code Update](#code-update)
   - [Usage](#usage)
@@ -159,7 +158,13 @@ cd AIlice
 pip install -e .
 ```
 
-For users who need to use the voice dialogue or model fine-tuning or pdf reading functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
+AIlice installed by default will run slowly because it uses CPU as the inference hardware of the long-term memory module. Therefore, it is strongly recommended to install GPU acceleration support:
+
+```bash
+ailice_turbo
+```
+
+For users who need to use the huggingface models/voice dialogue/model fine-tuning/pdf reading functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
 
 ```bash
 pip install -e .[huggingface]
@@ -169,8 +174,6 @@ pip install -e .[pdf-reading]
 ```
 
 You can run AIlice now! Use the commands in [Usage](#usage).
-
-AIlice installed by default will run slowly because it uses CPU as the inference hardware of the long-term memory module. Therefore, it is strongly recommended to [configure it](#accelerate-using-gpu) to run on GPU according to your own circumstances.
 
 
 <a name="if-you-need-to-frequently-use-google"></a>
@@ -198,33 +201,6 @@ pip install google-api-python-client
 ```
 
 Then simply restart AIlice.
-
-
-<a name="accelerate-using-gpu"></a>
-### Accelerate using GPU
-The vector database is currently AIlice's sole long-term memory mechanism, accessed frequently during runtime. We currently use CPU as the default device for embedding vector calculations, which may result in high CPU usage and slower response times. If you have GPU support for llama.cpp, switching to the GPU version of llama-cpp-python is the optimal choice:
-
-```bash
-pip uninstall llama-cpp-python
-```
-
-For Nvidia CUDA GPUs:
-
-```bash
-CMAKE_ARGS="-DGGML_CUDA=on" FORCE_CMAKE=1 pip install llama-cpp-python
-```
-
-For AMD ROCM GPUs:
-
-```bash
-CMAKE_ARGS="-DGGML_HIPBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python
-```
-
-Use Vulkan:
-
-```bash
-CMAKE_ARGS="-DGGML_VULKAN=on" FORCE_CMAKE=1 pip install llama-cpp-python
-```
 
 <a name="virtual-environment-settings-for-code-execution"></a>
 ### Virtual Environment Settings for Code Execution
