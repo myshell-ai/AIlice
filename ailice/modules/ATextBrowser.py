@@ -9,13 +9,17 @@ class ATextBrowser(AScrollablePage):
         super(ATextBrowser, self).__init__(functions=functions)
         self.path = None
         self.prompt = \
-"""
+'''
 The document is in editable mode. You can edit the content using the following functions:
 #Replace and edit content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.
 REPLACE<!|pattern: str, replacement: str, regexMode: bool, session: str|!> -> str
 #Save the modified content to a file. If the dstPath parameter is an empty string, save it to the original file.
 SAVETO<!|dstPath: str, session: str|!> -> str
-"""
+
+Example:
+!REPLACE<!|"""Hello World!""", """Hello Python!""", False, "session_example"|!>
+!SAVETO<!|"", "session_example"|!>
+'''
         return
     
     def Browse(self, url: str) -> str:
