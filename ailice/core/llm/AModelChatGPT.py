@@ -13,17 +13,18 @@ class AModelChatGPT():
         self.client = openai.OpenAI(api_key = config.models[modelType]["apikey"],
                                     base_url = config.models[modelType]["baseURL"])
 
-        modelCfg = config.models[modelType]["modelList"][modelName]
-        self.formatter = CreateFormatter(modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = modelCfg['systemAsUser'])
-        self.contextWindow = modelCfg["contextWindow"]
+        self.modelCfg = config.models[modelType]["modelList"][modelName]
+        self.formatter = CreateFormatter(self.modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = self.modelCfg['systemAsUser'])
+        self.contextWindow = self.modelCfg["contextWindow"]
         return
     
     def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
         currentPosition = 0
         text = ""
-        extras = {"max_tokens": 4096} if "vision" in self.modelName else {}
-        if None != temperature:
-            extras["temperature"] = temperature
+        extras = {}
+        extras.update({"max_tokens": 4096} if "vision" in self.modelName else {})
+        extras.update(self.modelCfg.get("args", {}))
+        extras.update({"temperature": temperature} if None != temperature else {})
         for chunk in self.client.chat.completions.create(model=self.modelName,
                                                          messages=prompt,
                                                          stream=True,

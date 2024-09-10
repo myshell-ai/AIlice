@@ -13,15 +13,17 @@ class AModelMistral():
         self.modelName = modelName
         self.client = MistralClient(api_key = config.models[modelType]["apikey"])
 
-        modelCfg = config.models[modelType]["modelList"][modelName]
-        self.formatter = CreateFormatter(modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = modelCfg['systemAsUser'])
-        self.contextWindow = modelCfg["contextWindow"]
+        self.modelCfg = config.models[modelType]["modelList"][modelName]
+        self.formatter = CreateFormatter(self.modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = self.modelCfg['systemAsUser'])
+        self.contextWindow = self.modelCfg["contextWindow"]
         return
     
     def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
         currentPosition = 0
         text = ""
-        extras = {"temperature": temperature} if None != temperature else {}
+        extras = {}
+        extras.update(self.modelCfg.get("args", {}))
+        extras.update({"temperature": temperature} if None != temperature else {})
         for chunk in self.client.chat_stream(model=self.modelName,
                                              messages=[ChatMessage(**msg) for msg in prompt],
                                              **extras):

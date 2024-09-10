@@ -13,15 +13,17 @@ class AModelAnthropic():
         self.client = anthropic.Anthropic(api_key = config.models[modelType]["apikey"],
                                           base_url = config.models[modelType]["baseURL"])
 
-        modelCfg = config.models[modelType]["modelList"][modelName]
-        self.formatter = CreateFormatter(modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = modelCfg['systemAsUser'])
-        self.contextWindow = modelCfg["contextWindow"]
+        self.modelCfg = config.models[modelType]["modelList"][modelName]
+        self.formatter = CreateFormatter(self.modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = self.modelCfg['systemAsUser'])
+        self.contextWindow = self.modelCfg["contextWindow"]
         return
     
     def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
         currentPosition = 0
         text = ""
-        extras = {"temperature": temperature} if None != temperature else {}
+        extras = {}
+        extras.update(self.modelCfg.get("args", {}))
+        extras.update({"temperature": temperature} if None != temperature else {})
         with self.client.messages.stream(model=self.modelName,
                                          max_tokens=4096,
                                          system=prompt[0]["content"],
