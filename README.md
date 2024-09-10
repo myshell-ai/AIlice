@@ -383,7 +383,7 @@ For advanced players, it is inevitable to try more models. Fortunately, this is 
 <a name="using-llm-through-inference-services"></a>
 #### Using LLM through Inference Services
 
-For openai/mistral/anthropic/groq models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:"/"mistral:"/"anthropic:"/"groq:" prefix. If you need to use a model that is not included in AIlice's supported list, you can resolve this by adding an entry for this model in the config.json file. The method for adding is to directly reference the entry of a similar model, modify the **contextWindow** to the actual value, and keep the **systemAsUser** consistent with the similar model.
+For openai/mistral/anthropic/groq models, you don't need to do anything. Just use the modelID consisting of the official model name appended to the "oai:"/"mistral:"/"anthropic:"/"groq:" prefix. If you need to use a model that is not included in AIlice's supported list, you can resolve this by adding an entry for this model in the config.json file. The method for adding is to directly reference the entry of a similar model, modify the **contextWindow** to the actual value, keep the **systemAsUser** consistent with the similar model, and set **args** to empty dict.
 
 You can use any third-party inference server compatible with the OpenAI API to replace the built-in LLM inference functionality in AIlice. 
 Just use the same configuration format as the openai models and modify the **baseURL, apikey, contextWindow and other parameters** (Actually, this is how AIlice supports Groq models).
@@ -422,7 +422,8 @@ Then, add support for this service in the config.json file (the location of this
         "mistral-openorca": {
           "formatter": "AFormatterGPT",
           "contextWindow": 8192,
-          "systemAsUser": false
+          "systemAsUser": false,
+          "args": {}
         }
       }
     },
@@ -467,7 +468,8 @@ Then, we open config.json and make the following modifications:
         "qwen2-72b": {
           "formatter": "AFormatterGPT",
           "contextWindow": 32764,
-          "systemAsUser": true
+          "systemAsUser": true,
+          "args": {}
         }
       }
     },
@@ -504,7 +506,8 @@ Similar to what we did in the previous section, after we use LM Studio to downlo
         "llava-1.6-34b": {
           "formatter": "AFormatterGPTVision",
           "contextWindow": 4096,
-          "systemAsUser": true
+          "systemAsUser": true,
+          "args": {}
         }
       },
     },
@@ -538,12 +541,14 @@ Open config.json, you should add the config of new LLM into models.hf.modelList,
         "meta-llama/Llama-2-13b-chat-hf": {
           "formatter": "AFormatterLLAMA2",
           "contextWindow": 4096,
-          "systemAsUser": false
+          "systemAsUser": false,
+          "args": {}
         },
         "meta-llama/Llama-2-70b-chat-hf": {
           "formatter": "AFormatterLLAMA2",
           "contextWindow": 4096,
-          "systemAsUser": false
+          "systemAsUser": false,
+          "args": {}
         },
         ...
       }
