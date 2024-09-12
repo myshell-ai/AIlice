@@ -45,6 +45,10 @@ class AConfig():
                 "apikey": None,
                 "baseURL": None,
                 "modelList": {
+                    "o1-preview": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": True, "args": {}},
+                    "o1-preview-2024-09-12": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": True, "args": {}},
+                    "o1-mini": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": True, "args": {}},
+                    "o1-mini-2024-09-12": {"formatter": "AFormatterGPT", "contextWindow": 128000, "systemAsUser": True, "args": {}},
                     "gpt-4o": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": True, "args": {}},
                     "gpt-4o-2024-05-13": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": True, "args": {}},
                     "gpt-4o-2024-08-06": {"formatter": "AFormatterGPTVision", "contextWindow": 128000, "systemAsUser": True, "args": {}},
