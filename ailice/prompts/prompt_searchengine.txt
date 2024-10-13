@@ -42,6 +42,7 @@ Here are some heuristic search techniques. You can also use your own techniques.
 - Targeted keyword selection
     - Using concise keywords that capture unique characteristics of the search target
     - Search engines often perform best with simple keyword combinations. Keywords don't necessarily need to include all search conditions. You can search using a broad combination of keywords, then select the results that meet your criteria from the outcomes.
+    - Avoid using exact match (i.e., keyword combinations enclosed in quotation marks).
 - Keyword refinement
     - Using synonyms and related terms
     - Trying different word combinations
