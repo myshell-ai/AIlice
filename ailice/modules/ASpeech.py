@@ -10,94 +10,94 @@ from ailice.modules.speech.ASTT_Whisper import S2T_WhisperLarge
 
 from ailice.common.lightRPC import makeServer
 
-def strip(txt: str) -> str:
-    translation_table = str.maketrans("", "", string.whitespace)
-    return txt.translate(translation_table)
-
-class ASpeech():
+class ASpeech:
     def __init__(self):
-        self.textQue = queue.Queue(maxsize=100)
-        self.audioQue = queue.Queue(maxsize=100)
+        self.text_queue = queue.Queue(maxsize=100)
+        self.audio_queue = queue.Queue(maxsize=100)
         self.t2s = None
         self.s2t = None
 
-        self.inputDone = True
+        self.input_done = True
         self.lock = threading.Lock()
-        self.noTextLeft = True
+        self.no_text_left = True
         
-        self.textProcessor = threading.Thread(target=self.ProcessText, daemon=True)
-        self.textProcessor.start()
-        self.audioProcessor = threading.Thread(target=self.ProcessAudio, daemon=True)
-        self.audioProcessor.start()
+        self.text_processor = threading.Thread(target=self.process_text, daemon=True)
+        self.text_processor.start()
+        self.audio_processor = threading.Thread(target=self.process_audio, daemon=True)
+        self.audio_processor.start()
         return
     
-    def ModuleInfo(self):
-        return {"NAME": "speech", "ACTIONS": {"SPEECH-TO-TEXT": {"func": "Speech2Text", "prompt": "Speech to text.", "type": "primary"},
-                                              "TEXT-TO-SPEECH": {"func": "Text2Speech", "prompt": "Text to speech.", "type": "primary"},
-                                              "GET-AUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone.", "type": "primary"},
-                                              "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play.", "type": "primary"}}}
+    def module_info(self):
+        return {"NAME": "speech", "ACTIONS": {"SPEECH-TO-TEXT": {"func": "speech2text", "prompt": "Speech to text.", "type": "primary"},
+                                              "TEXT-TO-SPEECH": {"func": "text2speech", "prompt": "Text to speech.", "type": "primary"},
+                                              "GET-AUDIO": {"func": "get_audio", "prompt": "Get text input from microphone.", "type": "primary"},
+                                              "PLAY": {"func": "play", "prompt": "Synthesize input text fragments into audio and play.", "type": "primary"}}}
     
-    def PrepareModel(self):
+    def prepare_model(self):
         if None in [self.t2s, self.s2t]:
             self.t2s = T2S_LJS()
             self.s2t = S2T_WhisperLarge()
         return
     
-    def SetDevices(self, deviceMap: dict[str,str]):
-        if "stt" in deviceMap:
-            self.s2t.To(deviceMap['stt'])
-        elif "tts" in deviceMap:
-            self.t2s.To(deviceMap['tts'])
+    def set_devices(self, device_map: dict[str,str]):
+        if "stt" in device_map:
+            self.s2t.to(device_map['stt'])
+        elif "tts" in device_map:
+            self.t2s.to(device_map['tts'])
         return
     
-    def Speech2Text(self, wav: np.ndarray, sr: int) -> str:
+    def speech2text(self, wav: np.ndarray, sr: int) -> str:
         return self.s2t.recognize(audio_data_to_numpy((wav, sr)))
 
-    def Text2Speech(self, txt: str) -> tuple[np.ndarray, int]:
-        if (None == txt) or ("" == strip(txt)):
+    def text2speech(self, txt: str) -> tuple[np.ndarray, int]:
+        if (None == txt) or ("" == self.strip(txt)):
             return (np.zeros(1), 24000)
         return self.t2s(txt)
     
-    def GetAudio(self) -> str:
-        self.inputDone = True
+    def get_audio(self) -> str:
+        self.input_done = True
         with self.lock:
             ret = self.s2t()
         return ret
     
-    def Play(self, txt: str):
+    def play(self, txt: str):
         print("Play(): ", txt)
-        if (None == txt) or ("" == strip(txt)):
+        if (None == txt) or ("" == self.strip(txt)):
             return
-        self.textQue.put(txt)
-        self.inputDone = False
+        self.text_queue.put(txt)
+        self.input_done = False
         return
     
-    def ProcessText(self):
+    def process_text(self):
         while True:
             #The inter-thread synchronization issue here is more complex than it appears.
-            self.noTextLeft = (self.inputDone and self.textQue.empty())
-            text = self.textQue.get()
+            self.no_text_left = (self.input_done and self.text_queue.empty())
+            text = self.text_queue.get()
             try:
-                self.audioQue.put(self.t2s(text))
+                self.audio_queue.put(self.t2s(text))
             except Exception as e:
                 print('EXCEPTION in ProcessText(). continue. e: ',str(e))
                 continue
     
-    def ProcessAudio(self):
+    def process_audio(self):
         while True:
             time.sleep(0.1)
             with self.lock:
-                while not (self.inputDone and self.noTextLeft and self.audioQue.empty()):
-                    audio,sr = self.audioQue.get()
+                while not (self.input_done and self.no_text_left and self.audio_queue.empty()):
+                    audio,sr = self.audio_queue.get()
                     sd.play(audio, sr)
                     sd.wait()
+    
+    def strip(self, txt: str) -> str:
+        translation_table = str.maketrans("", "", string.whitespace)
+        return txt.translate(translation_table)
 
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "PrepareModel", "Speech2Text", "Text2Speech", "GetAudio", "Play", "SetDevices"]).Run()
+    makeServer(ASpeech, dict(), args.addr, ["module_info", "prepare_model", "speech2text", "text2speech", "get_audio", "play", "set_devices"]).Run()
 
 if __name__ == '__main__':
     main()
