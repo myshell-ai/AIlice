@@ -2,7 +2,6 @@ from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
-from ailice.common.ARemoteAccessors import clientPool
 
 class APromptMain():
     PROMPT_NAME = "main"

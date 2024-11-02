@@ -4,7 +4,6 @@ from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import paragraph_generator
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
-from ailice.common.ARemoteAccessors import clientPool
 
 class APromptArticleDigest():
     PROMPT_NAME = "article-digest"
