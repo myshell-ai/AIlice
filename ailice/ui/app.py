@@ -41,8 +41,8 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 
 app = Flask(__name__)
-clientPool = AClientPool()
-processor = None
+currentSession = None
+processors = dict()
 logger = None
 speech = None
 audioQue = None
@@ -50,6 +50,8 @@ sessionName = None
 lock = threading.Lock()
 
 def Init():
+    global logger
+    
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
@@ -57,25 +59,15 @@ use the provided Dockerfile to build an image and container, and modify the rele
     print(colored("If you find that ailice is running slowly or experiencing high CPU usage, please run `ailice_turbo` to install GPU acceleration support.", "green"))
 
     StartServices()
-    for i in range(5):
-        try:
-            clientPool.Init()
-            break
-        except Exception as e:
-            if i == 4:
-                print(f"It seems that some peripheral module services failed to start. EXCEPTION: {str(e)}")
-                print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
-            time.sleep(5)
-            continue
+
+    logger = ALogger(speech=None)
 
     llmPool.Init([config.modelID])
-
-    InitSpeech()
     
     InitServer()
     return
 
-def InitSpeech():
+def InitSpeech(clientPool):
     global speech, audioQue
     
     if config.speechOn:
@@ -106,9 +98,13 @@ def InitSpeech():
     return
 
 def LoadSession(sessionName: str):
-    global processor, logger
+    global processors, currentSession, logger
     
     try:
+        if sessionName in processors:
+            currentSession = sessionName
+            return
+        
         sessionPath = os.path.join(config.chatHistoryPath, sessionName)
         
         os.makedirs(sessionPath, exist_ok=True)
@@ -116,6 +112,20 @@ def LoadSession(sessionName: str):
         app.config['UPLOAD_FOLDER'] = f'{str(sessionPath)}/uploads'
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+        clientPool = AClientPool()
+        for i in range(5):
+            try:
+                clientPool.Init()
+                break
+            except Exception as e:
+                if i == 4:
+                    print(f"It seems that some peripheral module services failed to start. EXCEPTION: {str(e)}")
+                    print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
+                time.sleep(5)
+                continue
+        
+        InitSpeech(clientPool)
+        
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
         print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
         storage = clientPool.GetClient(config.services['storage']['addr'])
@@ -126,7 +136,6 @@ def LoadSession(sessionName: str):
         promptsManager.Init(storage=storage, collection=sessionName)
         promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
         
-        logger = ALogger(speech=None)
         processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, services=clientPool, outputCB=logger.Receiver, collection=sessionName)
         processor.RegisterModules([config.services['browser']['addr'],
                                 config.services['arxiv']['addr'],
@@ -139,6 +148,8 @@ def LoadSession(sessionName: str):
         if os.path.exists(p):
             with open(p, "r") as f:
                 processor.FromJson(json.load(f))
+        processors[sessionName] = processor
+        currentSession = sessionName
     except Exception as e:
         print('Exception: ', str(e))
         print(e.tb) if hasattr(e, 'tb') else traceback.print_tb(e.__traceback__)
@@ -201,14 +212,14 @@ def main():
 
 def generate_response(message):
     try:
-        threadLLM = threading.Thread(target=processor, args=(message,))
+        threadLLM = threading.Thread(target=processors[currentSession], args=(message,))
         threadLLM.start()
         while True:
             channel, txt, action = logger.queue.get()
             if ">" == channel:
                 threadLLM.join()
                 with open(os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json"), "w") as f:
-                    json.dump(processor.ToJson(), f, indent=2)
+                    json.dump(processors[currentSession].ToJson(), f, indent=2)
                 return
             ret = "\r\r" if "open"==action else ""
             ret += txt
@@ -323,7 +334,7 @@ def sendmsg():
 @app.route('/proxy', methods=['GET', 'HEAD'])
 def proxy():
     href = unquote(request.args.get('href'))
-    var = processor.interpreter.env.get(href, None)
+    var = processors[currentSession].interpreter.env.get(href, None)
     if var and (type(var).__name__ in ['AImage', 'AVideo']):
         with tempfile.NamedTemporaryFile(mode='bw', delete=True) as temp:
             temp.write(var.data)
