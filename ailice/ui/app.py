@@ -24,7 +24,7 @@ from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
-from ailice.common.ARemoteAccessors import clientPool
+from ailice.common.ARemoteAccessors import AClientPool
 from ailice.common.AMessenger import messenger
 from ailice.AServices import StartServices, TerminateSubprocess
 
@@ -41,6 +41,7 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 
 app = Flask(__name__)
+clientPool = AClientPool()
 processor = None
 logger = None
 speech = None
@@ -126,7 +127,7 @@ def LoadSession(sessionName: str):
         promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
         
         logger = ALogger(speech=None)
-        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=sessionName)
+        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, services=clientPool, outputCB=logger.Receiver, collection=sessionName)
         processor.RegisterModules([config.services['browser']['addr'],
                                 config.services['arxiv']['addr'],
                                 config.services['google']['addr'],

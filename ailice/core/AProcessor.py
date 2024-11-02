@@ -12,7 +12,6 @@ from ailice.common.AConfig import config
 from ailice.common.utils.ALogger import ALoggerSection, ALoggerMsg
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.APrompts import promptsManager
-from ailice.common.ARemoteAccessors import clientPool
 from ailice.common.AMessenger import messenger
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
@@ -20,10 +19,11 @@ from ailice.prompts.ARegex import ARegexMap, GenerateRE4FunctionCalling, FUNCTIO
 
 
 class AProcessor():
-    def __init__(self, name, modelID, promptName, outputCB, collection = None):
+    def __init__(self, name, modelID, promptName, services, outputCB, collection = None):
         self.name = name
         self.modelID = modelID
         self.llm = llmPool.GetModel(modelID, promptName)
+        self.services = services
         self.interpreter = AInterpreter()
         self.conversation = AConversations()
         self.subProcessors = dict()
@@ -67,7 +67,7 @@ class AProcessor():
         funcList = []
         actions = {}
         for moduleAddr in moduleAddrs:
-            module = clientPool.GetClient(moduleAddr)
+            module = self.services.GetClient(moduleAddr)
             if (not hasattr(module, "ModuleInfo")) or (not callable(getattr(module, "ModuleInfo"))):
                 raise Exception("EXCEPTION: ModuleInfo() not found in module.")
             info = module.ModuleInfo()
@@ -101,7 +101,7 @@ class AProcessor():
         return self.prompt.PROMPT_NAME
     
     def Prepare(self):
-        self.RegisterModules(set(clientPool.pool) - set([d['addr'] for name, d in self.modules.items()]))
+        self.RegisterModules(set(self.services.pool) - set([d['addr'] for name, d in self.modules.items()]))
         for nodeType, action in self.prompt.GetActions().items():
             self.interpreter.RegisterAction(nodeType, action)
         for nodeType, patterns in self.prompt.GetPatterns().items():
@@ -148,7 +148,7 @@ class AProcessor():
         if agentType not in promptsManager:
             return f"CALL FAILED. specified agentType {agentType} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, services=self.services, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         
         for varName in self.interpreter.env:
@@ -245,7 +245,7 @@ class AProcessor():
         if hasattr(self.prompt, "FromJson"):
             self.prompt.FromJson(data['prompt'])
         for agentName, state in data['subProcessors'].items():
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], services=self.services, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].FromJson(state)
         return
     

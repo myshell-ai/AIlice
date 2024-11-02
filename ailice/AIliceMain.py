@@ -9,7 +9,7 @@ from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
-from ailice.common.ARemoteAccessors import clientPool
+from ailice.common.ARemoteAccessors import AClientPool
 from ailice.AServices import StartServices, TerminateSubprocess
 
 from ailice.common.APrompts import promptsManager
@@ -49,6 +49,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     else:
         storagePath = ""
     
+    clientPool = AClientPool()
     StartServices()
     for i in range(5):
         try:
@@ -93,7 +94,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     llmPool.Init([config.modelID])
     
     logger = ALogger(speech=speech)
-    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=collection)
+    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, services=clientPool, outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
