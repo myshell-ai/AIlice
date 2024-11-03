@@ -6,16 +6,16 @@ import traceback
 from typing import Any
 from ailice.common.ADataType import typeInfo, ToJson, FromJson
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling, GenerateRE4ObjectExpr, ARegexMap, VAR_DEF, EXPR_OBJ
-from ailice.common.AMessenger import messenger
 
 def HasReturnValue(action):
     return action['signature'].return_annotation != inspect.Parameter.empty
 
 class AInterpreter():
-    def __init__(self):
+    def __init__(self, messenger):
         self.actions = {}#nodeType: {"func": func}
         self.patterns = []#[{nodeType,re,isEntry,noTrunc,priority}]
         self.env = {}
+        self.messenger = messenger
 
         self.RegisterPattern("_STR", f"(?P<txt>({ARegexMap['str']}))", False)
         self.RegisterPattern("_INT", f"(?P<txt>({ARegexMap['int']}))", False)
@@ -61,7 +61,7 @@ class AInterpreter():
     
     def EndChecker(self, txt: str) -> bool:
         endPatterns = [p['re'] for p in self.patterns if p['isEntry'] and (not p['noTrunc']) and (HasReturnValue(self.actions[p['nodeType']]) if p['nodeType'] in self.actions else False)]
-        return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns]) or (None != messenger.Get())
+        return any([bool(re.findall(pattern, txt, re.DOTALL)) for pattern in endPatterns]) or (None != self.messenger.Get())
     
     def GetEntryPatterns(self) -> dict[str,str]:
         return [(p['nodeType'], p['re']) for p in self.patterns if p["isEntry"]]

@@ -10,6 +10,7 @@ from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.ARemoteAccessors import AClientPool
+from ailice.common.AMessenger import AMessenger
 from ailice.AServices import StartServices, TerminateSubprocess
 
 from ailice.common.APrompts import promptsManager
@@ -94,7 +95,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     llmPool.Init([config.modelID])
     
     logger = ALogger(speech=speech)
-    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, services=clientPool, outputCB=logger.Receiver, collection=collection)
+    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],

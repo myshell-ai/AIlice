@@ -12,19 +12,19 @@ from ailice.common.AConfig import config
 from ailice.common.utils.ALogger import ALoggerSection, ALoggerMsg
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.APrompts import promptsManager
-from ailice.common.AMessenger import messenger
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
 from ailice.prompts.ARegex import ARegexMap, GenerateRE4FunctionCalling, FUNCTION_CALL_DEFAULT
 
 
 class AProcessor():
-    def __init__(self, name, modelID, promptName, services, outputCB, collection = None):
+    def __init__(self, name, modelID, promptName, services, messenger, outputCB, collection = None):
         self.name = name
         self.modelID = modelID
         self.llm = llmPool.GetModel(modelID, promptName)
         self.services = services
-        self.interpreter = AInterpreter()
+        self.messenger = messenger
+        self.interpreter = AInterpreter(messenger)
         self.conversation = AConversations()
         self.subProcessors = dict()
         self.modules = {}
@@ -126,7 +126,7 @@ class AProcessor():
                 self.EvalStore(ret)
                 self.result = ret
                 
-                msg = messenger.GetPreviousMsg()
+                msg = self.messenger.GetPreviousMsg()
                 if msg != None:
                     resp = f"Interruption. Reminder from super user: {msg}"
                     self.conversation.Add(role = "SYSTEM", msg = resp, env = self.interpreter.env)
@@ -148,7 +148,7 @@ class AProcessor():
         if agentType not in promptsManager:
             return f"CALL FAILED. specified agentType {agentType} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, services=self.services, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         
         for varName in self.interpreter.env:
@@ -245,7 +245,7 @@ class AProcessor():
         if hasattr(self.prompt, "FromJson"):
             self.prompt.FromJson(data['prompt'])
         for agentName, state in data['subProcessors'].items():
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], services=self.services, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].FromJson(state)
         return
     

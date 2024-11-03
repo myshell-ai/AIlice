@@ -25,7 +25,7 @@ from ailice.core.AProcessor import AProcessor
 from ailice.core.llm.ALLMPool import llmPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.ARemoteAccessors import AClientPool
-from ailice.common.AMessenger import messenger
+from ailice.common.AMessenger import AMessenger
 from ailice.AServices import StartServices, TerminateSubprocess
 
 from ailice.common.APrompts import promptsManager
@@ -43,6 +43,7 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 app = Flask(__name__)
 currentSession = None
 processors = dict()
+messenger = AMessenger()
 logger = None
 speech = None
 audioQue = None
@@ -98,7 +99,7 @@ def InitSpeech(clientPool):
     return
 
 def LoadSession(sessionName: str):
-    global processors, currentSession, logger
+    global processors, currentSession, messenger, logger
     
     try:
         if sessionName in processors:
@@ -136,7 +137,7 @@ def LoadSession(sessionName: str):
         promptsManager.Init(storage=storage, collection=sessionName)
         promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
         
-        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, services=clientPool, outputCB=logger.Receiver, collection=sessionName)
+        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, services=clientPool, messenger=messenger, outputCB=logger.Receiver, collection=sessionName)
         processor.RegisterModules([config.services['browser']['addr'],
                                 config.services['arxiv']['addr'],
                                 config.services['google']['addr'],
@@ -321,11 +322,13 @@ def list_histories():
 
 @app.route('/interrupt', methods=['POST'])
 def interrupt():
+    global messenger
     messenger.Lock()
     return jsonify({'status': 'interrupted'})
 
 @app.route('/sendmsg', methods=['POST'])
 def sendmsg():
+    global messenger
     msg = request.get_json().get('message', '')
     messenger.Put(msg)
     messenger.Unlock()
