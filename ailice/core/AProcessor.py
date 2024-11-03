@@ -9,18 +9,18 @@ import random
 import json
 from ailice.common.AConfig import config
 from ailice.common.utils.ALogger import ALoggerSection, ALoggerMsg
-from ailice.common.APrompts import promptsManager
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling, FUNCTION_CALL_DEFAULT
 
 
 class AProcessor():
-    def __init__(self, name, modelID, promptName, llmPool, services, messenger, outputCB, collection = None):
+    def __init__(self, name, modelID, promptName, llmPool, promptsManager, services, messenger, outputCB, collection = None):
         self.name = name
         self.modelID = modelID
         self.llmPool = llmPool
         self.llm = llmPool.GetModel(modelID, promptName)
+        self.promptsManager = promptsManager
         self.services = services
         self.messenger = messenger
         self.interpreter = AInterpreter(messenger)
@@ -144,10 +144,10 @@ class AProcessor():
                     return self.result
 
     def EvalCall(self, agentType: str, agentName: str, msg: str) -> str:
-        if agentType not in promptsManager:
+        if agentType not in self.promptsManager:
             return f"CALL FAILED. specified agentType {agentType} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, llmPool=self.llmPool, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         
         for varName in self.interpreter.env:
@@ -216,7 +216,7 @@ class AProcessor():
             sys.modules[moduleName] = promptModule
             spec.loader.exec_module(promptModule)
             
-            ret += promptsManager.RegisterPrompts([promptModule.APrompt])
+            ret += self.promptsManager.RegisterPrompts([promptModule.APrompt])
             if "" == ret:
                 ret += f"Prompt module {promptModule.APrompt.PROMPT_NAME} has been loaded. Its description information is as follows:\n{promptModule.APrompt.PROMPT_DESCRIPTION}"
         except Exception as e:
@@ -240,11 +240,11 @@ class AProcessor():
         self.conversation.FromJson(data["conversation"])
         self.collection = data['collection']
         self.RegisterModules([m['addr'] for k,m in data["modules"].items()])
-        self.prompt = promptsManager[data['agentType']](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
+        self.prompt = self.promptsManager[data['agentType']](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
         if hasattr(self.prompt, "FromJson"):
             self.prompt.FromJson(data['prompt'])
         for agentName, state in data['subProcessors'].items():
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], llmPool=self.llmPool, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].FromJson(state)
         return
     

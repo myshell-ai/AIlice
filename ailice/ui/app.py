@@ -28,7 +28,7 @@ from ailice.common.ARemoteAccessors import AClientPool
 from ailice.common.AMessenger import AMessenger
 from ailice.AServices import StartServices, TerminateSubprocess
 
-from ailice.common.APrompts import promptsManager
+from ailice.common.APrompts import APromptsManager
 from ailice.prompts.APromptChat import APromptChat
 from ailice.prompts.APromptMain import APromptMain
 from ailice.prompts.APromptSearchEngine import APromptSearchEngine
@@ -135,10 +135,11 @@ def LoadSession(sessionName: str):
         print(f"Vector database has been started. returned msg: {msg}")
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
+        promptsManager = APromptsManager()
         promptsManager.Init(storage=storage, collection=sessionName)
         promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
         
-        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, services=clientPool, messenger=messenger, outputCB=logger.Receiver, collection=sessionName)
+        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=messenger, outputCB=logger.Receiver, collection=sessionName)
         processor.RegisterModules([config.services['browser']['addr'],
                                 config.services['arxiv']['addr'],
                                 config.services['google']['addr'],

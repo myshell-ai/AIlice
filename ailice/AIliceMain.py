@@ -13,7 +13,7 @@ from ailice.common.ARemoteAccessors import AClientPool
 from ailice.common.AMessenger import AMessenger
 from ailice.AServices import StartServices, TerminateSubprocess
 
-from ailice.common.APrompts import promptsManager
+from ailice.common.APrompts import APromptsManager
 from ailice.prompts.APromptChat import APromptChat
 from ailice.prompts.APromptMain import APromptMain
 from ailice.prompts.APromptSearchEngine import APromptSearchEngine
@@ -89,6 +89,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     timestamp = str(int(time.time()))
     collection = "ailice_" + timestamp
 
+    promptsManager = APromptsManager()
     promptsManager.Init(storage=storage, collection=collection)
     promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
     
@@ -96,7 +97,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     llmPool.Init([config.modelID])
     
     logger = ALogger(speech=speech)
-    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
+    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],

@@ -30,5 +30,3 @@ class APromptsManager():
     
     def __iter__(self):
         return iter(self.prompts)
-    
-promptsManager = APromptsManager()
