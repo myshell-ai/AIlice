@@ -22,7 +22,7 @@ from logging.handlers import RotatingFileHandler
 
 from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
-from ailice.core.llm.ALLMPool import llmPool
+from ailice.core.llm.ALLMPool import ALLMPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.ARemoteAccessors import AClientPool
 from ailice.common.AMessenger import AMessenger
@@ -43,6 +43,7 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 app = Flask(__name__)
 currentSession = None
 processors = dict()
+llmPool = ALLMPool()
 messenger = AMessenger()
 logger = None
 speech = None
@@ -51,7 +52,7 @@ sessionName = None
 lock = threading.Lock()
 
 def Init():
-    global logger
+    global llmPool, logger
     
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
@@ -99,7 +100,7 @@ def InitSpeech(clientPool):
     return
 
 def LoadSession(sessionName: str):
-    global processors, currentSession, messenger, logger
+    global processors, currentSession, llmPool, messenger, logger
     
     try:
         if sessionName in processors:
@@ -137,7 +138,7 @@ def LoadSession(sessionName: str):
         promptsManager.Init(storage=storage, collection=sessionName)
         promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
         
-        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, services=clientPool, messenger=messenger, outputCB=logger.Receiver, collection=sessionName)
+        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, services=clientPool, messenger=messenger, outputCB=logger.Receiver, collection=sessionName)
         processor.RegisterModules([config.services['browser']['addr'],
                                 config.services['arxiv']['addr'],
                                 config.services['google']['addr'],

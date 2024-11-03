@@ -7,7 +7,7 @@ from termcolor import colored
 
 from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
-from ailice.core.llm.ALLMPool import llmPool
+from ailice.core.llm.ALLMPool import ALLMPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.ARemoteAccessors import AClientPool
 from ailice.common.AMessenger import AMessenger
@@ -92,10 +92,11 @@ use the provided Dockerfile to build an image and container, and modify the rele
     promptsManager.Init(storage=storage, collection=collection)
     promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
     
+    llmPool = ALLMPool()
     llmPool.Init([config.modelID])
     
     logger = ALogger(speech=speech)
-    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
+    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
