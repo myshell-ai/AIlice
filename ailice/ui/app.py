@@ -42,18 +42,13 @@ from ailice.prompts.APromptArticleDigest import APromptArticleDigest
 
 app = Flask(__name__)
 currentSession = None
-processors = dict()
-llmPool = ALLMPool()
-messenger = AMessenger()
-logger = None
+context = dict()
 speech = None
 audioQue = None
 sessionName = None
 lock = threading.Lock()
 
 def Init():
-    global llmPool, logger
-    
     print(colored("In order to simplify installation and usage, we have set local execution as the default behavior, which means AI has complete control over the local environment. \
 To prevent irreversible losses due to potential AI errors, you may consider one of the following two methods: the first one, run AIlice in a virtual machine; the second one, install Docker, \
 use the provided Dockerfile to build an image and container, and modify the relevant configurations in config.json. For detailed instructions, please refer to the documentation.", "red"))
@@ -61,10 +56,6 @@ use the provided Dockerfile to build an image and container, and modify the rele
     print(colored("If you find that ailice is running slowly or experiencing high CPU usage, please run `ailice_turbo` to install GPU acceleration support.", "green"))
 
     StartServices()
-
-    logger = ALogger(speech=None)
-
-    llmPool.Init([config.modelID])
     
     InitServer()
     return
@@ -100,10 +91,10 @@ def InitSpeech(clientPool):
     return
 
 def LoadSession(sessionName: str):
-    global processors, currentSession, llmPool, messenger, logger
+    global context, currentSession
     
     try:
-        if sessionName in processors:
+        if sessionName in context:
             currentSession = sessionName
             return
         
@@ -135,9 +126,16 @@ def LoadSession(sessionName: str):
         print(f"Vector database has been started. returned msg: {msg}")
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
+        llmPool = ALLMPool()
+        llmPool.Init([config.modelID])
+
         promptsManager = APromptsManager()
         promptsManager.Init(storage=storage, collection=sessionName)
         promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
+
+        messenger = AMessenger()
+
+        logger = ALogger(speech=None)
         
         processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=messenger, outputCB=logger.Receiver, collection=sessionName)
         processor.RegisterModules([config.services['browser']['addr'],
@@ -151,7 +149,7 @@ def LoadSession(sessionName: str):
         if os.path.exists(p):
             with open(p, "r") as f:
                 processor.FromJson(json.load(f))
-        processors[sessionName] = processor
+        context[sessionName] = {'processor': processor, 'llmPool': llmPool, 'messenger': messenger, 'logger': logger}
         currentSession = sessionName
     except Exception as e:
         print('Exception: ', str(e))
@@ -215,14 +213,14 @@ def main():
 
 def generate_response(message):
     try:
-        threadLLM = threading.Thread(target=processors[currentSession], args=(message,))
+        threadLLM = threading.Thread(target=context[currentSession]['processor'], args=(message,))
         threadLLM.start()
         while True:
-            channel, txt, action = logger.queue.get()
+            channel, txt, action = context[currentSession]['logger'].queue.get()
             if ">" == channel:
                 threadLLM.join()
                 with open(os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json"), "w") as f:
-                    json.dump(processors[currentSession].ToJson(), f, indent=2)
+                    json.dump(context[currentSession]['processor'].ToJson(), f, indent=2)
                 return
             ret = "\r\r" if "open"==action else ""
             ret += txt
@@ -324,22 +322,22 @@ def list_histories():
 
 @app.route('/interrupt', methods=['POST'])
 def interrupt():
-    global messenger
-    messenger.Lock()
+    global context
+    context[currentSession]['messenger'].Lock()
     return jsonify({'status': 'interrupted'})
 
 @app.route('/sendmsg', methods=['POST'])
 def sendmsg():
-    global messenger
+    global context
     msg = request.get_json().get('message', '')
-    messenger.Put(msg)
-    messenger.Unlock()
+    context[currentSession]['messenger'].Put(msg)
+    context[currentSession]['messenger'].Unlock()
     return jsonify({'status': 'message sent', 'message': msg})
 
 @app.route('/proxy', methods=['GET', 'HEAD'])
 def proxy():
     href = unquote(request.args.get('href'))
-    var = processors[currentSession].interpreter.env.get(href, None)
+    var = context[currentSession]['processor'].interpreter.env.get(href, None)
     if var and (type(var).__name__ in ['AImage', 'AVideo']):
         with tempfile.NamedTemporaryFile(mode='bw', delete=True) as temp:
             temp.write(var.data)
