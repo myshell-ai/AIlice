@@ -122,6 +122,7 @@ class AProcessor():
                 prompt = self.prompt.BuildPrompt()
                 with ALoggerMsg(recv=self.outputCB, channel="ASSISTANT_" + self.name) as loggerMsg:
                     ret = self.llm.Generate(prompt, proc=loggerMsg, endchecker=self.interpreter.EndChecker, temperature = config.temperature)
+                ret = "System notification: The empty output was detected, which is usually caused by an agent error. You can urge it to resolve this issue and return meaningful information." if "" == ret.strip() else ret
                 self.conversation.Add(role = "ASSISTANT", msg = ret, env = self.interpreter.env)
                 self.EvalStore(ret)
                 self.result = ret
