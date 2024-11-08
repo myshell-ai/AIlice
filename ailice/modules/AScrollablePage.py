@@ -1,5 +1,5 @@
 
-STEP = 4096
+STEP = 8192
 
 class AScrollablePage():
     def __init__(self, functions: dict[str, str]):
