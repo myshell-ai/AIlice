@@ -10,7 +10,7 @@ class AScrollablePage():
     
     def ConstructPrompt(self) -> str:
         pagesTotal = int((len(self.txt) + STEP) // STEP)
-        pageIdx = min(max(int(self.currentIdx // STEP) + 1, 1), pagesTotal)
+        pageIdx = min(max(int((self.currentIdx + int(STEP/2)) // STEP) + 1, 1), pagesTotal)
         ret = "To avoid excessive consumption of context space due to lengthy content, we have paginated the entire content. This is just one page, to browse more content, please use the following function(s) for page navigation.\n"
         funcs = []
         if ('SCROLLDOWN' in self.functions) and (self.currentIdx + STEP < len(self.txt)):
