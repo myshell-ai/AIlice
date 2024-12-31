@@ -44,5 +44,3 @@ class ALLMPool():
                 sys.exit(0)
             modelID = config.agentModelConfig.get(agentType, config.agentModelConfig['DEFAULT'])
         return self.pool[modelID]
-    
-llmPool = ALLMPool()

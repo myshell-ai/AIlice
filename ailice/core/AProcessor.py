@@ -7,24 +7,23 @@ import inspect
 import re
 import random
 import json
-from functools import partial
 from ailice.common.AConfig import config
 from ailice.common.utils.ALogger import ALoggerSection, ALoggerMsg
-from ailice.core.llm.ALLMPool import llmPool
-from ailice.common.APrompts import promptsManager
-from ailice.common.ARemoteAccessors import clientPool
-from ailice.common.AMessenger import messenger
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
-from ailice.prompts.ARegex import ARegexMap, GenerateRE4FunctionCalling, FUNCTION_CALL_DEFAULT
+from ailice.prompts.ARegex import GenerateRE4FunctionCalling, FUNCTION_CALL_DEFAULT
 
 
 class AProcessor():
-    def __init__(self, name, modelID, promptName, outputCB, collection = None):
+    def __init__(self, name, modelID, promptName, llmPool, promptsManager, services, messenger, outputCB, collection = None):
         self.name = name
         self.modelID = modelID
+        self.llmPool = llmPool
         self.llm = llmPool.GetModel(modelID, promptName)
-        self.interpreter = AInterpreter()
+        self.promptsManager = promptsManager
+        self.services = services
+        self.messenger = messenger
+        self.interpreter = AInterpreter(messenger)
         self.conversation = AConversations()
         self.subProcessors = dict()
         self.modules = {}
@@ -67,7 +66,7 @@ class AProcessor():
         funcList = []
         actions = {}
         for moduleAddr in moduleAddrs:
-            module = clientPool.GetClient(moduleAddr)
+            module = self.services.GetClient(moduleAddr)
             if (not hasattr(module, "ModuleInfo")) or (not callable(getattr(module, "ModuleInfo"))):
                 raise Exception("EXCEPTION: ModuleInfo() not found in module.")
             info = module.ModuleInfo()
@@ -101,7 +100,7 @@ class AProcessor():
         return self.prompt.PROMPT_NAME
     
     def Prepare(self):
-        self.RegisterModules(set(clientPool.pool) - set([d['addr'] for name, d in self.modules.items()]))
+        self.RegisterModules(set(self.services.pool) - set([d['addr'] for name, d in self.modules.items()]))
         for nodeType, action in self.prompt.GetActions().items():
             self.interpreter.RegisterAction(nodeType, action)
         for nodeType, patterns in self.prompt.GetPatterns().items():
@@ -127,7 +126,7 @@ class AProcessor():
                 self.EvalStore(ret)
                 self.result = ret
                 
-                msg = messenger.GetPreviousMsg()
+                msg = self.messenger.GetPreviousMsg()
                 if msg != None:
                     resp = f"Interruption. Reminder from super user: {msg}"
                     self.conversation.Add(role = "SYSTEM", msg = resp, env = self.interpreter.env)
@@ -146,10 +145,10 @@ class AProcessor():
                     return self.result
 
     def EvalCall(self, agentType: str, agentName: str, msg: str) -> str:
-        if agentType not in promptsManager:
+        if agentType not in self.promptsManager:
             return f"CALL FAILED. specified agentType {agentType} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         
         for varName in self.interpreter.env:
@@ -218,7 +217,7 @@ class AProcessor():
             sys.modules[moduleName] = promptModule
             spec.loader.exec_module(promptModule)
             
-            ret += promptsManager.RegisterPrompts([promptModule.APrompt])
+            ret += self.promptsManager.RegisterPrompts([promptModule.APrompt])
             if "" == ret:
                 ret += f"Prompt module {promptModule.APrompt.PROMPT_NAME} has been loaded. Its description information is as follows:\n{promptModule.APrompt.PROMPT_DESCRIPTION}"
         except Exception as e:
@@ -242,11 +241,11 @@ class AProcessor():
         self.conversation.FromJson(data["conversation"])
         self.collection = data['collection']
         self.RegisterModules([m['addr'] for k,m in data["modules"].items()])
-        self.prompt = promptsManager[data['agentType']](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
+        self.prompt = self.promptsManager[data['agentType']](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
         if hasattr(self.prompt, "FromJson"):
             self.prompt.FromJson(data['prompt'])
         for agentName, state in data['subProcessors'].items():
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
             self.subProcessors[agentName].FromJson(state)
         return
     

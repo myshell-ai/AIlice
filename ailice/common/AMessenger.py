@@ -26,6 +26,3 @@ class AMessenger():
     def Unlock(self):
         self.lock.release()
         return
-    
-messenger = AMessenger()
-    

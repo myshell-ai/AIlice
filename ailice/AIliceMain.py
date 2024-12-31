@@ -7,12 +7,13 @@ from termcolor import colored
 
 from ailice.common.AConfig import config
 from ailice.core.AProcessor import AProcessor
-from ailice.core.llm.ALLMPool import llmPool
+from ailice.core.llm.ALLMPool import ALLMPool
 from ailice.common.utils.ALogger import ALogger
-from ailice.common.ARemoteAccessors import clientPool
+from ailice.common.ARemoteAccessors import AClientPool
+from ailice.common.AMessenger import AMessenger
 from ailice.AServices import StartServices, TerminateSubprocess
 
-from ailice.common.APrompts import promptsManager
+from ailice.common.APrompts import APromptsManager
 from ailice.prompts.APromptChat import APromptChat
 from ailice.prompts.APromptMain import APromptMain
 from ailice.prompts.APromptSearchEngine import APromptSearchEngine
@@ -49,6 +50,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     else:
         storagePath = ""
     
+    clientPool = AClientPool()
     StartServices()
     for i in range(5):
         try:
@@ -87,13 +89,15 @@ use the provided Dockerfile to build an image and container, and modify the rele
     timestamp = str(int(time.time()))
     collection = "ailice_" + timestamp
 
+    promptsManager = APromptsManager()
     promptsManager.Init(storage=storage, collection=collection)
     promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
     
+    llmPool = ALLMPool()
     llmPool.Init([config.modelID])
     
     logger = ALogger(speech=speech)
-    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, outputCB=logger.Receiver, collection=collection)
+    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],

@@ -28,5 +28,3 @@ class AClientPool():
             if key == client["name"]:
                 return client["client"]
         return None
-    
-clientPool = AClientPool()
