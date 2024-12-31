@@ -33,7 +33,7 @@ Available Functions
 #You can use divide and conquer strategy for complex tasks. Use this function to interact with an AI agent.
 CALL<!|agentType: str, agentName: str, msg: str|!> -> str
 agentType: A string used to specify the type of AI agent. It can be of the following types:
- - "search-engine": search for information from sources like Google, arXiv.
+ - "search-engine": search for web pages/documents containing specified information from sources like Google, arXiv. Use the URLs he returned as the entry point for the survey.
  - "article-digest": literature reading comprehension and related question answering.
  - "coder-proxy": he is adept at using programming to solve problems and has execution permissions for both Bash and Python. You'd better leave it to problems that are easy to solve with programming.
 <AGENTS>

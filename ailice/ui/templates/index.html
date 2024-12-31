@@ -200,12 +200,10 @@
         }
     </style>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
-    <!-- The loading of KaTeX is deferred to speed up page rendering -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"></script>
-    <!-- To automatically render math in text elements, include the auto-render extension: -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
-        onload="renderMathInElement(document.body);"></script>
+    <!-- Load MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked-highlight@2.1.3/lib/index.umd.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/default.min.css">
@@ -293,12 +291,12 @@
         function mathsExpression(expr, force) {
             if (expr.match(/^\$\$[\s\S]*\$\$$/)) {
                 expr = expr.substr(2, expr.length - 4);
-                return [katex.renderToString(expr, { displayMode: true }), true];
+                return [`$$${expr}$$`, true];
             } else if (expr.match(/^\$[\s\S]*\$$/)) {
                 expr = expr.substr(1, expr.length - 2);
-                return [katex.renderToString(expr, { displayMode: false }), true];
+                return [`\\(${expr}\\)`, true];
             } else if (force) {
-                return [katex.renderToString(expr, { displayMode: true }), true];
+                return [`$$${expr}$$`, true];
             }
             else {
                 return [expr, false]
@@ -417,6 +415,7 @@
                                 if (lastBotMessageElement) {
                                     content += responseMessage;
                                     lastBotMessageElement.innerHTML = renderMarkdown(content);
+                                    MathJax.typesetPromise([lastBotMessageElement]);
                                 } else {
                                     content = responseMessage;
                                     displayMsg("ASSISTANT", content);
@@ -509,6 +508,7 @@
                     <img src=${roleMap[role] || "/static/AIlice.png"} class="avatar">
                     <div class="bubble">${renderMarkdown(message)}</div>
                 </div>`;
+            MathJax.typesetPromise([chatWindow.querySelector('.message:last-child .bubble')]);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
