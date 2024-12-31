@@ -8,8 +8,9 @@ from termcolor import colored
 class AConfig():
     def __init__(self):
         self.modelID = ""
-        self.agentModelConfig = {"DEFAULT": "openrouter:qwen/qwen-2-72b-instruct",
-                                 "coder": "openrouter:deepseek/deepseek-coder"}
+        self.agentModelConfig = {"DEFAULT": "openrouter:qwen/qwen-2.5-72b-instruct",
+                                 "main": "openrouter:anthropic/claude-3.5-sonnet",
+                                 "coder": "openrouter:qwen/qwen-2.5-coder-32b-instruct"}
         self.prompt = "main"
         self.chatHistoryPath = appdirs.user_data_dir("ailice", "Steven Lu")
         self.certificate = ""
