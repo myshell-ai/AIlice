@@ -19,6 +19,9 @@
   <a href="https://www.reddit.com/r/AIlice/">Reddit</a>
 </p>
 
+
+**ATTENTION! We currently has no plans to create any related crypto tokens. Please be cautious and recognize scams to avoid being deceived. (Updated on January 6, 2025)**
+
 :fire: Jun 22, 2024: We have entered the era of locally running JARVIS-like AI assistants! The latest open-source LLMs enable us to perform complex tasks locally! Click [here](#guide-to-choosing-an-llm) to learn more.
 
 ----
