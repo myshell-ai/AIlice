@@ -96,7 +96,7 @@ Install and run Ailice with the following commands. Once Ailice is launched, use
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 pip install -e .
-ailice_web --modelID=oai:gpt-4o --contextWindowRatio=0.2
+ailice_web --modelID=openrouter:anthropic/claude-3.5-sonnet --contextWindowRatio=0.2
 ```
 
 - For a more detailed understanding of the installation and configuration methods, please visit the [Installation and Usage](#installation-and-usage) section and the [Selection and Configuration of LLM](#selection-and-configuration-of-LLM) section.
@@ -258,11 +258,9 @@ docker restart scripter
 You can directly copy a command from the typical use cases below to run Ailice.
 
 ```bash
-ailice_web --modelID=oai:gpt-4o --contextWindowRatio=0.2
-ailice_web --modelID=anthropic:claude-3-5-sonnet-20240620 --contextWindowRatio=0.1
-ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history
-ailice_web --modelID=anthropic:claude-3-opus-20240229 --prompt="researcher"
-ailice_web --modelID=mistral:mistral-large-latest
+ailice_web --modelID=anthropic:claude-3-5-sonnet-20240620 --contextWindowRatio=0.2
+ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history --contextWindowRatio=0.2
+ailice_web --modelID=mistral:mistral-large-latest --prompt="researcher"
 ailice_web --modelID=deepseek:deepseek-chat
 ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --contextWindowRatio=0.6
 ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --quantization=4bit --contextWindowRatio=0.3
@@ -345,10 +343,10 @@ Updated on Aug 23, 2024.
 
 Currently, Ailice can **handle more complex tasks using the locally run 72B open-source model (qwen-2-72b-instruct running on 4090x2)**, with performance approaching that of GPT-4 level models. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. Click [here](#example-2-lm-studio) to learn how to run this model locally. For users whose GPU conditions are insufficient to run large models, this is not a problem. You can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). Although open-source models cannot yet fully rival commercial GPT-4 level models, you can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
 
-**claude-3-5-sonnet-20240620** provides the best performance.
+**claude-3-5-sonnet** provides the best performance.
 
-**gpt-4o** and **gpt-4-1106-preview** also offer top-level performance. But due to the long running time of the Agent and the great consumption of tokens, please use commercial models with caution. **gpt-4o-mini** works very well, and although it's not top-notch, its low price makes this model very attractive.
 **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
+**gpt-4o** used to have top-tier performance, but currently (similar to the previous turbo models) they exhibit laziness issues in function calls. We no longer recommend using them.
 
 Among the open-source models, the ones that usually perform well include:
 
