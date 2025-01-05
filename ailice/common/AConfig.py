@@ -116,7 +116,9 @@ class AConfig():
                         "claude-2.1": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True, "args": {}},
                         "claude-3-sonnet-20240229": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
                         "claude-3-opus-20240229": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
-                        "claude-3-5-sonnet-20240620": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}}
+                        "claude-3-5-sonnet-20240620": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
+                        "claude-3-5-sonnet-20241022": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
+                        "claude-3-5-haiku-20241022": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True, "args": {}}
                     }
             }
         }
