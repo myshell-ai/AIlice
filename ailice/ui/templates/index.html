@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Interface</title>
+    <title>Ailice</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -198,6 +198,71 @@
             background-color: #007bff;
             color: #fff;
         }
+        .history-panel {
+            position: relative;
+            height: 30px;
+            min-height: 30px;
+            max-height: calc(100% - 20px);
+            background-color: #f7f9fc;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+        .history-handle {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 30px;
+            background-color: #f0f4f8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+            user-select: none;
+        }
+
+        .history-handle::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            cursor: ns-resize;
+        }
+        .history-content {
+            padding: 35px 20px 5px 20px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+        .history-panel.expanded {
+            height: 200px;
+        }
+        .handle-bar {
+            width: 40px;
+            height: 4px;
+            background-color: #ccc;
+            border-radius: 2px;
+            margin-right: 10px;
+        }
+        .internal-message {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+            border-left: 3px solid #007bff;
+        }
+        .role {
+            color: #2c5282;
+            font-weight: 600;
+            font-size: 0.95em;
+            padding-right: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
     </style>
 
     <!-- Load MathJax -->
@@ -220,6 +285,15 @@
         <div class="main-content">
             <div class="chat-window" id="chat-window">
                 <!-- Chat messages will be displayed here -->
+            </div>
+            <div class="history-panel" id="history-panel">
+                <div class="history-handle">
+                    <div class="handle-bar"></div>
+                    Details
+                </div>
+                <div class="history-content">
+                    <!-- History messages will be displayed here -->
+                </div>
             </div>
             <div class="input-section">
                 <textarea id="text-input" placeholder="Type a message... (Shift+Enter for new line)"></textarea>
@@ -384,7 +458,11 @@
             const decoder = new TextDecoder();
             let inputDisabled = false;  // Flag variable used to track whether the input field has been disabled.
             let content = '';
+            let internalContent = '';
             let lastBotMessageElement = null;
+            let lastInternalElement = null;
+            const historyPanel = document.getElementById('history-panel');
+            const historyContent = historyPanel.querySelector('.history-content');
             
             function read() {
                 reader.read().then(({ done, value }) => {
@@ -392,6 +470,11 @@
                         enableInput();
                         document.getElementById('interrupt-button').style.display = 'none';
                         isUpdating = false;  // End of data updating.
+                        
+                        setTimeout(() => {
+                            collapseHistoryPanel();
+                        }, 1000);
+                        
                         return;
                     }
                     if (!inputDisabled) {
@@ -399,7 +482,10 @@
                         document.getElementById('interrupt-button').style.display = 'inline-block';
                         inputDisabled = true;  // Setting the flag variable to true indicates that the input field has been disabled.
                         isUpdating = true;  // Start data updating.
+                        
+                        expandHistoryPanel();
                     }
+                    
                     const text = decoder.decode(value, { stream: true });
                     const lines = text.split('\n');
                     
@@ -409,19 +495,46 @@
                             try {
                                 const responseObject = JSON.parse(jsonString);
                                 const responseMessage = responseObject.message;
-                                setTimeout(() => {
+                                
+                                roleHTML = "<span class='role'>" + responseObject.role + ": </span>";
+                                if (responseObject.action === "") {
+                                    internalContent += (roleHTML + responseMessage + "<br><br>");
+                                } else if (responseObject.action === "open") {
+                                    internalContent += (roleHTML + responseMessage);
+                                } else if (responseObject.action === "append") {
+                                    internalContent += responseMessage;
+                                } else if (responseObject.action === "close") {
+                                    internalContent += (responseMessage + "<br><br>");
+                                }
+                                
+                                if (lastInternalElement) {
+                                    lastInternalElement.innerHTML = renderMarkdown(internalContent);
+                                    MathJax.typesetPromise([lastInternalElement]);
+                                } else {
+                                    const messageDiv = document.createElement('div');
+                                    messageDiv.className = 'internal-message';
+                                    messageDiv.innerHTML = renderMarkdown(internalContent);
+                                    historyContent.appendChild(messageDiv);
+                                    lastInternalElement = messageDiv;
+                                    MathJax.typesetPromise([messageDiv]);
+                                }
+                                historyContent.scrollTop = historyContent.scrollHeight;
+
+                                if (responseObject.msgType === "response") {
+                                    setTimeout(() => {
                                         lastBotMessageElement = chatWindow.querySelector('.message.ASSISTANT:last-child .bubble');
                                     }, 0);
-                                if (lastBotMessageElement) {
-                                    content += responseMessage;
-                                    lastBotMessageElement.innerHTML = renderMarkdown(content);
-                                    MathJax.typesetPromise([lastBotMessageElement]);
-                                } else {
-                                    content = responseMessage;
-                                    displayMsg("ASSISTANT", content);
+                                    if (lastBotMessageElement) {
+                                        content += responseMessage;
+                                        lastBotMessageElement.innerHTML = renderMarkdown(content);
+                                        MathJax.typesetPromise([lastBotMessageElement]);
+                                    } else {
+                                        content = responseMessage;
+                                        displayMsg("ASSISTANT", content);
+                                    }
+                                    const chatWindow = document.getElementById('chat-window');
+                                    chatWindow.scrollTop = chatWindow.scrollHeight;
                                 }
-                                const chatWindow = document.getElementById('chat-window');
-                                chatWindow.scrollTop = chatWindow.scrollHeight;
                             } catch (e) {
                                 console.error("Error parsing JSON:", e);
                             }
@@ -512,6 +625,76 @@
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
+        const historyPanel = document.getElementById('history-panel');
+        const historyHandle = historyPanel.querySelector('.history-handle');
+
+        let isResizing = false;
+        let startY = 0;
+        let startHeight = 0;
+        let isDragged = false;
+
+        historyHandle.addEventListener('click', function(e) {
+            if (isDragged) {
+                isDragged = false;
+                return;
+            }
+            
+            if (historyPanel.classList.contains('expanded')) {
+                historyPanel.style.height = '30px';
+                historyPanel.classList.remove('expanded');
+            } else {
+                historyPanel.style.height = '200px';
+                historyPanel.classList.add('expanded');
+            }
+        });
+
+        historyHandle.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            startY = e.clientY;
+            startHeight = historyPanel.offsetHeight;
+            isDragged = false;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isResizing) return;
+            
+            isDragged = true;
+            
+            const newHeight = startHeight + (startY - e.clientY);
+            const finalHeight = Math.max(30, Math.min(newHeight, 
+                historyPanel.parentElement.offsetHeight - 20));
+            
+            historyPanel.style.height = finalHeight + 'px';
+            
+            if (finalHeight > 30) {
+                historyPanel.classList.add('expanded');
+            } else {
+                historyPanel.classList.remove('expanded');
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (isResizing) {
+                isResizing = false;
+                if (historyPanel.offsetHeight < 45) {
+                    historyPanel.style.height = '30px';
+                    historyPanel.classList.remove('expanded');
+                }
+            }
+        });
+
+        function expandHistoryPanel() {
+            historyPanel.style.height = '200px';
+            historyPanel.classList.add('expanded');
+        }
+
+        function collapseHistoryPanel() {
+            historyPanel.style.height = '30px';
+            historyPanel.classList.remove('expanded');
+        }
+
+        
         document.getElementById('interrupt-button').addEventListener('click', function() {
             if (isInterrupted) {
                 const message = document.getElementById('text-input').value;

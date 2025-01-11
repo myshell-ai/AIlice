@@ -215,18 +215,25 @@ def generate_response(message):
     try:
         threadLLM = threading.Thread(target=context[currentSession]['processor'], args=(message,))
         threadLLM.start()
+        depth = -1
+        braketMap = {"<": 1, ">": -1}
+        
         while True:
             channel, txt, action = context[currentSession]['logger'].queue.get()
-            if ">" == channel:
+            
+            depth += braketMap.get(channel, 0)
+            if (-1 == depth) and (">" == channel):
                 threadLLM.join()
                 with open(os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json"), "w") as f:
                     json.dump(context[currentSession]['processor'].ToJson(), f, indent=2)
                 return
-            ret = "\r\r" if "open"==action else ""
-            ret += txt
-            if config.speechOn:
+            elif (channel in ["<", ">"]):
+                continue
+            
+            if (config.speechOn and (0 == depth)):
                 audioQue.put(speech.Text2Speech(txt))
-            msg = json.dumps({'message': ret})
+            
+            msg = json.dumps({'message': txt, 'role': channel, 'action': action, 'msgType': 'internal' if (depth > 0) or ("ASSISTANT" not in channel) else 'response'})
             yield f"data: {msg}\n\n"
     except Exception as e:
         app.logger.error(f"Error in generate_response: {e} {traceback.print_tb(e.__traceback__)}")

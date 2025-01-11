@@ -12,6 +12,8 @@ class ALogger():
         return
     
     def ParseChannel(self, channel: str) -> tuple[str]:
+        if channel in ["<", ">"]:
+            return channel, ""
         l = channel.find("_")
         channelType, agentName = channel[:l], channel[l+1:]
         return channelType, agentName
@@ -47,11 +49,8 @@ class ALogger():
             self.SinkPrint(channel=channel, txt=txt, action=action)
         if config.speechOn and ((channelType in ["ASSISTANT"]) and (0 == self.depth)):
             self.SinkSpeech(channel=channel, txt=txt, action=action)
-        if ((channelType in ["OUTPUT"]) and (1 == self.depth)) or\
-           (((channelType in ["ASSISTANT"]) and (0 == self.depth))):
+        if ((channelType in ["ASSISTANT", "SYSTEM", "<", ">"]) or (0 >= self.depth)):
             self.SinkQueue(channel=channel, txt=txt, action=action)
-        if (channel in [">"]) and (-1 == self.depth):
-            self.SinkQueue(channel=channel, txt=None, action=None)
         return
     
 class ALoggerSection:
