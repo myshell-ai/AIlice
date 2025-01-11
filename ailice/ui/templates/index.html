@@ -263,6 +263,15 @@
             padding-right: 8px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
+        .media-placeholder {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            color: #666;
+        }
     </style>
 
     <!-- Load MathJax -->
@@ -337,7 +346,7 @@
             }
         }
 
-        function getContentType(url) {
+        async function getContentType(url) {
             try {
                 const extension = url.split('.').pop().toLowerCase();
                 if (['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac', 'aiff', 'wma', 'opus', 'ra', 'mid'].includes(extension)) {
@@ -348,14 +357,11 @@
                     return 'image/jpeg';
                 }
                 
-                const xhr = new XMLHttpRequest();
-                xhr.open("HEAD", url, false);
-                xhr.send();
-                if (xhr.status === 200) {
-                    return xhr.getResponseHeader("Content-Type");
-                } else {
-                    throw new Error("Failed to fetch Content-Type.");
+                const response = await fetch(url, { method: 'HEAD' });
+                if (response.ok) {
+                    return response.headers.get("Content-Type");
                 }
+                throw new Error("Failed to fetch Content-Type");
             } catch (error) {
                 console.error(error);
                 return "";
@@ -382,28 +388,35 @@
         const rendererCodespan = renderer.codespan;
 
         renderer.image = function(href, title, text) {
-                let mediaType = "";
-                if (href.startsWith("blob:")) {
-                    mediaType = text;
+            const placeholder = `<div class="media-placeholder" data-href="${href}" data-title="${title}" data-text="${text}">Loading media...</div>`;
+            
+            setTimeout(async () => {
+                try {
+                    const mediaType = href.startsWith("blob:") ? text : 
+                                    await getContentType(convertToProxyURL(href));
+                    
+                    let mediaElement = '';
+                    if (mediaType.startsWith('image')) {
+                        mediaElement = `<img src="${convertToProxyURL(href)}" alt="${text}" title="${title}" style="max-width: 100%; height: auto; display: block;">`;
+                    } else if (mediaType.startsWith('audio')) {
+                        mediaElement = `<audio controls><source src="${convertToProxyURL(href)}" type="${mediaType}">Your browser does not support the audio element.</audio>`;
+                    } else if (mediaType.startsWith('video')) {
+                        mediaElement = `<video controls><source src="${convertToProxyURL(href)}" type="${mediaType}">Your browser does not support the video element.</video>`;
+                    } else {
+                        mediaElement = `<a href="${href}">${text}</a>`;
+                    }
+                    
+                    const placeholders = document.querySelectorAll(`.media-placeholder[data-href="${href}"]`);
+                    placeholders.forEach(placeholder => {
+                        placeholder.outerHTML = mediaElement;
+                    });
+                } catch (error) {
+                    console.error('Error loading media:', error);
                 }
-                else {
-                    mediaType = getContentType(convertToProxyURL(href));
-                }
-                
-                if (mediaType.startsWith('image')) {
-                    return `<img src="${convertToProxyURL(href)}" alt="${text}" title="${title}" style="max-width: 100%; height: auto; display: block;">`;
-                }
-                else if (mediaType.startsWith('audio')) {
-                    return `<audio controls><source src="${convertToProxyURL(href)}" type="${mediaType}">Your browser does not support the audio element.</audio>`;
-                }
-                else if (mediaType.startsWith('video')) {
-                    return `<video controls><source src="${convertToProxyURL(href)}" type="${mediaType}">Your browser does not support the video element.</video>`;
-                }
-                else
-                {
-                    return `![${text}](${href}) ${title}`;
-                }
-            };
+            }, 0);
+            
+            return placeholder;
+        };
 
         renderer.code = function(code, lang, escaped) {
                 if (!lang) {
