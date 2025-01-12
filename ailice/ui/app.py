@@ -365,13 +365,32 @@ def proxy():
             method = request.method
             if method == 'HEAD':
                 resp = requests.head(href)
+                response = Response(None, content_type=resp.headers.get('Content-Type'))
             else:
-                resp = requests.get(href)
+                resp = requests.get(href, stream=True)
+                resp.raise_for_status()
+                
+                content_type = resp.headers.get('Content-Type', '')
+                
+                def generate():
+                    for chunk in resp.iter_content(chunk_size=8192):
+                        if chunk:
+                            yield chunk
+                
+                response = Response(generate(), content_type=content_type)
+                
+                for key, value in resp.headers.items():
+                    if key.lower() not in ('content-encoding', 'content-length', 'transfer-encoding', 'connection'):
+                        response.headers[key] = value
+                
+                if content_type.lower() in ('image/svg+xml', 'application/svg+xml'):
+                    response.headers['Content-Type'] = 'image/svg+xml'
+                    response.headers['Content-Disposition'] = 'inline'
             
-            resp.raise_for_status()
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, HEAD, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = '*'
             
-            response = Response(resp.content if method != 'HEAD' else None, content_type=resp.headers['Content-Type'])
-            response.headers = {key: value for key, value in resp.headers.items()}
         except requests.exceptions.RequestException as e:
             return f'Error fetching the URL: {e}', 500
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
