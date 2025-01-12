@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import paragraph_generator
@@ -64,6 +65,9 @@ class APromptArticleDigest():
 {self.prompt0}
 
 End of general instructions.
+
+Current date and time(%Y-%m-%d %H:%M:%S):
+{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 Variables:
 {self.processor.EnvSummary()}

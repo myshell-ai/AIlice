@@ -1,3 +1,4 @@
+from datetime import datetime
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
@@ -48,6 +49,9 @@ class APromptMain():
 {prompt0}
 
 End of general instructions.
+
+Current date and time(%Y-%m-%d %H:%M:%S):
+{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 Active Agents: {[k+": agentType "+p.GetPromptName() for k,p in self.processor.subProcessors.items()]}
 

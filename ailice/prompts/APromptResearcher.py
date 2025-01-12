@@ -1,3 +1,4 @@
+from datetime import datetime
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
@@ -74,6 +75,9 @@ class APromptResearcher():
 {prompt0}
 
 End of general instructions.
+
+Current date and time(%Y-%m-%d %H:%M:%S):
+{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 Code Execution Environment: {self.platformInfo}
 

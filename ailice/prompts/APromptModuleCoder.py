@@ -1,3 +1,4 @@
+from datetime import datetime
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
@@ -34,6 +35,10 @@ class APromptModuleCoder():
         prompt0 = self.prompt0.replace("<CODE_EXAMPLE>", read_text("ailice.modules", "AArxiv.py"))
         prompt = f"""
 {prompt0}
+
+Current date and time(%Y-%m-%d %H:%M:%S):
+{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
 """
         #prompt += "\nConversations:"
         return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))

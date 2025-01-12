@@ -1,3 +1,4 @@
+from datetime import datetime
 from ailice.common.AConfig import config
 from ailice.common.utils.AFileUtils import LoadTXTFile
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
@@ -33,6 +34,10 @@ class APromptChat():
     def ParameterizedBuildPrompt(self, n: int):
         prompt = f"""
 {self.prompt0}
+
+Current date and time(%Y-%m-%d %H:%M:%S):
+{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
 """
         #prompt += "\nConversations:"
         return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))

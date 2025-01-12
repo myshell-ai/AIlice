@@ -1,3 +1,4 @@
+from datetime import datetime
 from importlib.resources import read_text
 from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
@@ -46,6 +47,9 @@ class APromptCoder():
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         prompt = f"""
 {self.prompt0}
+
+Current date and time(%Y-%m-%d %H:%M:%S):
+{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 RELEVANT INFORMATION: {self.Recall(context).strip()}
 The "RELEVANT INFORMATION" part contains data that may be related to the current task, originating from your own history or the histories of other agents. Please refrain from attempting to invoke functions mentioned in the relevant information, as you may not necessarily have the permissions to do so.
