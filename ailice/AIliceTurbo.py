@@ -37,7 +37,7 @@ def main():
         print("Detected Vulkan support. Using Vulkan for installation.")
     else:
         print("No compatible hardware detected. Exiting.")
-        sys.exit(1)
+        sys.exit(0)
 
     os.environ["FORCE_CMAKE"] = "1"
 
