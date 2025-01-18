@@ -45,7 +45,6 @@ To understand Ailice's present abilities, watch the following videos:
   - [Environment Configuration and Installation](#environment-configuration-and-installation)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
   - [Virtual Environment Settings for Code Execution](#virtual-environment-settings-for-code-execution)
-  - [Code Update](#code-update)
   - [Usage](#usage)
   - [Module Configuration](#module-configuration)
   - [Useful Tips](#useful-tips)
@@ -207,52 +206,16 @@ Then simply restart Ailice.
 
 <a name="virtual-environment-settings-for-code-execution"></a>
 ### Virtual Environment Settings for Code Execution
-By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to install Docker, build a container, and modify Ailice's configuration file (Ailice will provide the configuration file location upon startup). Configure its code execution module (AScripter) to operate within a virtual environment.
+By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to run Ailice inside a Docker container.
 
 ```bash
-docker build -t env4scripter .
-docker run -d -p 127.0.0.1:59000-59200:59000-59200 --name scripter env4scripter
+git clone https://github.com/myshell-ai/AIlice.git
+cd AIlice
+docker build -t ailice .
+docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
 ```
 
-In my case, when Ailice starts, it informs me that the configuration file is located at ~/.config/ailice/config.json, so I modify it in the following way
-
-```bash
-nano ~/.config/ailice/config.json
-```
-
-Modify "scripter" under "services":
-
-```
-{
-    ...
-    "services": {
-        ...
-        "scripter": {"cmd": "docker start scripter",
-                     "addr": "tcp://127.0.0.1:59000"},
-    }
-}
-```
-
-Now that the environment configuration has been done.
-
-
-<a name="code-update"></a>
-### Code Update
-
-Due to the ongoing development status of Ailice, updating the code may result in incompatibility issues between existing configuration file and Docker container with the new code. The most thorough solution for this scenario is to delete the configuration file (making sure to save any API keys beforehand) and the container, and then perform a complete reinstall. However, for most situations, you can address the issue by simply **deleting the configuration file** and **updating the Ailice module within the container**.
-
-```bash
-rm ~/.config/ailice/config.json
-cd Ailice
-docker cp ailice/__init__.py scripter:scripter/ailice/__init__.py
-docker cp ailice/common/__init__.py scripter:scripter/ailice/common/__init__.py
-docker cp ailice/common/ADataType.py scripter:scripter/ailice/common/ADataType.py
-docker cp ailice/common/lightRPC.py scripter:scripter/ailice/common/lightRPC.py
-docker cp ailice/modules/__init__.py scripter:scripter/ailice/modules/__init__.py
-docker cp ailice/modules/AScripter.py scripter:scripter/ailice/modules/AScripter.py
-docker cp ailice/modules/AScrollablePage.py scripter:scripter/ailice/modules/AScrollablePage.py
-docker restart scripter
-```
+Of course, you can choose any suitable command-line parameters based on your situation. The image build time may take a while, but fortunately, it's all automated. For the first run, remember to follow Ailice's prompt to input the API key (if required). Additionally, Ailice will take a few minutes to download the model weights for the first run, so please be patient. Once Ailice is running, you can enter the chat interface by opening the web link it provides.
 
 
 <a name="usage"></a>
