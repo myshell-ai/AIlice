@@ -183,6 +183,7 @@ def main():
     parser.add_argument('--sttDevice',type=str,default=config.sttDevice,help='sttDevice specifies the computing device used by the speech-to-text model. You can set it to "cuda" if there is enough video memory. Default: %(default)s')
     parser.add_argument('--chatHistoryPath',type=str,default=config.chatHistoryPath, help="chatHistoryPath is used to specify the chat history storage path. Default: %(default)s")
     parser.add_argument('--certificate',type=str,default=config.certificate, help="""Certificate settings for the web interface. The simplest option is an empty string, which will use the HTTP protocol for the UI web page. Setting it to 'adhoc' will use a self-generated certificate, providing encryption for the data flow between the UI and server, but it requires dismissing browser security warnings. The most secure method is to apply for a certificate and set this parameter to '{"cert": "your_cert.pem", "key": "your_key.pem")'. Default: %(default)s""")
+    parser.add_argument('--expose',type=bool,default=False, help="Whether to provide public access. Default: %(default)s")
     #parser.add_argument('--share',type=bool,default=False, help="Whether to create a publicly shareable link for AIlice.")
     kwargs = vars(parser.parse_args())
 
@@ -203,7 +204,7 @@ def main():
                 print("""The certificate configuration you entered could not be recognized. Please set it according to the following format: {"cert": "your_cert.pem", "key": "your_key.pem")""")
                 sys.exit(0)
         
-        app.run(debug=False, ssl_context=ssl_context)
+        app.run(debug=False, ssl_context=ssl_context, host='0.0.0.0' if kwargs['expose'] else '127.0.0.1', port=5000)
         
     except Exception as e:
         print(f"Encountered an exception, AIlice is exiting: {str(e)}")

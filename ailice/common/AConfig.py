@@ -14,6 +14,7 @@ class AConfig():
         self.prompt = "main"
         self.chatHistoryPath = appdirs.user_data_dir("ailice", "Steven Lu")
         self.certificate = ""
+        self.expose = False
         self.maxMemory = {}
         self.quantization = None
         self.models = {
