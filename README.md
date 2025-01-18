@@ -43,8 +43,8 @@ To understand Ailice's present abilities, watch the following videos:
   - [COOL things we can do](#cool-things-we-can-do)
 - [Installation and Usage](#installation-and-usage)
   - [Environment Configuration and Installation](#environment-configuration-and-installation)
+  - [Run Ailice in Docker Containers](#run-ailice-in-docker-containers)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
-  - [Virtual Environment Settings for Code Execution](#virtual-environment-settings-for-code-execution)
   - [Usage](#usage)
   - [Module Configuration](#module-configuration)
   - [Useful Tips](#useful-tips)
@@ -177,6 +177,19 @@ pip install -e .[pdf-reading]
 
 You can run Ailice now! Use the commands in [Usage](#usage).
 
+<a name="run-ailice-in-docker-containers"></a>
+### Run Ailice in Docker Containers
+By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to run Ailice inside a Docker container.
+
+```bash
+git clone https://github.com/myshell-ai/AIlice.git
+cd AIlice
+docker build -t ailice .
+docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
+```
+
+Of course, you can choose any suitable command-line parameters based on your situation. The image build time may take a while, but fortunately, it's all automated. For the first run, remember to follow Ailice's prompt to input the API key (if required). Additionally, Ailice will take a few minutes to download the model weights for the first run, so please be patient. Once Ailice is running, you can enter the chat interface by opening the web link it provides.
+
 
 <a name="if-you-need-to-frequently-use-google"></a>
 ### If You Need to Frequently Use Google
@@ -203,19 +216,6 @@ pip install google-api-python-client
 ```
 
 Then simply restart Ailice.
-
-<a name="virtual-environment-settings-for-code-execution"></a>
-### Virtual Environment Settings for Code Execution
-By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to run Ailice inside a Docker container.
-
-```bash
-git clone https://github.com/myshell-ai/AIlice.git
-cd AIlice
-docker build -t ailice .
-docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
-```
-
-Of course, you can choose any suitable command-line parameters based on your situation. The image build time may take a while, but fortunately, it's all automated. For the first run, remember to follow Ailice's prompt to input the API key (if required). Additionally, Ailice will take a few minutes to download the model weights for the first run, so please be patient. Once Ailice is running, you can enter the chat interface by opening the web link it provides.
 
 
 <a name="usage"></a>
