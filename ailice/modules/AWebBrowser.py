@@ -1,3 +1,4 @@
+import os
 import random
 import difflib
 import traceback
@@ -36,6 +37,8 @@ document.querySelector('form.mini-search').submit();
             subprocess.run(['google-chrome', '--version'], check=True)
             self.options = webdriver.ChromeOptions()
             self.options.add_argument('--headless')
+            if os.path.exists('/.dockerenv'):
+                self.options.add_argument('--no-sandbox')
             self.options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36")
             self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
             self.options.add_argument("--disable-blink-features=AutomationControlled")
