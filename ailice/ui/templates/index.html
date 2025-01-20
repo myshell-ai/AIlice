@@ -563,16 +563,17 @@
                                 }
                                 historyContent.scrollTop = historyContent.scrollHeight;
 
+                                const suffix = {"": "<br><br>", "close": "<br><br>", "open": "", "append": ""};
                                 if (responseObject.msgType === "response") {
                                     setTimeout(() => {
                                         lastBotMessageElement = chatWindow.querySelector('.message.ASSISTANT:last-child .bubble');
                                     }, 0);
                                     if (lastBotMessageElement) {
-                                        content += responseMessage;
+                                        content += (responseMessage + suffix[responseObject.action]);
                                         lastBotMessageElement.innerHTML = renderMarkdown(content);
                                         MathJax.typesetPromise([lastBotMessageElement]);
                                     } else {
-                                        content = responseMessage;
+                                        content = (responseMessage + suffix[responseObject.action]);
                                         displayMsg("ASSISTANT", content);
                                     }
                                     const chatWindow = document.getElementById('chat-window');
