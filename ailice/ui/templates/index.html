@@ -300,7 +300,7 @@
                     <div class="handle-bar"></div>
                     Details
                 </div>
-                <div class="history-content">
+                <div class="history-content" id="history-content">
                     <!-- History messages will be displayed here -->
                 </div>
             </div>
@@ -504,8 +504,8 @@
             let internalContent = '';
             let lastBotMessageElement = null;
             let lastInternalElement = null;
-            const historyPanel = document.getElementById('history-panel');
-            const historyContent = historyPanel.querySelector('.history-content');
+            const chatWindow = document.getElementById('chat-window');
+            const historyContent = document.getElementById('history-content');
             
             function read() {
                 reader.read().then(({ done, value }) => {
@@ -538,45 +538,31 @@
                             try {
                                 const responseObject = JSON.parse(jsonString);
                                 const responseMessage = responseObject.message;
+                                const roleHTML = "<span class='role'>" + responseObject.role + ": </span>";
+                                const prefix = {"": roleHTML, "open": roleHTML, "append": "", "close": ""};
+                                const suffix = {"": "<br><br>", "open": "", "append": "", "close": "<br><br>"};
                                 
-                                roleHTML = "<span class='role'>" + responseObject.role + ": </span>";
-                                if (responseObject.action === "") {
-                                    internalContent += (roleHTML + responseMessage + "<br><br>");
-                                } else if (responseObject.action === "open") {
-                                    internalContent += (roleHTML + responseMessage);
-                                } else if (responseObject.action === "append") {
-                                    internalContent += responseMessage;
-                                } else if (responseObject.action === "close") {
-                                    internalContent += (responseMessage + "<br><br>");
-                                }
-                                
+                                lastInternalElement = historyContent.querySelector(`.message.${responseObject.role}:last-child .bubble`);
                                 if (lastInternalElement) {
+                                    internalContent += (responseMessage + suffix[responseObject.action]);
                                     lastInternalElement.innerHTML = renderMarkdown(internalContent);
                                     MathJax.typesetPromise([lastInternalElement]);
                                 } else {
-                                    const messageDiv = document.createElement('div');
-                                    messageDiv.className = 'internal-message';
-                                    messageDiv.innerHTML = renderMarkdown(internalContent);
-                                    historyContent.appendChild(messageDiv);
-                                    lastInternalElement = messageDiv;
-                                    MathJax.typesetPromise([messageDiv]);
+                                    internalContent = (prefix[responseObject.action] + responseMessage + suffix[responseObject.action]);
+                                    displayMsg(responseObject.role, internalContent, 'history-content');
                                 }
                                 historyContent.scrollTop = historyContent.scrollHeight;
-
-                                const suffix = {"": "<br><br>", "close": "<br><br>", "open": "", "append": ""};
+                                
                                 if (responseObject.msgType === "response") {
-                                    setTimeout(() => {
-                                        lastBotMessageElement = chatWindow.querySelector('.message.ASSISTANT:last-child .bubble');
-                                    }, 0);
+                                    lastBotMessageElement = chatWindow.querySelector('.message.ASSISTANT:last-child .bubble');
                                     if (lastBotMessageElement) {
                                         content += (responseMessage + suffix[responseObject.action]);
                                         lastBotMessageElement.innerHTML = renderMarkdown(content);
                                         MathJax.typesetPromise([lastBotMessageElement]);
                                     } else {
                                         content = (responseMessage + suffix[responseObject.action]);
-                                        displayMsg("ASSISTANT", content);
+                                        displayMsg("ASSISTANT", content, 'chat-window');
                                     }
-                                    const chatWindow = document.getElementById('chat-window');
                                     chatWindow.scrollTop = chatWindow.scrollHeight;
                                 }
                             } catch (e) {
@@ -614,7 +600,7 @@
                 }
                 return response.json();
             }).then(data => {
-                displayMsg("USER", msg);
+                displayMsg("USER", msg, 'chat-window');
                 isInterrupted = false;
                 if (isUpdating) {
                     document.getElementById('text-input').disabled = true;
@@ -654,12 +640,12 @@
             return newChatPromise;
         }
         
-        function displayMsg(role, message) {
+        function displayMsg(role, message, windowID) {
             const roleMap = {
                 "USER": "/static/User.JPG",
                 "ASSISTANT": "/static/AIlice.png",
             };
-            const chatWindow = document.getElementById('chat-window');
+            const chatWindow = document.getElementById(windowID);
             chatWindow.innerHTML += `
                 <div class="message ${role}">
                     <img src=${roleMap[role] || "/static/AIlice.png"} class="avatar">
@@ -763,7 +749,7 @@
                         let newChatPromise = ensureChat();
                         
                         newChatPromise.then(() => {
-                            displayMsg("USER", message);
+                            displayMsg("USER", message, 'chat-window');
                             
                             const currentHistory = document.querySelector('#history-list .selected');
                             if (currentHistory.querySelector('span').textContent === "New Chat") {
@@ -828,7 +814,7 @@
                             newChatPromise.then(() => {
                                 // Update the chat window to display the audio uploaded by the USER.
                                 const audioUrl = URL.createObjectURL(audioBlob);
-                                displayMsg("USER", `![audio/wav](${audioUrl})`);
+                                displayMsg("USER", `![audio/wav](${audioUrl})`, 'chat-window');
 
                                 fetch('/upload_audio', {
                                     method: 'POST',
@@ -872,7 +858,7 @@
             newChatPromise.then(() => {
                 // Update the chat window to display the image uploaded by the USER.
                 const imageUrl = URL.createObjectURL(file);
-                displayMsg("USER", `![image](${imageUrl})`);
+                displayMsg("USER", `![image](${imageUrl})`, 'chat-window');
 
                 fetch('/upload_image', {
                     method: 'POST',
@@ -928,7 +914,7 @@
                     const chatWindow = document.getElementById('chat-window');
                     chatWindow.innerHTML = '';
                     data.forEach(([sender, message]) => {
-                        displayMsg(sender, message);
+                        displayMsg(sender, message, 'chat-window');
                     });
                 })
                 .catch(error => {
