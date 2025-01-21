@@ -94,8 +94,8 @@ class AConfig():
                 "apikey": None,
                 "baseURL": "https://api.deepseek.com",
                 "modelList": {
-                    "deepseek-chat": {"formatter": "AFormatterGPT", "contextWindow": 32768, "systemAsUser": False, "args": {}},
-                    "deepseek-coder": {"formatter": "AFormatterGPT", "contextWindow": 16384, "systemAsUser": False, "args": {}}
+                    "deepseek-chat": {"formatter": "AFormatterGPT", "contextWindow": 64000, "systemAsUser": False, "args": {}},
+                    "deepseek-reasoner": {"formatter": "AFormatterGPT", "contextWindow": 64000, "systemAsUser": False, "args": {}}
                 }
             },
             "mistral": {
