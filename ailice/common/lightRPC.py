@@ -27,6 +27,20 @@ def SendMsg(conn,msg):
 def ReceiveMsg(conn):
   return pickle.loads(conn.recv())
 
+class GeneratorStorage:
+    def __init__(self, obj):
+        self.obj = obj
+        self.generators = {}
+        
+    def SaveGenerator(self, generatorID, gen):
+        self.generators[generatorID] = gen
+        
+    def GetGenerator(self, generatorID):
+        return self.generators[generatorID]
+        
+    def __getattr__(self, name):
+        return getattr(self.obj, name)
+
 class GenesisRPCServer(object):
   def __init__(self,objCls,objArgs,url,APIList):
     self.objCls=objCls
@@ -70,15 +84,30 @@ class GenesisRPCServer(object):
           ret = {"exception": KeyError(f"clientID {msg['clientID']} not exist.")}
         elif "GET_META" in msg:
           methods=inspect.getmembers(self.objCls, predicate=lambda x: (inspect.isfunction(x) and x.__name__ in self.APIList))
-          ret={"META":{"methods": {methodName: str(inspect.signature(method)) for methodName, method in methods}}}
+          ret = {"META": {"methods": {methodName: {
+                                        'signature': str(inspect.signature(method)),
+                                        'is_generator': inspect.isgeneratorfunction(method)
+                                      } for methodName, method in methods}}}
         elif "CREATE" in msg:
           newID = str(max([int(k) for k in self.objPool]) + 1) if self.objPool else '10000000'
-          self.objPool[newID]=self.objCls(**self.objArgs)
+          self.objPool[newID] = GeneratorStorage(self.objCls(**self.objArgs))
           ret = {"clientID": newID}
         elif "DEL" in msg:
           del self.objPool[msg['clientID']]
+        elif "NEXT" in msg:
+          gen = self.objPool[msg['clientID']].GetGenerator(msg['generatorID'])
+          try:
+            ret = {'ret': next(gen), 'finished': False}
+          except StopIteration:
+            ret = {'ret': None, 'finished': True}
         else:
-          ret={'ret':(getattr(self.objPool[msg['clientID']],msg['function'])(*msg['args'], **msg['kwargs']))}
+          result = getattr(self.objPool[msg['clientID']], msg['function'])(*msg['args'], **msg['kwargs'])
+          if inspect.isgenerator(result):
+            generatorID = str(id(result))
+            self.objPool[msg['clientID']].SaveGenerator(generatorID, result)
+            ret = {'ret': {'generatorID': generatorID}}
+          else:
+            ret = {'ret': result}
       except Exception as e:
         e.tb = ''.join(traceback.format_tb(e.__traceback__))
         ret={'exception':e}
@@ -91,7 +120,10 @@ class GenesisRPCServer(object):
 def makeServer(objCls,objArgs,url,APIList):
   return GenesisRPCServer(objCls,objArgs,url,APIList)
 
-def AddMethod(kls,methodName,signature):
+def AddMethod(kls, methodName, methodMeta):
+  signature = methodMeta['signature']
+  is_generator = methodMeta['is_generator']
+  
   tempNamespace = {k.__name__: k for k in typeInfo}
   tempNamespace["ailice"] = ailice
   tempNamespace["numpy"] = numpy
@@ -113,10 +145,34 @@ def AddMethod(kls,methodName,signature):
 
   def methodTemplate(self,*args,**kwargs):
     return self.RemoteCall(methodName,args,kwargs)
+  methodTemplate.__is_generator__ = is_generator
   methodTemplate.__signature__ = newSignature
   setattr(kls,methodName,methodTemplate)
 
 def makeClient(url,returnClass=False):
+  class RemoteGenerator:
+      def __init__(self, client, generatorID):
+          self.client = client
+          self.generatorID = generatorID
+          
+      def __iter__(self):
+          return self
+          
+      def __next__(self):
+          ret = self.client.Send({
+              'NEXT': '',
+              'clientID': self.client.clientID,
+              'generatorID': self.generatorID
+          })
+          
+          if 'exception' in ret:
+              raise ret['exception']
+              
+          if ret['finished']:
+              raise StopIteration
+              
+          return ret['ret']
+      
   class GenesisRPCClientTemplate(object):
     def __init__(self):
       self.url=url
@@ -140,6 +196,8 @@ def makeClient(url,returnClass=False):
       ret = self.Send({'clientID': self.clientID, 'function':funcName, 'args':args, "kwargs": kwargs})
       if 'exception' in ret:
         raise ret['exception']
+      if isinstance(ret['ret'], dict) and 'generatorID' in ret['ret']:
+        return RemoteGenerator(self, ret['ret']['generatorID'])
       return ret['ret']
     
     def __del__(self):
@@ -154,6 +212,6 @@ def makeClient(url,returnClass=False):
     socket.connect(url)
     SendMsg(socket,{'GET_META':''})
     ret=ReceiveMsg(socket)
-  for funcName, signature in ret['META']['methods'].items():
-    AddMethod(GenesisRPCClientTemplate,funcName,signature)
+  for funcName, methodMeta in ret['META']['methods'].items():
+    AddMethod(GenesisRPCClientTemplate,funcName,methodMeta)
   return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()
