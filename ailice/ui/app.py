@@ -231,7 +231,7 @@ def generate_response(message):
             elif (channel in ["<", ">"]):
                 continue
             
-            if (config.speechOn and (0 == depth)):
+            if (config.speechOn and (0 == depth) and ("ASSISTANT" in channel)):
                 audioQue.put(speech.Text2Speech(txt))
             
             msg = json.dumps({'message': txt, 'role': channel, 'action': action, 'msgType': 'internal' if (depth > 0) else 'user-ailice'})
