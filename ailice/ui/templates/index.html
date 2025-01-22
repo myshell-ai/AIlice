@@ -548,11 +548,12 @@
                             try {
                                 const responseObject = JSON.parse(jsonString);
                                 const responseMessage = responseObject.message;
+                                const roleType = responseObject.role.split('_')[0]
                                 const roleHTML = "<span class='role'>" + responseObject.role + ": </span>";
                                 const prefix = {"": roleHTML, "open": roleHTML, "append": "", "close": ""};
                                 const suffix = {"": "<br><br>", "open": "", "append": "", "close": "<br><br>"};
                                 
-                                lastInternalElement = historyContent.querySelector(`.message.${responseObject.role}:last-child .bubble`);
+                                lastInternalElement = historyContent.querySelector(`.message.${roleType}.${responseObject.role}:last-child .bubble`);
                                 if (lastInternalElement) {
                                     internalContent += (responseMessage + suffix[responseObject.action]);
                                     lastInternalElement.innerHTML = renderMarkdown(internalContent);
@@ -563,15 +564,15 @@
                                 }
                                 historyContent.scrollTop = historyContent.scrollHeight;
                                 
-                                if (responseObject.msgType === "response") {
-                                    lastBotMessageElement = chatWindow.querySelector('.message.ASSISTANT:last-child .bubble');
+                                if ((responseObject.msgType === "user-ailice") && (roleType != "SYSTEM")) {
+                                    lastBotMessageElement = chatWindow.querySelector(`.message.${roleType}.${responseObject.role}:last-child .bubble`);
                                     if (lastBotMessageElement) {
                                         content += (responseMessage + suffix[responseObject.action]);
                                         lastBotMessageElement.innerHTML = renderMarkdown(content);
                                         MathJax.typesetPromise([lastBotMessageElement]);
                                     } else {
                                         content = (responseMessage + suffix[responseObject.action]);
-                                        displayMsg("ASSISTANT", content, 'chat-window');
+                                        displayMsg(responseObject.role, content, 'chat-window');
                                     }
                                     chatWindow.scrollTop = chatWindow.scrollHeight;
                                 }
@@ -651,14 +652,15 @@
         }
         
         function displayMsg(role, message, windowID) {
+            const roleType = role.split('_')[0]
             const roleMap = {
                 "USER": "/static/User.JPG",
                 "ASSISTANT": "/static/AIlice.png",
             };
             const chatWindow = document.getElementById(windowID);
             chatWindow.innerHTML += `
-                <div class="message ${role}">
-                    <img src=${roleMap[role] || "/static/AIlice.png"} class="avatar">
+                <div class="message ${roleType} ${role}">
+                    <img src=${roleMap[roleType] || "/static/AIlice.png"} class="avatar">
                     <div class="bubble">${renderMarkdown(message)}</div>
                 </div>`;
             MathJax.typesetPromise([chatWindow.querySelector('.message:last-child .bubble')]);
@@ -759,8 +761,6 @@
                         let newChatPromise = ensureChat();
                         
                         newChatPromise.then(() => {
-                            displayMsg("USER", message, 'chat-window');
-                            
                             const currentHistory = document.querySelector('#history-list .selected');
                             if (currentHistory.querySelector('span').textContent === "New Chat") {
                                 currentHistory.querySelector('span').textContent = message;
@@ -822,10 +822,6 @@
 
                             let newChatPromise = ensureChat();
                             newChatPromise.then(() => {
-                                // Update the chat window to display the audio uploaded by the USER.
-                                const audioUrl = URL.createObjectURL(audioBlob);
-                                displayMsg("USER", `![audio/wav](${audioUrl})`, 'chat-window');
-
                                 fetch('/upload_audio', {
                                     method: 'POST',
                                     body: formData
@@ -866,10 +862,6 @@
 
             let newChatPromise = ensureChat();
             newChatPromise.then(() => {
-                // Update the chat window to display the image uploaded by the USER.
-                const imageUrl = URL.createObjectURL(file);
-                displayMsg("USER", `![image](${imageUrl})`, 'chat-window');
-
                 fetch('/upload_image', {
                     method: 'POST',
                     body: formData

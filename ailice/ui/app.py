@@ -234,7 +234,7 @@ def generate_response(message):
             if (config.speechOn and (0 == depth)):
                 audioQue.put(speech.Text2Speech(txt))
             
-            msg = json.dumps({'message': txt, 'role': channel, 'action': action, 'msgType': 'internal' if (depth > 0) or ("ASSISTANT" not in channel) else 'response'})
+            msg = json.dumps({'message': txt, 'role': channel, 'action': action, 'msgType': 'internal' if (depth > 0) else 'user-ailice'})
             yield f"data: {msg}\n\n"
     except Exception as e:
         app.logger.error(f"Error in generate_response: {e} {traceback.print_tb(e.__traceback__)}")
