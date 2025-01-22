@@ -417,9 +417,19 @@
                         mediaElement = `<a href="${href}">${text}</a>`;
                     }
                     
-                    const placeholders = document.querySelectorAll(`.media-placeholder[data-href="${href}"]`);
-                    placeholders.forEach(placeholder => {
-                        placeholder.outerHTML = mediaElement;
+                    const observer = new MutationObserver((mutationsList, observer) => {
+                        const placeholders = document.querySelectorAll(`.media-placeholder[data-href="${href}"]`);
+                        if (placeholders.length > 0) {
+                            placeholders.forEach(placeholder => {
+                                placeholder.outerHTML = mediaElement;
+                            });
+                            observer.disconnect();
+                        }
+                    });
+
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
                     });
                 } catch (error) {
                     console.error('Error loading media:', error);
