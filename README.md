@@ -22,6 +22,8 @@
 
 **ATTENTION! We currently has no plans to create any related crypto tokens. Please be cautious and recognize scams to avoid being deceived. (Updated on January 6, 2025)**
 
+:fire: Jan 23, 2025: Updated the voice dialogue feature. Thanks to ChatTTS's excellent implementation, voice dialogue has finally moved beyond its experimental status and become practical.
+
 :fire: Jun 22, 2024: We have entered the era of locally running JARVIS-like AI assistants! The latest open-source LLMs enable us to perform complex tasks locally! Click [here](#guide-to-choosing-an-llm) to learn more.
 
 ----
@@ -218,18 +220,16 @@ Then simply restart Ailice.
 You can directly copy a command from the typical use cases below to run Ailice.
 
 ```bash
+ailice_web   #Use models configured individually for different agents under the agentModelConfig field in config.json.
+ailice_web --speechOn=1 --ttsDevice=cuda --sttDevice=cuda
 ailice_web --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
 ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history --contextWindowRatio=0.2
 ailice_web --modelID=mistral:mistral-large-latest --prompt="researcher"
 ailice_web --modelID=deepseek:deepseek-chat
 ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --contextWindowRatio=0.6
-ailice_web --modelID=hf:NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO --quantization=4bit --contextWindowRatio=0.3
-ailice_web --modelID=hf:Phind/Phind-CodeLlama-34B-v2 --prompt="coder-proxy" --quantization=4bit --contextWindowRatio=0.6
 ailice_web --modelID=groq:llama3-70b-8192
-ailice_web   #Use models configured individually for different agents under the agentModelConfig field in config.json.
-ailice_web --modelID=openrouter:openrouter/auto
-ailice_web --modelID=openrouter:mistralai/mixtral-8x22b-instruct
-ailice_web --modelID=openrouter:qwen/qwen-2-72b-instruct
+ailice_web --modelID=openrouter:qwen/qwen-2.5-72b-instruct
+ailice_web --modelID=openrouter:anthropic/claude-3.5-sonnet
 ailice_web --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
 ```
 
@@ -260,6 +260,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**chatHistoryPath** is used to specify the directory where chat history data is stored.
 - --**certificate** Certificate settings for the web interface. The simplest option is an empty string, which will use the HTTP protocol for the UI web page. Setting it to 'adhoc' will use a self-generated certificate, providing encryption for the data flow between the UI and server, but it requires dismissing browser security warnings. The most secure method is to apply for a certificate and set this parameter to '{"cert": "your_cert.pem", "key": "your_key.pem")'.
+- --**expose** Whether to provide public access.
 - --**share** create a publicly shareable link for Ailice. (For security reasons, we have temporarily removed this feature. It will be re-enabled once more security measures are implemented in the UI. Please ensure that the services provided by app.py are not exposed to any untrusted networks)
 
 
