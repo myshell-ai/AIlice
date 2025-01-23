@@ -160,12 +160,6 @@ cd AIlice
 pip install -e .
 ```
 
-Ailice installed by default will run slowly because it uses CPU as the inference hardware of the long-term memory module. Therefore, it is strongly recommended to install GPU acceleration support:
-
-```bash
-ailice_turbo
-```
-
 For users who need to use the huggingface models/voice dialogue/model fine-tuning/pdf reading functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
 
 ```bash
