@@ -5,7 +5,6 @@ import sys
 import re
 import simplejson as json
 import traceback
-import queue
 import librosa
 import requests
 import mimetypes
@@ -44,7 +43,6 @@ app = Flask(__name__)
 currentSession = None
 context = dict()
 speech = None
-audioQue = None
 sessionName = None
 lock = threading.Lock()
 
@@ -61,7 +59,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     return
 
 def InitSpeech(clientPool):
-    global speech, audioQue
+    global speech
     
     if config.speechOn:
         import sounddevice as sd
@@ -78,16 +76,6 @@ def InitSpeech(clientPool):
             speech.SetDevices({"tts": config.ttsDevice, "stt": config.sttDevice})
     else:
         speech = None
-        
-    audioQue = queue.Queue(maxsize=100)
-
-    def playAudio():
-        while True:
-            sd.play(*audioQue.get())
-            sd.wait()
-    if config.speechOn:
-        threadPlayer = threading.Thread(target=playAudio, args=())
-        threadPlayer.start()
     return
 
 def LoadSession(sessionName: str):
@@ -143,7 +131,8 @@ def LoadSession(sessionName: str):
                                 config.services['google']['addr'],
                                 config.services['duckduckgo']['addr'],
                                 config.services['scripter']['addr'],
-                                config.services['computer']['addr']])
+                                config.services['computer']['addr'],
+                                config.services['speech']['addr']])
         
         p = os.path.join(sessionPath, "ailice_history.json")
         if os.path.exists(p):
@@ -230,9 +219,6 @@ def generate_response(message):
                 return
             elif (channel in ["<", ">"]):
                 continue
-            
-            if (config.speechOn and (0 == depth) and ("ASSISTANT" in channel)):
-                audioQue.put(speech.Text2Speech(txt))
             
             msg = json.dumps({'message': txt, 'role': channel, 'action': action, 'msgType': 'internal' if (depth > 0) else 'user-ailice'})
             yield f"data: {msg}\n\n"

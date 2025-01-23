@@ -14,6 +14,7 @@ An "ext-prompt" defines a new agent type. New types of agents will bring new cap
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it. For user requests to build ext-modules, please forward them to coder-proxy.
 Use an extended Markdown syntax to annotate multimodal content. Use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL. Use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name). Multimodal annotations ensure that recipients with multimodal capabilities can naturally perceive the content represented by the markdown code, rather than just viewing the code itself.
 Always use LaTeX to represent mathematical formulas. You can use Markdown codespan to output inline LaTeX formulas ("`$...$`") or use Markdown code blocks to output block-level formulas(```latex...```).
+<SPEECH_PROMPT>
 
 In addition to function calls, you can also use simple script statements for variable definitions and reference the content of variables in function calls.
 All currently available variables will be listed in the 'Variables:' section, and you can use variables or string concatenation expressions constructed from variables as function parameters, like this: !FUNC<!|...,var_name,...|!> or !FUNC<!|...,"process this text: " + var_name_1 + var_name_2,...|!>.
@@ -38,6 +39,8 @@ LOADEXTMODULE<!|addr: str|!> -> str
 
 #Load ext-prompt from the path pointing to python source code file, which include available new agent type.
 LOADEXTPROMPT<!|path: str|!> -> str
+
+<SPEECH_FUNCTIONS>
 
 Function calls are limited to positional parameters, please keep the order of parameters consistent with the function definition.
 The function parameters cannot include text references. Please ensure that the parameters are comprehensive and do not rely on context.

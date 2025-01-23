@@ -33,7 +33,7 @@ class ALogger():
     
     def SinkSpeech(self, channel: str, txt: str = None, action: str = ''):
         if self.speech:
-            self.speech.Play(txt)
+            self.speech.Speak(txt)
         return
     
     def SinkQueue(self, channel: str, txt: str = None, action: str = ''):

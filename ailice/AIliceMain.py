@@ -96,7 +96,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     llmPool = ALLMPool()
     llmPool.Init([config.modelID])
     
-    logger = ALogger(speech=speech)
+    logger = ALogger(speech=None)
     processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],

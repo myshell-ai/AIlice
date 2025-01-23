@@ -5,7 +5,7 @@ import time
 import numpy as np
 import sounddevice as sd
 from ailice.modules.speech.AAudioSource import audio_data_to_numpy
-from ailice.modules.speech.ATTS_LJS import T2S_LJS
+from ailice.modules.speech.ATTS_ChatTTS import T2S_ChatTTS
 from ailice.modules.speech.ASTT_Whisper import S2T_WhisperLarge
 
 from ailice.common.lightRPC import makeServer
@@ -35,11 +35,12 @@ class ASpeech():
         return {"NAME": "speech", "ACTIONS": {"SPEECH-TO-TEXT": {"func": "Speech2Text", "prompt": "Speech to text.", "type": "primary"},
                                               "TEXT-TO-SPEECH": {"func": "Text2Speech", "prompt": "Text to speech.", "type": "primary"},
                                               "GET-AUDIO": {"func": "GetAudio", "prompt": "Get text input from microphone.", "type": "primary"},
-                                              "PLAY": {"func": "Play", "prompt": "Synthesize input text fragments into audio and play.", "type": "primary"}}}
+                                              "SPEAK": {"func": "Speak", "prompt": "Synthesize input text fragments into audio and play.", "type": "primary"},
+                                              "SWITCH-TONE": {"func": "SwitchTone", "prompt": "Switch the TTS system to a new tone.", "type": "primary"}}}
     
     def PrepareModel(self):
         if None in [self.t2s, self.s2t]:
-            self.t2s = T2S_LJS()
+            self.t2s = T2S_ChatTTS()
             self.s2t = S2T_WhisperLarge()
         return
     
@@ -64,13 +65,16 @@ class ASpeech():
             ret = self.s2t()
         return ret
     
-    def Play(self, txt: str):
-        print("Play(): ", txt)
+    def Speak(self, txt: str):
+        print("Speak(): ", txt)
         if (None == txt) or ("" == strip(txt)):
             return
         self.textQue.put(txt)
         self.inputDone = False
         return
+    
+    def SwitchTone(self) -> str:
+        return self.t2s.SwitchTone()
     
     def ProcessText(self):
         while True:
@@ -97,7 +101,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "PrepareModel", "Speech2Text", "Text2Speech", "GetAudio", "Play", "SetDevices"]).Run()
+    makeServer(ASpeech, dict(), args.addr, ["ModuleInfo", "PrepareModel", "Speech2Text", "Text2Speech", "GetAudio", "Speak", "SwitchTone", "SetDevices"]).Run()
 
 if __name__ == '__main__':
     main()
