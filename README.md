@@ -300,9 +300,9 @@ Proficient use of this feature requires a good understanding of Ailice's working
 <a name="guide-to-choosing-an-llm"></a>
 ### Guide to Choosing an LLM
 
-Updated on Aug 23, 2024.
+Updated on Jan 23, 2025.
 
-Currently, Ailice can **handle more complex tasks using the locally run 72B open-source model (qwen-2-72b-instruct running on 4090x2)**, with performance approaching that of GPT-4 level models. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. Click [here](#example-2-lm-studio) to learn how to run this model locally. For users whose GPU conditions are insufficient to run large models, this is not a problem. You can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). Although open-source models cannot yet fully rival commercial GPT-4 level models, you can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
+Currently, Ailice can **handle more complex tasks using the locally run 72B open-source model (qwen-2.5-72b-instruct running on 4090x2)**, with performance approaching that of GPT-4 level models. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. Click [here](#example-2-lm-studio) to learn how to run this model locally. For users whose GPU conditions are insufficient to run large models, this is not a problem. You can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). Although open-source models cannot yet fully rival commercial GPT-4 level models, you can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
 
 **claude-3-5-sonnet** provides the best performance.
 
@@ -311,10 +311,8 @@ Currently, Ailice can **handle more complex tasks using the locally run 72B open
 
 Among the open-source models, the ones that usually perform well include:
 
-- **meta-llama-3.1-70B-Instruct**
-- **Qwen/Qwen2-72B-Instruct**
-
-**meta-llama-3.1-405B-Instruct** is nice, but too big to be practical on PC.
+- **qwen-2.5-72b-instruct**
+- **deepseek-ai/DeepSeek-V3**
 
 For users whose hardware capabilities are insufficient to run open-source models locally and who are unable to obtain API keys for commercial models, they can try the following options:
 
@@ -328,9 +326,9 @@ For users whose hardware capabilities are insufficient to run open-source models
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
-- The best among all models: **qwen-2-72b-instruct**. This is **the first open-source model with practical value**. It's a great advancement! It has reasoning capabilities close to GPT-4, though not quite there yet. With active user intervention through the interrupt feature, many more complex tasks can be successfully completed.
+- The best among all models: **qwen-2.5-72b-instruct**. qwen-2.0-72b-instruct was the first open-source model with practical value, and version 2.5 continues to improve. Its execution capability is approaching that of Claude-3.5-sonnet.
 
-- The second-best performing models: **mixtral-8x22b-instruct** and **meta-llama/Meta-Llama-3-70B-Instruct**. It's worth noting that the Llama3 series models seem to exhibit a significant performance drop after quantization, which reduces their practical value. You can use them with Groq.
+- The second-best performing models: **deepseek-ai/DeepSeek-V3**. This model demonstrates excellent performance, but compared to Qwen 2.5, it exhibits more hallucinations in certain investigation and search tasks, thus ranking second.
 
 If you find a better model, please let me know.
 
@@ -535,8 +533,9 @@ Ailice has two operating modes. One mode uses a single LLM to drive all agents, 
 ```json
   "modelID": "",
   "agentModelConfig": {
-    "DEFAULT": "openrouter:qwen/qwen-2-72b-instruct",
-    "coder": "openrouter:deepseek/deepseek-coder"
+    "DEFAULT": "openrouter:qwen/qwen-2.5-72b-instruct",
+    "main": "openrouter:anthropic/claude-3.5-sonnet",
+    "coder": "openrouter:deepseek/deepseek-chat"
   },
 ```
 
