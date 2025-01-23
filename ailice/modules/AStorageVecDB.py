@@ -5,7 +5,7 @@ import traceback
 import numpy as np
 from typing import Union
 from huggingface_hub import hf_hub_download
-from llama_cpp import Llama
+from gpt4all import Embed4All
 from threading import Thread, Lock
 
 from ailice.common.lightRPC import makeServer
@@ -68,13 +68,7 @@ class AStorageVecDB():
         if self.model and ggufFile == self.model.model_path:
             return
         
-        self.model = Llama(
-            model_path=ggufFile,
-            embedding=True,
-            n_gpu_layers=-1, # Uncomment to use GPU acceleration
-            # seed=1337, # Uncomment to set a specific seed
-            # n_ctx=2048, # Uncomment to increase the context window
-        )
+        self.model = Embed4All(ggufFile)
         return
     
     def Open(self, directory: str) -> str:
