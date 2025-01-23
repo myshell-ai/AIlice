@@ -56,7 +56,6 @@ pdf-reading = ["marker-pdf"]
 ailice = "ailice.ui.app:main"
 ailice_main = "ailice.AIliceMain:main"
 ailice_web = "ailice.ui.app:main"
-ailice_turbo = "ailice.AIliceTurbo:main"
 
 [build-system]
 requires = ["poetry-core"]
