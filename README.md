@@ -44,6 +44,7 @@ To understand Ailice's present abilities, watch the following videos:
   - [Quick Installation](#quick-installation)
   - [COOL things we can do](#cool-things-we-can-do)
 - [Installation and Usage](#installation-and-usage)
+  - [System Requirements](#system-requirements)
   - [Environment Configuration and Installation](#environment-configuration-and-installation)
   - [Run Ailice in Docker Containers](#run-ailice-in-docker-containers)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
@@ -146,15 +147,24 @@ can give us a glimpse of how mature geometric intuition can be in LLM's world vi
 <a name="installation-and-usage"></a>
 ## Installation and Usage
 
+<a name="system-requirements"></a>
+### System Requirements
+
+If users do not plan to run LLMs locally, then running Ailice has virtually no hardware requirements. For users who want to run LLMs locally, currently only models with 70B or more parameters can perform tasks well, therefore you need at least two RTX 4090 GPUs (48GB VRAM) to effectively complete tasks.
+
+- Ailice was developed in **Ubuntu**, therefore installation and usage on Ubuntu has the best guarantee. 
+- For **Windows** users, using **Docker** or installing **WSL** (Windows Subsystem for Linux) and running Ailice within WSL is a better choice, especially for users who need to execute programming tasks -- I haven't integrated Windows command execution tools yet (this will be considered in the future, but the flexibility of command-line tools is of great significance for AI agents, which makes Linux platforms more advantageous). Additionally, the lack of testing on Windows significantly increases the likelihood of bugs; if you encounter related issues, please submit issues for resolution. 
+- Due to the lack of a suitable **macOS** environment, I am not yet aware of potential issues on that platform, and hope users who try it can provide feedback.
+
+Before installing Ailice, it is strongly recommended to install **Anaconda and create a virtual environment** first (you can also use other tools you prefer, such as venv). You will also need **Chrome**, as Ailice needs it for web browsing. For users who want to run Ailice in a fully controlled virtual machine, you will need **Docker** (or other virtual machines, such as VirtualBox), please refer to [Run Ailice in Docker Containers](#run-ailice-in-docker-containers).
+
+If you want to run Ailice in a virtual machine, ensure **Hyper-V** is turned off(otherwise llama.cpp cannot be installed). In a VirtualBox environment, you can disable it by following these steps: disable PAE/NX and VT-X/AMD-V ( Hyper-V) on VirtualBox settings for the VM. Set paravirtualization Interface to Default, disable nested paging.
+
 <a name="environment-configuration-and-installation"></a>
 ### Environment Configuration and Installation
 Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. It may take us a long time to install the dependencies, but fortunately, this is basically done automatically.
 
-To run Ailice, you need to ensure that **Chrome** are correctly installed. If you need to execute code in a secure virtual environment, you also need to install **Docker**.
-
-If you want to run Ailice in a virtual machine, ensure **Hyper-V** is turned off(otherwise llama.cpp cannot be installed). In a VirtualBox environment, you can disable it by following these steps: disable PAE/NX and VT-X/AMD-V ( Hyper-V) on VirtualBox settings for the VM. Set paravirtualization Interface to Default, disable nested paging.
-
-You can use the following command to install Ailice (It is strongly recommended to use tools such as conda to create a new virtual environment to install Ailice, so as to avoid dependency conflicts):
+You can use the following command to install Ailice:
 
 ```bash
 git clone https://github.com/myshell-ai/AIlice.git
@@ -162,13 +172,13 @@ cd AIlice
 pip install -e .
 ```
 
-For users who need to use the huggingface models/voice dialogue/model fine-tuning/pdf reading functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
+For users who need to use the pdf reading/voice dialogue/huggingface models/model fine-tuning functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
 
 ```bash
-pip install -e .[huggingface]
-pip install -e .[speech]
-pip install -e .[finetuning]
 pip install -e .[pdf-reading]
+pip install -e .[speech]
+pip install -e .[huggingface]
+pip install -e .[finetuning]
 ```
 
 You can run Ailice now! Use the commands in [Usage](#usage).
