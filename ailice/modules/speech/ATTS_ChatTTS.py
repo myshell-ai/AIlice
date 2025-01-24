@@ -11,7 +11,7 @@ class T2S_ChatTTS():
         self.model = ChatTTS.Chat()
         succ = False
         for i in range(5):
-            succ = self.model.load(compile=False)
+            succ = self.model.load(compile=True)
             if succ:
                 break
         if not succ:
