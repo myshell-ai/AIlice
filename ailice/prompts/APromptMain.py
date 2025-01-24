@@ -20,7 +20,7 @@ class APromptMain():
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
                          "LOADEXTMODULE": [{"re": GenerateRE4FunctionCalling("LOADEXTMODULE<!|addr: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "LOADEXTPROMPT": [{"re": GenerateRE4FunctionCalling("LOADEXTPROMPT<!|path: str|!> -> str", faultTolerance = True), "isEntry": True}],
-                         "SPEAK": [{"re": GenerateRE4FunctionCalling("SPEAK<!|txt: str|!>", faultTolerance = True), "isEntry": True}],
+                         "SPEAK": [{"re": GenerateRE4FunctionCalling("SPEAK<!|txt: str|!>"), "isEntry": True}],
                          "SWITCH-TONE": [{"re": GenerateRE4FunctionCalling("SWITCH-TONE<!||!> -> str"), "isEntry": True}]}
         self.ACTIONS= {}
         return
