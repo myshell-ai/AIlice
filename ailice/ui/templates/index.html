@@ -354,7 +354,7 @@
                 } else if (['mp4', 'webm', 'ogg', 'wmv', 'mov', 'avi', 'flv', 'mkv', 'mpeg', 'vob', 'rm', '3gp', 'ogv', 'm4v', 'h264', 'ts', 'm2ts', 'divx'].includes(extension)) {
                     return `video/${extension}`;
                 } else if (['jpg', 'jpeg', 'bmp', 'png', 'gif', 'tiff', 'tif', 'webp', 'svg', 'heif', 'heic', 'raw'].includes(extension)) {
-                    return 'image/jpeg';
+                    return `image/${extension}`;
                 }
                 
                 const controller = new AbortController();
@@ -396,14 +396,33 @@
         const rendererCode = renderer.code;
         const rendererCodespan = renderer.codespan;
 
-        renderer.image = function(href, title, text) {
-            const placeholder = `<div class="media-placeholder" data-href="${href}" data-title="${title}" data-text="${text}">Loading media...</div>`;
-            
-            const loadMedia = async () => {
+        class MediaPlaceholder extends HTMLElement {
+            constructor() {
+                super();
+                this.hasStartedLoading = false;
+            }
+
+            connectedCallback() {
+                if (this.hasStartedLoading) {
+                    return;
+                }
+                this.hasStartedLoading = true;
+                this.loadAndReplace();
+            }
+
+            async loadAndReplace() {
+                const href = this.dataset.href;
+                const title = this.dataset.title;
+                const text = this.dataset.text;
+                
                 try {
                     const mediaType = href.startsWith("blob:") ? text : 
                                     await getContentType(convertToProxyURL(href));
                     
+                    if (!this.isConnected) {
+                        return;
+                    }
+
                     let mediaElement = '';
                     if (mediaType.startsWith('image')) {
                         mediaElement = `<img src="${convertToProxyURL(href)}" alt="${text}" title="${title}" 
@@ -417,45 +436,28 @@
                         mediaElement = `<a href="${href}">${text}</a>`;
                     }
                     
-                    const observer = new MutationObserver((mutationsList, observer) => {
-                        const placeholders = document.querySelectorAll(`.media-placeholder[data-href="${href}"]`);
-                        if (placeholders.length > 0) {
-                            placeholders.forEach(placeholder => {
-                                placeholder.outerHTML = mediaElement;
-                            });
-                            observer.disconnect();
-                        }
-                    });
-
-                    observer.observe(document.body, {
-                        childList: true,
-                        subtree: true
-                    });
+                    if (this.isConnected) {
+                        this.outerHTML = mediaElement;
+                    }
                 } catch (error) {
                     console.error('Error loading media:', error);
-                    const placeholders = document.querySelectorAll(`.media-placeholder[data-href="${href}"]`);
-                    placeholders.forEach(placeholder => {
-                        placeholder.innerHTML = 'Failed to load media';
-                        placeholder.style.color = 'red';
-                    });
+                    if (this.isConnected) {
+                        this.innerHTML = 'Failed to load media';
+                        this.style.color = 'red';
+                    }
                 }
-            };
+            }
+        }
 
-            Promise.race([
-                loadMedia(),
-                new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Media loading timeout')), 10000)
-                )
-            ]).catch(error => {
-                console.error('Media loading failed:', error);
-                const placeholders = document.querySelectorAll(`.media-placeholder[data-href="${href}"]`);
-                placeholders.forEach(placeholder => {
-                    placeholder.innerHTML = 'Failed to load media';
-                    placeholder.style.color = 'red';
-                });
-            });
-            
-            return placeholder;
+        customElements.define('media-placeholder', MediaPlaceholder);
+
+        renderer.image = function(href, title, text) {
+            return `<media-placeholder 
+                data-href="${href}" 
+                data-title="${title}" 
+                data-text="${text}">
+                Loading media...
+            </media-placeholder>`;
         };
 
         renderer.code = function(code, lang, escaped) {
