@@ -2,7 +2,6 @@ import os
 import random
 import difflib
 import traceback
-import subprocess
 from urllib.parse import urljoin
 from selenium import webdriver
 from bs4 import BeautifulSoup, Comment
@@ -34,7 +33,6 @@ document.querySelector('form.mini-search').submit();
         if self.inited:
             return True, ""
         try:
-            subprocess.run(['google-chrome', '--version'], check=True)
             self.options = webdriver.ChromeOptions()
             self.options.add_argument('--headless')
             if os.path.exists('/.dockerenv'):
