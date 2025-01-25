@@ -27,7 +27,9 @@ class APDFBrowser(AScrollablePage):
         return self.p2t.recognize_pdf(pdfPath).to_markdown(outDir)
 
     def OCRMarker(self, pdfPath: str, outDir: str) -> str:
-        subprocess.run(["marker_single", f"{pdfPath}", "--output_dir", f"{outDir}", "--output_format", "markerdown"])
+        result = subprocess.run(["marker_single", f"{pdfPath}", "--output_dir", f"{outDir}", "--output_format", "markdown"])
+        if result.returncode != 0:
+            raise Exception(str(result.stdout) + "\n\n" + str(result.stderr))
         pdfName = Path(pdfPath).stem
 
         with open(Path(outDir) / pdfName / f"{pdfName}.md", "r") as f:
