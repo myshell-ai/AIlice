@@ -5,7 +5,7 @@ import traceback
 import numpy as np
 from typing import Union
 from huggingface_hub import hf_hub_download
-from gpt4all import Embed4All
+from gpt4all import GPT4All, Embed4All
 from threading import Thread, Lock
 
 from ailice.common.lightRPC import makeServer
@@ -63,25 +63,31 @@ class AStorageVecDB():
                 self.data = pickle.load(f)
         return
 
-    def PrepareModel(self):
+    def PrepareModel(self) -> str:
         ggufFile = hf_hub_download(repo_id=self.data['model'],filename=self.data['file'])
         if self.model and ggufFile == self.model.model_path:
-            return
+            return f"Embedding model {self.model} has already been loaded."
         
-        self.model = Embed4All(ggufFile)
-        return
+        gpus = []
+        try:
+            gpus = GPT4All.list_gpus()
+            device = gpus[0] if len(gpus) > 0 else "cpu"
+        except Exception as e:
+            device = "cpu"
+        self.model = Embed4All(ggufFile, device = device)
+        return f"GPUs found on this device: {gpus}. Embedding model has been loaded on {device}."
     
     def Open(self, directory: str) -> str:
         try:
             if "" == directory.strip():
                 self.dir = None
-                self.PrepareModel()
-                return f"vector database has been switched to a non-persistent version. model: {self.data['model']}, gguf: {self.data['file']}"
+                r = self.PrepareModel()
+                return f"{r}\nvector database has been switched to a non-persistent version. model: {self.data['model']}, gguf: {self.data['file']}"
             else:
                 self.dir = directory
                 self.Load(directory)
-                self.PrepareModel()
-                return f"vector database under {directory} is opened. model: {self.data['model']}, gguf: {self.data['file']}"
+                r = self.PrepareModel()
+                return f"{r}\nvector database under {directory} is opened. model: {self.data['model']}, gguf: {self.data['file']}"
         except Exception as e:
             print(f"Open() EXCEPTION. e: {str(e)}")
             raise e

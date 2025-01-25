@@ -109,7 +109,7 @@ def LoadSession(sessionName: str):
         print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
         storage = clientPool.GetClient(config.services['storage']['addr'])
         msg = storage.Open(os.path.join(sessionPath, "storage"))
-        print(f"Vector database has been started. returned msg: {msg}")
+        print(msg)
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
         llmPool = ALLMPool()

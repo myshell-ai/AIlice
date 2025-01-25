@@ -66,7 +66,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
     storage = clientPool.GetClient(config.services['storage']['addr'])
     msg = storage.Open(storagePath)
-    print(f"Vector database has been started. returned msg: {msg}")
+    print(msg)
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
     if config.speechOn:
