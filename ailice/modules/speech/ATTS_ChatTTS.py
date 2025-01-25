@@ -5,13 +5,13 @@ import ChatTTS
 
 class T2S_ChatTTS():
     def __init__(self):
-        self.device = "cuda"
+        self.device = "cpu"
         self.toneFile = os.path.join(appdirs.user_data_dir("ailice", "Steven Lu"), "speaker_tone")
         
         self.model = ChatTTS.Chat()
         succ = False
         for i in range(5):
-            succ = self.model.load(compile=True)
+            succ = self.model.load(compile=True, device=self.device)
             if succ:
                 break
         if not succ:
@@ -31,7 +31,10 @@ class T2S_ChatTTS():
         return "The new speaker tone has been created."
     
     def To(self, device: str):
-        self.model = self.model.to(device)
+        if device == self.device:
+            return
+        self.model = ChatTTS.Chat()
+        self.model.load(compile=True, device=device)
         self.device = device
         return
     
