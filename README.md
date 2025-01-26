@@ -268,6 +268,7 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**speechOn** is the switch to enable voice conversation.
 - --**ttsDevice** specifies the computing device used by the text-to-speech model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
 - --**sttDevice** specifies the computing device used by the speech-to-text model. The default is "cpu", you can set it to "cuda" if there is enough video memory.
+- --**resetApiKey** whether to reset the model's API key after startup.
 - --**chatHistoryPath** is used to specify the directory where chat history data is stored.
 - --**certificate** Certificate settings for the web interface. The simplest option is an empty string, which will use the HTTP protocol for the UI web page. Setting it to 'adhoc' will use a self-generated certificate, providing encryption for the data flow between the UI and server, but it requires dismissing browser security warnings. The most secure method is to apply for a certificate and set this parameter to '{"cert": "your_cert.pem", "key": "your_key.pem")'.
 - --**expose** Whether to provide public access.
