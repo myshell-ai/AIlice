@@ -1,3 +1,7 @@
+import os
+
+from termcolor import colored
+from mistralai.exceptions import MistralAPIException
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 
@@ -24,17 +28,25 @@ class AModelMistral():
         extras = {}
         extras.update(self.modelCfg.get("args", {}))
         extras.update({"temperature": temperature} if None != temperature else {})
-        for chunk in self.client.chat_stream(model=self.modelName,
-                                             messages=[ChatMessage(**msg) for msg in prompt],
-                                             **extras):
-            text += (chunk.choices[0].delta.content or "")
+        try:
+            for chunk in self.client.chat_stream(model=self.modelName,
+                                                messages=[ChatMessage(**msg) for msg in prompt],
+                                                **extras):
+                text += (chunk.choices[0].delta.content or "")
 
-            if endchecker(text):
-                break
-            
-            sentences = [x for x in sentences_split(text[currentPosition:])]
-            if (2 <= len(sentences)) and ("" != sentences[0].strip()):
-                proc(txt=sentences[0])
-                currentPosition += len(sentences[0])
+                if endchecker(text):
+                    break
+                
+                sentences = [x for x in sentences_split(text[currentPosition:])]
+                if (2 <= len(sentences)) and ("" != sentences[0].strip()):
+                    proc(txt=sentences[0])
+                    currentPosition += len(sentences[0])
+        except MistralAPIException as e:
+            msg = colored("The program encountered an authorization error. Please check your API key:", "yellow") + \
+                  colored(f"\n\n{self.modelType}: ", "green") + colored(f"'{config.models[self.modelType]['apikey']}'\n\n", "blue") + \
+                  colored("If it's incorrect, append '--resetApiKey' to the command parameters you are using to restart ailice and reset the API key.", "yellow")
+            print('\n\n', msg)
+            print('\n\nException:\n', str(e))
+            os._exit(1)
         proc(txt=text[currentPosition:])
         return text
