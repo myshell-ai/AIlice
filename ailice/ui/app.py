@@ -43,7 +43,6 @@ app = Flask(__name__)
 currentSession = None
 context = dict()
 speech = None
-sessionName = None
 lock = threading.Lock()
 
 def Init():
@@ -214,7 +213,7 @@ def generate_response(message):
             depth += braketMap.get(channel, 0)
             if (-1 == depth) and (">" == channel):
                 threadLLM.join()
-                with open(os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json"), "w") as f:
+                with open(os.path.join(config.chatHistoryPath, currentSession, "ailice_history.json"), "w") as f:
                     json.dump(context[currentSession]['processor'].ToJson(), f, indent=2)
                 return
             elif (channel in ["<", ">"]):
@@ -265,7 +264,6 @@ def upload_image():
 
 @app.route('/new_chat')
 def new_chat():
-    global sessionName
     with lock:
         sessionName = "ailice_" + str(int(time.time()))
         LoadSession(sessionName=sessionName)
@@ -273,11 +271,9 @@ def new_chat():
 
 @app.route('/load_history')
 def load_history():
-    global sessionName
     with lock:
-        sessionNameNew = request.args.get('name')
-        needLoading = (sessionNameNew != sessionName)
-        sessionName = sessionNameNew
+        sessionName = request.args.get('name')
+        needLoading = (sessionName != currentSession)
         if needLoading:
             LoadSession(sessionName=sessionName)
         historyPath = os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json")
