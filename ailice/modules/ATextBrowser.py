@@ -11,7 +11,7 @@ class ATextBrowser(AScrollablePage):
         self.prompt = \
 '''
 The document is in editable mode. You can edit the content using the following functions:
-#Replace and edit content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.
+#Replace and edit content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent patterns and replacements.
 REPLACE<!|pattern: str, replacement: str, regexMode: bool, session: str|!> -> str
 #Save the modified content to a file. If the dstPath parameter is an empty string, save it to the original file.
 SAVETO<!|dstPath: str, session: str|!> -> str
