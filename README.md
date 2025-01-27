@@ -20,7 +20,7 @@
 </p>
 
 
-**ATTENTION! We currently has no plans to create any related crypto tokens. Please be cautious and recognize scams to avoid being deceived. (Updated on January 6, 2025)**
+**ATTENTION! We currently have no plans to create any related crypto tokens. Please be cautious and recognize scams to avoid being deceived. (Updated on January 6, 2025)**
 
 :fire: Jan 23, 2025: Updated the voice dialogue feature. Thanks to ChatTTS's excellent implementation, voice dialogue has finally moved beyond its experimental status and become practical.
 
@@ -120,7 +120,7 @@ The last point to note is that Ailice currently lacks a run time control mechani
 
 - **"Deploy a straightforward website on this machine using the Flask framework. Ensure accessibility at 0.0.0.0:59001. The website should have a single page capable of displaying all images located in the 'images' directory."**
 This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
-cp" command to see it. But you can let Ailice solve this problem by itself: deploy a website in the container according to the above prompt(It is recommended to use ports between 59001 and 59200 that has been port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can also try to let her iterate to produce more complex functions. If you don't see any images on the page, please check whether the "images" folder of the website is different from the "images" folder here (for example, it might be under "static/images").
+cp" command to see it. But you can let Ailice solve this problem by itself: deploy a website in the container according to the above prompt(It is recommended to use ports between 59001 and 59200 that have been port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can also try to let her iterate to produce more complex functions. If you don't see any images on the page, please check whether the "images" folder of the website is different from the "images" folder here (for example, it might be under "static/images").
 
 - **"Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the 'images' directory."**
 If you successfully deployed the above website, you can now see the BTC price curve directly on the page.
