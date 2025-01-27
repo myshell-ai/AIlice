@@ -729,4 +729,4 @@ If you are interested in the development of Ailice itself, you may consider the 
 
 - **Build rich external interaction modules using self-expansion mechanisms! This will be accomplished in [AiliceEVO](https://github.com/stevenlu137/AIliceEVO).**
 
-In addition to the tasks mentioned above, we should also start actively contemplating the possibility of **creating a smaller LLM that possesses lower knowledge content but higher reasoning abilities**.
+- **Explore using Ailice as the execution environment for reinforcement learning to optimize the performance of small-sized language models.** In agent applications, the amount of knowledge in the model is less important than its reasoning and tool-use abilities. The latter largely depends on the model's understanding of its operational environment, and reinforcement learning (RL) may be the best option for developing this understanding.
