@@ -1,7 +1,7 @@
 import arxiv
 import random
 
-#ailice is already exist in the local running environment, please do not try to install or build them.
+#ailice already exist in the local running environment, please do not try to install or build them.
 from ailice.common.lightRPC import makeServer
 #For cases where the returned result is too long, we recommend use AScrollablePage class to implement a scrolling page effect. AScrollablePage contains the following methods: LoadPage(txt: str, initPosition: str)->str, ScrollDown()->str, ScrollUp()->str, SearchDown(query: str)->str, SearchUp(query: str)->str.
 from ailice.modules.AScrollablePage import AScrollablePage
