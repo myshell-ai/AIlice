@@ -2,13 +2,22 @@ import os
 import time
 import pickle
 import traceback
+import importlib.util
 import numpy as np
 from typing import Union
 from huggingface_hub import hf_hub_download
-from gpt4all import GPT4All, Embed4All
+
 from threading import Thread, Lock
 
 from ailice.common.lightRPC import makeServer
+
+INFERENCE_ENGINE = None
+if (None != importlib.util.find_spec("llama_cpp")):
+    from llama_cpp import Llama
+    INFERENCE_ENGINE = "llama_cpp"
+elif (None != importlib.util.find_spec("gpt4all")):
+    from gpt4all import GPT4All, Embed4All
+    INFERENCE_ENGINE = "gpt4all"
 
 MODEL = 'nomic-ai/nomic-embed-text-v1-GGUF'
 FILE_NAME = 'nomic-embed-text-v1.Q8_0.gguf'
@@ -68,14 +77,26 @@ class AStorageVecDB():
         if self.model and ggufFile == self.model.model_path:
             return f"Embedding model {self.model} has already been loaded."
         
-        gpus = []
-        try:
-            gpus = GPT4All.list_gpus()
-            device = gpus[0] if len(gpus) > 0 else "cpu"
-        except Exception as e:
-            device = "cpu"
-        self.model = Embed4All(ggufFile, device = device)
-        return f"GPUs found on this device: {gpus}. Embedding model has been loaded on {device}."
+        if "llama_cpp" == INFERENCE_ENGINE:
+            self.model = Llama(
+                model_path=ggufFile,
+                embedding=True,
+                n_gpu_layers=-1, # Uncomment to use GPU acceleration
+                # seed=1337, # Uncomment to set a specific seed
+                # n_ctx=2048, # Uncomment to increase the context window
+            )
+            return "Embedding model has been loaded."
+        elif "gpt4all" == INFERENCE_ENGINE:
+            gpus = []
+            try:
+                gpus = GPT4All.list_gpus()
+                device = gpus[0] if len(gpus) > 0 else "cpu"
+            except Exception as e:
+                device = "cpu"
+            self.model = Embed4All(ggufFile, device = device)
+            return f"GPUs found on this device: {gpus}. Embedding model has been loaded on {device}."
+        else:
+            return "No inference engine was found. Please use one of the following commands to install: `pip install gpt4all` or `ailice_turbo`."
     
     def Open(self, directory: str) -> str:
         try:

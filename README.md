@@ -172,6 +172,12 @@ cd AIlice
 pip install -e .
 ```
 
+The running speed of Ailice may be slow after installation, as the long-term memory module's embedded model computation might be running on CPU. In this case, we can try running the following command to install GPU acceleration:
+
+```bash
+ailice_turbo
+```
+
 For users who need to use the pdf reading/voice dialogue/huggingface models/model fine-tuning functions, you can use one of the following command(Installing too many features increases the likelihood of dependency conflicts, so it is recommended to install only the necessary parts):
 
 ```bash
