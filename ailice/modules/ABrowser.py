@@ -26,7 +26,7 @@ class ABrowser():
 
     def ModuleInfo(self):
         return {"NAME": "browser", "ACTIONS": {"BROWSE": {"func": "Browse", "prompt": "Open any PDFs, web pages in headless mode to retrieve their content. The 'url' parameter can be either a URL or a local path. You need to give the page a name(the session parameter). You can reuse this session to open new url/path.", "type": "primary"},
-                                               "BROWSE-EDIT": {"func": "Edit", "prompt": "Browse and edit any text document (including code files with various extensions) in headless mode. You need to give the page a name(the session parameter). You can reuse this session to open new file.", "type": "primary"},
+                                               "BROWSE-EDIT": {"func": "Edit", "prompt": "Browse and edit any text document (including code files with various extensions) in headless mode. You need to give the page a name(the session parameter). You can reuse this session to open a new file.", "type": "primary"},
                                                "SCROLL-DOWN-BROWSER": {"func": "ScrollDown", "prompt": "Scroll down the page.", "type": "supportive"},
                                                "SCROLL-UP-BROWSER": {"func": "ScrollUp", "prompt": "Scroll up the page.", "type": "supportive"},
                                                "SEARCH-DOWN-BROWSER": {"func": "SearchDown", "prompt": "Search content downward from the current location.", "type": "supportive"},
@@ -141,7 +141,7 @@ class ABrowser():
         return self.sessions[session].Replace(pattern, replacement, regexMode) if hasattr(self.sessions[session], "Replace") else "Replace not supported in current browser."
     
     def SaveTo(self, dstPath: str, session: str) -> str:
-        return self.sessions[session].SaveTo(dstPath) if hasattr(self.sessions[session], "SaveTo") else "SaveTo not supported in current browser."
+        return self.sessions[session].SaveTo(dstPath) if hasattr(self.sessions[session], "SaveTo") else "SaveTo not supported in the current browser."
 
 def main():
     import argparse
