@@ -64,7 +64,9 @@ Example:
     def SaveTo(self, dstPath: str) -> str:
         try:
             dstPath = self.path if ((dstPath.strip() == "") and (self.path != None)) else dstPath
-            os.makedirs(os.path.dirname(dstPath), exist_ok=True)
+            d = os.path.dirname(dstPath)
+            if d.strip() != "":
+                os.makedirs(d, exist_ok=True)
             with open(dstPath, 'w') as f:
                 f.write(self.txt)
             return f"File {dstPath} saved."
