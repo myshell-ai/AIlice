@@ -39,8 +39,12 @@ jobs:
 
     - name: Install Chrome (Windows)
       if: matrix.os == 'windows-latest'
+      shell: powershell
       run: |
-        choco install googlechrome -y
+        $Path = $env:TEMP + '\chrome_installer.exe'
+        Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/latest/chrome_installer.exe' -OutFile $Path
+        Start-Process -FilePath $Path -Args '/silent /install' -Wait
+        Remove-Item -Path $Path
 
     - name: Install dependencies
       run: |
