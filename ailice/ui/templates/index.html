@@ -275,18 +275,6 @@
             word-break: break-all;
             font-size: 18px;
         }
-        .message.USER .bubble {
-            background-color: #e8f5e9;
-            border-color: #c8e6c9;
-        }
-        .message.ASSISTANT .bubble {
-            background-color: #fff3e0;
-            border-color: #ffe0b2;
-        }
-        .message.SYSTEM .bubble {
-            background-color: #f5f5f5;
-            border-color: #e0e0e0;
-        }
         #new-chat-button {
             width: 36px;
             height: 36px;
@@ -661,15 +649,16 @@
                                 const roleType = responseObject.role.split('_')[0];
                                 const roleHTML = "<span class='role'>" + responseObject.role + ": </span>";
                                 const prefix = {"": roleHTML, "open": roleHTML, "append": "", "close": ""};
-                                const suffix = {"": "<br><br>", "open": "", "append": "", "close": "<br><br>"};
+                                const breaks = {"": "<br><br>", "open": "<br><br>", "append": "", "close": ""};
                                 
                                 lastInternalElement = historyContent.querySelector(`.message.${roleType}.${responseObject.role}:last-child .bubble`);
                                 if (lastInternalElement) {
-                                    internalContent += (responseMessage + suffix[responseObject.action]);
+
+                                    internalContent += (breaks[responseObject.action] + responseMessage);
                                     lastInternalElement.innerHTML = renderMarkdown(internalContent);
                                     MathJax.typesetPromise([lastInternalElement]);
                                 } else {
-                                    internalContent = (prefix[responseObject.action] + responseMessage + suffix[responseObject.action]);
+                                    internalContent = (prefix[responseObject.action] + responseMessage);
                                     displayMsg(responseObject.role, internalContent, 'history-content');
                                 }
                                 historyContent.scrollTop = historyContent.scrollHeight;
@@ -677,11 +666,11 @@
                                 if ((responseObject.msgType === "user-ailice") && (roleType != "SYSTEM")) {
                                     lastBotMessageElement = chatWindow.querySelector(`.message.${roleType}.${responseObject.role}:last-child .bubble`);
                                     if (lastBotMessageElement) {
-                                        content += (responseMessage + suffix[responseObject.action]);
+                                        content += (breaks[responseObject.action] + responseMessage);
                                         lastBotMessageElement.innerHTML = renderMarkdown(content);
                                         MathJax.typesetPromise([lastBotMessageElement]);
                                     } else {
-                                        content = (responseMessage + suffix[responseObject.action]);
+                                        content = responseMessage;
                                         displayMsg(responseObject.role, content, 'chat-window');
                                     }
                                     chatWindow.scrollTop = chatWindow.scrollHeight;
