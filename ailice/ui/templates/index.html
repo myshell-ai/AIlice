@@ -15,6 +15,22 @@
             background-color: #f7f9fc;
             color: #333;
         }
+        ::-webkit-scrollbar {
+            width: 16px;
+            height: 16px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+            border-left: 1px solid #e0e0e0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e6e6e6;
+        }
         .container {
             width: 98%;
             height: 98vh;
@@ -55,16 +71,16 @@
         }
         .sidebar li.selected {
             padding: 8px 12px;
-            background-color: #e6e6e6;
+            background-color: #fff;
             color: #333;
-            border: 1px solid #ccc;
+            border: 1px solid #e0e0e0;
             border-radius: 12px;
         }
         .sidebar li:hover {
             padding: 8px 12px;
-            background-color: #f1f1f1;
+            background-color: #fff;
             color: #333;
-            border: 1px solid #ccc;
+            border: 1px solid #e0e0e0;
             border-radius: 12px;
         }
         .sidebar li .menu-button {
@@ -72,14 +88,24 @@
             position: absolute;
             right: 10px;
             top: 10px;
-            background: none;
-            border: none;
+            width: 30px;
+            height: 30px;
+            border: 1px solid transparent;
+            background-color: transparent;
+            border-radius: 6px;
+            color: #666;
             cursor: pointer;
-            font-size: 18px;
-            float: 'right';
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .sidebar li:hover .menu-button {
             display: inline-block;
+        }
+        .menu-button:hover {
+            border-color: #e0e0e0;
+            background-color: #f7f9fc;
         }
         .dropdown-menu {
             display: none;
@@ -87,7 +113,7 @@
             right: 10px;
             top: 30px;
             background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             z-index: 1000;
@@ -98,9 +124,10 @@
             text-decoration: none;
             color: #333;
             border-bottom: 1px solid #e0e0e0;
+            transition: all 0.2s ease;
         }
         .dropdown-menu a:hover {
-            background-color: #f0f0f0;
+            background-color: #f7f9fc;
         }
         .dropdown-menu a:last-child {
             border-bottom: none;
@@ -127,6 +154,7 @@
             background-color: #f7f9fc;
             border-top: 1px solid #e0e0e0;
             justify-content: space-between;
+            align-items: center;
         }
         .input-section textarea {
             flex: 1;
@@ -138,26 +166,65 @@
             font-size: 16px;
             color: #333;
             background-color: #fff;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
             resize: none;
             overflow-y: auto;
             min-height: 40px;
+            min-height: 40px;
             max-height: 200px;
+            line-height: 20px;
+            box-sizing: border-box;
         }
         .input-section button {
-            padding: 10px 15px;
-            border: none;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #e0e0e0;
+            background-color: #f7f9fc;
             border-radius: 8px;
-            background-color: #007bff;
-            color: #fff;
+            color: #666;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             min-width: 40px;
             margin-left: 5px;
+            font-size: 20px;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .input-section button:hover {
-            background-color: #0056b3;
+        #audio-button {
+            border-color: #b2ebf2;
+            background-color: #e0f7fa;
+            color: #00acc1;
+        }
+        #audio-button:hover {
+            background-color: #fff;
+            border-color: #00acc1;
+        }
+        #image-button {
+            border-color: #c8e6c9;
+            background-color: #e8f5e9;
+            color: #43a047;
+        }
+        #image-button:hover {
+            background-color: #fff;
+            border-color: #43a047;
+        }
+        #interrupt-button {
+            border-color: #ffcdd2;
+            background-color: #fff5f5;
+            color: #ef5350;
+            min-width: 40px;
+            width: auto;
+            padding: 0 12px;
+        }
+        .input-section button:not(#interrupt-button) {
+            width: 40px;
+            min-width: 40px;
+        }
+        #interrupt-button:hover {
+            background-color: #fff;
+            border-color: #ef5350;
         }
         .input-section button:last-child {
             margin-right: 0;
@@ -187,16 +254,37 @@
             max-width: 70%;
             padding: 10px;
             border-radius: 12px;
-            background-color: #f1f1f1;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background-color: #f7f9fc;
+            border: 1px solid #e0e0e0;
             overflow-wrap: break-word;
             word-wrap: break-word;
             word-break: break-all;
             font-size: 18px;
         }
         .message.USER .bubble {
-            background-color: #007bff;
-            color: #fff;
+            background-color: #f0f4f8;
+            border-color: #e0e0e0;
+        }
+        #new-chat-button {
+            width: 36px;
+            height: 36px;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            background-color: #f7f9fc;
+            border-radius: 8px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        #new-chat-button:hover {
+            background-color: #fff;
+            border-color: #ccc;
+            color: #333;
         }
         .history-panel {
             position: relative;
@@ -222,7 +310,6 @@
             color: #666;
             user-select: none;
         }
-
         .history-handle::after {
             content: '';
             position: absolute;
@@ -250,11 +337,11 @@
         .internal-message {
             padding: 10px;
             margin: 5px 0;
-            background-color: #f0f0f0;
+            background-color: #f7f9fc;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
             line-height: 1.4;
-            border-left: 3px solid #007bff;
         }
         .role {
             color: #2c5282;
@@ -266,8 +353,8 @@
         .media-placeholder {
             padding: 10px;
             margin: 5px 0;
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
+            background-color: #f7f9fc;
+            border: 1px solid #e0e0e0;
             border-radius: 4px;
             text-align: center;
             color: #666;
@@ -306,9 +393,9 @@
             </div>
             <div class="input-section">
                 <textarea id="text-input" placeholder="Type a message... (Shift+Enter for new line)"></textarea>
-                <button id="interrupt-button" style="display: none;">⏹️</button>
-                <button id="audio-button">🎤</button>
-                <button id="image-button">📷</button>
+                <button id="interrupt-button" class="btn btn-icon" style="display: none;">⏹️</button>
+                <button id="audio-button" class="btn btn-icon">🎤</button>
+                <button id="image-button" class="btn btn-icon">📷</button>
                 <input type="file" id="image-input" style="display: none;">
             </div>
         </div>
@@ -550,7 +637,7 @@
                             try {
                                 const responseObject = JSON.parse(jsonString);
                                 const responseMessage = responseObject.message;
-                                const roleType = responseObject.role.split('_')[0]
+                                const roleType = responseObject.role.split('_')[0];
                                 const roleHTML = "<span class='role'>" + responseObject.role + ": </span>";
                                 const prefix = {"": roleHTML, "open": roleHTML, "append": "", "close": ""};
                                 const suffix = {"": "<br><br>", "open": "", "append": "", "close": "<br><br>"};
