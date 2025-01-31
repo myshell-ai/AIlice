@@ -55,6 +55,7 @@
             
             --selection-bg: #e0e0e0;
             --selection-color: #333;
+            --link-color: #2563eb;
         }
         [data-theme="dark"] {
             --bg-primary: #1a1b26;
@@ -104,6 +105,7 @@
             --spinner-active-border: #7aa2f7;
 
             --selection-bg: #515c7e;
+            --link-color: #ff9e64;
         }
         .menubar {
             position: fixed;
@@ -554,6 +556,10 @@
             border-radius: 4px;
             text-align: center;
             color: #666;
+        }
+        a {
+            color: var(--link-color);
+            text-decoration: underline;
         }
     </style>
 
