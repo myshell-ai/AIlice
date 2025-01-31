@@ -1,6 +1,6 @@
 
 <div align= "center">
-    <img src="./AIliceLogo.png" height=256>
+    <img src="./ailice/ui/static/AIliceLogo.png" height=256>
     <h1>Ailice</h1>
 
 [![forks](https://img.shields.io/github/forks/myshell-ai/AIlice)](https://github.com/myshell-ai/AIlice)

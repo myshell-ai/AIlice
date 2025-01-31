@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/static/AIliceLogo.png">
     <title>Ailice</title>
     <style>
         :root {
@@ -118,9 +119,16 @@
             padding: 0 16px;
             z-index: 1000;
         }
+        .menu-logo {
+            height: 24px;
+            width: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
         .menubar-left {
             display: flex;
             align-items: center;
+            gap: 8px;
         }
         .app-title {
             font-size: 16px;
@@ -546,6 +554,7 @@
 <body>
     <div class="menubar">
         <div class="menubar-left">
+            <img src="/static/AIliceLogo.png" alt="Ailice Logo" class="menu-logo">
             <span class="app-title">Ailice</span>
         </div>
         <div class="menubar-right">
