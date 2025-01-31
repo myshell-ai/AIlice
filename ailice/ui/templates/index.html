@@ -218,6 +218,31 @@
             padding: 20px;
             background-color: var(--bg-tertiary);
         }
+        .sidebar-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        #search-input {
+            flex: 1;
+            height: 18px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-quaternary);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        #search-input:focus {
+            outline: none;
+            border-color: var(--border-hover);
+        }
+        #search-input::placeholder {
+            color: var(--text-primary);
+            opacity: 0.6;
+        }
         .sidebar ul {
             list-style-type: none;
             padding: 0;
@@ -467,17 +492,17 @@
             width: 36px;
             height: 36px;
             padding: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e0e0;
-            background-color: #f7f9fc;
+            border: 1px solid var(--border-color);
+            background-color: var(--button-bg);
             border-radius: 8px;
-            color: #666;
+            color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
+            flex-shrink: 0;
         }
         #new-chat-button:hover {
             background-color: #fff;
@@ -592,7 +617,10 @@
     </div>
     <div class="container">
         <div class="sidebar" id="history-bar">
-            <button id="new-chat-button">➕</button>
+            <div class="sidebar-header">
+                <button id="new-chat-button">➕</button>
+                <input type="text" id="search-input" placeholder="Search chats...">
+            </div>
             <ul id="history-list">
                 <!-- History records will be listed here -->
             </ul>
@@ -1350,6 +1378,27 @@
             newchat()
         });
         
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const historyItems = document.querySelectorAll('#history-list li');
+            
+            historyItems.forEach(item => {
+                const text = item.querySelector('.history-span').textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('search-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                this.dispatchEvent(new Event('input'));
+            }
+        });
+
         // Load history list on page load
         window.onload = function() {
             initThemeToggle();
