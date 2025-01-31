@@ -5,6 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ailice</title>
     <style>
+        :root {
+            --bg-primary: #f7f9fc;
+            --bg-secondary: #fff;
+            --bg-tertiary: #f0f4f8;
+            --bg-quaternary: #ffffff;
+
+            --text-primary: #333;
+            --border-color: #e0e0e0;
+            --menubar-bg: #fff;
+            --menubar-text: #333;
+
+            --button-bg: #f7f9fc;
+            --button-hover: #e6e6e6;
+            --button-active: #4a90e2;
+            --border-hover: #4a90e2;
+
+            --audio-button-bg: #e0f7fa;
+            --audio-button-border: #b2ebf2;
+            --audio-button-color: #00acc1;
+
+            --image-button-bg: #e8f5e9;
+            --image-button-border: #c8e6c9;
+            --image-button-color: #43a047;
+            
+            --interrupt-button-bg: #fff5f5;
+            --interrupt-button-border: #ffcdd2;
+            --interrupt-button-color: #ef5350;
+            
+            --scrollbar-track-bg: transparent;
+            --scrollbar-track-border: #e0e0e0;
+            --scrollbar-thumb-bg: #f0f0f0;
+            --scrollbar-thumb-border: #e0e0e0;
+            --scrollbar-thumb-hover-bg: #e6e6e6;
+            
+            --dropdown-menu-bg: #fff;
+            --dropdown-menu-border: #e0e0e0;
+            --dropdown-item-color: #333;
+            --dropdown-item-border: #e0e0e0;
+            --dropdown-item-hover-bg: #f7f9fc;
+            
+            --history-panel-bg: #f7f9fc;
+            --history-handle-bg: #f0f4f8;
+            --history-handle-color: #666;
+            
+            --spinner-border: #f3f3f3;
+            --spinner-active-border: #666;
+            
+            --selection-bg: #e0e0e0;
+            --selection-color: #333;
+        }
+        [data-theme="dark"] {
+            --bg-primary: #1a1b26;
+            --bg-secondary: #24283b;
+            --bg-tertiary: #2f354d;
+            --bg-quaternary: #414868;
+
+            --text-primary: #c0caf5;
+            --border-color: #414868;
+            --menubar-bg: #1a1b26;
+            --menubar-text: #c0caf5;
+
+            --button-bg: #2f354d;
+            --button-hover: #dfe1e9;
+            --button-active: #7aa2f7;
+            --border-hover: #7aa2f7;
+
+            --audio-button-bg: #2f354d;
+            --audio-button-border: #414868;
+            --audio-button-color: #7dcfff;
+
+            --image-button-bg: #2f354d;
+            --image-button-border: #414868;
+            --image-button-color: #9ece6a;
+            
+            --interrupt-button-bg: #2f354d;
+            --interrupt-button-border: #414868;
+            --interrupt-button-color: #f7768e;
+            
+            --scrollbar-track-bg: transparent;
+            --scrollbar-track-border: #1a1b26;
+            --scrollbar-thumb-bg: #414868;
+            --scrollbar-thumb-border: #1a1b26;
+            --scrollbar-thumb-hover-bg: #565f89;
+
+            --dropdown-menu-bg: #1f2335;
+            --dropdown-menu-border: #414868;
+            --dropdown-item-color: #c0caf5;
+            --dropdown-item-border: #2f354d;
+            --dropdown-item-hover-bg: #7aa2f7;
+            
+            --history-panel-bg: var(--bg-secondary);
+            --history-handle-bg: var(--bg-secondary);
+            --history-handle-color: #9aa5ce;
+  
+            --spinner-border: #2f354d;
+            --spinner-active-border: #7aa2f7;
+
+            --selection-bg: #515c7e;
+        }
+        .menubar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background-color: var(--menubar-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+        }
+        .menubar-left {
+            display: flex;
+            align-items: center;
+        }
+        .app-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--menubar-text);
+        }
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--menubar-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+        }
+        .container {
+            margin-top: 40px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             display: flex;
@@ -12,29 +154,32 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f7f9fc;
-            color: #333;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
         }
         ::-webkit-scrollbar {
             width: 16px;
             height: 16px;
         }
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: var(--scrollbar-track-bg);
             border-left: 1px solid #e0e0e0;
+            border-color: var(--scrollbar-track-border);
         }
         ::-webkit-scrollbar-thumb {
-            background: #f0f0f0;
+            background: var(--scrollbar-thumb-bg);
             border: 1px solid #e0e0e0;
             border-radius: 8px;
+            border-color: var(--scrollbar-thumb-border);
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #e6e6e6;
+            background: var(--scrollbar-thumb-hover-bg);
         }
         .container {
             width: 98%;
             height: 98vh;
-            background-color: #fff;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -44,10 +189,10 @@
         .sidebar {
             width: 20%;
             min-width: 200px;
-            border-right: 1px solid #e0e0e0;
+            border-right: 1px solid var(--border-color);
             overflow-y: auto;
             padding: 20px;
-            background-color: #f0f4f8;
+            background-color: var(--bg-tertiary);
         }
         .sidebar ul {
             list-style-type: none;
@@ -61,6 +206,7 @@
             overflow: visible;
             position: relative;
             display: flex;
+            color: var(--text-primary);
         }
         .sidebar li .history-span {
             flex: 1;
@@ -71,14 +217,16 @@
         }
         .sidebar li.selected {
             padding: 8px 12px;
-            background-color: #fff;
+            background-color: var(--button-active);
+            border-color: var(--border-hover);
             color: #333;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
         }
         .sidebar li:hover {
             padding: 8px 12px;
-            background-color: #fff;
+            background-color: var(--button-hover);
+            border-color: var(--border-hover);
             color: #333;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
@@ -114,6 +262,8 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
             flex-shrink: 0;
+            border-color: var(--spinner-border);
+            border-top-color: var(--spinner-active-border);
         }
         .sidebar li:hover .menu-button {
             display: inline-block;
@@ -127,7 +277,8 @@
             position: absolute;
             right: 10px;
             top: 30px;
-            background-color: #fff;
+            background-color: var(--dropdown-menu-bg);
+            border-color: var(--dropdown-menu-border);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             border: 1px solid #e0e0e0;
             border-radius: 8px;
@@ -137,12 +288,13 @@
             display: block;
             padding: 10px;
             text-decoration: none;
-            color: #333;
+            color: var(--dropdown-item-color);
             border-bottom: 1px solid #e0e0e0;
             transition: all 0.2s ease;
+            border-bottom-color: var(--dropdown-item-border);
         }
         .dropdown-menu a:hover {
-            background-color: #f7f9fc;
+            background-color: var(--dropdown-item-hover-bg);
         }
         .dropdown-menu a:last-child {
             border-bottom: none;
@@ -160,14 +312,15 @@
             padding: 20px;
             overflow-x: auto;
             overflow-y: auto;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
         }
         .input-section {
             display: flex;
             flex-wrap: nowrap;
             padding: 10px;
-            background-color: #f7f9fc;
-            border-top: 1px solid #e0e0e0;
+            background-color: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
             justify-content: space-between;
             align-items: center;
         }
@@ -179,8 +332,9 @@
             border-radius: 8px;
             margin-right: 10px;
             font-size: 16px;
-            color: #333;
-            background-color: #fff;
+            background-color: var(--bg-quaternary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
             resize: none;
             overflow-y: auto;
             min-height: 40px;
@@ -193,9 +347,10 @@
             width: 40px;
             height: 40px;
             border: 1px solid #e0e0e0;
-            background-color: #f7f9fc;
+            background-color: var(--button-bg);
+            border-color: var(--border-color);
+            color: var(--text-primary);
             border-radius: 8px;
-            color: #666;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -207,28 +362,36 @@
             padding: 0;
             box-sizing: border-box;
         }
+        .input-section button:hover {
+            background-color: var(--button-hover);
+            border-color: var(--border-hover);
+        }
         #audio-button {
-            border-color: #b2ebf2;
-            background-color: #e0f7fa;
-            color: #00acc1;
+            background-color: var(--audio-button-bg);
+            border-color: var(--audio-button-border);
+            color: var(--audio-button-color);
         }
         #audio-button:hover {
             background-color: #fff;
             border-color: #00acc1;
         }
+        ::selection {
+            background-color: var(--selection-bg);
+            color: var(--selection-color);
+        }
         #image-button {
-            border-color: #c8e6c9;
-            background-color: #e8f5e9;
-            color: #43a047;
+            background-color: var(--image-button-bg);
+            border-color: var(--image-button-border);
+            color: var(--image-button-color);
         }
         #image-button:hover {
             background-color: #fff;
             border-color: #43a047;
         }
         #interrupt-button {
-            border-color: #ffcdd2;
-            background-color: #fff5f5;
-            color: #ef5350;
+            border-color: var(--interrupt-button-border);
+            background-color: var(--interrupt-button-bg);
+            color: var(--interrupt-button-color);
             min-width: 40px;
             width: auto;
             padding: 0 12px;
@@ -270,6 +433,7 @@
             padding: 10px;
             border-radius: 12px;
             border: 1px solid;
+            border-color: var(--border-color);
             overflow-wrap: break-word;
             word-wrap: break-word;
             word-break: break-all;
@@ -301,9 +465,9 @@
             height: 30px;
             min-height: 30px;
             max-height: calc(100% - 20px);
-            background-color: #f7f9fc;
-            border-top: 1px solid #e0e0e0;
-            border-bottom: 1px solid #e0e0e0;
+            background-color: var(--history-panel-bg);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
             overflow: hidden;
         }
         .history-handle {
@@ -311,13 +475,13 @@
             top: 0;
             width: 100%;
             height: 30px;
-            background-color: #f0f4f8;
+            background-color: var(--history-handle-bg);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            color: #666;
+            color: var(--history-handle-color);
             user-select: none;
         }
         .history-handle::after {
@@ -380,6 +544,17 @@
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
 </head>
 <body>
+    <div class="menubar">
+        <div class="menubar-left">
+            <span class="app-title">Ailice</span>
+        </div>
+        <div class="menubar-right">
+            <button id="theme-toggle" class="theme-toggle">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-text">Dark Mode</span>
+            </button>
+        </div>
+    </div>
     <div class="container">
         <div class="sidebar" id="history-bar">
             <button id="new-chat-button">➕</button>
@@ -806,7 +981,7 @@
         }
         
         const colorPalette = {
-            colors: [
+            lightColors: [
                 { bg: '#e8f5e9', border: '#c8e6c9' },
                 { bg: '#e8eaf6', border: '#c5cae9' },
                 { bg: '#fff3e0', border: '#ffe0b2' },
@@ -818,18 +993,34 @@
                 { bg: '#dcedc8', border: '#c5e1a5' },
                 { bg: '#ffebee', border: '#ffcdd2' }
             ],
+            darkColors: [
+                { bg: '#2f354d', border: '#414868' },
+                { bg: '#24283b', border: '#414868' },
+                { bg: '#2a2f45', border: '#414868' },
+                { bg: '#292e42', border: '#414868' },
+                { bg: '#2d3247', border: '#414868' },
+                { bg: '#2b3048', border: '#414868' },
+                { bg: '#283045', border: '#414868' },
+                { bg: '#2c3143', border: '#414868' },
+                { bg: '#2e3346', border: '#414868' },
+                { bg: '#2d3144', border: '#414868' }
+            ],
             assignedColors: new Map(),
             colorIndex: 0,
 
             getColorForRole: function(role) {
+                const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                const colors = isDarkMode ? this.darkColors : this.lightColors;
+
                 if (!this.assignedColors.has(role)) {
-                    const colorSet = this.colors[this.colorIndex % this.colors.length];
+                    const colorSet = colors[this.colorIndex % colors.length];
                     this.assignedColors.set(role, colorSet);
                     this.colorIndex++;
                 }
                 return this.assignedColors.get(role);
             }
         };
+
 
         function displayMsg(role, message, windowID) {
             const roleType = role.split('_')[0];
@@ -855,6 +1046,48 @@
             MathJax.typesetPromise([messageDiv.querySelector('.bubble')]);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
+
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = themeToggle.querySelector('.theme-icon');
+            const themeText = themeToggle.querySelector('.theme-text');
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = 'Dark';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = 'Light';
+                }
+                
+                colorPalette.assignedColors.clear();
+                colorPalette.colorIndex = 0;
+                
+                const messages = document.querySelectorAll('.message');
+                messages.forEach(message => {
+                    const role = Array.from(message.classList).find(c => c !== 'message' && c !== 'USER' && c !== 'ASSISTANT');
+                    const bubble = message.querySelector('.bubble');
+                    const colors = colorPalette.getColorForRole(role);
+                    bubble.style.backgroundColor = colors.bg;
+                    bubble.style.borderColor = colors.border;
+                });
+            });
+
+        }
+
 
         const historyPanel = document.getElementById('history-panel');
         const historyHandle = historyPanel.querySelector('.history-handle');
@@ -1081,6 +1314,7 @@
         
         // Load history list on page load
         window.onload = function() {
+            initThemeToggle();
             fetch('/list_histories')
                 .then(response => response.json())
                 .then(data => {
