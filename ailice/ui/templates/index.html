@@ -100,6 +100,21 @@
             align-items: center;
             justify-content: center;
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+            min-width: 20px;
+            width: 20px;
+            min-height: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #666;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            flex-shrink: 0;
+        }
         .sidebar li:hover .menu-button {
             display: inline-block;
         }
@@ -711,23 +726,78 @@
             });
         }
 
+        function showLoadingState(element, type) {
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            
+            switch(type) {
+                case 'new-chat':
+                    const originalContent = element.textContent;
+                    element.textContent = '';
+                    element.appendChild(spinner);
+                    return () => {
+                        element.textContent = originalContent;
+                    };
+                    
+                case 'history':
+                    const menuButton = element.querySelector('.menu-button');
+                    const originalHTML = menuButton.innerHTML;
+                    menuButton.innerHTML = '';
+                    menuButton.appendChild(spinner);
+                    menuButton.style.display = 'flex';
+                    menuButton.style.alignItems = 'center';
+                    menuButton.style.justifyContent = 'center';
+                    return () => {
+                        menuButton.innerHTML = originalHTML;
+                    };
+                    
+                case 'input':
+                    const textArea = element;
+                    const spinnerContainer = document.createElement('div');
+                    spinnerContainer.style.position = 'absolute';
+                    spinnerContainer.style.right = 'calc(95px + 25px)';
+                    spinnerContainer.style.top = '50%';
+                    spinnerContainer.style.transform = 'translateY(-50%)';
+                    spinnerContainer.style.display = 'flex';
+                    spinnerContainer.style.alignItems = 'center';
+                    spinnerContainer.style.pointerEvents = 'none';
+                    spinnerContainer.appendChild(spinner);
+                    
+                    textArea.style.paddingRight = '35px';
+                    textArea.parentElement.style.position = 'relative';
+                    textArea.parentElement.appendChild(spinnerContainer);
+                    
+                    return () => {
+                        textArea.style.paddingRight = '10px';
+                        spinnerContainer.remove();
+                    };
+            }
+        }
+
+
         async function newchat() {
-            return fetch('/new_chat')
-                    .then(response => response.json())
-                    .then(data => {
-                        const historyList = document.getElementById('history-list');
-                        const historyItem = createHistoryItem('New Chat', data.sessionName);
-                        historyList.insertBefore(historyItem, historyList.firstChild);
-                        
-                        const allItems = document.querySelectorAll('#history-list li');
-                        allItems.forEach(item => item.classList.remove('selected'));
-                        historyItem.classList.add('selected');
-                        
-                        const chatWindow = document.getElementById('chat-window');
-                        chatWindow.innerHTML = '';
-                    }).catch(error => {
-                        console.error('Error:', error);
-                    });
+            const newChatButton = document.getElementById('new-chat-button');
+            const removeLoading = showLoadingState(newChatButton, 'new-chat');
+            
+            try {
+                const response = await fetch('/new_chat');
+                const data = await response.json();
+                
+                const historyList = document.getElementById('history-list');
+                const historyItem = createHistoryItem('New Chat', data.sessionName);
+                historyList.insertBefore(historyItem, historyList.firstChild);
+                
+                const allItems = document.querySelectorAll('#history-list li');
+                allItems.forEach(item => item.classList.remove('selected'));
+                historyItem.classList.add('selected');
+                
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.innerHTML = '';
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                removeLoading();
+            }
         }
 
         async function ensureChat() {
@@ -847,6 +917,8 @@
                     if (isInterrupted) {
                         sendmsg(message);
                     } else {
+                        const removeLoading = showLoadingState(this, 'input');
+                        
                         let newChatPromise = ensureChat();
                         
                         newChatPromise.then(() => {
@@ -867,6 +939,7 @@
                             if (!response.ok) {
                                 throw new Error('Network response was not ok');
                             }
+                            removeLoading();
                             return response.body.getReader();
                         })
                         .then(reader => {
@@ -874,6 +947,7 @@
                         })
                         .catch(error => {
                             console.error('Error:', error);
+                            removeLoading();
                         });
                     }
                 }
@@ -995,6 +1069,9 @@
             if (isUpdating) {
                 return;
             }
+            
+            const removeLoading = showLoadingState(historyItem, 'history');
+            
             const allItems = document.querySelectorAll('#history-list li');
             allItems.forEach(item => item.classList.remove('selected'));
             historyItem.classList.add('selected');
@@ -1010,6 +1087,9 @@
                 })
                 .catch(error => {
                     console.error(error);
+                })
+                .finally(() => {
+                    removeLoading();
                 });
         }
 
