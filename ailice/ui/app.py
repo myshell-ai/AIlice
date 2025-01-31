@@ -282,7 +282,8 @@ def load_history():
         historyPath = os.path.join(config.chatHistoryPath, sessionName, "ailice_history.json")
         if os.path.exists(historyPath):
             with open(historyPath, "r") as f:
-                conversations = [(conv['role'], conv['msg']) for conv in json.load(f)['conversation']]
+                data = json.load(f)
+                conversations = [(f"{conv['role']}_{data['name']}", conv['msg']) for conv in data['conversation']]
         else:
             conversations = []
         return jsonify(conversations)

@@ -269,15 +269,22 @@
             max-width: 70%;
             padding: 10px;
             border-radius: 12px;
-            background-color: #f7f9fc;
-            border: 1px solid #e0e0e0;
+            border: 1px solid;
             overflow-wrap: break-word;
             word-wrap: break-word;
             word-break: break-all;
             font-size: 18px;
         }
         .message.USER .bubble {
-            background-color: #f0f4f8;
+            background-color: #e8f5e9;
+            border-color: #c8e6c9;
+        }
+        .message.ASSISTANT .bubble {
+            background-color: #fff3e0;
+            border-color: #ffe0b2;
+        }
+        .message.SYSTEM .bubble {
+            background-color: #f5f5f5;
             border-color: #e0e0e0;
         }
         #new-chat-button {
@@ -809,19 +816,54 @@
             return newChatPromise;
         }
         
+        const colorPalette = {
+            colors: [
+                { bg: '#e8f5e9', border: '#c8e6c9' },
+                { bg: '#e8eaf6', border: '#c5cae9' },
+                { bg: '#fff3e0', border: '#ffe0b2' },
+                { bg: '#e3f2fd', border: '#bbdefb' },
+                { bg: '#f3e5f5', border: '#e1bee7' },
+                { bg: '#fff8e1', border: '#ffecb3' },
+                { bg: '#e0f7fa', border: '#b2ebf2' },
+                { bg: '#fce4ec', border: '#f8bbd0' },
+                { bg: '#dcedc8', border: '#c5e1a5' },
+                { bg: '#ffebee', border: '#ffcdd2' }
+            ],
+            assignedColors: new Map(),
+            colorIndex: 0,
+
+            getColorForRole: function(role) {
+                if (!this.assignedColors.has(role)) {
+                    const colorSet = this.colors[this.colorIndex % this.colors.length];
+                    this.assignedColors.set(role, colorSet);
+                    this.colorIndex++;
+                }
+                return this.assignedColors.get(role);
+            }
+        };
+
         function displayMsg(role, message, windowID) {
-            const roleType = role.split('_')[0]
+            const roleType = role.split('_')[0];
             const roleMap = {
                 "USER": "/static/User.JPG",
                 "ASSISTANT": "/static/AIlice.png",
             };
+            
+            const colors = colorPalette.getColorForRole(role);
+            
             const chatWindow = document.getElementById(windowID);
-            chatWindow.innerHTML += `
-                <div class="message ${roleType} ${role}">
-                    <img src=${roleMap[roleType] || "/static/AIlice.png"} class="avatar">
-                    <div class="bubble">${renderMarkdown(message)}</div>
-                </div>`;
-            MathJax.typesetPromise([chatWindow.querySelector('.message:last-child .bubble')]);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${roleType} ${role}`;
+            
+            messageDiv.innerHTML = `
+                <img src=${roleMap[roleType] || "/static/AIlice.png"} class="avatar">
+                <div class="bubble" style="background-color: ${colors.bg}; border-color: ${colors.border}">
+                    ${renderMarkdown(message)}
+                </div>
+            `;
+            
+            chatWindow.appendChild(messageDiv);
+            MathJax.typesetPromise([messageDiv.querySelector('.bubble')]);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
