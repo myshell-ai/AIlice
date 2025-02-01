@@ -4,6 +4,7 @@ import random
 import ast
 import traceback
 from typing import Any
+from ailice.common.AExceptions import AExceptionStop
 from ailice.common.ADataType import typeInfo, ToJson, FromJson
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling, GenerateRE4ObjectExpr, ARegexMap, VAR_DEF, EXPR_OBJ
 
@@ -142,6 +143,8 @@ class AInterpreter():
             resp += f"EXCEPTION: {str(e)}\n{traceback.format_exc()}\n"
             if "unterminated string literal" in str(e):
                 resp += "Please check if there are any issues with your string syntax. For instance, are you using a newline within a single-quoted string? Or should you use triple quotes to avoid error-prone escape sequences?"
+        except AExceptionStop as e:
+            raise e
         except Exception as e:
             resp += f"EXCEPTION: {str(e)}\n{e.tb if hasattr(e, 'tb') else traceback.format_exc()}"
         return resp

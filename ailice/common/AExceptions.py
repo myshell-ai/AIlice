@@ -1,0 +1,2 @@
+class AExceptionStop(Exception):
+    pass

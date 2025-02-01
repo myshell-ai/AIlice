@@ -8,6 +8,7 @@ import re
 import random
 import json
 from ailice.common.AConfig import config
+from ailice.common.AExceptions import AExceptionStop
 from ailice.common.utils.ALogger import ALoggerSection, ALoggerMsg
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
@@ -133,20 +134,30 @@ class AProcessor():
                 self.SaveMsg(role="ASSISTANT", msg=ret, storeMsg=ret)
                 self.result = ret
                 
-                msg = self.messenger.GetPreviousMsg()
-                if msg != None:
-                    resp = f"Interruption. Reminder from super user: {msg}"
-                    self.SaveMsg(role="SYSTEM", msg=resp, storeMsg=resp, loggerMsg=resp, logger=loggerSection)
-                    continue
-                
-                resp = self.interpreter.EvalEntries(ret)
-                
-                if "" != resp:
-                    self.interpreter.EvalVar(varName="returned_content_in_last_function_call", content=resp)
-                    m = "This is a system-generated message. Since the function call in your previous message has returned information, the response to this message will be handled by the backend system instead of the user. Meanwhile, your previous message has been marked as private and has not been sent to the user. Function returned: {" + resp + "}\n\nThe returned text has been automatically saved to variable 'returned_content_in_last_function_call' for quick reference."
-                    self.SaveMsg(role="SYSTEM", msg=m, storeMsg="Function returned: {" + resp + "}", logMsg=resp, logger=loggerSection)
-                else:
-                    return self.result
+                try:
+                    msg = self.messenger.GetPreviousMsg()
+                    if (str == type(msg)) and ("/stop" == msg.strip()):
+                        raise AExceptionStop()
+                    elif msg != None:
+                        resp = f"Interruption. Reminder from super user: {msg}"
+                        self.SaveMsg(role="SYSTEM", msg=resp, storeMsg=resp, loggerMsg=resp, logger=loggerSection)
+                        continue
+                    
+                    resp = self.interpreter.EvalEntries(ret)
+                    
+                    if "" != resp:
+                        self.interpreter.EvalVar(varName="returned_content_in_last_function_call", content=resp)
+                        m = "This is a system-generated message. Since the function call in your previous message has returned information, the response to this message will be handled by the backend system instead of the user. Meanwhile, your previous message has been marked as private and has not been sent to the user. Function returned: {" + resp + "}\n\nThe returned text has been automatically saved to variable 'returned_content_in_last_function_call' for quick reference."
+                        self.SaveMsg(role="SYSTEM", msg=m, storeMsg="Function returned: {" + resp + "}", logMsg=resp, logger=loggerSection)
+                    else:
+                        return self.result
+                except AExceptionStop as e:
+                    resp = "Interruption. The task was terminated by the superuser."
+                    self.SaveMsg(role="SYSTEM", msg=resp, storeMsg=resp, logMsg=resp, logger=loggerSection)
+                    
+                    resp = "I will stop here due to the superuser's request to terminate the task."
+                    self.SaveMsg(role="ASSISTANT", msg=resp, storeMsg=resp, logMsg=resp, logger=loggerSection)
+                    raise e
 
     def EvalCall(self, agentType: str, agentName: str, msg: str) -> str:
         if agentType not in self.promptsManager:

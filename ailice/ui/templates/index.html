@@ -926,8 +926,12 @@
 
         function interrupt() {
             isInterrupted = true;
-            document.getElementById('text-input').disabled = false;
+            const textInput = document.getElementById('text-input');
+            textInput.disabled = false;
             document.getElementById('interrupt-button').textContent = 'Send';
+            
+            textInput.placeholder = "Send a message to the currently active agent. You can also send the command \"/stop\" to terminate the current task.";
+            
             fetch('/interrupt', {
                 method: 'POST'
             }).catch(error => {
@@ -954,6 +958,7 @@
                     document.getElementById('text-input').disabled = true;
                 }
                 document.getElementById('interrupt-button').textContent = '⏹️';
+                document.getElementById('text-input').placeholder = "Type a message... (Markdown/LaTeX/code highlighting Supported. Shift+Enter for new line)";
             }).catch(error => {
                 console.error('Error:', error);
             });
