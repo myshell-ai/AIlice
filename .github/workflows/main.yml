@@ -24,6 +24,24 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+
+    - name: Install PyAV dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libavformat-dev libavcodec-dev libavdevice-dev \
+          libavutil-dev libswscale-dev libswresample-dev libavfilter-dev
+
+    - name: Install PyAV dependencies (MacOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install ffmpeg
+
+    - name: Install PyAV dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install ffmpeg
         
     - name: Install Chrome (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
