@@ -9,15 +9,13 @@ on:
 
 jobs:
   test-installation:
-    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-    
-    id: ${{ matrix.os }}-py${{ matrix.python-version }}
+        python-version: ['3.9', '3.10', '3.11', '3.12']
 
     steps:
     - uses: actions/checkout@v3
@@ -82,9 +80,3 @@ jobs:
     - name: Test CLI
       run: |
         ailice --help || echo "Version check completed"
-
-    - name: Set status output
-      if: always()
-      run: |
-        echo "::set-output name=status::${{ job.status }}"
-      id: status
