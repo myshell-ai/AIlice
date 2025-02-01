@@ -140,7 +140,7 @@ class AProcessor():
                         raise AExceptionStop()
                     elif msg != None:
                         resp = f"Interruption. Reminder from super user: {msg}"
-                        self.SaveMsg(role="SYSTEM", msg=resp, storeMsg=resp, loggerMsg=resp, logger=loggerSection)
+                        self.SaveMsg(role="SYSTEM", msg=resp, storeMsg=resp, logMsg=resp, logger=loggerSection)
                         continue
                     
                     resp = self.interpreter.EvalEntries(ret)
