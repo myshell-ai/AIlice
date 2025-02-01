@@ -110,9 +110,17 @@ class AProcessor():
         self.interpreter.RegisterAction("_FUNCTION_CALL_DEFAULT", {"func": self.EvalFunctionCallDefault, "noEval": ["funcName", "paras"]})
         return
     
+    def SaveMsg(self, role: str, msg: str, storeMsg: str = None, logMsg: str = None, logger = None, entry: bool = False):
+        self.conversation.Add(role=role, msg=msg, env=self.interpreter.env, entry=entry)
+        if storeMsg:
+            self.EvalStore(storeMsg)
+        if logMsg and logger:
+            logger(f"{role}_{self.name}", logMsg)
+        return
+    
     def __call__(self, txt: str) -> str:
-        self.conversation.Add(role = "USER", msg = txt, env = self.interpreter.env, entry=True)
-        self.EvalStore(txt)
+        self.SaveMsg(role="USER", msg=txt, storeMsg=txt, entry=True)
+        
         with ALoggerSection(recv=self.outputCB) as loggerSection:
             loggerSection(f"USER_{self.name}", txt)
 
@@ -122,25 +130,21 @@ class AProcessor():
                 with ALoggerMsg(recv=self.outputCB, channel="ASSISTANT_" + self.name) as loggerMsg:
                     ret = self.llm.Generate(prompt, proc=loggerMsg, endchecker=self.interpreter.EndChecker, temperature = config.temperature)
                 ret = "System notification: The empty output was detected, which is usually caused by an agent error. You can urge it to resolve this issue and return meaningful information." if "" == ret.strip() else ret
-                self.conversation.Add(role = "ASSISTANT", msg = ret, env = self.interpreter.env)
-                self.EvalStore(ret)
+                self.SaveMsg(role="ASSISTANT", msg=ret, storeMsg=ret)
                 self.result = ret
                 
                 msg = self.messenger.GetPreviousMsg()
                 if msg != None:
                     resp = f"Interruption. Reminder from super user: {msg}"
-                    self.conversation.Add(role = "SYSTEM", msg = resp, env = self.interpreter.env)
-                    self.EvalStore(resp)
-                    loggerSection(f"SYSTEM_{self.name}", resp)
+                    self.SaveMsg(role="SYSTEM", msg=resp, storeMsg=resp, loggerMsg=resp, logger=loggerSection)
                     continue
                 
                 resp = self.interpreter.EvalEntries(ret)
                 
                 if "" != resp:
                     self.interpreter.EvalVar(varName="returned_content_in_last_function_call", content=resp)
-                    self.conversation.Add(role = "SYSTEM", msg = "This is a system-generated message. Since the function call in your previous message has returned information, the response to this message will be handled by the backend system instead of the user. Meanwhile, your previous message has been marked as private and has not been sent to the user. Function returned: {" + resp + "}\n\nThe returned text has been automatically saved to variable 'returned_content_in_last_function_call' for quick reference.", env = self.interpreter.env)
-                    self.EvalStore("Function returned: {" + resp + "}")
-                    loggerSection(f"SYSTEM_{self.name}", resp)
+                    m = "This is a system-generated message. Since the function call in your previous message has returned information, the response to this message will be handled by the backend system instead of the user. Meanwhile, your previous message has been marked as private and has not been sent to the user. Function returned: {" + resp + "}\n\nThe returned text has been automatically saved to variable 'returned_content_in_last_function_call' for quick reference."
+                    self.SaveMsg(role="SYSTEM", msg=m, storeMsg="Function returned: {" + resp + "}", logMsg=resp, logger=loggerSection)
                 else:
                     return self.result
 
