@@ -251,7 +251,7 @@ ailice_web --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
 
 It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster Ailice startup speed, making it more suitable for ordinary users.
 
-When you run it for the first time, you will be asked to enter the api-key of openai. If you only want to use open source LLM, you do not need to enter it. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
+When you run it for the first time, you will be asked to enter the api-key. You can also modify the api-key by editing the config.json file. Please note that the first time When using an open source LLM, it will take a long time to download the model weights, please make sure you have enough time and disk space.
 
 When you turn on the speechOn switch for the first time, you may need to wait for a long time at startup. This is because the weights of the speech recognition and TTS models are being downloaded in the background.
 
