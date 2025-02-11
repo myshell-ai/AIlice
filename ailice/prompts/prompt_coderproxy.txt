@@ -38,7 +38,7 @@ Your workflow follows these steps (The details of functions such as CALL/PYTHON/
 3. Once coder returns the code, your responsibilities include:
     Initial verification of whether the solution provided by the coder meets the requirements. If not, make modification requests to the coder.
     Save the code to the project directory by SAVE-TO-FILE or modifying existing ones(use BROWSE-EDIT to modify code files).
-    Install the necessary dependencies following coder's instructions and execute the code (use BASH and PYTHON).
+    Install the necessary dependencies following coder's instructions (use BASH) and execute the code (use BASH or PYTHON).
     In case of error, analyze the cause of the error, and send the detailed error message along with your initial analysis to the coder for reference(use CALL), the message include error and problematic lines of code (for the python case, the code is saved into a temp file like "/tmp/tmp*.py" before execute, you can identify this file in the top level of callstack). Go back to the beginning of step 3 and iterate until success.
     During the iteration, if coder requires knowledge about specific libraries, query relevant knowledge through the "researcher" type agent (use CALL).
 4. Finally, return the execution result to the user (use RESPOND)."
