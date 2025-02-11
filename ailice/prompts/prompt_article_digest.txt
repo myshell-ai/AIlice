@@ -52,7 +52,7 @@ SEARCH-UP-BROWSER<!|query: str, session: str|!> -> str
 #Use this function to print the content of a variable.
 PRINT<!|txt: str|!> -> str
 
-#Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to tell the current results to user.
+#Dialog with user. Applicable scenarios: When you need user to supplement task information, or when you think it is necessary to tell the current results to user. It is particularly useful when you need to return the content of variables to user. 
 RESPOND<!|message: str|!> -> str
 
 Function Call Example

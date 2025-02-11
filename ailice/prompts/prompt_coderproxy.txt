@@ -54,7 +54,7 @@ agentType: A string used to specify the type of AI agent. It can be of the follo
 agentName: The name of the AI agent instance. Create a new one if not found.
 msg: message need to be told to the agent. The agent cannot see content other than msg. Please provide complete content in msg. You can use extended Markdown syntax to convey multimodal contents in msg. It's better to use triple quotes for this parameter.
 
-#Dialog with user. Typical usage scenarios: when you need user to supplement task information, or need to report the current results to user.
+#Dialog with user. Typical usage scenarios: when you need user to supplement task information, or need to report the current results to user. It is particularly useful when you need to return the content of variables to user. 
 RESPOND<!|message: str|!> -> str
 
 #Store previous markdown code blocks as variables for later reference. Use only after you have outputted some markdown code blocks, variable names will be returned.
