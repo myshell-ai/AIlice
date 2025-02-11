@@ -33,7 +33,8 @@ class ABrowser():
                                                "SEARCH-UP-BROWSER": {"func": "SearchUp", "prompt": "Search content upward from the current location.", "type": "supportive"},
                                                "GET-LINK": {"func": "GetLink", "prompt": "Get the url on the specified text fragment. The text needs to be one of those text fragments enclosed by square brackets on the page (excluding the square brackets themselves).", "type": "supportive"},
                                                "EXECUTE-JS": {"func": "ExecuteJS", "prompt": "Execute js code on the current web page, especially suitable for form operations such as entering text, clicking buttons, etc. Use triple quotes on your code.", "type": "supportive"},
-                                               "REPLACE": {"func": "Replace", "prompt": "Replace and edit content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.", "type": "supportive"},
+                                               "REPLACE": {"func": "Replace", "prompt": "Replace the matching content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.", "type": "supportive"},
+                                               "REPLACE-ALL": {"func": "ReplaceAll", "prompt": "Replace all matching content in the entire document. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.", "type": "supportive"},
                                                "SAVETO": {"func": "SaveTo", "prompt": "Save the modified content to a file. If the dstPath parameter is an empty string, save it to the original file.", "type": "supportive"},
                                                }}
     
@@ -140,6 +141,9 @@ class ABrowser():
     def Replace(self, pattern: str, replacement: str, regexMode: bool, session: str) -> str:
         return self.sessions[session].Replace(pattern, replacement, regexMode) if hasattr(self.sessions[session], "Replace") else "Replace not supported in current browser."
     
+    def ReplaceAll(self, pattern: str, replacement: str, regexMode: bool, session: str) -> str:
+        return self.sessions[session].ReplaceAll(pattern, replacement, regexMode) if hasattr(self.sessions[session], "ReplaceAll") else "ReplaceAll not supported in current browser."
+    
     def SaveTo(self, dstPath: str, session: str) -> str:
         return self.sessions[session].SaveTo(dstPath) if hasattr(self.sessions[session], "SaveTo") else "SaveTo not supported in current browser."
 
@@ -154,7 +158,7 @@ def main():
         makeServer(ABrowser,
                    {"pdfOutputDir": (args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)},
                    args.addr,
-                   ["ModuleInfo", "Browse", "Edit", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink", "ExecuteJS", "Replace", "SaveTo"]).Run()
+                   ["ModuleInfo", "Browse", "Edit", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink", "ExecuteJS", "Replace", "ReplaceAll", "SaveTo"]).Run()
 
 if __name__ == '__main__':
     main()

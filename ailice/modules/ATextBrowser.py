@@ -11,8 +11,10 @@ class ATextBrowser(AScrollablePage):
         self.prompt = \
 '''
 The document is in editable mode. You can edit the content using the following functions:
-#Replace and edit content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.
+#Replace the matching content within the current page. When regexMode==True, you can use regular expressions to represent the pattern and replacement. This function is a simple wrapper for re.sub() in this mode. When regexMode==False, pattern and replacement represent literal strings. Use triple quotes to represent pattern and replacement.
 REPLACE<!|pattern: str, replacement: str, regexMode: bool, session: str|!> -> str
+#Replace all matching content in the entire document. The parameters are the same as REPLACE.
+REPLACE-ALL<!|pattern: str, replacement: str, regexMode: bool, session: str|!> -> str
 #Save the modified content to a file. If the dstPath parameter is an empty string, save it to the original file.
 SAVETO<!|dstPath: str, session: str|!> -> str
 
@@ -58,8 +60,22 @@ Example:
             textNew = re.sub(pattern, replacement, self(prompt=False))
         else:
             textNew = self(prompt=False).replace(pattern, replacement)
+        msg = "Pattern NOT FOUND in current visible page. Please check: 1. If the pattern you entered is correct, such as whether you forgot to properly escape characters within the quotes. 2. Ensure that the content to be replaced is within the currently visible page (you can use the SEARCHDOWN/SEARCHUP to locate it, or directly use the REPLACE-ALL to replace all matching content).\n\n---\n\n"
+        if (self(prompt=False) != textNew) or ("" == pattern):
+            msg = "The matching contents has been replaced. \n\n---\n\n"
         self.ReplaceText(textNew, replaceAll=False)
-        return textNew + self.prompt
+        return msg + self() + self.prompt
+    
+    def ReplaceAll(self, pattern: str, replacement: str, regexMode: bool) -> str:
+        if regexMode:
+            textNew = re.sub(pattern, replacement, self.txt)
+        else:
+            textNew = self.txt.replace(pattern, replacement)
+        msg = "Pattern NOT FOUND in the entire document. Please check if the pattern you entered is correct, such as whether you forgot to properly escape characters within the quotes.\n\n---\n\n"
+        if (self.txt != textNew) or ("" == pattern):
+            msg = "The matching contents has been replaced. \n\n---\n\n"
+        self.ReplaceText(textNew, replaceAll=True)
+        return msg + self() + self.prompt
     
     def SaveTo(self, dstPath: str) -> str:
         try:
