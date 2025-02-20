@@ -255,7 +255,12 @@ class AProcessor():
         self.interpreter.FromJson(data['interpreter'])
         self.conversation.FromJson(data["conversation"])
         self.collection = data['collection']
-        self.RegisterModules([m['addr'] for k,m in data["modules"].items()])
+        for k,m in data["modules"].items():
+            try:
+                self.RegisterModules([m['addr']])
+            except Exception as e:
+                print(f"FromJson(): RegisterModules FAILED on {m['addr']}")
+                continue
         self.prompt = self.promptsManager[data['agentType']](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
         if hasattr(self.prompt, "FromJson"):
             self.prompt.FromJson(data['prompt'])
