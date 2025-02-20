@@ -22,10 +22,11 @@ elif (None != importlib.util.find_spec("gpt4all")):
 MODEL = 'nomic-ai/nomic-embed-text-v1-GGUF'
 FILE_NAME = 'nomic-embed-text-v1.Q8_0.gguf'
 
+model = None
+modelLock = Lock()
+
 class AStorageVecDB():
     def __init__(self):
-        self.model = None
-        self.modelLock = Lock()
         self.data = {"model": MODEL, "file": FILE_NAME, "collections": {}}
         self.dir = None
         self.buffers = {}
@@ -38,8 +39,9 @@ class AStorageVecDB():
         return {"NAME": "storage", "ACTIONS": {}}
 
     def CalcEmbeddings(self, txts: list[str]):
-        with self.modelLock:
-            return np.array(self.model.embed(txts))
+        global model, modelLock
+        with modelLock:
+            return np.array(model.embed(txts))
     
     def Hippocampus(self):
         while True:
@@ -73,30 +75,33 @@ class AStorageVecDB():
         return
 
     def PrepareModel(self) -> str:
+        global model, modelLock
+
         ggufFile = hf_hub_download(repo_id=self.data['model'],filename=self.data['file'])
-        if self.model and ggufFile == self.model.model_path:
-            return f"Embedding model {self.model} has already been loaded."
-        
-        if "llama_cpp" == INFERENCE_ENGINE:
-            self.model = Llama(
-                model_path=ggufFile,
-                embedding=True,
-                n_gpu_layers=-1, # Uncomment to use GPU acceleration
-                # seed=1337, # Uncomment to set a specific seed
-                # n_ctx=2048, # Uncomment to increase the context window
-            )
-            return "Embedding model has been loaded."
-        elif "gpt4all" == INFERENCE_ENGINE:
-            gpus = []
-            try:
-                gpus = GPT4All.list_gpus()
-                device = gpus[0] if len(gpus) > 0 else "cpu"
-            except Exception as e:
-                device = "cpu"
-            self.model = Embed4All(ggufFile, device = device)
-            return f"GPUs found on this device: {gpus}. Embedding model has been loaded on {device}."
-        else:
-            return "No inference engine was found. Please use one of the following commands to install: `pip install gpt4all` or `ailice_turbo`."
+        with modelLock:
+            if model and ggufFile == model.model_path:
+                return f"Embedding model {self.data['model']} has already been loaded."
+            
+            if "llama_cpp" == INFERENCE_ENGINE:
+                model = Llama(
+                    model_path=ggufFile,
+                    embedding=True,
+                    n_gpu_layers=-1, # Uncomment to use GPU acceleration
+                    # seed=1337, # Uncomment to set a specific seed
+                    # n_ctx=2048, # Uncomment to increase the context window
+                )
+                return "Embedding model has been loaded."
+            elif "gpt4all" == INFERENCE_ENGINE:
+                gpus = []
+                try:
+                    gpus = GPT4All.list_gpus()
+                    device = gpus[0] if len(gpus) > 0 else "cpu"
+                except Exception as e:
+                    device = "cpu"
+                model = Embed4All(ggufFile, device = device)
+                return f"GPUs found on this device: {gpus}. Embedding model has been loaded on {device}."
+            else:
+                return "No inference engine was found. Please use one of the following commands to install: `pip install gpt4all` or `ailice_turbo`."
     
     def Open(self, directory: str) -> str:
         try:

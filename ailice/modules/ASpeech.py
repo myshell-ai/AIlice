@@ -14,12 +14,13 @@ def strip(txt: str) -> str:
     translation_table = str.maketrans("", "", string.whitespace)
     return txt.translate(translation_table)
 
+t2s = None
+s2t = None
+
 class ASpeech():
     def __init__(self):
         self.textQue = queue.Queue(maxsize=100)
         self.audioQue = queue.Queue(maxsize=100)
-        self.t2s = None
-        self.s2t = None
 
         self.inputDone = True
         self.lock = threading.Lock()
@@ -39,30 +40,39 @@ class ASpeech():
                                               "SWITCH-TONE": {"func": "SwitchTone", "prompt": "Switch the TTS system to a new tone.", "type": "primary"}}}
     
     def PrepareModel(self):
-        if None in [self.t2s, self.s2t]:
-            self.t2s = T2S_ChatTTS()
-            self.s2t = S2T_WhisperLarge()
+        global s2t, t2s
+
+        if None in [t2s, s2t]:
+            t2s = T2S_ChatTTS()
+            s2t = S2T_WhisperLarge()
         return
     
     def SetDevices(self, deviceMap: dict[str,str]):
+        global s2t, t2s
+
         if "stt" in deviceMap:
-            self.s2t.To(deviceMap['stt'])
+            s2t.To(deviceMap['stt'])
         elif "tts" in deviceMap:
-            self.t2s.To(deviceMap['tts'])
+            t2s.To(deviceMap['tts'])
         return
     
     def Speech2Text(self, wav: np.ndarray, sr: int) -> str:
-        return self.s2t.recognize(audio_data_to_numpy((wav, sr)))
+        global s2t
+        return s2t.recognize(audio_data_to_numpy((wav, sr)))
 
     def Text2Speech(self, txt: str) -> tuple[np.ndarray, int]:
+        global t2s
+        
         if (None == txt) or ("" == strip(txt)):
             return (np.zeros(1), 24000)
-        return self.t2s(txt)
+        return t2s(txt)
     
     def GetAudio(self) -> str:
+        global s2t
+
         self.inputDone = True
         with self.lock:
-            ret = self.s2t()
+            ret = s2t()
         return ret
     
     def Speak(self, txt: str):
@@ -74,15 +84,17 @@ class ASpeech():
         return
     
     def SwitchTone(self) -> str:
-        return self.t2s.SwitchTone()
+        global t2s
+        return t2s.SwitchTone()
     
     def ProcessText(self):
+        global t2s
         while True:
             #The inter-thread synchronization issue here is more complex than it appears.
             self.noTextLeft = (self.inputDone and self.textQue.empty())
             text = self.textQue.get()
             try:
-                self.audioQue.put(self.t2s(text))
+                self.audioQue.put(t2s(text))
             except Exception as e:
                 print('EXCEPTION in ProcessText(). continue. e: ',str(e))
                 continue
