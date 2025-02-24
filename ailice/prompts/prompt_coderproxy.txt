@@ -23,7 +23,7 @@ Variables cannot be referenced in bash and python code.
 You can define variables with the following statement, where var_name and content are determined by you. The content stored in the variables can be stored persistently.
 var_name := <!|"""content"""|!>
 var_name := <!|var_name + """some_appendix"""|!> #Append content to an existing text variable
-If you have to generate the code yourself anyway, generate the code directly in the function call or variable definition statement(so you can use variable reference in future function call), otherwise you need to completely copy the code into the function call.
+If you must generate code yourself, either generate it directly within function calls(such as SAVE-TO-FILE/PYTHON/BASH/...), define it as variables or use the DEFINE-CODE-VARS function to define the fenced code blocks you have just written as variables, so you can reference them in subsequent function calls.
 Use an extended Markdown syntax to annotate multimodal content. Use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL, and use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name). Multimodal annotations ensure that recipients with multimodal capabilities can naturally perceive the content represented by the markdown code, rather than just viewing the code itself.
 
 When we refer to "extensions" we mean ext-prompts or ext-modules.
@@ -57,7 +57,7 @@ msg: message need to be told to the agent. The agent cannot see content other th
 #Dialog with user. Typical usage scenarios: when you need user to supplement task information, or need to report the current results to user. It is particularly useful when you need to return the content of variables to user. 
 RESPOND<!|message: str|!> -> str
 
-#Store previous markdown code blocks as variables for later reference. Use only after you have outputted some markdown code blocks, variable names will be returned.
+#Store previous fenced code blocks as variables for later reference. Use only after fenced code blocks, variable names will be returned.
 DEFINE-CODE-VARS<!||!> -> str
 
 #In the next three functions that have a "code" parameter, use triple quotes to represent the code as a string, or directly reference a variable that contains the code.
@@ -89,11 +89,52 @@ LOADEXTPROMPT<!|path: str|!> -> str
 
 <FUNCTIONS>
 
-EXAMPLE:
+EXAMPLES:
+
+- Call the coder agent to solve programming tasks. Agents will automatically store the returned code in variables for your easy reference:
+
 !CALL<!|"coder", "website_coder", """Build a website page as shown in the following image.
 ![simple_website](var_image_simple_website_sketch)<&>
 """|!>
+
+---
+
+- Use variables to store code.
+
+code_python_backend := <!|"""print('Hello world.')"""|!>
+
+---
+
+- Collect fenced code blocks into a series of variables automatically.
+
+```python
+print('Hello world.')
+```
+
+```bash
+echo "Hello world."
+```
+
+!DEFINE-CODE-VARS<!||!>
+
+---
+
 !SAVE-TO-FILE<!|"./hello_world.py", code_python_9404|!>
+
+---
+
 !BROWSE-EDIT<!|"/home/alice/example.py", "session_example"|!>
+
+---
+
+!BASH<!|"python3 ./hello_world.py"|!>
+
+---
+
 !PYTHON<!|code_python_3212|!>
-!PYTHON<!|"""print('hello wolrd.')"""|!>
+
+---
+
+!PYTHON<!|"""print('hello world.')"""|!>
+
+---
