@@ -243,7 +243,7 @@ class AProcessor():
         if funcName not in self.interpreter.actions:
             return f"Error: Function call detected, but function name '{funcName}' does not exist."
         else:
-            return f"Error: The function call to '{funcName}' failed, please check whether the number and type of parameters are correct. For example, the session name/agent type/url need to be of str type, and the str type needs to be enclosed in quotation marks, etc."
+            return f"Error: The function call to '{funcName}' failed, please check whether the number and type of parameters are correct. For example, the session name/agent type/url need to be of str type, and the str type needs to be enclosed in quotation marks, proper escaping may be necessary when quotation marks appear in strings, etc."
     
     def EnvSummary(self) -> str:
         return "\n".join([f"{varName}: {type(var).__name__}  {str(var)[:50]}{'...[The remaining content is not shown]' if len(str(var)) > 50 else ''}" for varName, var in self.interpreter.env.items()]) + \
