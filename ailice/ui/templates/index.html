@@ -815,6 +815,10 @@
                 return rendererCodespan({text: text});
             }
 
+        renderer.link = function(href, title, text) {
+                return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        };
+
         marked.use({ renderer });
 
         function renderMarkdown(message) {
