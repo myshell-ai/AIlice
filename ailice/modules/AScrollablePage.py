@@ -9,8 +9,6 @@ class AScrollablePage():
         return
     
     def ConstructPrompt(self) -> str:
-        pagesTotal = int((len(self.txt) + STEP) // STEP)
-        pageIdx = min(max(int((self.currentIdx + int(STEP/2)) // STEP) + 1, 1), pagesTotal)
         ret = "To avoid excessive consumption of context space due to lengthy content, we have paginated the entire content. This is just one page, to browse more content, please use the following function(s) for page navigation.\n"
         funcs = []
         if ('SCROLLDOWN' in self.functions) and (self.currentIdx + STEP < len(self.txt)):
@@ -21,7 +19,12 @@ class AScrollablePage():
             funcs.append(self.functions['SEARCHDOWN'])
         if ('SEARCHUP' in self.functions) and (self.currentIdx > 0):
             funcs.append(self.functions['SEARCHUP'])
-        return f"page {pageIdx}/{pagesTotal}\n\n" + ret + "\n".join(funcs) if len(funcs) > 0 else ""
+        pos = self.currentIdx
+        pos = 0 if pos < 0 else pos
+        pos = (len(self.txt) - STEP) if pos > (len(self.txt) - STEP) else pos
+        prior = (float(pos)/float(len(self.txt))) * 100
+        remaining = (float(len(self.txt) - pos - STEP)/float(len(self.txt))) * 100
+        return f"Prior: {prior:.1f}% / Remaining: {remaining:.1f}% \n\n" + ret + "\n".join(funcs) if len(funcs) > 0 else ""
     
     def LoadPage(self, txt: str, initPosition: str):
         self.txt = txt
@@ -65,4 +68,4 @@ class AScrollablePage():
         else:
             start = self.currentIdx if self.currentIdx >= 0 else 0
             end = (self.currentIdx + STEP) if (self.currentIdx + STEP) >= 0 else 0
-            return self.txt[start:end] + ("\n\n" + self.ConstructPrompt() if prompt else "")
+            return "\n\n---\n\n" + self.txt[start:end] + ("\n\n---\n\n" + self.ConstructPrompt() if prompt else "")

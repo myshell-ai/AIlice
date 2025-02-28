@@ -87,7 +87,7 @@ class AScripter():
             p = f"Exception when check the output of program execution: {str(e)}\n {traceback.format_exc()}"
             print(p)
         finally:
-            self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + p, "BOTTOM")
+            self.sessions[session]['pages'].LoadPage(self.sessions[session]['output'] + "---" + p, "BOTTOM")
                         
     def OutputReader(self):
         while True:
