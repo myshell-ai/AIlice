@@ -60,9 +60,9 @@ Example:
             textNew = re.sub(pattern, replacement, self(prompt=False))
         else:
             textNew = self(prompt=False).replace(pattern, replacement)
-        msg = "Pattern NOT FOUND in current visible page. Please check: 1. If the pattern you entered is correct, such as whether you forgot to properly escape characters within the quotes. 2. Ensure that the content to be replaced is within the currently visible page (you can use the SEARCHDOWN/SEARCHUP to locate it, or directly use the REPLACE-ALL to replace all matching content).\n\n---\n\n"
+        msg = "Pattern NOT FOUND in current visible page. Please check: 1. If the pattern you entered is correct, such as whether you forgot to properly escape characters within the quotes. 2. Ensure that the content to be replaced is within the currently visible page (you can use the SEARCHDOWN/SEARCHUP to locate it, or directly use the REPLACE-ALL to replace all matching content).\n\n"
         if (self(prompt=False) != textNew) or ("" == pattern):
-            msg = "The matching contents has been replaced. \n\n---\n\n"
+            msg = "The matching contents has been replaced. \n\n"
         self.ReplaceText(textNew, replaceAll=False)
         return msg + self() + self.prompt
     
@@ -71,9 +71,9 @@ Example:
             textNew = re.sub(pattern, replacement, self.txt)
         else:
             textNew = self.txt.replace(pattern, replacement)
-        msg = "Pattern NOT FOUND in the entire document. Please check if the pattern you entered is correct, such as whether you forgot to properly escape characters within the quotes.\n\n---\n\n"
+        msg = "Pattern NOT FOUND in the entire document. Please check if the pattern you entered is correct, such as whether you forgot to properly escape characters within the quotes.\n\n"
         if (self.txt != textNew) or ("" == pattern):
-            msg = "The matching contents has been replaced. \n\n---\n\n"
+            msg = "The matching contents has been replaced. \n\n"
         self.ReplaceText(textNew, replaceAll=True)
         return msg + self() + self.prompt
     

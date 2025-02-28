@@ -87,20 +87,20 @@ class ABrowser():
             if url is not None:
                 if self.URLIsPDF(url):
                     self.sessions[session] = APDFBrowser(self.pdfOutputDir, functions=self.functions)
-                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n\n" + self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
                 else:
                     self.sessions[session] = AWebBrowser(functions=self.functions)
-                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n\n" + self.sessions[session].Browse(url) + "\n\n" + f'Session name: "{session}"\n'
             elif path is not None:
                 if os.path.isdir(path):
                     self.sessions[session] = AFileBrowser(functions=self.functions)
-                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
                 elif self.PathIsPDF(path):
                     self.sessions[session] = APDFBrowser(self.pdfOutputDir, functions=self.functions)
-                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
                 else:
                     self.sessions[session] = ATextBrowser(functions=self.functions)
-                    return self.prompt + "\n--------------" + "\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
+                    return self.prompt + "\n\n" + self.sessions[session].Browse(path) + "\n\n" + f'Session name: "{session}"\n'
             else:
                 return "No URL/Path found in input string. Please check your input. "
 
@@ -114,7 +114,7 @@ class ABrowser():
     def Edit(self, path: str, session: str) -> str:
         try:
             self.sessions[session] = ATextBrowser(functions=self.functions)
-            return self.prompt + "\n--------------" + "\n" + self.sessions[session].Edit(path) + "\n\n" + f'Session name: "{session}"\n'
+            return self.prompt + "\n\n" + self.sessions[session].Edit(path) + "\n\n" + f'Session name: "{session}"\n'
         except Exception as e:
             print("EXCEPTION. e: ", str(e))
             return f"Browser Exception. please check your path input. EXCEPTION: {str(e)}\n{traceback.format_exc()}"
@@ -124,16 +124,16 @@ class ABrowser():
         return self.sessions[session].GetFullText() if session in self.sessions else f"ERROR: Invalid session name: {session}"
 
     def ScrollDown(self, session: str) -> str:
-        return self.prompt + "\n--------------" + "\n" + self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n\n" + self.sessions[session].ScrollDown() + "\n\n" + f'Session name: "{session}"\n'
     
     def ScrollUp(self, session: str) -> str:
-        return self.prompt + "\n--------------" + "\n" + self.sessions[session].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n\n" + self.sessions[session].ScrollUp() + "\n\n" + f'Session name: "{session}"\n'
 
     def SearchDown(self, query: str, session: str) -> str:
-        return self.prompt + "\n--------------" + "\n" + self.sessions[session].SearchDown(query=query) + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n\n" + self.sessions[session].SearchDown(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
     def SearchUp(self, query: str, session: str) -> str:
-        return self.prompt + "\n--------------" + "\n" + self.sessions[session].SearchUp(query=query) + "\n\n" + f'Session name: "{session}"\n'
+        return self.prompt + "\n\n" + self.sessions[session].SearchUp(query=query) + "\n\n" + f'Session name: "{session}"\n'
     
     def GetLink(self, text: str, session: str) -> str:
         return self.sessions[session].GetLink(text) if hasattr(self.sessions[session], "GetLink") else "GetLink not supported in current browser."
