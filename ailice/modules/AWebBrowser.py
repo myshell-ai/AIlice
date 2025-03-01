@@ -114,6 +114,18 @@ document.querySelector('form.mini-search').submit();
             ret = txt + "   |" + str(random.randint(0, 10000000))
         return ret
     
+    def IsBase64Image(self, string):
+        if string.startswith('data:image'):
+            if ';base64,' not in string:
+                return False
+            string = string.split(';base64,')[1]
+        
+        try:
+            valid_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
+            return all(c in valid_chars for c in string)
+        except Exception:
+            return False
+    
     def ProcessNode(self, node, strip=True) -> str:
         ret = ''
         if node.name is None:  # This is a text node or a comment node
@@ -165,8 +177,9 @@ document.querySelector('form.mini-search').submit();
             if ('' != src):
                 textUni = self.EnsureUnique(alt)
                 url = urljoin(self.driver.current_url, src)
-                self.urls[textUni] = url
-                ret = f"\n![{textUni}]({url})\n"
+                if not self.IsBase64Image(url):
+                    self.urls[textUni] = url
+                    ret = f"\n![{textUni}]({url})\n"
             else:
                 ret = alt
         elif node.name == 'video':
