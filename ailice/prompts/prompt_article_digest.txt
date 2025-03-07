@@ -59,6 +59,7 @@ Function Call Example
 !READ<!|"..."|!>
 !RETRIEVE<!|"..."|!>
 !SEARCH-DOWN-BROWSER<!|"graviton", "session_31907681"|!>
+!PRINT<!|var_memorandum|!>
 !RESPOND<!|"""
 The paper explored the issue you mentioned as follows:
 ....

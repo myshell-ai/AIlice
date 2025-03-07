@@ -128,6 +128,8 @@ document.querySelector('form.mini-search').submit();
     
     def ProcessNode(self, node, strip=True) -> str:
         ret = ''
+        if node is None:
+            return ''
         if node.name is None:  # This is a text node or a comment node
             if isinstance(node, Comment):
                 # Handle comment nodes
