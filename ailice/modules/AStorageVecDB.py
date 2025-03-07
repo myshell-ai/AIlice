@@ -23,6 +23,7 @@ MODEL = 'nomic-ai/nomic-embed-text-v1-GGUF'
 FILE_NAME = 'nomic-embed-text-v1.Q8_0.gguf'
 
 model = None
+modelPath = None
 modelLock = Lock()
 
 class AStorageVecDB():
@@ -75,11 +76,11 @@ class AStorageVecDB():
         return
 
     def PrepareModel(self) -> str:
-        global model, modelLock
+        global model, modelPath, modelLock
 
         ggufFile = hf_hub_download(repo_id=self.data['model'],filename=self.data['file'])
         with modelLock:
-            if model and ggufFile == model.model_path:
+            if model and ggufFile == modelPath:
                 return f"Embedding model {self.data['model']} has already been loaded."
             
             if "llama_cpp" == INFERENCE_ENGINE:
@@ -90,6 +91,7 @@ class AStorageVecDB():
                     # seed=1337, # Uncomment to set a specific seed
                     # n_ctx=2048, # Uncomment to increase the context window
                 )
+                modelPath = ggufFile
                 return "Embedding model has been loaded."
             elif "gpt4all" == INFERENCE_ENGINE:
                 gpus = []
@@ -99,6 +101,7 @@ class AStorageVecDB():
                 except Exception as e:
                     device = "cpu"
                 model = Embed4All(ggufFile, device = device)
+                modelPath = ggufFile
                 return f"GPUs found on this device: {gpus}. Embedding model has been loaded on {device}."
             else:
                 return "No inference engine was found. Please use one of the following commands to install: `pip install gpt4all` or `ailice_turbo`."
