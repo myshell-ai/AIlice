@@ -69,13 +69,16 @@ class AModelCausalLM():
         self.model = PeftModel.from_pretrained(self.model, modelName)
         return
     
-    def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float = 0.0) -> str:
+    def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float, gasTank) -> str:
         predictedIDs = torch.tensor([prompt]).cuda() #(b, seq)
 
         generatedIDs = None
         pastKeyValues = None
         currentPosition = 0
         text = ""
+        
+        gasTank.Consume(resourceType="HFCausalLM/InputTokens", amount=predictedIDs.shape[1])
+        
         for _ in range(4096):
             with torch.no_grad():
                 outputs = self.model(
@@ -93,6 +96,8 @@ class AModelCausalLM():
                 predictedIDs = torch.multinomial(probs[:, -1, :], 1)
             else:
                 predictedIDs = torch.argmax(logits[..., -1, :], dim=-1, keepdim=True) #(b, 1)
+            
+            gasTank.Consume(resourceType="HFCausalLM/OutputTokens", amount=predictedIDs.shape[1])
             
             generatedIDs = predictedIDs if None == generatedIDs else torch.cat((generatedIDs, predictedIDs), dim=-1)
             text = self.tokenizer.decode(generatedIDs[0].cpu().numpy(), skip_special_tokens=True)

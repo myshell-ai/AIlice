@@ -11,6 +11,7 @@ from ailice.core.llm.ALLMPool import ALLMPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.ARemoteAccessors import AClientPool
 from ailice.common.AMessenger import AMessenger
+from ailice.common.AGas import AGasTank
 from ailice.AServices import StartServices, TerminateSubprocess
 
 from ailice.common.APrompts import APromptsManager
@@ -97,7 +98,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     llmPool.Init([config.modelID])
     
     logger = ALogger(speech=None)
-    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, collection=collection)
+    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, gasTank=AGasTank(1e8), collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
@@ -115,7 +116,11 @@ use the provided Dockerfile to build an image and container, and modify the rele
             with open(historyPath, "w") as f:
                     json.dump(processor.ToJson(), f, indent=2)
         inpt = GetInput(speech)
-        processor(inpt)
+        processor.SetGas(1e8)
+        try:
+            processor(inpt)
+        except Exception as e:
+            continue
     return
 
 def main():

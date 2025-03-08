@@ -25,6 +25,7 @@ from ailice.core.llm.ALLMPool import ALLMPool
 from ailice.common.utils.ALogger import ALogger
 from ailice.common.ARemoteAccessors import AClientPool
 from ailice.common.AMessenger import AMessenger
+from ailice.common.AGas import AGasTank
 from ailice.AServices import StartServices, TerminateSubprocess
 
 from ailice.common.APrompts import APromptsManager
@@ -124,7 +125,7 @@ def LoadSession(sessionName: str):
 
         logger = ALogger(speech=None)
         
-        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=messenger, outputCB=logger.Receiver, collection=sessionName)
+        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=messenger, outputCB=logger.Receiver, gasTank=AGasTank(1e8), collection=sessionName)
         moduleList = [config.services['browser']['addr'],
                       config.services['arxiv']['addr'],
                       config.services['google']['addr'],
@@ -205,6 +206,7 @@ def main():
 
 def generate_response(message):
     try:
+        context[currentSession]['processor'].SetGas(amount=1e8)
         threadLLM = threading.Thread(target=context[currentSession]['processor'], args=(message,))
         threadLLM.start()
         depth = -1

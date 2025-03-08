@@ -4,7 +4,7 @@ import random
 import ast
 import traceback
 from typing import Any
-from ailice.common.AExceptions import AExceptionStop
+from ailice.common.AExceptions import AExceptionOutofGas, AExceptionStop
 from ailice.common.ADataType import typeInfo, ToJson, FromJson
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling, GenerateRE4ObjectExpr, ARegexMap, VAR_DEF, EXPR_OBJ
 
@@ -145,6 +145,8 @@ class AInterpreter():
                 resp += "Please check if there are any issues with your string syntax. For instance, are you using a newline within a single-quoted string? Or should you use triple quotes to avoid error-prone escape sequences?"
         except AExceptionStop as e:
             raise e
+        except AExceptionOutofGas as e:
+            resp += "The current task has run out of gas and has been terminated. Please ask the user to help recharge gas."
         except Exception as e:
             resp += f"EXCEPTION: {str(e)}\n{e.tb if hasattr(e, 'tb') else traceback.format_exc()}"
         return resp

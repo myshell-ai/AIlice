@@ -1,6 +1,6 @@
 import json
 
-def ConstructOptPrompt(func, low:int, high: int, maxLen: int) -> str:
+def ConstructOptPrompt(func, low:int, high: int, maxLen: int) -> tuple[str, int, int]:
     prompt = None
     n = None
     while low <= high:
@@ -12,7 +12,7 @@ def ConstructOptPrompt(func, low:int, high: int, maxLen: int) -> str:
             low = mid + 1
         else:
             high = mid - 1
-    return prompt, n
+    return prompt, n, length
 
 
 def FindRecords(prompt: str, selector, num: int, storage, collection) -> list:

@@ -22,15 +22,16 @@ class AModelMistral():
         self.contextWindow = self.modelCfg["contextWindow"]
         return
     
-    def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
+    def Generate(self, prompt: tuple[list[dict[str,str]],int], proc: callable, endchecker: callable, temperature: float, gasTank) -> str:
         currentPosition = 0
         text = ""
         extras = {}
         extras.update(self.modelCfg.get("args", {}))
         extras.update({"temperature": temperature} if None != temperature else {})
         try:
+            gasTank.Consume(resourceType="Mistral/InputTokens", amount=prompt[1])
             for chunk in self.client.chat_stream(model=self.modelName,
-                                                messages=[ChatMessage(**msg) for msg in prompt],
+                                                messages=[ChatMessage(**msg) for msg in prompt[0]],
                                                 **extras):
                 text += (chunk.choices[0].delta.content or "")
 
@@ -39,6 +40,7 @@ class AModelMistral():
                 
                 sentences = [x for x in sentences_split(text[currentPosition:])]
                 if (2 <= len(sentences)) and ("" != sentences[0].strip()):
+                    gasTank.Consume(resourceType="Mistral/OutputTokens", amount=len(sentences[0]) // 4)
                     proc(txt=sentences[0])
                     currentPosition += len(sentences[0])
         except MistralAPIException as e:
@@ -48,5 +50,6 @@ class AModelMistral():
             print('\n\n', msg)
             print('\n\nException:\n', str(e))
             os._exit(1)
+        gasTank.Consume(resourceType="Mistral/OutputTokens", amount=len(text[currentPosition:]) // 4)
         proc(txt=text[currentPosition:])
         return text

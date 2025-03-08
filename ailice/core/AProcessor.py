@@ -9,6 +9,7 @@ import random
 import json
 from ailice.common.AConfig import config
 from ailice.common.AExceptions import AExceptionStop
+from ailice.common.AGas import AGasTank
 from ailice.common.utils.ALogger import ALoggerSection, ALoggerMsg
 from ailice.core.AConversation import AConversations
 from ailice.core.AInterpreter import AInterpreter
@@ -16,7 +17,7 @@ from ailice.prompts.ARegex import GenerateRE4FunctionCalling, FUNCTION_CALL_DEFA
 
 
 class AProcessor():
-    def __init__(self, name, modelID, promptName, llmPool, promptsManager, services, messenger, outputCB, collection = None):
+    def __init__(self, name, modelID, promptName, llmPool, promptsManager, services, messenger, outputCB, gasTank, collection = None):
         self.name = name
         self.modelID = modelID
         self.llmPool = llmPool
@@ -29,6 +30,7 @@ class AProcessor():
         self.subProcessors = dict()
         self.modules = {}
         self.outputCB = outputCB
+        self.gasTank = gasTank
         self.collection = "ailice" + str(time.time()) if collection is None else collection
         
         self.RegisterModules([config.services['storage']['addr']])
@@ -100,6 +102,10 @@ class AProcessor():
     def GetPromptName(self) -> str:
         return self.prompt.PROMPT_NAME
     
+    def SetGas(self, amount: int):
+        self.gasTank.Set(amount)
+        return
+    
     def Prepare(self):
         self.RegisterModules(set(self.services.pool) - set([d['addr'] for name, d in self.modules.items()]))
         for nodeType, action in self.prompt.GetActions().items():
@@ -128,8 +134,13 @@ class AProcessor():
             while True:
                 self.Prepare()
                 prompt = self.prompt.BuildPrompt()
-                with ALoggerMsg(recv=self.outputCB, channel="ASSISTANT_" + self.name) as loggerMsg:
-                    ret = self.llm.Generate(prompt, proc=loggerMsg, endchecker=self.interpreter.EndChecker, temperature = config.temperature)
+                try:
+                    with ALoggerMsg(recv=self.outputCB, channel="ASSISTANT_" + self.name) as loggerMsg:
+                        ret = self.llm.Generate(prompt, proc=loggerMsg, endchecker=self.interpreter.EndChecker, temperature = config.temperature, gasTank = self.gasTank)
+                except Exception as e:
+                    ret = f"An exception was encountered while generating the reply message. EXCEPTION:\n\n{str(e)}"
+                    self.SaveMsg(role="ASSISTANT", msg=ret, storeMsg=ret)
+                    raise e
                 ret = "System notification: The empty output was detected, which is usually caused by an agent error. You can urge it to resolve this issue and return meaningful information." if "" == ret.strip() else ret
                 self.SaveMsg(role="ASSISTANT", msg=ret, storeMsg=ret)
                 self.result = ret
@@ -163,7 +174,7 @@ class AProcessor():
         if agentType not in self.promptsManager:
             return f"CALL FAILED. specified agentType {agentType} does not exist. This may be caused by using an agent type that does not exist or by getting the parameters in the wrong order."
         if (agentName not in self.subProcessors) or (agentType != self.subProcessors[agentName].GetPromptName()):
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, gasTank=self.gasTank, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         
         for varName in self.interpreter.env:
@@ -266,7 +277,7 @@ class AProcessor():
         if hasattr(self.prompt, "FromJson"):
             self.prompt.FromJson(data['prompt'])
         for agentName, state in data['subProcessors'].items():
-            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, gasTank=self.gasTank, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[m]["addr"] for m in self.modules])
             self.subProcessors[agentName].FromJson(state)
         return

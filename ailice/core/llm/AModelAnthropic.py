@@ -20,17 +20,18 @@ class AModelAnthropic():
         self.contextWindow = self.modelCfg["contextWindow"]
         return
     
-    def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
+    def Generate(self, prompt: tuple[list[dict[str,str]],int], proc: callable, endchecker: callable, temperature: float, gasTank) -> str:
         currentPosition = 0
         text = ""
         extras = {}
         extras.update(self.modelCfg.get("args", {}))
         extras.update({"temperature": temperature} if None != temperature else {})
         try:
+            gasTank.Consume(resourceType="Anthropic/InputTokens", amount=prompt[1])
             with self.client.messages.stream(model=self.modelName,
                                             max_tokens=4096,
-                                            system=prompt[0]["content"],
-                                            messages=prompt[1:],
+                                            system=prompt[0][0]["content"],
+                                            messages=prompt[0][1:],
                                             **extras) as stream:
                 for delta in stream.text_stream:
                     text += delta
@@ -40,6 +41,7 @@ class AModelAnthropic():
                     
                     sentences = [x for x in sentences_split(text[currentPosition:])]
                     if (2 <= len(sentences)) and ("" != sentences[0].strip()):
+                        gasTank.Consume(resourceType="Anthropic/OutputTokens", amount=len(sentences[0]) // 4)
                         proc(txt=sentences[0])
                         currentPosition += len(sentences[0])
         except anthropic.AuthenticationError as e:
@@ -49,5 +51,6 @@ class AModelAnthropic():
             print('\n\n', msg)
             print('\n\nException:\n', str(e))
             os._exit(1)
+        gasTank.Consume(resourceType="Anthropic/OutputTokens", amount=len(text[currentPosition:]) // 4)
         proc(txt=text[currentPosition:])
         return text

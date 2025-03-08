@@ -90,9 +90,9 @@ The "Relevant Information" part contains data that may be related to the current
         _, s = self.ParameterizedBuildPrompt(-self.conversations.LatestEntry())
         self.overflowing = (s > (self.processor.llm.contextWindow * config.contextWindowRatio * 0.8))
         
-        prompt, n = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
+        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
         if prompt is None:
-            prompt, _ = self.ParameterizedBuildPrompt(1)
-        return prompt
+            prompt, tokenNum = self.ParameterizedBuildPrompt(1)
+        return prompt, tokenNum
 
 APrompt = APromptDocReader

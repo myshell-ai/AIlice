@@ -19,7 +19,7 @@ class AModelChatGPT():
         self.contextWindow = self.modelCfg["contextWindow"]
         return
     
-    def Generate(self, prompt: list[dict[str,str]], proc: callable, endchecker: callable, temperature: float) -> str:
+    def Generate(self, prompt: tuple[list[dict[str,str]],int], proc: callable, endchecker: callable, temperature: float, gasTank) -> str:
         currentPosition = 0
         text = ""
         extras = {}
@@ -27,8 +27,9 @@ class AModelChatGPT():
         extras.update(self.modelCfg.get("args", {}))
         extras.update({"temperature": temperature} if None != temperature else {})
         try:
+            gasTank.Consume(resourceType="ChatGPT/InputTokens", amount=prompt[1])
             for chunk in self.client.chat.completions.create(model=self.modelName,
-                                                            messages=prompt,
+                                                            messages=prompt[0],
                                                             stream=True,
                                                             **extras):
                 text += (chunk.choices[0].delta.content or "")
@@ -38,6 +39,7 @@ class AModelChatGPT():
                 
                 sentences = [x for x in sentences_split(text[currentPosition:])]
                 if (2 <= len(sentences)) and ("" != sentences[0].strip()):
+                    gasTank.Consume(resourceType="ChatGPT/OutputTokens", amount=len(sentences[0]) // 4)
                     proc(txt=sentences[0])
                     currentPosition += len(sentences[0])
         except openai.AuthenticationError as e:
@@ -48,5 +50,6 @@ class AModelChatGPT():
             print('\n\nException:\n', str(e))
             os._exit(1)
             
+        gasTank.Consume(resourceType="ChatGPT/OutputTokens", amount=len(text[currentPosition:]) // 4)
         proc(txt=text[currentPosition:])
         return text
