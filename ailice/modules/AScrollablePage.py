@@ -88,4 +88,5 @@ class AScrollablePage():
         return
     
     def __call__(self, prompt: bool = True) -> str:
-        return "\n\n---\n\n" + self.txt[self.currentIdx:self.currentEnd] + ("\n\n---\n\n" + self.ConstructPrompt() if prompt else "")
+        ret = self.txt[self.currentIdx:self.currentEnd]
+        return f"\n\n---\n\n{ret}\n\n---\n\n{self.ConstructPrompt()}" if prompt else ret
