@@ -21,7 +21,7 @@ from ailice.prompts.APromptResearcher import APromptResearcher
 from ailice.prompts.APromptCoder import APromptCoder
 from ailice.prompts.APromptModuleCoder import APromptModuleCoder
 from ailice.prompts.APromptCoderProxy import APromptCoderProxy
-from ailice.prompts.APromptArticleDigest import APromptArticleDigest
+from ailice.prompts.APromptDocReader import APromptDocReader
 
 
 def GetInput(speech) -> str:
@@ -91,7 +91,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
 
     promptsManager = APromptsManager()
     promptsManager.Init(storage=storage, collection=collection)
-    promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
+    promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptDocReader])
     
     llmPool = ALLMPool()
     llmPool.Init([config.modelID])

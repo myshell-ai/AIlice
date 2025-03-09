@@ -69,7 +69,7 @@ class APromptResearcher():
         prompt0 = self.prompt0.replace("<FUNCTIONS>", "\n\n".join([f"#{f['prompt']}\n{f['signature']}" for f in self.functions]))
         agents = FindRecords("academic, mathematics, search, investigation, analysis, logic.", lambda r: (r['properties']['type'] == 'primary'), 10, self.storage, self.collection + "_prompts")
         agents += FindRecords(context, lambda r: (r['properties']['type'] == 'primary') and (r not in agents), 5, self.storage, self.collection + "_prompts")
-        prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["researcher", "search-engine", "article-digest", "coder-proxy"]]))
+        prompt0 = prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["researcher", "search-engine", "doc-reader", "coder-proxy"]]))
 
         prompt = f"""
 {prompt0}

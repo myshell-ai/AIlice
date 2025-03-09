@@ -45,7 +45,7 @@ class APromptMain():
         context = self.conversations.GetConversations(frm = -1)[0]['msg']
         agents = FindRecords("Investigate, perform tasks, program", lambda r: (r['properties']['type'] == 'primary'), 10, self.storage, self.collection + "_prompts")
         agents += FindRecords(context, lambda r: (r['properties']['type'] == 'primary') and (r not in agents), 5, self.storage, self.collection + "_prompts")
-        prompt0 = self.prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["main", "researcher", "article-digest", "coder-proxy"]]))
+        prompt0 = self.prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["main", "researcher", "doc-reader", "coder-proxy"]]))
         speechPrompt = "" if not config.speechOn else "In every conversation with the user, after generating a formal text response, you also need to use the SPEAK function to reply to the user with a voice response. The voice response should be shorter and more conversational, with the details placed in the text reply."
         speechFunctions = "" if not config.speechOn else """#Synthesize input text fragments into audio and play.
 SPEAK<!|txt: str|!>

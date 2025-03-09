@@ -28,7 +28,7 @@ var_name := <!|var_name + """some_appendix"""|!> #Append content to an existing 
 CALL<!|agentType: str, agentName: str, msg: str|!> -> str
 agentType: A string used to specify the type of AI agent. It can be of the following types:
  - "researcher", Conduct an internet investigation on a particular topic or gather data. It also has the capability to execute simple scripts.
- - "article-digest": literature reading comprehension and related question answering. URL or file path is neccessary for the agent to work.
+ - "doc-reader": literature reading comprehension and related question answering. URL or file path is neccessary for the agent to work.
  - "coder-proxy", an excellent coder who also has access to bash and python interpreter, he can solve problems programmatically.
  <AGENTS>
     You need to choose the appropriate agentType among the above types according to your needs.

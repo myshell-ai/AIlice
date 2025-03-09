@@ -35,7 +35,7 @@ from ailice.prompts.APromptResearcher import APromptResearcher
 from ailice.prompts.APromptCoder import APromptCoder
 from ailice.prompts.APromptModuleCoder import APromptModuleCoder
 from ailice.prompts.APromptCoderProxy import APromptCoderProxy
-from ailice.prompts.APromptArticleDigest import APromptArticleDigest
+from ailice.prompts.APromptDocReader import APromptDocReader
 
 
 
@@ -118,7 +118,7 @@ def LoadSession(sessionName: str):
 
         promptsManager = APromptsManager()
         promptsManager.Init(storage=storage, collection=sessionName)
-        promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptArticleDigest])
+        promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptDocReader])
 
         messenger = AMessenger()
 

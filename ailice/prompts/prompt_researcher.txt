@@ -35,7 +35,7 @@ Available Functions
 CALL<!|agentType: str, agentName: str, msg: str|!> -> str
 agentType: A string used to specify the type of AI agent. It can be of the following types:
  - "search-engine": Search for web pages/documents containing specified information from sources like Google, arXiv. Use the URLs he returned as the entry point for the survey.
- - "article-digest": Document(web page/pdf literatures/code files/text files...) reading comprehension and related question answering. You need to include the URL or file path of the target documentation in the request message.
+ - "doc-reader": Document(web page/pdf literatures/code files/text files...) reading comprehension and related question answering. You need to include the URL or file path of the target documentation in the request message.
  - "coder-proxy": He is adept at using programming to solve problems and has execution permissions for both Bash and Python. You'd better leave it to problems that are easy to solve with programming.
 <AGENTS>
 agentName: A name used to identify the agent. Create a new one if no such agent is found.
@@ -80,7 +80,7 @@ Search for online bookstores where you can buy the book shown in the image:
 
 ---
 
-!CALL<!|"article-digest","product-researcher","""
+!CALL<!|"doc-reader","product-researcher","""
 Browse webpage and answer what are the hardware specifications of Product A:
 https://www.example.com/product-A.html
 """|!>

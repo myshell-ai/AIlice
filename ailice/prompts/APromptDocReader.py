@@ -6,8 +6,8 @@ from ailice.common.utils.ATextSpliter import paragraph_generator
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
 
-class APromptArticleDigest():
-    PROMPT_NAME = "article-digest"
+class APromptDocReader():
+    PROMPT_NAME = "doc-reader"
     PROMPT_DESCRIPTION = "Document(web page/pdf literatures/code files/text files...) reading comprehension and related question answering. You need to include the URL or file path of the target documentation in the request message."
     PROMPT_PROPERTIES = {"type": "primary"}
     
@@ -18,7 +18,7 @@ class APromptArticleDigest():
         self.conversations = conversations
         self.formatter = formatter
         self.outputCB = outputCB
-        self.prompt0 = read_text('ailice.prompts', 'prompt_article_digest.txt')
+        self.prompt0 = read_text('ailice.prompts', 'prompt_doc_reader.txt')
         self.PATTERNS = {"READ": [{"re": GenerateRE4FunctionCalling("READ<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLL-DOWN-BROWSER": [{"re": GenerateRE4FunctionCalling("SCROLL-DOWN-BROWSER<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLL-UP-BROWSER": [{"re": GenerateRE4FunctionCalling("SCROLL-UP-BROWSER<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
@@ -95,4 +95,4 @@ The "Relevant Information" part contains data that may be related to the current
             prompt, _ = self.ParameterizedBuildPrompt(1)
         return prompt
 
-APrompt = APromptArticleDigest
+APrompt = APromptDocReader
