@@ -6,15 +6,18 @@ Created on Mon Feb 15 11:39:09 2021
 @author: Steven Lu
 """
 
+import os
 import sys
 import threading
 import numpy
 import inspect
 import typing
 import zmq
+import zmq.auth
 import pickle
 import traceback
 import ailice
+from zmq.auth.thread import ThreadAuthenticator
 from ailice.common.ADataType import *
 
 WORKERS_ADDR="inproc://workers"
@@ -26,6 +29,18 @@ def SendMsg(conn,msg):
   
 def ReceiveMsg(conn):
   return pickle.loads(conn.recv())
+
+def GenerateCertificates(baseDir, name):
+    keysDir = os.path.join(baseDir, 'certificates')
+    os.makedirs(keysDir, exist_ok=True)
+    
+    publicFile, secretFile = zmq.auth.create_certificates(keysDir, name)
+    return publicFile, secretFile
+
+def LoadCertificate(filename):
+    with open(filename, 'r') as f:
+        keyText = f.read()
+    return keyText
 
 class GeneratorStorage:
     def __init__(self, obj):
@@ -42,14 +57,31 @@ class GeneratorStorage:
         return getattr(self.obj, name)
 
 class GenesisRPCServer(object):
-  def __init__(self,objCls,objArgs,url,APIList):
-    self.objCls=objCls
-    self.objArgs=objArgs
-    self.url=url
-    self.objPool=dict()
-    self.APIList=APIList
-    self.context=context
+  def __init__(self, objCls, objArgs, url, APIList, enableSecurity=False, keysDir=None):
+    self.objCls = objCls
+    self.objArgs = objArgs
+    self.url = url
+    self.objPool = dict()
+    self.APIList = APIList
+    self.context = context
     self.receiver = self.context.socket(zmq.ROUTER)
+    
+    self.enableSecurity = enableSecurity
+    if enableSecurity:
+      if keysDir is None:
+        keysDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'certificates')
+      
+      self.auth = ThreadAuthenticator(self.context)
+      self.auth.start()
+      self.auth.configure_curve(domain='*', location=zmq.auth.CURVE_ALLOW_ANY)
+      
+      serverPublicFile, serverSecretFile = zmq.auth.find_certificates(keysDir, "server")
+      serverPublic, serverSecret = zmq.auth.load_certificate(serverSecretFile)
+      
+      self.receiver.curve_secretkey = serverSecret
+      self.receiver.curve_publickey = serverPublic
+      self.receiver.curve_server = True
+    
     self.receiver.bind(url)
     self.dealer = self.context.socket(zmq.DEALER)
     self.dealer.bind(WORKERS_ADDR)
@@ -65,10 +97,14 @@ class GenesisRPCServer(object):
       zmq.device(zmq.QUEUE, self.receiver, self.dealer)
     except Exception as e:
       print('GenesisRPCServer:Run() FATAL EXCEPTION. ',self.url,', ',str(e))
+      if self.enableSecurity:
+        self.auth.stop()
       sys.exit(1)
     finally:
       self.receiver.close()
       self.dealer.close()
+      if self.enableSecurity:
+        self.auth.stop()
   
   def Worker(self):
     socket = self.context.socket(zmq.REP)
@@ -117,8 +153,8 @@ class GenesisRPCServer(object):
     return
 
 
-def makeServer(objCls,objArgs,url,APIList):
-  return GenesisRPCServer(objCls,objArgs,url,APIList)
+def makeServer(objCls, objArgs, url, APIList, enableSecurity=False, keysDir=None):
+  return GenesisRPCServer(objCls, objArgs, url, APIList, enableSecurity, keysDir)
 
 def AddMethod(kls, methodName, methodMeta):
   signature = methodMeta['signature']
@@ -149,7 +185,8 @@ def AddMethod(kls, methodName, methodMeta):
   methodTemplate.__signature__ = newSignature
   setattr(kls,methodName,methodTemplate)
 
-def makeClient(url,returnClass=False):
+
+def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serverPublicKey=None):
   class RemoteGenerator:
       def __init__(self, client, generatorID):
           self.client = client
@@ -175,16 +212,34 @@ def makeClient(url,returnClass=False):
       
   class GenesisRPCClientTemplate(object):
     def __init__(self):
-      self.url=url
-      self.context=context
-      ret=self.Send({'CREATE':''})
+      self.url = url
+      self.context = context
+      self.enableSecurity = enableSecurity
+      
+      if self.enableSecurity:
+        if keysDir is None:
+          keysDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'certificates')
+        
+        clientPublicFile, clientSecretFile = zmq.auth.find_certificates(keysDir, "client")
+        clientPublic, clientSecret = zmq.auth.load_certificate(clientSecretFile)
+        
+        self.clientPublic = clientPublic
+        self.clientSecret = clientSecret
+        self.serverPublic = serverPublicKey
+      
+      ret = self.Send({'CREATE':''})
       if "exception" in ret:
         raise ret["exception"]
-      self.clientID=ret['clientID']
+      self.clientID = ret['clientID']
       return
     
     def Send(self, msg):
       with self.context.socket(zmq.REQ) as socket:
+        if self.enableSecurity:
+          socket.curve_secretkey = self.clientSecret
+          socket.curve_publickey = self.clientPublic
+          socket.curve_serverkey = self.serverPublic
+        
         socket.setsockopt(zmq.CONNECT_TIMEOUT, 10000)
         socket.setsockopt(zmq.HEARTBEAT_IVL, 2000)
         socket.setsockopt(zmq.HEARTBEAT_TIMEOUT, 10000)
@@ -215,3 +270,9 @@ def makeClient(url,returnClass=False):
   for funcName, methodMeta in ret['META']['methods'].items():
     AddMethod(GenesisRPCClientTemplate,funcName,methodMeta)
   return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()
+
+
+#baseDir = os.path.dirname(os.path.abspath(__file__))
+#serverPublicFile, serverSecretFile = GenerateCertificates(baseDir, "server")
+#clientPublicFile, clientSecretFile = GenerateCertificates(baseDir, "client")
+
