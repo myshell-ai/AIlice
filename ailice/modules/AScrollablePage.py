@@ -52,8 +52,8 @@ class AScrollablePage():
         if ('SEARCHUP' in self.functions) and (self.currentIdx > 0):
             funcs.append(self.functions['SEARCHUP'])
         pos = self.currentIdx
-        prior = (float(pos)/float(len(self.txt))) * 100
-        remaining = (float(len(self.txt) - self.currentEnd)/float(len(self.txt))) * 100
+        prior = ((float(pos)/float(len(self.txt))) * 100) if len(self.txt) > 0 else 0.0
+        remaining = ((float(len(self.txt) - self.currentEnd)/float(len(self.txt))) * 100) if len(self.txt) > 0 else 0.0
         return f"Prior: {prior:.1f}% / Remaining: {remaining:.1f}% \n\n" + ((ret + "\n".join(funcs)) if len(funcs) > 0 else "")
     
     def LoadPage(self, txt: str, initPosition: str):
