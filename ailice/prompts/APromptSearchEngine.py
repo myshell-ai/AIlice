@@ -6,7 +6,7 @@ from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
 class APromptSearchEngine():
     PROMPT_NAME = "search-engine"
-    PROMPT_DESCRIPTION = "Searching for web pages/documents containing specified information from sources like Google, arXiv. Use the URLs he returned as the entry point for the survey."
+    PROMPT_DESCRIPTION = "Search for web pages/documents containing specified information from sources like Google, arXiv. It can only provide search result entries and content hints that are not necessarily accurate; you need to browse the page to get complete information."
     PROMPT_PROPERTIES = {"type": "supportive"}
 
     def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
