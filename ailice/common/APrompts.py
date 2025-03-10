@@ -21,6 +21,9 @@ class APromptsManager():
             self.storage.Store(self.collection + "_prompts", [json.dumps({"name": promptClass.PROMPT_NAME, "desc": promptClass.PROMPT_DESCRIPTION, "properties": promptClass.PROMPT_PROPERTIES}) for promptClass in promptClasses])
             for promptClass in promptClasses:
                 self.prompts[promptClass.PROMPT_NAME] = promptClass
+            #This is for compatibility purposes.
+            if "doc-reader" in self.prompts:
+                self.prompts["article-digest"] = self.prompts["doc-reader"]
             return ""
         except Exception as e:
             return f"STORE prompt to vecdb FAILED, there may be a problem with the vector database. Exception: {str(e)}"
