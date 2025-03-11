@@ -3,6 +3,7 @@ import base64
 import mimetypes
 import requests
 import av
+from typing import Optional
 from urllib.parse import urlparse
 from pydantic import BaseModel
 from PIL import Image
@@ -41,13 +42,13 @@ def ConvertVideoFormat(bytesSrc, format):
     return bytesDst.getvalue()
 
 class AImage(BaseModel):
-    data: bytes
-    format: str
-    width: int
-    height: int
+    data: Optional[bytes]
+    format: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
     
     def __init__(self, **params):
-        super().__init__(params)
+        super().__init__(**params)
         if self.data and not all([self.format, self.width, self.height]):
             meta = self.GetMeta()
             self.format = meta['format']
@@ -115,14 +116,14 @@ class AImageLocation(BaseModel):
         return AImage(data=imageByte.getvalue())
 
 class AVideo(BaseModel):
-    data: bytes
-    format: str
-    width: int
-    height: int
-    fps: int
+    data: Optional[bytes]
+    format: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+    fps: Optional[int] = None
     
     def __init__(self, **params):
-        super().__init__(params)
+        super().__init__(**params)
         if self.data and not all([self.format, self.width, self.height, self.fps]):
             meta = self.GetMeta()
             self.format = meta['format']
