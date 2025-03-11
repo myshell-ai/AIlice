@@ -87,18 +87,17 @@ class AStorageVecDB():
             return False
         return True
     
-    def Query(self, collection: str, clue: str = "", keywords: list[str] = None, num_results:int=1) -> list[tuple[str,float]]:
+    def Query(self, collection: str, clue: str = "", keywords: list[str] = [], num_results:int=1) -> list[tuple[str,float]]:
         try:
             if collection not in self.data["collections"]:
                 return []
             
             results = [txt for txt,_ in self.data['collections'][collection].items()]
-            if None != keywords:
-                for keyword in keywords:
-                    results = [txt for txt in results if keyword in txt]
+            for keyword in keywords:
+                results = [txt for txt in results if keyword in txt]
             
             if clue in ["", None]:
-                results = [(r, None) for r in results]
+                results = [(r, -1.0) for r in results]
                 return results[:num_results] if num_results > 0 else results
 
             query = self.CalcEmbeddings([clue])[0]
