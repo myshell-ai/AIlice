@@ -12,21 +12,22 @@ import numpy
 import inspect
 import typing
 import zmq
-import pickle
+import json
 import traceback
 import ailice
 from pydantic import validate_call
 from ailice.common.ADataType import *
+from ailice.common.ASerialization import AJSONEncoder, AJSONDecoder
 
 WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
 
 def SendMsg(conn,msg):
-  conn.send(pickle.dumps(msg))
+  conn.send(json.dumps(msg, cls=AJSONEncoder).encode("utf-8"))
   return
   
 def ReceiveMsg(conn):
-  return pickle.loads(conn.recv())
+  return json.loads(conn.recv().decode("utf-8"), cls=AJSONDecoder)
 
 def validate_methods(cls, methodList=None):
     for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
