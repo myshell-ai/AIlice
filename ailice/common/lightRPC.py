@@ -15,6 +15,7 @@ import zmq
 import pickle
 import traceback
 import ailice
+from pydantic import validate_call
 from ailice.common.ADataType import *
 
 WORKERS_ADDR="inproc://workers"
@@ -26,6 +27,12 @@ def SendMsg(conn,msg):
   
 def ReceiveMsg(conn):
   return pickle.loads(conn.recv())
+
+def validate_methods(cls, methodList=None):
+    for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
+        if (not name.startswith('_')) and ((methodList is None) or (name in methodList)):
+            setattr(cls, name, validate_call(method, validate_return=True))
+    return cls
 
 class GeneratorStorage:
     def __init__(self, obj):
@@ -43,7 +50,7 @@ class GeneratorStorage:
 
 class GenesisRPCServer(object):
   def __init__(self,objCls,objArgs,url,APIList):
-    self.objCls=objCls
+    self.objCls=validate_methods(objCls, APIList)
     self.objArgs=objArgs
     self.url=url
     self.objPool=dict()
@@ -140,12 +147,12 @@ def AddMethod(kls, methodName, methodMeta):
   
   exec(f"def tempFunc{signature}: pass", tempNamespace)
   tempFunc = tempNamespace['tempFunc']
-  newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(tempFunc).parameters.items()],
-                                   return_annotation=inspect.signature(tempFunc).return_annotation)
+  newSignature = inspect.signature(tempFunc)
 
   def methodTemplate(self,*args,**kwargs):
     return self.RemoteCall(methodName,args,kwargs)
   methodTemplate.__is_generator__ = is_generator
+  methodTemplate.__annotations__ = tempFunc.__annotations__.copy()
   methodTemplate.__signature__ = newSignature
   setattr(kls,methodName,methodTemplate)
 
@@ -214,4 +221,4 @@ def makeClient(url,returnClass=False):
     ret=ReceiveMsg(socket)
   for funcName, methodMeta in ret['META']['methods'].items():
     AddMethod(GenesisRPCClientTemplate,funcName,methodMeta)
-  return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()
+  return validate_methods(GenesisRPCClientTemplate) if returnClass else validate_methods(GenesisRPCClientTemplate)()

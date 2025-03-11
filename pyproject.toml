@@ -10,6 +10,7 @@ include = ["LICENSE", "ailice/prompts/*.txt"]
 [tool.poetry.dependencies]
 python = "^3.9"
 pyzmq = "*"
+pydantic = "^2"
 termcolor = "*"
 simplejson = "*"
 appdirs = "^1"
