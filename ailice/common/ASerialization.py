@@ -3,6 +3,7 @@ import json
 import inspect
 import inspect
 import typing
+import importlib
 import json
 from ailice.common.ADataType import AImage, AImageLocation, AVideo, AVideoLocation
 
@@ -52,10 +53,10 @@ TYPE_NAMESPACE = {
     'set': set,
     'Optional': typing.Optional,
     'Union': typing.Union,
-    'Any': typing.Any,
-    'Callable': typing.Callable,
-    'TypeVar': typing.TypeVar,
-    'Generic': typing.Generic
+    'AImage': AImage,
+    'AImageLocation': AImageLocation,
+    'AVideo': AVideo,
+    'AVideoLocation': AVideoLocation
 }
 
 def SignatureFromString(sig_str: str) -> inspect.Signature:
@@ -92,8 +93,31 @@ def SignatureFromString(sig_str: str) -> inspect.Signature:
 
 def BuildTypeFromAST(node, namespace):
     if isinstance(node, ast.Name):
-        return namespace.get(node.id, typing.Any)
+        if node.id not in namespace:
+            raise TypeError(f"BuildTypeFromAST(): Unsupported type {str(node.id)}.")
+        return namespace[node.id]
     
+    elif isinstance(node, ast.Attribute):
+        attrChain = []
+        current = node
+        while isinstance(current, ast.Attribute):
+            attrChain.append(current.attr)
+            current = current.value
+        if isinstance(current, ast.Name):
+            attrChain.append(current.id)
+        attrChain.reverse()
+        
+        baseModule = namespace.get(attrChain[0], None)
+        if baseModule is None:
+            if (attrChain[:3] == ["ailice", "common", "ADataType"]):
+                baseModule = importlib.import_module(attrChain[0])
+            else:
+                raise TypeError(f"BuildTypeFromAST(): Unsupported type {str(attrChain)}.")
+        
+        currentObj = baseModule
+        for i in range(1, len(attrChain)):
+            currentObj = getattr(currentObj, attrChain[i])
+        return currentObj
     elif isinstance(node, ast.Subscript):
         container = BuildTypeFromAST(node.value, namespace)
         
@@ -104,15 +128,12 @@ def BuildTypeFromAST(node, namespace):
         else:
             type_arg = BuildTypeFromAST(args, namespace)
             return container[type_arg]
-    
     elif isinstance(node, ast.Tuple):
         return tuple(BuildTypeFromAST(elt, namespace) for elt in node.elts)
-    
     elif isinstance(node, ast.Constant) and node.value is None:
         return None
-    
     else:
-        return typing.Any
+        raise TypeError(f"BuildTypeFromAST(): Unsupported type {str(node)}.")
 
 def AnnotationsFromSignature(signature: inspect.Signature) -> dict:
     annotations = {}
