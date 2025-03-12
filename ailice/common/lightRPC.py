@@ -8,16 +8,13 @@ Created on Mon Feb 15 11:39:09 2021
 
 import sys
 import threading
-import numpy
 import inspect
-import typing
 import zmq
 import json
 import traceback
-import ailice
 from pydantic import validate_call
 from ailice.common.ADataType import *
-from ailice.common.ASerialization import AJSONEncoder, AJSONDecoder
+from ailice.common.ASerialization import AJSONEncoder, AJSONDecoder, SignatureFromString, AnnotationsFromSignature
 
 WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
@@ -132,28 +129,12 @@ def AddMethod(kls, methodName, methodMeta):
   signature = methodMeta['signature']
   is_generator = methodMeta['is_generator']
   
-  tempNamespace = {k.__name__: k for k in typeInfo}
-  tempNamespace["ailice"] = ailice
-  tempNamespace["numpy"] = numpy
-  tempNamespace["Any"] = typing.Any
-  tempNamespace["Union"] = typing.Union
-  tempNamespace["Optional"] = typing.Optional
-  tempNamespace["List"] = typing.List
-  tempNamespace["Tuple"] = typing.Tuple
-  tempNamespace["Dict"] = typing.Dict
-  tempNamespace["Set"] = typing.Set
-  tempNamespace["Callable"] = typing.Callable
-  tempNamespace["TypeVar"] = typing.TypeVar
-  tempNamespace["Generic"] = typing.Generic
-  
-  exec(f"def tempFunc{signature}: pass", tempNamespace)
-  tempFunc = tempNamespace['tempFunc']
-  newSignature = inspect.signature(tempFunc)
+  newSignature = SignatureFromString(signature)
 
   def methodTemplate(self,*args,**kwargs):
     return self.RemoteCall(methodName,args,kwargs)
   methodTemplate.__is_generator__ = is_generator
-  methodTemplate.__annotations__ = tempFunc.__annotations__.copy()
+  methodTemplate.__annotations__ = AnnotationsFromSignature(newSignature)
   methodTemplate.__signature__ = newSignature
   setattr(kls,methodName,methodTemplate)
 
