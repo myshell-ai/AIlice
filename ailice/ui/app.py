@@ -15,7 +15,7 @@ import traceback
 
 from urllib.parse import unquote
 from termcolor import colored
-from flask import Flask, render_template, request, jsonify, Response, send_file
+from flask import Flask, render_template, request, jsonify, Response, send_file, make_response
 from werkzeug.utils import secure_filename
 from logging.handlers import RotatingFileHandler
 
@@ -337,14 +337,14 @@ def proxy():
             temp.write(var.data)
             temp.flush()
             if request.method == 'HEAD':
-                mime_type = {"AImage": "image/jpeg", "AVideo": "video/mp4"}[type(var).__name__]
-                response = send_file(os.path.abspath(temp.name), mimetype=mime_type)
+                response = make_response("")
+                response.headers["Content-Type"] = {"AImage": "image/jpeg", "AVideo": "video/mp4"}[type(var).__name__]
             else:
                 response = send_file(os.path.abspath(temp.name))
     elif os.path.exists(href):
         if request.method == 'HEAD':
-            mime_type, _ = mimetypes.guess_type(href)
-            response = send_file(os.path.abspath(href), mimetype=mime_type)
+            response = make_response("")
+            response.headers["Content-Type"] = mimetypes.guess_type(href)[0]
         else:
             response = send_file(os.path.abspath(href))
     else:
