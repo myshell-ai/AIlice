@@ -344,17 +344,18 @@ def proxy():
     else:
         computer = context[currentSession]["processor"].services.GetClient(config.services['computer']['addr'])
         try:
-            r = computer.Proxy(href, dict(request.headers), request.method)
+            r = computer.Proxy(href, request.method)
             responseInfo = next(r)
             def gen():
                 yield from r
-            response = Response(gen(), status=responseInfo['status_code'])
+
+            contentType = responseInfo['headers'].get('Content-Type', '')
+            response = Response(gen(), status=responseInfo['status_code'], content_type=contentType)
             
             for key, value in responseInfo['headers'].items():
                 if key.lower() not in ('content-encoding', 'content-length', 'transfer-encoding', 'connection'):
                     response.headers[key] = value
 
-            contentType = responseInfo['headers'].get('Content-Type', '')
             if contentType.lower() in ('image/svg+xml', 'application/svg+xml'):
                 response.headers['Content-Type'] = 'image/svg+xml'
                 response.headers['Content-Disposition'] = 'inline'

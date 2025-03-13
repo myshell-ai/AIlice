@@ -99,7 +99,7 @@ class AComputer():
             return f"WriteImage() excetption: {str(e)}"
         return
 
-    def Proxy(self, href: str, headers: dict, method: str, body: dict=None, params: dict=None):
+    def Proxy(self, href: str, method: str, headers: dict=None, body: dict=None, params: dict=None):
         if os.path.exists(href):
             filePath = os.path.abspath(href)
             fileSize = os.path.getsize(filePath)
@@ -172,6 +172,9 @@ class AComputer():
                 'status_code': req.status_code,
                 'headers': dict(req.headers)
             }
+            
+            if method.upper == 'HEAD':
+                return responseInfo
             
             def content_generator():
                 try:
