@@ -8,7 +8,8 @@ from ailice.common.ADataType import typeInfo, GuessMediaType, ToJson, FromJson, 
 
 
 class AConversations():
-    def __init__(self):
+    def __init__(self, proxy):
+        self.proxy = proxy
         self.conversations: list[dict] = []
         return
     
@@ -58,9 +59,9 @@ class AConversations():
         else:
             mimeType = GuessMediaType(param)
             if "image" in mimeType:
-                return {"type": "image", "tag": m, "content": AImageLocation(param).Standardize()}
+                return {"type": "image", "tag": m, "content": AImageLocation(param).Standardize(self.proxy)}
             elif "video" in mimeType:
-                return {"type": "video", "tag": m, "content": AVideoLocation(param).Standardize()}
+                return {"type": "video", "tag": m, "content": AVideoLocation(param).Standardize(self.proxy)}
             return
     
     def LatestEntry(self):

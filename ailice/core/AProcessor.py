@@ -25,7 +25,7 @@ class AProcessor():
         self.services = services
         self.messenger = messenger
         self.interpreter = AInterpreter(messenger)
-        self.conversation = AConversations()
+        self.conversation = AConversations(proxy=services.GetClient(config.services['computer']['addr']).Proxy)
         self.subProcessors = dict()
         self.modules = {}
         self.outputCB = outputCB
