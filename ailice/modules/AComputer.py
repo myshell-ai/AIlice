@@ -138,26 +138,25 @@ class AComputer():
                 'headers': responseHeaders
             }
             
-            if method.upper() == 'HEAD':
-                return responseInfo
-            
-            def content_generator():
-                with open(filePath, 'rb') as file:
-                    if startByte > 0:
-                        file.seek(startByte)
-                    bytesToRead = endByte - startByte + 1
-                    bytesRead = 0
-                    
-                    while bytesRead < bytesToRead:
-                        chunkSize = min(262144, bytesToRead - bytesRead)
-                        chunk = file.read(chunkSize)
-                        if not chunk:
-                            break
-                        bytesRead += len(chunk)
-                        yield chunk
-            
             yield responseInfo
-            yield from content_generator()
+            
+            if method.upper() != 'HEAD':
+                def content_generator():
+                    with open(filePath, 'rb') as file:
+                        if startByte > 0:
+                            file.seek(startByte)
+                        bytesToRead = endByte - startByte + 1
+                        bytesRead = 0
+                        
+                        while bytesRead < bytesToRead:
+                            chunkSize = min(262144, bytesToRead - bytesRead)
+                            chunk = file.read(chunkSize)
+                            if not chunk:
+                                break
+                            bytesRead += len(chunk)
+                            yield chunk
+                
+                yield from content_generator()
         else:
             req = requests.request(
                 method=method,
@@ -173,19 +172,18 @@ class AComputer():
                 'headers': dict(req.headers)
             }
             
-            if method.upper == 'HEAD':
-                return responseInfo
-            
-            def content_generator():
-                try:
-                    for chunk in req.iter_content(chunk_size=262144):
-                        if chunk:
-                            yield chunk
-                finally:
-                    req.close()
-            
             yield responseInfo
-            yield from content_generator()
+
+            if method.upper() != 'HEAD':
+                def content_generator():
+                    try:
+                        for chunk in req.iter_content(chunk_size=262144):
+                            if chunk:
+                                yield chunk
+                    finally:
+                        req.close()
+                
+                yield from content_generator()
     
 def main():
     import argparse
