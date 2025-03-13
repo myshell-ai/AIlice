@@ -47,6 +47,7 @@ class GenesisRPCServer(object):
     self.objArgs=objArgs
     self.url=url
     self.objPool=dict()
+    self.objPoolLock=threading.Lock()
     self.APIList=APIList
     self.context=context
     self.receiver = self.context.socket(zmq.ROUTER)
@@ -89,11 +90,13 @@ class GenesisRPCServer(object):
                                         'is_generator': inspect.isgeneratorfunction(method)
                                       } for methodName, method in methods}}}
         elif "CREATE" in msg:
-          newID = str(max([int(k) for k in self.objPool]) + 1) if self.objPool else '10000000'
-          self.objPool[newID] = GeneratorStorage(self.objCls(**self.objArgs))
+          with self.objPoolLock:
+            newID = str(max([int(k) for k in self.objPool]) + 1) if self.objPool else '10000000'
+            self.objPool[newID] = GeneratorStorage(self.objCls(**self.objArgs))
           ret = {"clientID": newID}
         elif "DEL" in msg:
-          del self.objPool[msg['clientID']]
+          with self.objPoolLock:
+            del self.objPool[msg['clientID']]
         elif "NEXT" in msg:
           gen = self.objPool[msg['clientID']].GetGenerator(msg['generatorID'])
           try:
