@@ -2,6 +2,7 @@ import os
 import importlib.util
 import io
 import re
+import typing
 import datetime
 import mimetypes
 import requests
@@ -99,7 +100,7 @@ class AComputer():
             return f"WriteImage() excetption: {str(e)}"
         return
 
-    def Proxy(self, href: str, method: str, headers: dict=None, body: dict=None, params: dict=None):
+    def Proxy(self, href: str, method: str, headers: dict={}, body: dict={}, params: dict={}) -> typing.Generator:
         if os.path.exists(href):
             filePath = os.path.abspath(href)
             fileSize = os.path.getsize(filePath)
