@@ -14,13 +14,18 @@ import json
 import traceback
 from pydantic import validate_call
 from ailice.common.ADataType import *
+from ailice.common.AExceptions import ALightRPCException
 from ailice.common.ASerialization import AJSONEncoder, AJSONDecoder, SignatureFromString, AnnotationsFromSignature
 
 WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
 
 def SendMsg(conn,msg):
-  conn.send(json.dumps(msg, cls=AJSONEncoder).encode("utf-8"))
+  try:
+    conn.send(json.dumps(msg, cls=AJSONEncoder).encode("utf-8"))
+  except Exception as e:
+     print("Exception: ", str(e))
+     traceback.print_tb(e.__traceback__)
   return
   
 def ReceiveMsg(conn):
@@ -29,7 +34,7 @@ def ReceiveMsg(conn):
 def validate_methods(cls, methodList=None):
     for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
         if (not name.startswith('_')) and ((methodList is None) or (name in methodList)):
-            setattr(cls, name, validate_call(method, validate_return=True))
+            setattr(cls, name, validate_call(method, validate_return=(not inspect.isgeneratorfunction(method))))
     return cls
 
 class GeneratorStorage:
@@ -115,7 +120,7 @@ class GenesisRPCServer(object):
             ret = {'ret': result}
       except Exception as e:
         e.tb = ''.join(traceback.format_tb(e.__traceback__))
-        ret={'exception':e}
+        ret={'exception':f"{str(e)}\n\n{e.tb}"}
         traceback.print_tb(e.__traceback__)
         print('Exception. msg: ',str(msg),'. Except: ',str(e))
       SendMsg(socket,ret)
@@ -155,7 +160,7 @@ def makeClient(url,returnClass=False):
           })
           
           if 'exception' in ret:
-              raise ret['exception']
+              raise ALightRPCException(ret['exception'])
               
           if ret['finished']:
               raise StopIteration
@@ -168,8 +173,8 @@ def makeClient(url,returnClass=False):
       self.context=context
       ret=self.Send({'CREATE':''})
       if "exception" in ret:
-        raise ret["exception"]
-      self.clientID=ret['clientID']
+        raise ALightRPCException(ret["exception"])
+      self.clientID = ret['clientID']
       return
     
     def Send(self, msg):
@@ -184,7 +189,7 @@ def makeClient(url,returnClass=False):
     def RemoteCall(self,funcName,args,kwargs):
       ret = self.Send({'clientID': self.clientID, 'function':funcName, 'args':args, "kwargs": kwargs})
       if 'exception' in ret:
-        raise ret['exception']
+        raise ALightRPCException(ret['exception'])
       if isinstance(ret['ret'], dict) and 'generatorID' in ret['ret']:
         return RemoteGenerator(self, ret['ret']['generatorID'])
       return ret['ret']
