@@ -1,5 +1,6 @@
 import ast
 import json
+import base64
 import inspect
 import inspect
 import typing
@@ -9,7 +10,9 @@ from ailice.common.ADataType import AImage, AImageLocation, AVideo, AVideoLocati
 
 class AJSONEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, AImage):
+        if isinstance(obj, bytes):
+            return {"_type": "bytes", "value": base64.b64encode(obj).decode('utf-8')}
+        elif isinstance(obj, AImage):
             return {"_type": "AImage", "value": obj.ToJson()}
         elif isinstance(obj, AImageLocation):
             return {"_type": "AImageLocation", "value": obj.ToJson()}
@@ -28,7 +31,9 @@ class AJSONDecoder(json.JSONDecoder):
         if "_type" not in obj:
             return obj
         type = obj["_type"]
-        if type == "AImage":
+        if type == "bytes":
+            return base64.b64decode(obj['value'].encode('utf-8'))
+        elif type == "AImage":
             return AImage.FromJson(obj["value"])
         elif type == 'AImageLocation':
             return AImageLocation.FromJson(obj["value"])
@@ -53,6 +58,7 @@ TYPE_NAMESPACE = {
     'set': set,
     'Optional': typing.Optional,
     'Union': typing.Union,
+    'Generator': typing.Generator,
     'AImage': AImage,
     'AImageLocation': AImageLocation,
     'AVideo': AVideo,
