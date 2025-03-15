@@ -134,6 +134,7 @@ def AddMethod(kls, methodName, methodMeta):
   tempNamespace["Tuple"] = typing.Tuple
   tempNamespace["Dict"] = typing.Dict
   tempNamespace["Set"] = typing.Set
+  tempNamespace["Generator"] = typing.Generator
   tempNamespace["Callable"] = typing.Callable
   tempNamespace["TypeVar"] = typing.TypeVar
   tempNamespace["Generic"] = typing.Generic
