@@ -256,16 +256,18 @@ class AProcessor():
         self.conversation.FromJson(data["conversation"])
         self.collection = data['collection']
         for k,m in data["modules"].items():
-            try:
-                self.RegisterModules([m['addr']])
-            except Exception as e:
-                print(f"FromJson(): RegisterModules FAILED on {m['addr']}")
-                continue
+            if k not in self.modules:
+                try:
+                    self.RegisterModules([m['addr']])
+                except Exception as e:
+                    print(f"FromJson(): RegisterModules FAILED on {k}: {m['addr']}")
+                    continue
         self.prompt = self.promptsManager[data['agentType']](processor=self, storage=self.modules['storage']['module'], collection=self.collection, conversations=self.conversation, formatter=self.llm.formatter, outputCB=self.outputCB)
         if hasattr(self.prompt, "FromJson"):
             self.prompt.FromJson(data['prompt'])
         for agentName, state in data['subProcessors'].items():
             self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=state['agentType'], llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, collection=self.collection)
+            self.subProcessors[agentName].RegisterModules([self.modules[m]["addr"] for m in self.modules])
             self.subProcessors[agentName].FromJson(state)
         return
     
