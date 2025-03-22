@@ -3,7 +3,9 @@ import base64
 import mimetypes
 import requests
 import av
+from typing import Optional
 from urllib.parse import urlparse
+from pydantic import BaseModel
 from PIL import Image
 
 def GuessMediaType(pathOrUrl: str) -> str:
@@ -39,13 +41,19 @@ def ConvertVideoFormat(bytesSrc, format):
     bytesDst.seek(0)
     return bytesDst.getvalue()
 
-class AImage():
-    def __init__(self, data: bytes):
-        self.data = data
-        meta = self.GetMeta()
-        self.format = meta['format']
-        self.width = meta['width']
-        self.height = meta['height']
+class AImage(BaseModel):
+    data: Optional[bytes]
+    format: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+    
+    def __init__(self, **params):
+        super().__init__(**params)
+        if self.data and not all([self.format, self.width, self.height]):
+            meta = self.GetMeta()
+            self.format = meta['format']
+            self.width = meta['width']
+            self.height = meta['height']
         return
     
     def GetMeta(self):
@@ -78,10 +86,8 @@ class AImage():
     def Standardize(self):
         return self.Convert(format="JPEG")
 
-class AImageLocation():
-    def __init__(self, urlOrPath: str):
-        self.urlOrPath = urlOrPath
-        return
+class AImageLocation(BaseModel):
+    urlOrPath: str
     
     def IsURL(self, ident: str) -> bool:
         return urlparse(ident).scheme != ''
@@ -109,14 +115,21 @@ class AImageLocation():
         image.save(imageByte, format='JPEG')
         return AImage(data=imageByte.getvalue())
 
-class AVideo():
-    def __init__(self, data: bytes):
-        self.data = data
-        meta = self.GetMeta()
-        self.format = meta['format']
-        self.width = meta['width']
-        self.height = meta['height']
-        self.fps = meta['fps']
+class AVideo(BaseModel):
+    data: Optional[bytes]
+    format: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+    fps: Optional[int] = None
+    
+    def __init__(self, **params):
+        super().__init__(**params)
+        if self.data and not all([self.format, self.width, self.height, self.fps]):
+            meta = self.GetMeta()
+            self.format = meta['format']
+            self.width = meta['width']
+            self.height = meta['height']
+            self.fps = meta['fps']
         return
     
     def GetMeta(self):
@@ -142,10 +155,8 @@ class AVideo():
     def Standardize(self):
         return AVideo(data=ConvertVideoFormat(self.data, 'mp4')) if self.data else self
 
-class AVideoLocation():
-    def __init__(self, urlOrPath: str):
-        self.urlOrPath = urlOrPath
-        return
+class AVideoLocation(BaseModel):
+    urlOrPath: str
     
     def IsURL(self, ident: str) -> bool:
         return urlparse(ident).scheme != ''

@@ -30,7 +30,7 @@ class AInterpreter():
         for dataType in typeInfo:
             if not typeInfo[dataType]["tag"]:
                 continue
-            self.RegisterPattern(f"_EXPR_OBJ_{dataType.__name__}", GenerateRE4ObjectExpr(inspect.Signature([param for name,param in inspect.signature(dataType.__init__).parameters.items() if name != 'self']), dataType.__name__, faultTolerance=True), False)
+            self.RegisterPattern(f"_EXPR_OBJ_{dataType.__name__}", GenerateRE4ObjectExpr([(fieldName, fieldInfo.annotation.__name__) for fieldName, fieldInfo in dataType.model_fields.items()], dataType.__name__, faultTolerance=True), False)
             self.RegisterAction(f"_EXPR_OBJ_{dataType.__name__}", {"func": self.CreateObjCB(dataType)})
         self.RegisterPattern("_EXPR_OBJ_DEFAULT", EXPR_OBJ, False)
         self.RegisterAction("_EXPR_OBJ_DEFAULT", {"func": self.EvalObjDefault, "noEval": ["typeBra", "typeKet"]})

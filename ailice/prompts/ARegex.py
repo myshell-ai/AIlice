@@ -33,8 +33,7 @@ def GenerateRE4FunctionCalling(signature: str, faultTolerance: bool = False) -> 
     patternArgs = r'\s*,\s*'.join([rf"(?:({arg}|\"{arg}\"|\'{arg}\')\s*[:=]\s*)?(?P<{arg}>({reMap[tp]+'|' if tp in reMap else ''}{refOrcatOrObj}))" for arg,tp in typePairs])
     return rf"!{funcName}<!\|\s*{patternArgs}\s*\|!>"
 
-def GenerateRE4ObjectExpr(signature, typeName: str, faultTolerance:bool = False) -> str:
-    typePairs = [(param.name, param.annotation.__name__) for name, param in signature.parameters.items()]
+def GenerateRE4ObjectExpr(typePairs, typeName: str, faultTolerance:bool = False) -> str:
     reMap = {k: v for k,v in ARegexMap.items()}
     reMap["str"] = rf"(?:.*?(?=\|{typeName}>))" if (faultTolerance and 1==len(typePairs) and "str"==typePairs[0][1]) else ARegexMap['str']
     patternArgs =  r'\s*,\s*'.join([rf"(?:({arg}|\"{arg}\"|\'{arg}\')\s*[:=]\s*)?(?P<{arg}>({reMap[tp]}))" for arg,tp in typePairs])

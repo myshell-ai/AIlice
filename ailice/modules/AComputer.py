@@ -80,7 +80,7 @@ class AComputer():
     
     def ReadImage(self, path: str) -> AImage:
         try:
-            return AImageLocation(path).Standardize()
+            return AImageLocation(urlOrPath=path).Standardize()
         except Exception as e:
             print("ReadImage() excetption: ", e)
         return AImage(data=None)

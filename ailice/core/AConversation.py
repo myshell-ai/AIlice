@@ -58,9 +58,9 @@ class AConversations():
         else:
             mimeType = GuessMediaType(param)
             if "image" in mimeType:
-                return {"type": "image", "tag": m, "content": AImageLocation(param).Standardize()}
+                return {"type": "image", "tag": m, "content": AImageLocation(urlOrPath=param).Standardize()}
             elif "video" in mimeType:
-                return {"type": "video", "tag": m, "content": AVideoLocation(param).Standardize()}
+                return {"type": "video", "tag": m, "content": AVideoLocation(urlOrPath=param).Standardize()}
             return
     
     def LatestEntry(self):

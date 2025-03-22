@@ -9,26 +9,36 @@ Created on Mon Feb 15 11:39:09 2021
 import os
 import sys
 import threading
-import numpy
 import inspect
-import typing
 import zmq
 import zmq.auth
-import pickle
-import traceback
-import ailice
 from zmq.auth.thread import ThreadAuthenticator
+import json
+import traceback
+from pydantic import validate_call
 from ailice.common.ADataType import *
+from ailice.common.AExceptions import ALightRPCException
+from ailice.common.ASerialization import AJSONEncoder, AJSONDecoder, SignatureFromString, AnnotationsFromSignature
 
 WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
 
 def SendMsg(conn,msg):
-  conn.send(pickle.dumps(msg))
+  try:
+    conn.send(json.dumps(msg, cls=AJSONEncoder).encode("utf-8"))
+  except Exception as e:
+     print("Exception: ", str(e))
+     traceback.print_tb(e.__traceback__)
   return
   
 def ReceiveMsg(conn):
-  return pickle.loads(conn.recv())
+  return json.loads(conn.recv().decode("utf-8"), cls=AJSONDecoder)
+
+def validate_methods(cls, methodList=None):
+    for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
+        if (not name.startswith('_')) and ((methodList is None) or (name in methodList)):
+            setattr(cls, name, validate_call(method, validate_return=(not inspect.isgeneratorfunction(method))))
+    return cls
 
 def GenerateCertificates(baseDir, name):
     keysDir = os.path.join(baseDir, 'certificates')
@@ -58,7 +68,7 @@ class GeneratorStorage:
 
 class GenesisRPCServer(object):
   def __init__(self, objCls, objArgs, url, APIList, enableSecurity=False, keysDir=None):
-    self.objCls = objCls
+    self.objCls = validate_methods(objCls, APIList)
     self.objArgs = objArgs
     self.url = url
     self.objPool = dict()
@@ -146,7 +156,7 @@ class GenesisRPCServer(object):
             ret = {'ret': result}
       except Exception as e:
         e.tb = ''.join(traceback.format_tb(e.__traceback__))
-        ret={'exception':e}
+        ret={'exception':f"{str(e)}\n\n{e.tb}"}
         traceback.print_tb(e.__traceback__)
         print('Exception. msg: ',str(msg),'. Except: ',str(e))
       SendMsg(socket,ret)
@@ -160,28 +170,12 @@ def AddMethod(kls, methodName, methodMeta):
   signature = methodMeta['signature']
   is_generator = methodMeta['is_generator']
   
-  tempNamespace = {k.__name__: k for k in typeInfo}
-  tempNamespace["ailice"] = ailice
-  tempNamespace["numpy"] = numpy
-  tempNamespace["Any"] = typing.Any
-  tempNamespace["Union"] = typing.Union
-  tempNamespace["Optional"] = typing.Optional
-  tempNamespace["List"] = typing.List
-  tempNamespace["Tuple"] = typing.Tuple
-  tempNamespace["Dict"] = typing.Dict
-  tempNamespace["Set"] = typing.Set
-  tempNamespace["Callable"] = typing.Callable
-  tempNamespace["TypeVar"] = typing.TypeVar
-  tempNamespace["Generic"] = typing.Generic
-  
-  exec(f"def tempFunc{signature}: pass", tempNamespace)
-  tempFunc = tempNamespace['tempFunc']
-  newSignature = inspect.Signature(parameters=[inspect.Parameter(name=t.name, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=t.annotation) for p,t in inspect.signature(tempFunc).parameters.items()],
-                                   return_annotation=inspect.signature(tempFunc).return_annotation)
+  newSignature = SignatureFromString(signature)
 
   def methodTemplate(self,*args,**kwargs):
     return self.RemoteCall(methodName,args,kwargs)
   methodTemplate.__is_generator__ = is_generator
+  methodTemplate.__annotations__ = AnnotationsFromSignature(newSignature)
   methodTemplate.__signature__ = newSignature
   setattr(kls,methodName,methodTemplate)
 
@@ -203,7 +197,7 @@ def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serve
           })
           
           if 'exception' in ret:
-              raise ret['exception']
+              raise ALightRPCException(ret['exception'])
               
           if ret['finished']:
               raise StopIteration
@@ -229,7 +223,7 @@ def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serve
       
       ret = self.Send({'CREATE':''})
       if "exception" in ret:
-        raise ret["exception"]
+        raise ALightRPCException(ret["exception"])
       self.clientID = ret['clientID']
       return
     
@@ -250,7 +244,7 @@ def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serve
     def RemoteCall(self,funcName,args,kwargs):
       ret = self.Send({'clientID': self.clientID, 'function':funcName, 'args':args, "kwargs": kwargs})
       if 'exception' in ret:
-        raise ret['exception']
+        raise ALightRPCException(ret['exception'])
       if isinstance(ret['ret'], dict) and 'generatorID' in ret['ret']:
         return RemoteGenerator(self, ret['ret']['generatorID'])
       return ret['ret']
@@ -269,10 +263,9 @@ def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serve
     ret=ReceiveMsg(socket)
   for funcName, methodMeta in ret['META']['methods'].items():
     AddMethod(GenesisRPCClientTemplate,funcName,methodMeta)
-  return GenesisRPCClientTemplate if returnClass else GenesisRPCClientTemplate()
+  return validate_methods(GenesisRPCClientTemplate) if returnClass else validate_methods(GenesisRPCClientTemplate)()
 
 
 #baseDir = os.path.dirname(os.path.abspath(__file__))
 #serverPublicFile, serverSecretFile = GenerateCertificates(baseDir, "server")
 #clientPublicFile, clientSecretFile = GenerateCertificates(baseDir, "client")
-
