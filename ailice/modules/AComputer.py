@@ -1,5 +1,11 @@
+import os
 import importlib.util
 import io
+import re
+import typing
+import datetime
+import mimetypes
+import requests
 
 requirements = [x for x in ["pyautogui", "easyocr", "numpy"] if (None == importlib.util.find_spec(x))]
 if 0 == len(requirements):
@@ -94,12 +100,98 @@ class AComputer():
             return f"WriteImage() excetption: {str(e)}"
         return
 
+    def Proxy(self, href: str, method: str, headers: dict={}, body: dict={}, params: dict={}) -> typing.Generator:
+        if os.path.exists(href):
+            filePath = os.path.abspath(href)
+            fileSize = os.path.getsize(filePath)
+            fileName = os.path.basename(filePath)
+            
+            contentType, encoding = mimetypes.guess_type(filePath)
+            if contentType is None:
+                contentType = 'application/octet-stream'
+            
+            startByte = 0
+            endByte = fileSize - 1
+            statusCode = 200
+            
+            if headers and 'Range' in headers:
+                rangeHeader = headers['Range']
+                rangeMatch = re.match(r'bytes=(\d+)-(\d*)', rangeHeader)
+                if rangeMatch:
+                    startByte = int(rangeMatch.group(1))
+                    if rangeMatch.group(2):
+                        endByte = min(int(rangeMatch.group(2)), fileSize - 1)
+                    statusCode = 206  # Partial Content
+            
+            responseHeaders = {
+                'Content-Type': contentType,
+                'Content-Length': str(endByte - startByte + 1),
+                'Accept-Ranges': 'bytes',
+                'Content-Disposition': f'inline; filename="{fileName}"',
+                'Last-Modified': datetime.datetime.fromtimestamp(os.stat(filePath).st_mtime, tz=datetime.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
+            }
+            
+            if statusCode == 206:
+                responseHeaders['Content-Range'] = f'bytes {startByte}-{endByte}/{fileSize}'
+            
+            responseInfo = {
+                'status_code': statusCode,
+                'headers': responseHeaders
+            }
+            
+            yield responseInfo
+            
+            if method.upper() != 'HEAD':
+                def content_generator():
+                    with open(filePath, 'rb') as file:
+                        if startByte > 0:
+                            file.seek(startByte)
+                        bytesToRead = endByte - startByte + 1
+                        bytesRead = 0
+                        
+                        while bytesRead < bytesToRead:
+                            chunkSize = min(262144, bytesToRead - bytesRead)
+                            chunk = file.read(chunkSize)
+                            if not chunk:
+                                break
+                            bytesRead += len(chunk)
+                            yield chunk
+                
+                yield from content_generator()
+        else:
+            req = requests.request(
+                method=method,
+                url=href,
+                headers=headers,
+                data=body,
+                params=params,
+                stream=True
+            )
+            
+            responseInfo = {
+                'status_code': req.status_code,
+                'headers': dict(req.headers)
+            }
+            
+            yield responseInfo
+
+            if method.upper() != 'HEAD':
+                def content_generator():
+                    try:
+                        for chunk in req.iter_content(chunk_size=262144):
+                            if chunk:
+                                yield chunk
+                    finally:
+                        req.close()
+                
+                yield from content_generator()
+    
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AComputer, dict(), args.addr, ["ModuleInfo", "ScreenShot", "LocateAndClick", "LocateAndScroll", "TypeWrite", "ReadImage", "WriteImage"]).Run()
+    makeServer(AComputer, dict(), args.addr, ["ModuleInfo", "ScreenShot", "LocateAndClick", "LocateAndScroll", "TypeWrite", "ReadImage", "WriteImage", "Proxy"]).Run()
 
 if __name__ == '__main__':
     main()

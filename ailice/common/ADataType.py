@@ -92,13 +92,21 @@ class AImageLocation(BaseModel):
     def IsURL(self, ident: str) -> bool:
         return urlparse(ident).scheme != ''
     
-    def GetImage(self, ident: str) -> Image:
-        if self.IsURL(ident):
-            response = requests.get(ident)
-            imageBytes = io.BytesIO(response.content)
-            return Image.open(imageBytes)
+    def GetImage(self, ident: str, proxy=None) -> Image:
+        if proxy is None:
+            if self.IsURL(ident):
+                response = requests.get(ident)
+                imageBytes = io.BytesIO(response.content)
+                return Image.open(imageBytes)
+            else:
+                return Image.open(ident)
         else:
-            return Image.open(ident)
+            response = proxy(ident, "GET")
+            _ = next(response)
+            imageBytes = io.BytesIO()
+            for chunk in response:
+                imageBytes.write(chunk)
+            return Image.open(imageBytes)
 
     @classmethod
     def FromJson(cls, data):
@@ -107,8 +115,8 @@ class AImageLocation(BaseModel):
     def ToJson(self):
         return {'type': 'AImageLocation', 'urlOrPath': self.urlOrPath}
     
-    def Standardize(self):
-        image = self.GetImage(self.urlOrPath)
+    def Standardize(self, proxy=None):
+        image = self.GetImage(self.urlOrPath, proxy)
         if image.mode != 'RGB':
             image = image.convert('RGB')
         imageByte = io.BytesIO()
@@ -161,15 +169,23 @@ class AVideoLocation(BaseModel):
     def IsURL(self, ident: str) -> bool:
         return urlparse(ident).scheme != ''
     
-    def GetVideo(self, ident: str):
-        if self.IsURL(ident):
-            response = requests.get(ident)
-            videoBytes = io.BytesIO(response.content)
-            return videoBytes.getvalue()
-        else:
-            with open(ident, "rb") as f:
-                videoBytes = io.BytesIO(f.read())
+    def GetVideo(self, ident: str, proxy=None):
+        if proxy is None:
+            if self.IsURL(ident):
+                response = requests.get(ident)
+                videoBytes = io.BytesIO(response.content)
                 return videoBytes.getvalue()
+            else:
+                with open(ident, "rb") as f:
+                    videoBytes = io.BytesIO(f.read())
+                    return videoBytes.getvalue()
+        else:
+            response = proxy(ident, "GET")
+            _ = next(response)
+            videoBytes = io.BytesIO()
+            for chunk in response:
+                videoBytes.write(chunk)
+            return videoBytes.getvalue()
     
     @classmethod
     def FromJson(cls, data):
@@ -178,8 +194,8 @@ class AVideoLocation(BaseModel):
     def ToJson(self):
         return {'type': 'AVideoLocation', 'urlOrPath': self.urlOrPath}
 
-    def Standardize(self):
-        return AVideo(data=ConvertVideoFormat(self.GetVideo(self.urlOrPath), "mp4"))
+    def Standardize(self, proxy=None):
+        return AVideo(data=ConvertVideoFormat(self.GetVideo(self.urlOrPath, proxy), "mp4"))
     
 def ToJson(obj):
     return obj.ToJson() if hasattr(obj, "ToJson") else {'type': type(obj).__name__, 'data': obj}
