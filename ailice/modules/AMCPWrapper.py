@@ -122,7 +122,6 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr', type=str, help="The address where the service runs on.")
-
     parser.add_argument('cmd', help='The command to be executed.')
     parser.add_argument('cmd_args', nargs='*', help='Command arguments.')
     parser.add_argument('--env', action='append', dest='env_vars', metavar='KEY=VALUE', help='Set up env variables, the format should be: KEY=VALUE')
@@ -141,6 +140,7 @@ def main():
         serverParams = StdioServerParameters(command=args.cmd, args=args.cmd_args, env=env)
         kls, actions = MakeWrapper(serverParams)
         server = makeServer(kls, {"serverParams": serverParams}, args.addr, ["ModuleInfo"] + actions)
+        print(f"We will run the MCP server next, you can use this address {args.addr} to load the wrapped ext-module and use the corresponding tools.")
         server.Run()
     except Exception as e:
         print(f"Error in main: {e}", traceback.print_tb(e.__traceback__))

@@ -22,6 +22,8 @@
 
 **ATTENTION! We currently has no plans to create any related crypto tokens. Please be cautious and recognize scams to avoid being deceived. (Updated on January 6, 2025)**
 
+:fire: Mar 22, 2025: Ailice can now use MCP tools! Click [here](#configuring-extension-modules-and-mcp-servers).
+
 :fire: Jan 23, 2025: Updated the voice dialogue feature. Thanks to ChatTTS's excellent implementation, voice dialogue has finally moved beyond its experimental status and become practical.
 
 :fire: Jun 22, 2024: We have entered the era of locally running JARVIS-like AI assistants! The latest open-source LLMs enable us to perform complex tasks locally! Click [here](#guide-to-choosing-an-llm) to learn more.
@@ -49,7 +51,7 @@ To understand Ailice's present abilities, watch the following videos:
   - [Run Ailice in Docker Containers](#run-ailice-in-docker-containers)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
   - [Usage](#usage)
-  - [Module Configuration](#module-configuration)
+  - [Configuring Extension Modules and MCP Servers](#configuring-extension-modules-and-mcp-servers)
   - [Useful Tips](#useful-tips)
 - [Selection and Configuration of LLM](#selection-and-configuration-of-LLM)
   - [Guide to Choosing an LLM](#guide-to-choosing-an-llm)
@@ -281,12 +283,12 @@ needs. You can also specify a special type of agent and interact with it directl
 - --**share** create a publicly shareable link for Ailice. (For security reasons, we have temporarily removed this feature. It will be re-enabled once more security measures are implemented in the UI. Please ensure that the services provided by app.py are not exposed to any untrusted networks)
 
 
-<a name="module-configuration"></a>
-### Module Configuration
+<a name="configuring-extension-modules-and-mcp-servers"></a>
+### Configuring Extension Modules and MCP Servers
 
-The configuration file of Ailice is named config.json, and its location will be output to the command line when Ailice is started. In this section, we will introduce how to configure the external interaction modules through the configuration file.
+The configuration file of Ailice is named config.json, and its location will be output to the command line when Ailice is started. In this section, we will introduce how to extend Ailice's external interaction capabilities through configuration file.
 
-In Ailice, we use the term "module" to specifically refer to components that provide functions for interacting with the external world. Each module runs as an independent process; they can run in different software or hardware environments from the core process, making Ailice capable of being distributed. We provide a series of basic module configurations in the configuration file required for Ailice's operation (such as vector database, search, browser, code execution, etc.). You can also add configurations for any third-party modules and provide their module runtime address and port after Ailice is up and running to enable automatic loading. Module configuration is very simple, consisting of only two items:
+In Ailice, we use the term "module" to specifically refer to components that provide functions for interacting with the external world. Each module runs as an independent process; they can run in different software or hardware environments from the core process, making Ailice capable of being distributed. We provide a series of basic module configurations in the configuration file required for Ailice's operation (such as vector database, search, browser, code execution, etc.). You can also add configurations for new modules. Module configuration is very simple, consisting of only two items:
 
 ```json
   "services": {
@@ -300,6 +302,19 @@ In Ailice, we use the term "module" to specifically refer to components that pro
 Among these, under **"cmd"** is a command line used to start the module's process. When Ailice starts, it automatically runs these commands to launch the modules. Users can specify any command, providing significant flexibility. You can start a module's process locally or utilize Docker to start a process in a virtual environment, or even start a remote process. Some modules have multiple implementations (such as Google/Storage), and you can configure here to switch to another implementation.
 
 **"addr"** refers to the address and port number of the module process. Users might be confused by the fact that many modules in the default configuration have both "cmd" and "addr" containing addresses and port numbers, causing redundancy. This is because "cmd" can, in principle, contain any command (which may include addresses and port numbers, or none at all). Therefore, a separate "addr" item is necessary to inform Ailice how to access the module process.
+
+Ailice can use tools from various **MCP servers**, simply by starting the MCP server with the ailice_mcp_wrapper command, which allows it to be used as a standard extension module for Ailice. For example:
+
+```json
+  "services": {
+    ...
+    "mcp_echo": {"cmd": "ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 mcp_echo hello",
+                 "addr": "tcp://127.0.0.1:59000"},
+    ...
+  }
+```
+
+For extension modules that are set up in the configuration file, Ailice automatically loads them after startup and selects the appropriate tools for the current task. In addition to using config.json, you can also provide Ailice with the address and port of the extension module process during runtime, and it can dynamically load and use the module.
 
 
 <a name="useful-tips"></a>

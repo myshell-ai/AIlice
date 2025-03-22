@@ -50,7 +50,7 @@ class AProcessor():
         self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"module": "core",
                                                                                             "action": "LOADEXTMODULE",
                                                                                             "signature": "LOADEXTMODULE<!|addr: str|!> -> str",
-                                                                                            "prompt": "Load the ext-module and get the list of callable functions in it. ",
+                                                                                            "prompt": "Load the ext-module and get the list of callable functions in it. addr is a service address in the format protocol://ip:port.",
                                                                                             "type": "primary"}))
         self.modules['storage']['module'].Store(self.collection + "_functions", json.dumps({"module": "core",
                                                                                             "action": "LOADEXTPROMPT",

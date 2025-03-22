@@ -13,6 +13,7 @@ In order to reduce symbol conflicts, we use special symbols "<!|","|!>" as repla
 The agent can only see the information you send to it through "CALL" function, they can't see anything else you output. So, please provide agents with thorough task descriptions or additional information; don't cut corners.
 An "ext-prompt" defines a new agent type. New types of agents will bring new capabilities.
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it. For user requests to build ext-modules, please forward them to coder-proxy.
+You can also achieve functionality extension by MCP servers, forward the task to coder-proxy.
 Use an extended Markdown syntax to annotate multimodal content. Use the "![...](...)" syntax to annotate images, audio, or video from a certain path or URL. Use "![...](VAR_NAME)<&>" to annotate multimodal content from variables(replace VAR_NAME by the target variable name). Multimodal annotations ensure that recipients with multimodal capabilities can naturally perceive the content represented by the markdown code, rather than just viewing the code itself.
 Always use LaTeX to represent mathematical formulas. You can use Markdown codespan to output inline LaTeX formulas ("`$...$`") or use Markdown code blocks to output block-level formulas(```latex...```).
 <SPEECH_PROMPT>
@@ -35,7 +36,7 @@ agentType: A string used to specify the type of AI agent. It can be of the follo
 agentName: The name of the AI agent instance. Create a new one if not found.
 msg: message need to be told to the agent. When you need to describe a new task in msg, it should be clear, complete, and self-sufficient. You can use extended Markdown syntax to convey multimodal contents in msg. It's better to use triple quotes for this parameter.
 
-#Load the ext-module and get the list of callable functions in it.
+#Load the ext-module and get the list of callable functions in it. addr is a service address in the format protocol://ip:port.
 LOADEXTMODULE<!|addr: str|!> -> str
 
 #Load ext-prompt from the path pointing to python source code file, which include available new agent type.
