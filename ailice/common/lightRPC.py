@@ -12,9 +12,9 @@ import threading
 import inspect
 import zmq
 import zmq.auth
-from zmq.auth.thread import ThreadAuthenticator
 import json
 import traceback
+from zmq.auth.thread import ThreadAuthenticator
 from pydantic import validate_call
 from ailice.common.ADataType import *
 from ailice.common.AExceptions import ALightRPCException
@@ -34,12 +34,6 @@ def SendMsg(conn,msg):
 def ReceiveMsg(conn):
   return json.loads(conn.recv().decode("utf-8"), cls=AJSONDecoder)
 
-def validate_methods(cls, methodList=None):
-    for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
-        if (not name.startswith('_')) and ((methodList is None) or (name in methodList)):
-            setattr(cls, name, validate_call(method, validate_return=(not inspect.isgeneratorfunction(method))))
-    return cls
-
 def GenerateCertificates(baseDir, name):
     keysDir = os.path.join(baseDir, 'certificates')
     os.makedirs(keysDir, exist_ok=True)
@@ -51,6 +45,12 @@ def LoadCertificate(filename):
     with open(filename, 'r') as f:
         keyText = f.read()
     return keyText
+
+def validate_methods(cls, methodList=None):
+    for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
+        if (not name.startswith('_')) and ((methodList is None) or (name in methodList)):
+            setattr(cls, name, validate_call(method, validate_return=(not inspect.isgeneratorfunction(method))))
+    return cls
 
 class GeneratorStorage:
     def __init__(self, obj):
