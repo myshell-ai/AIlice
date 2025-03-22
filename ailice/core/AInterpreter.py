@@ -131,11 +131,7 @@ class AInterpreter():
         try:
             for script in scripts:
                 r = self.Eval(script)
-                if type(r) in typeInfo:
-                    varName = self.CreateVar(content=r, prefix="ret")
-                    r = f"![Returned data is stored to variable: {varName} := {str(r)}]({varName})<&>"
-                elif r != None:
-                    r = str(r)
+                r = self.ConvertToText(r)
 
                 if r not in ["", None]:
                     resp += (r + "\n\n")
@@ -193,6 +189,22 @@ class AInterpreter():
                                          return_annotation=dataType)
         callback.__signature__ = newSignature
         return callback
+    
+    def ConvertToText(self, r) -> str:
+        if (type(r) == str) or (r is None):
+            return r
+        elif type(r) in typeInfo:
+            varName = self.CreateVar(content=r, prefix="ret")
+            return f"![Returned data is stored to variable: {varName} := {str(r)}]({varName})<&>"
+        elif type(r) == list:
+            return f"{str([self.ConvertToText(item) for item in r])}"
+        elif type(r) == tuple:
+            return f"{str((self.ConvertToText(item) for item in r))}"
+        elif type(r) == dict:
+            res = {k: self.ConvertToText(v) for k,v in r.items()}
+            return f"{str(res)}"
+        else:
+            return str(r)
     
     def ToJson(self):
         return {"env": {k: ToJson(v) for k,v in self.env.items()}}

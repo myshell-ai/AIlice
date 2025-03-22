@@ -4,6 +4,7 @@ import base64
 import inspect
 import inspect
 import typing
+import pydantic
 import importlib
 import json
 from ailice.common.ADataType import AImage, AImageLocation, AVideo, AVideoLocation
@@ -20,6 +21,8 @@ class AJSONEncoder(json.JSONEncoder):
             return {"_type": "AVideo", "value": obj.ToJson()}
         elif isinstance(obj, AVideoLocation):
             return {"_type": "AVideoLocation", "value": obj.ToJson()}
+        elif isinstance(obj, pydantic.BaseModel):
+            return {"_type": obj.__class__.__name__, "value": obj.model_dump_json()}
         else:
             return super(AJSONEncoder, self).default(obj)
 
@@ -28,20 +31,26 @@ class AJSONDecoder(json.JSONDecoder):
         super().__init__(object_hook=self.object_hook, *args, **kwargs)
 
     def object_hook(self, obj):
-        if "_type" not in obj:
+        try:
+            if "_type" not in obj:
+                return obj
+            type = obj["_type"]
+            if type == "bytes":
+                return base64.b64decode(obj['value'].encode('utf-8'))
+            elif type == "AImage":
+                return AImage.FromJson(obj["value"])
+            elif type == 'AImageLocation':
+                return AImageLocation.FromJson(obj["value"])
+            elif type == 'AVideo':
+                return AVideo.FromJson(obj["value"])
+            elif type == 'AVideoLocation':
+                return AVideoLocation.FromJson(obj["value"])
+            else:
+                ModelType = pydantic.create_model(obj["_type"], **obj["value"])
+                return ModelType().model_validate_json(obj["value"])
+        except Exception as e:
+            print("AJSONDecoder Exception. ", str(e))
             return obj
-        type = obj["_type"]
-        if type == "bytes":
-            return base64.b64decode(obj['value'].encode('utf-8'))
-        elif type == "AImage":
-            return AImage.FromJson(obj["value"])
-        elif type == 'AImageLocation':
-            return AImageLocation.FromJson(obj["value"])
-        elif type == 'AVideo':
-            return AVideo.FromJson(obj["value"])
-        elif type == 'AVideoLocation':
-            return AVideoLocation.FromJson(obj["value"])
-        return obj
 
 TYPE_NAMESPACE = {
     'bool': bool,
