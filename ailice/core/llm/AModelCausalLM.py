@@ -70,7 +70,7 @@ class AModelCausalLM():
         return
     
     def Generate(self, prompt: str, proc: callable, endchecker: callable, temperature: float, gasTank) -> str:
-        predictedIDs = torch.tensor([prompt]).cuda() #(b, seq)
+        predictedIDs = torch.tensor([prompt[0]]).cuda() #(b, seq)
 
         generatedIDs = None
         pastKeyValues = None
