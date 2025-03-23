@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import time
 import threading
@@ -9,6 +10,7 @@ from contextlib import AsyncExitStack
 from mcp import ClientSession, StdioServerParameters
 from mcp.server.fastmcp import Image
 from mcp.client.stdio import stdio_client
+from mcp.client.sse import sse_client
 
 from ailice.common.lightRPC import makeServer
 from ailice.common.ADataType import AImage, AVideo
@@ -27,12 +29,22 @@ loop_thread.start()
 while loop is None:
     time.sleep(0.01)
 
-async def LoadMeta(serverParams):
-    async with stdio_client(serverParams) as (read, write):
-        async with ClientSession(read, write) as session:
-            await session.initialize()
-            toolsInfo = await session.list_tools()
-            return toolsInfo
+async def LoadMeta(serverParams=None, serverUrl=None):
+    if serverParams is not None:
+        async with stdio_client(serverParams) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                toolsInfo = await session.list_tools()
+                return toolsInfo
+    elif serverUrl is not None:
+        async with sse_client(serverUrl) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                toolsInfo = await session.list_tools()
+                return toolsInfo
+    else:
+        print("The MCP server parameters you provided are insufficient, unable to connect to the MCP server.")
+        sys.exit(-1)
 
 def ConstructPrompt(name: str, tool) -> str:
     return f"{name} is a tool called through stringified json. Its description is: {tool.description}. Its schema is: {str(tool.inputSchema)}. You need to put json in triple quotes as a string type parameter."
@@ -64,13 +76,14 @@ def AddActionMethod(kls, name: str, tool):
     return
 
 
-def MakeWrapper(serverParams):
+def MakeWrapper(serverParams=None, serverUrl=None):
     class AMCPWrapper():
         #TODO. How to get the module name?
-        MODULE_INFO = {"NAME": serverParams.args[0], "ACTIONS": {}}
+        MODULE_INFO = {"NAME": serverParams.args[0] if serverParams is not None else serverUrl, "ACTIONS": {}}
         
-        def __init__(self, serverParams):
+        def __init__(self, serverParams=None, serverUrl=None):
             self.serverParams = serverParams
+            self.serverUrl = serverUrl
             self.exit_stack = None
             self.stdio = None
             self.write = None
@@ -86,11 +99,17 @@ def MakeWrapper(serverParams):
                     print(f"Error closing resources: {e}")
         
         async def initialize(self):
-            self.MODULE_INFO["NAME"] = self.serverParams.args[0]
             self.exit_stack = AsyncExitStack()
-            stdio_transport = await self.exit_stack.enter_async_context(stdio_client(self.serverParams))
-            self.stdio, self.write = stdio_transport
-            self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
+
+            if self.serverParams is not None:
+                self.MODULE_INFO["NAME"] = self.serverParams.args[0]
+                stdio_transport = await self.exit_stack.enter_async_context(stdio_client(self.serverParams))
+                self.session = await self.exit_stack.enter_async_context(ClientSession(*stdio_transport))
+            elif self.serverUrl is not None:
+                self.MODULE_INFO["NAME"] = self.serverUrl
+                streams = await self.exit_stack.enter_async_context(sse_client(url=self.serverUrl))
+                self.session = await self.exit_stack.enter_async_context(ClientSession(*streams))
+                
             await self.session.initialize()
             
         async def close(self):
@@ -103,7 +122,7 @@ def MakeWrapper(serverParams):
     maxRetries = 3
     for attempt in range(maxRetries):
         try:
-            toolsInfo = asyncio.run_coroutine_threadsafe(LoadMeta(serverParams), loop).result()
+            toolsInfo = asyncio.run_coroutine_threadsafe(LoadMeta(serverParams=serverParams, serverUrl=serverUrl), loop).result()
             break
         except Exception as e:
             if attempt == maxRetries - 1:
@@ -120,15 +139,48 @@ def MakeWrapper(serverParams):
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--addr', type=str, help="The address where the service runs on.")
-    parser.add_argument('cmd', help='The command to be executed.')
-    parser.add_argument('cmd_args', nargs='*', help='Command arguments.')
-    parser.add_argument('--env', action='append', dest='env_vars', metavar='KEY=VALUE', help='Set up env variables, the format should be: KEY=VALUE')
+    import sys
+    
+    parser = argparse.ArgumentParser(
+        description='Ailice MCP Wrapper',
+        epilog='''
+Examples:
+  # SSE mode example
+  ailice_mcp_wrapper --addr localhost:59200 sse --server_url http://example:8000/sse
+  
+  # Stdio mode example
+  ailice_mcp_wrapper --addr localhost:59200 stdio python3 mcp_demo_echo.py
+  
+  # Stdio mode with environment variables
+  ailice_mcp_wrapper --addr localhost:59200 stdio python3 mcp_demo_echo.py --env PYTHONPATH=/path/to/modules --env DEBUG=1
+''',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    
+    parser.add_argument('--addr', type=str, required=True, help="The address where the service runs on. This address will be given to Ailice, to connect to the service.")
+    
+    subparsers = parser.add_subparsers(dest='mode', help='Operation mode')
+    
+    sse_parser = subparsers.add_parser('sse', help='SSE mode', 
+                                      description='Run in SSE mode, connecting to an existing MCP server',
+                                      epilog='Example: ailice_mcp_wrapper --addr localhost:59200 sse --server_url http://example:8000/sse')
+    sse_parser.add_argument('--server_url', type=str, required=True, help="The url of MCP server.")
+    
+    stdio_parser = subparsers.add_parser('stdio', help='Stdio mode',
+                                        description='Run in stdio mode, executing a local command',
+                                        epilog='Example: ailice_mcp_wrapper --addr localhost:59200 stdio python3 mcp_demo_echo.py')
+    stdio_parser.add_argument('cmd', help='The command to be executed.')
+    stdio_parser.add_argument('cmd_args', nargs='*', help='Command arguments.')
+    stdio_parser.add_argument('--env', action='append', dest='env_vars', metavar='KEY=VALUE', help='Set up env variables, the format should be: KEY=VALUE')
+    
     args = parser.parse_args()
     
+    if args.mode is None:
+        parser.print_help()
+        sys.exit(1)
+    
     env = os.environ.copy()
-    if args.env_vars:
+    if args.mode == 'stdio' and args.env_vars:
         for env_var in args.env_vars:
             try:
                 key, value = env_var.split('=', 1)
@@ -137,9 +189,13 @@ def main():
                 print(f"Warning: Incorrect environment variable format: {env_var}, should be KEY=VALUE format.")
     
     try:
-        serverParams = StdioServerParameters(command=args.cmd, args=args.cmd_args, env=env)
-        kls, actions = MakeWrapper(serverParams)
-        server = makeServer(kls, {"serverParams": serverParams}, args.addr, ["ModuleInfo"] + actions)
+        if args.mode == 'stdio':
+            serverParams = StdioServerParameters(command=args.cmd, args=args.cmd_args, env=env)
+            kls, actions = MakeWrapper(serverParams=serverParams)
+            server = makeServer(kls, {"serverParams": serverParams}, args.addr, ["ModuleInfo"] + actions)
+        else:  # args.mode == 'sse'
+            kls, actions = MakeWrapper(serverUrl=args.server_url)
+            server = makeServer(kls, {"serverUrl": args.server_url}, args.addr, ["ModuleInfo"] + actions)
         print(f"We will run the MCP server next, you can use this address {args.addr} to load the wrapped ext-module and use the corresponding tools.")
         server.Run()
     except Exception as e:
@@ -148,6 +204,6 @@ def main():
         if loop is not None:
             loop.call_soon_threadsafe(loop.stop)
             loop_thread.join(timeout=5)
-    
+
 if __name__ == '__main__':
     main()

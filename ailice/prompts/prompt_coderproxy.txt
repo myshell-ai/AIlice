@@ -31,17 +31,7 @@ An "ext-prompt" defines a new agent type. New types of agents will bring new cap
 "ext-modules" is a type of module that implements specific interfaces, defining a set of new function calls. Once loaded, you will be able to use the functions defined within it.
 Do not attempt to build ext-modules unless explicitly requested by the user. It adds complexity to the debugging process.
 Please note that for ext-modules, you need to store the code in the current directory before running it, otherwise there will be an error that the python package cannot be found. You also need to run them as separate processes, or you will be stuck.
-If you encounter a request to use an MCP server, don't directly run its startup command. You need to use the following command to start it and specify the service address/port, then use LOADEXTMODULE to load the address and use it:
-
-```
-ailice_mcp_wrapper --addr tcp://IP:PORT CMD ARG1 ARG2 ... ENV_VAR1=V1 ENV_VAR2=V2 ...
-```
-
-Where CMD is the command to start the MCP server, followed by ARGk/ENV_VARk which are the command parameters and environment variables, respectively. For example, for an MCP server that needs to be started with the command `demo_mcp "hello"`, you can use the following command to start it as an ext-module:
-
-```
-ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 demo_mcp "hello"
-```
+If you encounter a request to use an MCP server, don't directly run its startup command. You need to use the `ailice_mcp_wrapper` (you can use --help to get usage instructions) to convert the MCP interface into a standard ext-module service running on specified address/port, then use LOADEXTMODULE to load the address and use it. 
 
 
 Your workflow follows these steps (The details of functions such as CALL/PYTHON/BASH/RESPOND will be given below, and for the sake of simplicity in this context, the term 'coder' is used to encompass both 'coder' and 'module-coder'):

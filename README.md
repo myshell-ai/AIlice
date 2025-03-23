@@ -303,13 +303,26 @@ Among these, under **"cmd"** is a command line used to start the module's proces
 
 **"addr"** refers to the address and port number of the module process. Users might be confused by the fact that many modules in the default configuration have both "cmd" and "addr" containing addresses and port numbers, causing redundancy. This is because "cmd" can, in principle, contain any command (which may include addresses and port numbers, or none at all). Therefore, a separate "addr" item is necessary to inform Ailice how to access the module process.
 
-Ailice can use tools from various **MCP servers**, simply by starting the MCP server with the ailice_mcp_wrapper command, which allows it to be used as a standard extension module for Ailice. For example:
+Ailice can use tools from various **MCP servers**, simply by wrapping the MCP server with the ailice_mcp_wrapper command, which allows it to be used as a standard extension module for Ailice. 
+
+For an MCP server started locally in stdio mode, assuming the startup command is `mcp_echo hello`, we use the following configuration to launch it as a standard Ailice service.
 
 ```json
   "services": {
     ...
-    "mcp_echo": {"cmd": "ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 mcp_echo hello",
-                 "addr": "tcp://127.0.0.1:59000"},
+    "mcp_echo": {"cmd": "ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 stdio mcp_echo hello",
+                 "addr": "tcp://127.0.0.1:59200"},
+    ...
+  }
+```
+
+For an MCP server in SSE mode, assuming its service address is: `http://example:8000/sse`, we use the following configuration to connect to it.
+
+```json
+  "services": {
+    ...
+    "mcp_echo": {"cmd": "ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 sse --server_url http://example:8000/sse",
+                 "addr": "tcp://127.0.0.1:59200"},
     ...
   }
 ```
