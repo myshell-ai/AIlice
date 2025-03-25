@@ -1,6 +1,5 @@
 from datetime import datetime
 from importlib.resources import read_text
-from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
@@ -10,12 +9,13 @@ class APromptResearcher():
     PROMPT_DESCRIPTION = "Conduct an internet investigation on a particular topic or gather data. It also has the capability to execute simple scripts."
     PROMPT_PROPERTIES = {"type": "primary"}
     
-    def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
+    def __init__(self, processor, storage, collection, conversations, formatter, config, outputCB = None):
         self.processor = processor
         self.storage = storage
         self.collection = collection
         self.conversations = conversations
         self.formatter = formatter
+        self.config = config
         self.outputCB = outputCB
         self.functions = []
         self.prompt0 = read_text("ailice.prompts", "prompt_researcher.txt")
@@ -97,7 +97,7 @@ The "Relevant Information" part contains data that may be related to the current
         return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
     
     def BuildPrompt(self):
-        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
+        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * self.config.contextWindowRatio))
         if prompt is None:
             prompt, tokenNum = self.ParameterizedBuildPrompt(1)
         return prompt, tokenNum

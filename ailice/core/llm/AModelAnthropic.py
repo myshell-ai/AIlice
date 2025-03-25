@@ -3,15 +3,15 @@ import anthropic
 
 from termcolor import colored
 from ailice.common.utils.ATextSpliter import sentences_split
-from ailice.common.AConfig import config
 from ailice.core.llm.AFormatter import CreateFormatter
 
 
 class AModelAnthropic():
-    def __init__(self, modelType: str, modelName: str):
+    def __init__(self, modelType: str, modelName: str, config):
         self.tokenizer = None
         self.modelType = modelType
         self.modelName = modelName
+        self.config = config
         self.client = anthropic.Anthropic(api_key = config.models[modelType]["apikey"],
                                           base_url = config.models[modelType]["baseURL"])
 
@@ -46,7 +46,7 @@ class AModelAnthropic():
                         currentPosition += len(sentences[0])
         except anthropic.AuthenticationError as e:
             msg = colored("The program encountered an authorization error. Please check your API key:", "yellow") + \
-                  colored(f"\n\n{self.modelType}: ", "green") + colored(f"'{config.models[self.modelType]['apikey']}'\n\n", "blue") + \
+                  colored(f"\n\n{self.modelType}: ", "green") + colored(f"'{self.config.models[self.modelType]['apikey']}'\n\n", "blue") + \
                   colored("If it's incorrect, append '--resetApiKey' to the command parameters you are using to restart ailice and reset the API key.", "yellow")
             print('\n\n', msg)
             print('\n\nException:\n', str(e))

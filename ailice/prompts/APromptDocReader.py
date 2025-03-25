@@ -1,7 +1,6 @@
 import random
 from datetime import datetime
 from importlib.resources import read_text
-from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import paragraph_generator
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt
@@ -11,12 +10,13 @@ class APromptDocReader():
     PROMPT_DESCRIPTION = "Document(web page/pdf literatures/code files/text files...) reading comprehension and related question answering. You need to include the URL or file path of the target documentation in the request message."
     PROMPT_PROPERTIES = {"type": "primary"}
     
-    def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
+    def __init__(self, processor, storage, collection, conversations, formatter, config, outputCB = None):
         self.processor = processor
         self.storage = storage
         self.collection = f"{collection}_{self.processor.name}_article"
         self.conversations = conversations
         self.formatter = formatter
+        self.config = config
         self.outputCB = outputCB
         self.prompt0 = read_text('ailice.prompts', 'prompt_doc_reader.txt')
         self.PATTERNS = {"READ": [{"re": GenerateRE4FunctionCalling("READ<!|url: str|!> -> str", faultTolerance = True), "isEntry": True}],
@@ -88,9 +88,9 @@ The "Relevant Information" part contains data that may be related to the current
     def BuildPrompt(self):
         self.overflowing = False
         _, s = self.ParameterizedBuildPrompt(-self.conversations.LatestEntry())
-        self.overflowing = (s > (self.processor.llm.contextWindow * config.contextWindowRatio * 0.8))
+        self.overflowing = (s > (self.processor.llm.contextWindow * self.config.contextWindowRatio * 0.8))
         
-        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
+        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * self.config.contextWindowRatio))
         if prompt is None:
             prompt, tokenNum = self.ParameterizedBuildPrompt(1)
         return prompt, tokenNum

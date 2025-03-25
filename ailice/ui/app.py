@@ -114,7 +114,7 @@ def LoadSession(sessionName: str):
         print(msg)
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
-        llmPool = ALLMPool()
+        llmPool = ALLMPool(config=config)
         llmPool.Init([config.modelID])
 
         promptsManager = APromptsManager()
@@ -125,7 +125,7 @@ def LoadSession(sessionName: str):
 
         logger = ALogger(speech=None)
         
-        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=messenger, outputCB=logger.Receiver, gasTank=AGasTank(1e8), collection=sessionName)
+        processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=messenger, outputCB=logger.Receiver, gasTank=AGasTank(1e8), config=config, collection=sessionName)
         moduleList = [config.services['browser']['addr'],
                       config.services['arxiv']['addr'],
                       config.services['google']['addr'],

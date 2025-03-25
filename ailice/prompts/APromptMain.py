@@ -1,6 +1,5 @@
 from datetime import datetime
 from importlib.resources import read_text
-from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
@@ -9,12 +8,13 @@ class APromptMain():
     PROMPT_DESCRIPTION = "The coordinator between the user and other agents, also acting as the scheduler for collaboration among multiple agents."
     PROMPT_PROPERTIES = {"type": "primary"}
 
-    def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
+    def __init__(self, processor, storage, collection, conversations, formatter, config, outputCB = None):
         self.processor = processor
         self.storage = storage
         self.collection = collection
         self.conversations = conversations
         self.formatter = formatter
+        self.config = config
         self.outputCB = outputCB
         self.prompt0 = read_text("ailice.prompts", "prompt_simple.txt")
         self.PATTERNS = {"CALL": [{"re": GenerateRE4FunctionCalling("CALL<!|agentType: str, agentName: str, msg: str|!> -> str"), "isEntry": True}],
@@ -46,8 +46,8 @@ class APromptMain():
         agents = FindRecords("Investigate, perform tasks, program", lambda r: (r['properties']['type'] == 'primary'), 10, self.storage, self.collection + "_prompts")
         agents += FindRecords(context, lambda r: (r['properties']['type'] == 'primary') and (r not in agents), 5, self.storage, self.collection + "_prompts")
         prompt0 = self.prompt0.replace("<AGENTS>", "\n".join([f" - {agent['name']}: {agent['desc']}" for agent in agents if agent['name'] not in ["main", "researcher", "doc-reader", "coder-proxy"]]))
-        speechPrompt = "" if not config.speechOn else "In every conversation with the user, after generating a formal text response, you also need to use the SPEAK function to reply to the user with a voice response. The voice response should be shorter and more conversational, with the details placed in the text reply."
-        speechFunctions = "" if not config.speechOn else """#Synthesize input text fragments into audio and play.
+        speechPrompt = "" if not self.config.speechOn else "In every conversation with the user, after generating a formal text response, you also need to use the SPEAK function to reply to the user with a voice response. The voice response should be shorter and more conversational, with the details placed in the text reply."
+        speechFunctions = "" if not self.config.speechOn else """#Synthesize input text fragments into audio and play.
 SPEAK<!|txt: str|!>
 
 #Switch the TTS system to a new tone. 
@@ -78,7 +78,7 @@ The "Relevant Information" part contains data that may be related to the current
         return self.formatter(prompt0 = prompt, conversations = self.conversations.GetConversations(frm = -n))
     
     def BuildPrompt(self):
-        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
+        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * self.config.contextWindowRatio))
         if prompt is None:
             prompt, tokenNum = self.ParameterizedBuildPrompt(1)
         return prompt, tokenNum

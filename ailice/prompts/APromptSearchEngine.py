@@ -1,6 +1,5 @@
 from datetime import datetime
 from importlib.resources import read_text
-from ailice.common.AConfig import config
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
 from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
@@ -9,12 +8,13 @@ class APromptSearchEngine():
     PROMPT_DESCRIPTION = "Search for web pages/documents containing specified information from sources like Google, arXiv. It can only provide search result entries and content hints that are not necessarily accurate; you need to browse the page to get complete information."
     PROMPT_PROPERTIES = {"type": "supportive"}
 
-    def __init__(self, processor, storage, collection, conversations, formatter, outputCB = None):
+    def __init__(self, processor, storage, collection, conversations, formatter, config, outputCB = None):
         self.processor = processor
         self.storage = storage
         self.collection = collection
         self.conversations = conversations
         self.formatter = formatter
+        self.config = config
         self.outputCB = outputCB
         self.functions = []
         self.prompt0 = read_text("ailice.prompts", "prompt_searchengine.txt")
@@ -73,9 +73,9 @@ Current date and time(%Y-%m-%d %H:%M:%S):
     def BuildPrompt(self):
         self.overflowing = False
         _, s = self.ParameterizedBuildPrompt(-self.conversations.LatestEntry())
-        self.overflowing = (s > (self.processor.llm.contextWindow * config.contextWindowRatio * 0.8))
+        self.overflowing = (s > (self.processor.llm.contextWindow * self.config.contextWindowRatio * 0.8))
 
-        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * config.contextWindowRatio))
+        prompt, n, tokenNum = ConstructOptPrompt(self.ParameterizedBuildPrompt, low=1, high=len(self.conversations), maxLen=int(self.processor.llm.contextWindow * self.config.contextWindowRatio))
         if prompt is None:
             prompt, tokenNum = self.ParameterizedBuildPrompt(1)
         return prompt, tokenNum

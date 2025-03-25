@@ -9,13 +9,13 @@ try:
 except ImportError:
     print("peft not installed. If you need to run the peft fine-tuned model, please install it with the following command: pip install -e .[finetuning]")
 
-from ailice.common.AConfig import config
 from ailice.common.utils.ATextSpliter import sentences_split
 from ailice.core.llm.AFormatter import CreateFormatter
 
 class AModelCausalLM():
-    def __init__(self, modelType: str, modelName: str):
+    def __init__(self, modelType: str, modelName: str, config):
         self.modelType = modelType
+        self.config = config
         self.tokenizer = None
         self.model = None
         self.configMap = {"": None, None:None,
@@ -44,9 +44,9 @@ class AModelCausalLM():
         self.model = transformers.AutoModelForCausalLM.from_pretrained(modelName,
                                                     device_map="auto",
                                                     low_cpu_mem_usage=True,
-                                                    quantization_config=self.configMap[config.quantization],
-                                                    attn_implementation="flash_attention_2" if config.flashAttention2 else None,
-                                                    max_memory=config.maxMemory,
+                                                    quantization_config=self.configMap[self.config.quantization],
+                                                    attn_implementation="flash_attention_2" if self.config.flashAttention2 else None,
+                                                    max_memory=self.config.maxMemory,
                                                     #offload_folder="offload",
                                                     force_download=False, resume_download=True
                                                     )
@@ -61,9 +61,9 @@ class AModelCausalLM():
         self.model = transformers.AutoModelForCausalLM.from_pretrained(peftConfig.base_model_name_or_path,
                                                     device_map="auto",
                                                     low_cpu_mem_usage=True,
-                                                    quantization_config=self.configMap[config.quantization],
-                                                    attn_implementation="flash_attention_2" if config.flashAttention2 else None,
-                                                    max_memory=config.maxMemory,
+                                                    quantization_config=self.configMap[self.config.quantization],
+                                                    attn_implementation="flash_attention_2" if self.config.flashAttention2 else None,
+                                                    max_memory=self.config.maxMemory,
                                                     #offload_folder="offload"
                                                     )
         self.model = PeftModel.from_pretrained(self.model, modelName)

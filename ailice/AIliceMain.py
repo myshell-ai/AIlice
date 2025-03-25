@@ -94,11 +94,11 @@ use the provided Dockerfile to build an image and container, and modify the rele
     promptsManager.Init(storage=storage, collection=collection)
     promptsManager.RegisterPrompts([APromptChat, APromptMain, APromptSearchEngine, APromptResearcher, APromptCoder, APromptModuleCoder, APromptCoderProxy, APromptDocReader])
     
-    llmPool = ALLMPool()
+    llmPool = ALLMPool(config=config)
     llmPool.Init([config.modelID])
     
     logger = ALogger(speech=None)
-    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, gasTank=AGasTank(1e8), collection=collection)
+    processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, gasTank=AGasTank(1e8), config=config, collection=collection)
     processor.RegisterModules([config.services['browser']['addr'],
                                config.services['arxiv']['addr'],
                                config.services['google']['addr'],
