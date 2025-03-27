@@ -99,12 +99,10 @@ use the provided Dockerfile to build an image and container, and modify the rele
     
     logger = ALogger(speech=None)
     processor = AProcessor(name='AIlice', modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=AMessenger(), outputCB=logger.Receiver, gasTank=AGasTank(1e8), config=config, collection=collection)
-    processor.RegisterModules([config.services['browser']['addr'],
-                               config.services['arxiv']['addr'],
-                               config.services['google']['addr'],
-                               config.services['duckduckgo']['addr'],
-                               config.services['scripter']['addr'],
-                               config.services['computer']['addr']] + ([config.services['speech']['addr']] if config.speechOn else []))
+    moduleList = [serviceCfg['addr'] for serviceName, serviceCfg in config.services.items()]
+    if not config.speechOn:
+        moduleList.remove(config.services['speech']['addr'])
+    processor.RegisterModules(moduleList)
 
     if "" != session.strip():
         if os.path.exists(historyPath):

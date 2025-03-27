@@ -126,14 +126,9 @@ def LoadSession(sessionName: str):
         logger = ALogger(speech=None)
         
         processor = AProcessor(name="AIlice", modelID=config.modelID, promptName=config.prompt, llmPool=llmPool, promptsManager=promptsManager, services=clientPool, messenger=messenger, outputCB=logger.Receiver, gasTank=AGasTank(1e8), config=config, collection=sessionName)
-        moduleList = [config.services['browser']['addr'],
-                      config.services['arxiv']['addr'],
-                      config.services['google']['addr'],
-                      config.services['duckduckgo']['addr'],
-                      config.services['scripter']['addr'],
-                      config.services['computer']['addr']]
-        if config.speechOn:
-            moduleList.append(config.services['speech']['addr'])
+        moduleList = [serviceCfg['addr'] for serviceName, serviceCfg in config.services.items()]
+        if not config.speechOn:
+            moduleList.remove(config.services['speech']['addr'])
         processor.RegisterModules(moduleList)
         
         p = os.path.join(sessionPath, "ailice_history.json")
