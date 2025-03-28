@@ -2,6 +2,7 @@ import time
 import os
 import simplejson as json
 import re
+import appdirs
 import traceback
 from termcolor import colored
 
@@ -122,7 +123,7 @@ use the provided Dockerfile to build an image and container, and modify the rele
     return
 
 def main():
-    config.Initialize()
+    config.Initialize(configFile=os.path.join(appdirs.user_config_dir("ailice", "Steven Lu"), "config.json"))
     
     import argparse
     parser = argparse.ArgumentParser()

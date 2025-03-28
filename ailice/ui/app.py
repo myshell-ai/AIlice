@@ -7,7 +7,7 @@ import simplejson as json
 import traceback
 import librosa
 import requests
-import mimetypes
+import appdirs
 import threading
 import tempfile
 import logging
@@ -153,7 +153,7 @@ def InitServer():
     return
 
 def main():
-    config.Initialize()
+    config.Initialize(configFile=os.path.join(appdirs.user_config_dir("ailice", "Steven Lu"), "config.json"))
     
     import argparse
     parser = argparse.ArgumentParser()

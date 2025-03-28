@@ -7,6 +7,7 @@ from termcolor import colored
 
 class AConfig():
     def __init__(self):
+        self.configFile = None
         self.modelID = ""
         self.agentModelConfig = {"DEFAULT": "openrouter:qwen/qwen-2.5-72b-instruct",
                                  "main": "openrouter:anthropic/claude-3.5-sonnet",
@@ -125,7 +126,6 @@ class AConfig():
                     }
             }
         }
-        self.InitOpenRouterCfg()
         self.temperature = 0.0
         self.flashAttention2 = False
         self.speechOn = False
@@ -170,38 +170,40 @@ class AConfig():
             print(f"InitOpenRouterCfg() FAILED, skip this part and do not set it again. EXCEPTION: {str(e)}")
         return
     
-    def Initialize(self):
+    def Initialize(self, configFile: str):
+        self.configFile = configFile
+        
         print(colored("********************** Initialize *****************************", "yellow"))
-        configFile = appdirs.user_config_dir("ailice", "Steven Lu")
-        print(f"config.json is located at {configFile}")
+        print(f"config.json is located at {self.configFile}")
+
+        self.InitOpenRouterCfg()
+        
         try:
-            os.makedirs(configFile)
+            os.makedirs(os.path.dirname(self.configFile))
         except OSError as e:
             pass
-        configFile = os.path.join(configFile, "config.json")
         
-        oldDict = self.Load(configFile)
+        oldDict = self.Load(self.configFile)
         self.Update(oldDict)
-        self.Store(configFile)
+        self.Store(self.configFile)
 
         print(colored("********************** End of Initialization *****************************", "yellow"))
         return
 
     def Check4Update(self, modelID, reset):
         modelIDs = [modelID] if "" != modelID else list(self.agentModelConfig.values())
-        configFile = os.path.join(appdirs.user_config_dir("ailice", "Steven Lu"), "config.json")
         setList = []
         for id in modelIDs:
             modelType = id[:id.find(":")]
             modelName = id[id.find(":")+1:]
             if (modelType not in self.models) or (modelName not in self.models[modelType]['modelList']):
-                print(f"The specified model ID '{id}' was not found in the configuration; you need to configure it in '{configFile}' beforehand.")
+                print(f"The specified model ID '{id}' was not found in the configuration; you need to configure it in '{self.configFile}' beforehand.")
                 sys.exit(0)
             if ("apikey" in self.models[modelType] and (self.models[modelType]["apikey"] is None)) or (reset and (modelType not in setList)):
                 key = input(colored(f"Your {modelType} api-key (or press Enter to keep current setting): ", "green"))
                 if 1 < len(key):
                     self.models[modelType]["apikey"] = key
-                    self.Store(configFile)
+                    self.Store(self.configFile)
                     setList.append(modelType)
         return
     
@@ -217,8 +219,13 @@ class AConfig():
                 return reference
             else:
                 return {k: self.Merge(k, v, reference[k]) if k in reference else v for k,v in template.items()}
+        elif key == 'configFile':
+            return template
         else:
             return reference
+    
+    def ToJson(self):
+        return {k: v for k,v in self.__dict__.items() if k!="configFile"}
     
     def Load(self, configFile: str) -> dict:
         if not os.path.exists(configFile):
@@ -229,7 +236,7 @@ class AConfig():
     
     def Store(self, configFile: str):
         with open(configFile, "w") as f:
-            json.dump(self.__dict__, f, indent=2)
+            json.dump(self.ToJson(), f, indent=2)
         return
     
     
