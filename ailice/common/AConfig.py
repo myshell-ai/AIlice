@@ -92,6 +92,12 @@ class AConfig():
                 "baseURL": "https://openrouter.ai/api/v1",
                 "modelList": {}
             },
+            "apipie": {
+                "modelWrapper": "AModelChatGPT",
+                "apikey": None,
+                "baseURL": "https://apipie.ai/v1/",
+                "modelList": {}
+            },
             "deepseek": {
                 "modelWrapper": "AModelChatGPT",
                 "apikey": None,
@@ -156,18 +162,30 @@ class AConfig():
             }
         return
 
-    def InitOpenRouterCfg(self):
+    def InitCfg(self, provider,  baseURL):
         try:
-            response = requests.get("https://openrouter.ai/api/v1/models")
+            response = requests.get(f"{baseURL}/models")
             response.raise_for_status()
             json = response.json()
             for model in json['data']:
-                self.models['openrouter']['modelList'][model['id']] = {"formatter": {"text->text": "AFormatterGPT", "text+image->text": "AFormatterGPTVision"}[model['architecture']['modality']],
+                if provider == "apipie":
+                    formatter = {"llm": "AFormatterGPT", "vision": "AFormatterGPTVision"}.get(model['type'], None)
+                    if (formatter is None) or (model['max_tokens'] is None):
+                        continue
+                    self.models[provider]['modelList'][model['id']] = {"formatter": formatter,
+                                                                       "contextWindow": int(model['max_tokens']),
+                                                                       "systemAsUser": True,
+                                                                       "args": {"extra_headers": {"HTTP-Referer": "https://github.com/myshell-ai/AIlice", "X-Title": "Ailice"}}}
+                else:
+                    formatter = {"text->text": "AFormatterGPT", "text+image->text": "AFormatterGPTVision"}.get(model['architecture']['modality'], None)
+                    if formatter is None:
+                        continue
+                    self.models[provider]['modelList'][model['id']] = {"formatter": formatter,
                                                                        "contextWindow": int(model['context_length']),
                                                                        "systemAsUser": True,
                                                                        "args": {"extra_headers": {"HTTP-Referer": "https://github.com/myshell-ai/AIlice", "X-Title": "Ailice"}}}
         except Exception as e:
-            print(f"InitOpenRouterCfg() FAILED, skip this part and do not set it again. EXCEPTION: {str(e)}")
+            print(f"InitCfg() FAILED, skip this part and do not set it again. EXCEPTION: {str(e)}")
         return
     
     def Initialize(self, configFile: str):
@@ -176,7 +194,12 @@ class AConfig():
         print(colored("********************** Initialize *****************************", "yellow"))
         print(f"config.json is located at {self.configFile}")
 
-        self.InitOpenRouterCfg()
+        providers = {
+            "openrouter": "https://openrouter.ai/api/v1",
+            "apipie": "https://apipie.ai/v1"
+        }
+        for provider, base_url in providers.items():
+            self.InitCfg(provider, base_url)
         
         try:
             os.makedirs(os.path.dirname(self.configFile))
