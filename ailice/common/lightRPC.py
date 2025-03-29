@@ -41,11 +41,6 @@ def GenerateCertificates(baseDir, name):
     publicFile, secretFile = zmq.auth.create_certificates(keysDir, name)
     return publicFile, secretFile
 
-def LoadCertificate(filename):
-    with open(filename, 'r') as f:
-        keyText = f.read()
-    return keyText
-
 def validate_methods(cls, methodList=None):
     for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
         if (not name.startswith('_')) and ((methodList is None) or (name in methodList)):
@@ -67,7 +62,7 @@ class GeneratorStorage:
         return getattr(self.obj, name)
 
 class GenesisRPCServer(object):
-  def __init__(self, objCls, objArgs, url, APIList, enableSecurity=False, keysDir=None):
+  def __init__(self, objCls, objArgs, url, APIList, enableSecurity=False, serverKeyPath=None, clientKeysDir=None):
     self.objCls = validate_methods(objCls, APIList)
     self.objArgs = objArgs
     self.url = url
@@ -79,19 +74,18 @@ class GenesisRPCServer(object):
     
     self.enableSecurity = enableSecurity
     if enableSecurity:
-      if keysDir is None:
-        keysDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'certificates')
+      if serverKeyPath is None:
+        raise ValueError("A value to serverKeyPath is necessary but not specified.")
       
       self.auth = ThreadAuthenticator(self.context)
       self.auth.start()
-      self.auth.configure_curve(domain='*', location=zmq.auth.CURVE_ALLOW_ANY)
+      self.auth.configure_curve(domain='*', location=zmq.auth.CURVE_ALLOW_ANY if (clientKeysDir is None) else clientKeysDir)
       
-      serverPublicFile, serverSecretFile = zmq.auth.find_certificates(keysDir, "server")
-      serverPublic, serverSecret = zmq.auth.load_certificate(serverSecretFile)
+      serverPublic, serverSecret = zmq.auth.load_certificate(serverKeyPath)
       
-      self.receiver.curve_secretkey = serverSecret
-      self.receiver.curve_publickey = serverPublic
-      self.receiver.curve_server = True
+      self.receiver.setsockopt(zmq.CURVE_PUBLICKEY, serverPublic)
+      self.receiver.setsockopt(zmq.CURVE_SECRETKEY, serverSecret)
+      self.receiver.setsockopt(zmq.CURVE_SERVER, True)
     
     self.receiver.bind(url)
     self.dealer = self.context.socket(zmq.DEALER)
@@ -166,8 +160,8 @@ class GenesisRPCServer(object):
     return
 
 
-def makeServer(objCls, objArgs, url, APIList, enableSecurity=False, keysDir=None):
-  return GenesisRPCServer(objCls, objArgs, url, APIList, enableSecurity, keysDir)
+def makeServer(objCls, objArgs, url, APIList, enableSecurity=False, serverKeyPath=None, clientKeysDir=None):
+  return GenesisRPCServer(objCls, objArgs, url, APIList, enableSecurity, serverKeyPath, clientKeysDir)
 
 def AddMethod(kls, methodName, methodMeta):
   signature = methodMeta['signature']
@@ -183,7 +177,14 @@ def AddMethod(kls, methodName, methodMeta):
   setattr(kls,methodName,methodTemplate)
 
 
-def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serverPublicKey=None):
+def makeClient(url, returnClass=False, enableSecurity=False, clientKeyPath=None, serverKeyPath=None):
+  if enableSecurity:
+    if clientKeyPath is None:
+      raise ValueError("A value to clientKeyPath is necessary but not specified.")
+    
+    clientPublic, clientSecret = zmq.auth.load_certificate(clientKeyPath)
+    serverPublic, _ = zmq.auth.load_certificate(serverKeyPath)
+  
   class RemoteGenerator:
       def __init__(self, client, generatorID):
           self.client = client
@@ -214,15 +215,7 @@ def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serve
       self.enableSecurity = enableSecurity
       
       if self.enableSecurity:
-        if keysDir is None:
-          keysDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'certificates')
-        
-        clientPublicFile, clientSecretFile = zmq.auth.find_certificates(keysDir, "client")
-        clientPublic, clientSecret = zmq.auth.load_certificate(clientSecretFile)
-        
-        self.clientPublic = clientPublic
-        self.clientSecret = clientSecret
-        self.serverPublic = serverPublicKey
+        self.clientPublic, self.clientSecret, self.serverPublic = clientPublic, clientSecret, serverPublic
       
       ret = self.Send({'CREATE':''})
       if "exception" in ret:
@@ -233,9 +226,9 @@ def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serve
     def Send(self, msg):
       with self.context.socket(zmq.REQ) as socket:
         if self.enableSecurity:
-          socket.curve_secretkey = self.clientSecret
-          socket.curve_publickey = self.clientPublic
-          socket.curve_serverkey = self.serverPublic
+          socket.setsockopt(zmq.CURVE_PUBLICKEY, self.clientPublic)
+          socket.setsockopt(zmq.CURVE_SECRETKEY, self.clientSecret)
+          socket.setsockopt(zmq.CURVE_SERVERKEY, self.serverPublic)
         
         socket.setsockopt(zmq.CONNECT_TIMEOUT, 10000)
         socket.setsockopt(zmq.HEARTBEAT_IVL, 2000)
@@ -258,6 +251,11 @@ def makeClient(url, returnClass=False, enableSecurity=False, keysDir=None, serve
       return
   
   with context.socket(zmq.REQ) as socket:
+    if enableSecurity:
+      socket.setsockopt(zmq.CURVE_PUBLICKEY, clientPublic)
+      socket.setsockopt(zmq.CURVE_SECRETKEY, clientSecret)
+      socket.setsockopt(zmq.CURVE_SERVERKEY, serverPublic)
+    
     socket.setsockopt(zmq.CONNECT_TIMEOUT, 10000)
     socket.setsockopt(zmq.SNDTIMEO, 10000) 
     socket.setsockopt(zmq.RCVTIMEO, 10000)
