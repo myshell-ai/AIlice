@@ -91,7 +91,7 @@ class AConversations():
                 if {d['role'], data[i-1]['role']} <= {"USER", "SYSTEM"}:
                     AddRecord('ASSISTANT', None, False, '<EMPTY MSG>', [])
             AddRecord(d['role'], d.get('time', None), d.get('entry', None), d['msg'] if '' != d['msg'] else '<EMPTY MSG>', [{'type': a['type'], 'tag': a.get('tag', None), 'content': FromJson(a['content'])} for a in d['attachments']])
-        if data[-1]['role'] in ['USER', 'SYSTEM']:
+        if (len(data) > 0) and (data[-1]['role'] in ['USER', 'SYSTEM']):
             AddRecord('ASSISTANT', None, False, '<EMPTY MSG>', [])
         return
     
