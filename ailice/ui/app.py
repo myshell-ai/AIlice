@@ -247,7 +247,7 @@ def upload_audio():
         
         if config.speechOn:
             audio_data, sample_rate = librosa.load(filepath)
-            message = speech.Speech2Text(audio_data, sample_rate)
+            message = speech.Speech2Text(audio_data.tolist(), sample_rate)
         else:
             message = f"![audio]({str(filepath)})"
         return Response(generate_response(f"{message}"), mimetype='text/event-stream')
