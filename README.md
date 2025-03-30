@@ -155,8 +155,8 @@ can give us a glimpse of how mature geometric intuition can be in LLM's world vi
 If users do not plan to run LLMs locally, then running Ailice has virtually no hardware requirements. For users who want to run LLMs locally, currently only models with 70B or more parameters can perform tasks well, therefore you need at least two RTX 4090 GPUs (48GB VRAM) to effectively complete tasks.
 
 - Ailice was developed in **Ubuntu**, therefore installation and usage on Ubuntu has the best guarantee. 
+- The usability in a **MacOS** environment is similar to that in an Ubuntu environment.
 - For **Windows** users, using **Docker** or installing **WSL** (Windows Subsystem for Linux) and running Ailice within WSL is a better choice, especially for users who need to execute programming tasks -- I haven't integrated Windows command execution tools yet (this will be considered in the future, but the flexibility of command-line tools is of great significance for AI agents, which makes Linux platforms more advantageous). Additionally, the lack of testing on Windows significantly increases the likelihood of bugs; if you encounter related issues, please submit issues for resolution. 
-- Due to the lack of a suitable **macOS** environment, I am not yet aware of potential issues on that platform, and hope users who try it can provide feedback.
 
 Before installing Ailice, it is strongly recommended to install **Anaconda and create a virtual environment** first (you can also use other tools you prefer, such as venv). You will also need **Chrome**, as Ailice needs it for web browsing. For users who want to run Ailice in a fully controlled virtual machine, you will need **Docker** (or other virtual machines, such as VirtualBox), please refer to [Run Ailice in Docker Containers](#run-ailice-in-docker-containers).
 
