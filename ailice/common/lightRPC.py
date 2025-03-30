@@ -62,7 +62,7 @@ class GeneratorStorage:
         return getattr(self.obj, name)
 
 class GenesisRPCServer(object):
-  def __init__(self, objCls, objArgs, url, APIList, enableSecurity=False, serverKeyPath=None, clientKeysDir=None):
+  def __init__(self, objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None):
     self.objCls = validate_methods(objCls, APIList)
     self.objArgs = objArgs
     self.url = url
@@ -71,17 +71,21 @@ class GenesisRPCServer(object):
     self.APIList = APIList
     self.context = context
     self.receiver = self.context.socket(zmq.ROUTER)
+
+    if serverPrivateKeyPath is None:
+      serverPrivateKeyPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "certificates/server/server.key_secret")
+      clientPublicKeysDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "certificates/client/")
+      if not os.path.exists(clientPublicKeysDir):
+        clientPublicKeysDir = None
+    self.enableSecurity = os.path.exists(serverPrivateKeyPath)
     
-    self.enableSecurity = enableSecurity
-    if enableSecurity:
-      if serverKeyPath is None:
-        raise ValueError("A value to serverKeyPath is necessary but not specified.")
-      
+    if self.enableSecurity:
+      print("lightRPC server encryption ENABLED.")
       self.auth = ThreadAuthenticator(self.context)
       self.auth.start()
-      self.auth.configure_curve(domain='*', location=zmq.auth.CURVE_ALLOW_ANY if (clientKeysDir is None) else clientKeysDir)
+      self.auth.configure_curve(domain='*', location=zmq.auth.CURVE_ALLOW_ANY if (clientPublicKeysDir is None) else clientPublicKeysDir)
       
-      serverPublic, serverSecret = zmq.auth.load_certificate(serverKeyPath)
+      serverPublic, serverSecret = zmq.auth.load_certificate(serverPrivateKeyPath)
       
       self.receiver.setsockopt(zmq.CURVE_PUBLICKEY, serverPublic)
       self.receiver.setsockopt(zmq.CURVE_SECRETKEY, serverSecret)
@@ -160,8 +164,8 @@ class GenesisRPCServer(object):
     return
 
 
-def makeServer(objCls, objArgs, url, APIList, enableSecurity=False, serverKeyPath=None, clientKeysDir=None):
-  return GenesisRPCServer(objCls, objArgs, url, APIList, enableSecurity, serverKeyPath, clientKeysDir)
+def makeServer(objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None):
+  return GenesisRPCServer(objCls, objArgs, url, APIList, serverPrivateKeyPath, clientPublicKeysDir)
 
 def AddMethod(kls, methodName, methodMeta):
   signature = methodMeta['signature']
@@ -177,13 +181,15 @@ def AddMethod(kls, methodName, methodMeta):
   setattr(kls,methodName,methodTemplate)
 
 
-def makeClient(url, returnClass=False, enableSecurity=False, clientKeyPath=None, serverKeyPath=None):
-  if enableSecurity:
-    if clientKeyPath is None:
-      raise ValueError("A value to clientKeyPath is necessary but not specified.")
+def makeClient(url, returnClass=False, clientPrivateKeyPath=None, serverPublicKeyPath=None):
+  clientPrivateKeyPath = clientPrivateKeyPath or os.path.join(os.path.dirname(os.path.abspath(__file__)), "certificates/client/client.key_secret")
+  serverPublicKeyPath = serverPublicKeyPath or os.path.join(os.path.dirname(os.path.abspath(__file__)), "certificates/server/server.key")
+  enableSecurity = (os.path.exists(serverPublicKeyPath) and os.path.exists(clientPrivateKeyPath))
     
-    clientPublic, clientSecret = zmq.auth.load_certificate(clientKeyPath)
-    serverPublic, _ = zmq.auth.load_certificate(serverKeyPath)
+  if enableSecurity:
+    print("lightRPC client encryption ENABLED.")
+    clientPublic, clientSecret = zmq.auth.load_certificate(clientPrivateKeyPath)
+    serverPublic, _ = zmq.auth.load_certificate(serverPublicKeyPath)
   
   class RemoteGenerator:
       def __init__(self, client, generatorID):
