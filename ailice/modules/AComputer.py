@@ -3,6 +3,7 @@ import importlib.util
 import io
 import re
 import typing
+import urllib.parse
 import datetime
 import mimetypes
 import requests
@@ -127,7 +128,7 @@ class AComputer():
                 'Content-Type': contentType,
                 'Content-Length': str(endByte - startByte + 1),
                 'Accept-Ranges': 'bytes',
-                'Content-Disposition': f'inline; filename="{fileName}"',
+                'Content-Disposition': f'inline; filename="{urllib.parse.quote(fileName)}"; filename*=UTF-8\'\'{urllib.parse.quote(fileName)}',
                 'Last-Modified': datetime.datetime.fromtimestamp(os.stat(filePath).st_mtime, tz=datetime.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
             }
             
