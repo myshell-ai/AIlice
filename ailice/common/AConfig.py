@@ -22,19 +22,7 @@ class AConfig():
             "hf": {
                 "modelWrapper": "AModelCausalLM",
                 "modelList": {
-                    "meta-llama/Llama-2-13b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False, "args": {}},
-                    "meta-llama/Llama-2-70b-chat-hf": {"formatter": "AFormatterLLAMA2", "contextWindow": 4096, "systemAsUser": False, "args": {}},
-                    "meta-llama/Meta-Llama-3-8B-Instruct": {"formatter": "AFormatterLLAMA3", "contextWindow": 8192, "systemAsUser": False, "args": {}},
-                    "meta-llama/Meta-Llama-3-70B-Instruct": {"formatter": "AFormatterLLAMA3", "contextWindow": 8192, "systemAsUser": False, "args": {}},
-                    "Phind/Phind-CodeLlama-34B-v2": {"formatter": "AFormatterSimple", "contextWindow": 4096, "systemAsUser": False, "args": {}},
-                    "mistralai/Mistral-7B-Instruct-v0.1": {"formatter": "AFormatterLLAMA2", "contextWindow": 8192, "systemAsUser": False, "args": {}},
-                    "Open-Orca/Mistral-7B-OpenOrca": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False, "args": {}},
-                    "teknium/OpenHermes-2.5-Mistral-7B": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False, "args": {}},
-                    "mistralai/Mixtral-8x7B-Instruct-v0.1": {"formatter": "AFormatterSimple", "contextWindow": 32000, "systemAsUser": False, "args": {}},
-                    "ehartford/dolphin-2.5-mixtral-8x7b": {"formatter": "AFormatterChatML", "contextWindow": 16000, "systemAsUser": False, "args": {}},
-                    "openchat/openchat_3.5": {"formatter": "AFormatterOpenChat", "contextWindow": 8192, "systemAsUser": False, "args": {}},
-                    "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": {"formatter": "AFormatterChatML", "contextWindow": 32000, "systemAsUser": False, "args": {}},
-                    "CohereForAI/c4ai-command-r-plus-4bit": {"formatter": "AFormatterCommandR", "contextWindow": 128000, "systemAsUser": False, "args": {}},
+                    #"Open-Orca/Mistral-7B-OpenOrca": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False, "args": {}},
                 },
             },
             "peft": {
