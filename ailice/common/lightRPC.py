@@ -35,7 +35,7 @@ def ReceiveMsg(conn):
   return json.loads(conn.recv().decode("utf-8"), cls=AJSONDecoder)
 
 def GenerateCertificates(baseDir, name):
-    keysDir = os.path.join(baseDir, 'certificates')
+    keysDir = os.path.join(baseDir, name)
     os.makedirs(keysDir, exist_ok=True)
     
     publicFile, secretFile = zmq.auth.create_certificates(keysDir, name)
@@ -274,5 +274,5 @@ def makeClient(url, returnClass=False, clientPrivateKeyPath=None, serverPublicKe
 
 
 #baseDir = os.path.dirname(os.path.abspath(__file__))
-#serverPublicFile, serverSecretFile = GenerateCertificates(baseDir, "server")
-#clientPublicFile, clientSecretFile = GenerateCertificates(baseDir, "client")
+#serverPublicFile, serverSecretFile = GenerateCertificates(baseDir + "/certificates", "server")
+#clientPublicFile, clientSecretFile = GenerateCertificates(baseDir + "/certificates", "client")
