@@ -13,6 +13,7 @@ import inspect
 import zmq
 import zmq.auth
 import json
+import secrets
 import traceback
 from zmq.auth.thread import ThreadAuthenticator
 from pydantic import validate_call
@@ -135,7 +136,7 @@ class GenesisRPCServer(object):
                                       } for methodName, method in methods}}}
         elif "CREATE" in msg:
           with self.objPoolLock:
-            newID = str(max([int(k) for k in self.objPool]) + 1) if self.objPool else '10000000'
+            newID = str(secrets.token_hex(64))
             self.objPool[newID] = GeneratorStorage(self.objCls(**self.objArgs))
           ret = {"clientID": newID}
         elif "DEL" in msg:
