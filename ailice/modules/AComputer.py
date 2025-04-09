@@ -100,6 +100,20 @@ class AComputer():
             print("WriteImage() excetption: ", e)
             return f"WriteImage() excetption: {str(e)}"
         return
+    
+    def WriteFile(self, data: bytes, path: str) -> str:
+        try:
+            directory = os.path.dirname(path)
+            if directory:
+                os.makedirs(directory, exist_ok=True)
+            
+            with open(path, "wb") as file:
+                file.write(data)
+            return f"The file has been written to {path}."
+        except Exception as e:
+            print("WriteFile() excetption: ", e)
+            return f"WriteFile() excetption: {str(e)}"
+        return
 
     def Proxy(self, href: str, method: str, headers: dict={}, body: dict={}, params: dict={}) -> typing.Generator:
         if os.path.exists(href):
@@ -192,7 +206,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AComputer, dict(), args.addr, ["ModuleInfo", "ScreenShot", "LocateAndClick", "LocateAndScroll", "TypeWrite", "ReadImage", "WriteImage", "Proxy"]).Run()
+    makeServer(AComputer, dict(), args.addr, ["ModuleInfo", "ScreenShot", "LocateAndClick", "LocateAndScroll", "TypeWrite", "ReadImage", "WriteImage", "WriteFile", "Proxy"]).Run()
 
 if __name__ == '__main__':
     main()
