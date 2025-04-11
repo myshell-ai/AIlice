@@ -248,3 +248,10 @@ document.querySelector('form.mini-search').submit();
                 form_info.append(f"   - Text: {field.text.strip()}")
 
         return "\n".join(form_info)
+    
+    def Destroy(self):
+        self.inited = False
+        self.driver.quit()
+        self.driver = None
+        self.urls = {}
+        return

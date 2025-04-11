@@ -147,6 +147,16 @@ class ABrowser():
     def SaveTo(self, dstPath: str, session: str) -> str:
         return self.sessions[session].SaveTo(dstPath) if hasattr(self.sessions[session], "SaveTo") else "SaveTo not supported in current browser."
 
+    def Destroy(self):
+        for _, session in self.sessions.items():
+            destroy = getattr(session, "Destroy", None)
+            if callable(destroy):
+              destroy()
+        self.sessions.clear()
+        self.computer = None
+        self.scripter = None
+        return
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
@@ -158,7 +168,7 @@ def main():
         makeServer(ABrowser,
                    {"pdfOutputDir": (args.pdfOutputDir if "" != args.pdfOutputDir.strip() else tmpdir)},
                    args.addr,
-                   ["ModuleInfo", "Browse", "Edit", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink", "ExecuteJS", "Replace", "ReplaceAll", "SaveTo"]).Run()
+                   ["ModuleInfo", "Browse", "Edit", "ScrollDown", "ScrollUp", "SearchDown", "SearchUp", "GetFullText", "GetLink", "ExecuteJS", "Replace", "ReplaceAll", "SaveTo", "Destroy"]).Run()
 
 if __name__ == '__main__':
     main()

@@ -28,3 +28,15 @@ class AClientPool():
             if key == client["name"]:
                 return client["client"]
         return None
+    
+    def Destroy(self):
+        for _, client in self.pool.items():
+            destroy = getattr(client, "Destroy", None)
+            if callable(destroy):
+                try:
+                    destroy()
+                except Exception as e:
+                    print(f"AClientPool.Destroy Exception: {str(e)}")
+                    continue
+        self.pool.clear()
+        return
