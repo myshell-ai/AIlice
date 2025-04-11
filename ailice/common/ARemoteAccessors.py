@@ -31,7 +31,7 @@ class AClientPool():
     
     def Destroy(self):
         for _, client in self.pool.items():
-            destroy = getattr(client, "Destroy", None)
+            destroy = getattr(client["client"], "Destroy", None)
             if callable(destroy):
                 try:
                     destroy()
