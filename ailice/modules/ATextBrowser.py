@@ -103,3 +103,6 @@ Example:
     
     def SearchUp(self, query: str) -> str:
         return super(ATextBrowser, self).SearchUp(query) + (self.prompt if self.path else "")
+    
+    def Destroy(self):
+        return

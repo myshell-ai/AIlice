@@ -19,3 +19,6 @@ class AFileBrowser(AScrollablePage):
                 dirs.append(filename)
         self.LoadPage("Folders: " + " ".join(dirs) + "\n\nFiles: " + " ".join(files), "BOTTOM")
         return self()
+    
+    def Destroy(self):
+        return

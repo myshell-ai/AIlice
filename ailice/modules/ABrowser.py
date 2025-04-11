@@ -83,6 +83,10 @@ class ABrowser():
     
     def Browse(self, url: str, session: str) -> str:
         try:
+            if session in self.sessions:
+                self.sessions[session].Destroy()
+                self.sessions.pop(session)
+            
             url, path = self.GetLocation(url)
             if url is not None:
                 if self.URLIsPDF(url):
@@ -113,6 +117,10 @@ class ABrowser():
     
     def Edit(self, path: str, session: str) -> str:
         try:
+            if session in self.sessions:
+                self.sessions[session].Destroy()
+                self.sessions.pop(session)
+            
             self.sessions[session] = ATextBrowser(functions=self.functions)
             return self.prompt + "\n\n" + self.sessions[session].Edit(path) + "\n\n" + f'Session name: "{session}"\n'
         except Exception as e:

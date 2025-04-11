@@ -72,3 +72,6 @@ class APDFBrowser(AScrollablePage):
     
     def GetFullText(self) -> str:
         return self.txt if (self.txt != None) else ""
+    
+    def Destroy(self):
+        return
