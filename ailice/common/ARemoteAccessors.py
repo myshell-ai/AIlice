@@ -1,4 +1,4 @@
-from ailice.common.lightRPC import makeClient
+from ailice.common.lightRPC import makeClient, destroyClient
 from ailice.common.AConfig import config
 
 class AClientPool():
@@ -35,6 +35,7 @@ class AClientPool():
             if callable(destroy):
                 try:
                     destroy()
+                    destroyClient(client["client"])
                 except Exception as e:
                     print(f"AClientPool.Destroy Exception: {str(e)}")
                     continue

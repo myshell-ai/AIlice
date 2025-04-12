@@ -251,11 +251,6 @@ def makeClient(url, returnClass=False, clientPrivateKeyPath=None, serverPublicKe
       if isinstance(ret['ret'], dict) and 'generatorID' in ret['ret']:
         return RemoteGenerator(self, ret['ret']['generatorID'])
       return ret['ret']
-    
-    def __del__(self):
-      if hasattr(self, "clientID"):
-        self.Send({'DEL':'', 'clientID': self.clientID})
-      return
   
   with context.socket(zmq.REQ) as socket:
     if enableSecurity:
@@ -273,6 +268,10 @@ def makeClient(url, returnClass=False, clientPrivateKeyPath=None, serverPublicKe
     AddMethod(GenesisRPCClientTemplate,funcName,methodMeta)
   return validate_methods(GenesisRPCClientTemplate) if returnClass else validate_methods(GenesisRPCClientTemplate)()
 
+def destroyClient(clientObj):
+  if hasattr(clientObj, "clientID") and (clientObj.clientID is not None):
+    clientObj.Send({'DEL':'', 'clientID': clientObj.clientID})
+    clientObj.clientID = None
 
 #baseDir = os.path.dirname(os.path.abspath(__file__))
 #serverPublicFile, serverSecretFile = GenerateCertificates(baseDir + "/certificates", "server")
