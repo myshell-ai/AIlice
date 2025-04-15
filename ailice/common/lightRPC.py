@@ -42,10 +42,10 @@ def GenerateCertificates(baseDir, name):
     publicFile, secretFile = zmq.auth.create_certificates(keysDir, name)
     return publicFile, secretFile
 
-def validate_methods(cls, methodList=None):
+def validate_methods(cls, methodList=None, validateReturn=True):
     for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
         if (not name.startswith('_')) and ((methodList is None) or (name in methodList)):
-            setattr(cls, name, validate_call(method, validate_return=(not inspect.isgeneratorfunction(method))))
+            setattr(cls, name, validate_call(method, validate_return=(validateReturn and (not inspect.isgeneratorfunction(method)))))
     return cls
 
 class GeneratorStorage:
@@ -63,8 +63,8 @@ class GeneratorStorage:
         return getattr(self.obj, name)
 
 class GenesisRPCServer(object):
-  def __init__(self, objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None):
-    self.objCls = validate_methods(objCls, APIList)
+  def __init__(self, objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True):
+    self.objCls = validate_methods(objCls, APIList, validateReturn)
     self.objArgs = objArgs
     self.url = url
     self.objPool = dict()
@@ -165,8 +165,8 @@ class GenesisRPCServer(object):
     return
 
 
-def makeServer(objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None):
-  return GenesisRPCServer(objCls, objArgs, url, APIList, serverPrivateKeyPath, clientPublicKeysDir)
+def makeServer(objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True):
+  return GenesisRPCServer(objCls, objArgs, url, APIList, serverPrivateKeyPath, clientPublicKeysDir, validateReturn)
 
 def AddMethod(kls, methodName, methodMeta):
   signature = methodMeta['signature']
@@ -182,7 +182,7 @@ def AddMethod(kls, methodName, methodMeta):
   setattr(kls,methodName,methodTemplate)
 
 
-def makeClient(url, returnClass=False, clientPrivateKeyPath=None, serverPublicKeyPath=None):
+def makeClient(url, returnClass=False, clientPrivateKeyPath=None, serverPublicKeyPath=None, validateReturn=True):
   clientPrivateKeyPath = clientPrivateKeyPath or os.path.join(os.path.dirname(os.path.abspath(__file__)), "certificates/client/client.key_secret")
   serverPublicKeyPath = serverPublicKeyPath or os.path.join(os.path.dirname(os.path.abspath(__file__)), "certificates/server/server.key")
   enableSecurity = (os.path.exists(serverPublicKeyPath) and os.path.exists(clientPrivateKeyPath))
@@ -266,7 +266,7 @@ def makeClient(url, returnClass=False, clientPrivateKeyPath=None, serverPublicKe
     ret=ReceiveMsg(socket)
   for funcName, methodMeta in ret['META']['methods'].items():
     AddMethod(GenesisRPCClientTemplate,funcName,methodMeta)
-  return validate_methods(GenesisRPCClientTemplate) if returnClass else validate_methods(GenesisRPCClientTemplate)()
+  return validate_methods(GenesisRPCClientTemplate, None, validateReturn) if returnClass else validate_methods(GenesisRPCClientTemplate, None, validateReturn)()
 
 def destroyClient(clientObj):
   if hasattr(clientObj, "clientID") and (clientObj.clientID is not None):
