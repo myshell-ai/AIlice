@@ -19,18 +19,18 @@ class AConfig():
         self.maxMemory = {}
         self.quantization = None
         self.models = {
-            "hf": {
-                "modelWrapper": "AModelCausalLM",
-                "modelList": {
-                    #"Open-Orca/Mistral-7B-OpenOrca": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False, "args": {}},
-                },
-            },
-            "peft": {
-                "modelWrapper": "AModelCausalLM",
-                "modelList": {
-                    #"model/": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False, "args": {}}
-                }
-            },
+            #"hf": {
+            #    "modelWrapper": "AModelCausalLM",
+            #    "modelList": {
+            #        #"Open-Orca/Mistral-7B-OpenOrca": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False, "args": {}},
+            #    },
+            #},
+            #"peft": {
+            #    "modelWrapper": "AModelCausalLM",
+            #    "modelList": {
+            #        #"model/": {"formatter": "AFormatterChatML", "contextWindow": 8192, "systemAsUser": False, "args": {}}
+            #    }
+            #},
             "oai": {
                 "modelWrapper": "AModelChatGPT",
                 "apikey": None,
