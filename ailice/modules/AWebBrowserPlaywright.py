@@ -97,7 +97,10 @@ document.querySelector('form.mini-search').submit();
         
         await self.page.goto(url, wait_until="domcontentloaded", timeout=30000)
         await self.page.wait_for_timeout(2000)
-        self.LoadPage(await self.AsyncHtmlToMarkdown(await self.page.content(), url), "TOP")
+        
+        # Process the page and all its frames
+        content = await self.AsyncHtmlToMarkdown()
+        self.LoadPage(content, "TOP")
         return self() + self.prompt
     
     def Browse(self, url):
@@ -142,7 +145,7 @@ document.querySelector('form.mini-search').submit();
             result = await self.page.evaluate(js_code)
             await self.page.wait_for_timeout(2000)
             
-            content = await self.AsyncHtmlToMarkdown(await self.page.content(), self.page.url)
+            content = await self.AsyncHtmlToMarkdown()
             result_str = "JavaScript executed successfully." if result is None else str(result)
             self.LoadPage(f"JS execution returned: {result_str}\n\n---\n\nThe current page content is as follows:\n\n{content}", "TOP")
             return self() + self.prompt
@@ -165,246 +168,389 @@ document.querySelector('form.mini-search').submit();
             ret = text + " |" + str(random.randint(0, 10000000))
         return ret
     
-    async def AsyncHtmlToMarkdown(self, html_content, base_url):
-        soup = BeautifulSoup(html_content, 'html.parser')
+    async def AsyncHtmlToMarkdown(self):
+        """Convert HTML to Markdown using JavaScript for DOM processing and Python for frame handling"""
+        # Initialize URL mapping
         self.urls = {}
-        body = soup.find('body')
-        return await self.AsyncProcessNode(body if body else soup, base_url)
-
-    async def AsyncProcessNode(self, node, base_url, strip=True, depth=0):
-        if node is None:
-            return ''
         
-        if isinstance(node, Comment):
-            return ''
-        
-        if isinstance(node, Tag) and node.has_attr('style') and 'display:none' in node.get('style', ''):
-            return ''
-        
-        if node.name in ['script', 'style', 'noscript', 'svg', 'path', 'meta', 'link']:
-            return ''
-        
-        if node.name is None:
-            text = node.string or ''
-            return text.strip() if strip and text else text or ''
-        
-        result = ''
-        
-        if node.name == 'form':
-            form_info = self.ProcessForm(node)
-            return f"\n\n```\n{form_info}\n```\n\n"
-        
-        elif node.name == 'li':
-            content = ''
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, strip, depth+1)
-                if child_content and not child_content.isspace():
-                    content += child_content
-            return f"- {content.strip()}\n"
-        
-        elif node.name == 'p':
-            content = ''
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, strip, depth+1)
-                if child_content and not child_content.isspace():
-                    content += child_content
-            return f"\n\n{content}\n\n"
-        
-        elif node.name == 'pre':
-            content = ''
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, False, depth+1)
-                if child_content:
-                    content += child_content
-            return f"\n\n```\n{content}\n```\n\n"
-        
-        elif node.name == 'code':
-            content = ''
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, False, depth+1)
-                if child_content:
-                    content += child_content
-            return f"`{content}`"
-        
-        elif node.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-            level = int(node.name[1])
-            content = ''
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, strip, depth+1)
-                if child_content:
-                    content += child_content
-            return f"\n\n{'#' * level} {content.strip()}\n"
-        
-        elif node.name == 'a':
-            href = node.get('href', '')
-            content = ''
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, strip, depth+1)
-                if child_content:
-                    content += child_content
-            
-            if not content:
-                content = node.get_text().strip() if strip else node.get_text()
-            
-            if content and href:
-                try:
-                    full_url = urljoin(base_url, href)
-                    unique_text = self.EnsureUnique(content)
-                    self.urls[unique_text] = full_url
-                    return f"[{unique_text}]"
-                except Exception as e:
-                    print(f"Error processing URL {href}: {str(e)}")
-                    return content
-            return content
-        
-        elif node.name == 'img':
-            src = node.get('src', '')
-            alt = node.get('alt', '').strip() if strip else node.get('alt', '')
-            
-            if src:
-                try:
-                    full_url = urljoin(base_url, src)
-                    if not full_url.startswith('data:'):
-                        unique_text = self.EnsureUnique(alt or "Image")
-                        self.urls[unique_text] = full_url
-                        return f"\n![{unique_text}]({full_url})\n"
-                except Exception as e:
-                    print(f"Error processing image URL {src}: {str(e)}")
-                    return alt
-            return alt
-        
-        elif node.name == 'video':
-            src = node.get('src', '')
-            if src:
-                try:
-                    full_url = urljoin(base_url, src)
-                    return f"\n\n[Video]({full_url})\n\n"
-                except Exception:
-                    return ''
-            
-            source = node.find('source')
-            if source:
-                src = source.get('src', '')
-                if src:
-                    try:
-                        full_url = urljoin(base_url, src)
-                        return f"\n\n[Video]({full_url})\n\n"
-                    except Exception:
-                        return ''
-            return ''
-        
-        elif node.name == 'iframe':
-            try:
-                src = node.get('src', '')
-                if src:
-                    iframe_url = urljoin(base_url, src)
-                    return await self.AsyncProcessIFrame(iframe_url)
-            except Exception as e:
-                print(f"Error processing iframe: {str(e)}")
-            return ''
-            
-        elif node.name in ['ul', 'ol']:
-            content = "\n\n"
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, strip, depth+1)
-                if child_content:
-                    content += child_content
-            return content + "\n\n"
-        
-        elif node.name in ['div', 'span', 'section', 'article', 'main', 'header', 'footer']:
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, strip, depth+1)
-                if child_content:
-                    result += child_content
-        
-        else:
-            for child in node.children:
-                child_content = await self.AsyncProcessNode(child, base_url, strip, depth+1)
-                if child_content:
-                    result += child_content
-        
+        # Process the main page and all frames
+        result = await self.AsyncProcessPageAndFrames(self.page)
         return result
-    
-    def ProcessForm(self, node):
-        """Process a form element and return its structure"""
-        form_info = []
-        form_info.append(f"Form:")
-        
-        for attr in ['action', 'method', 'name', 'id', 'class']:
-            if node.has_attr(attr):
-                form_info.append(f"- {attr.capitalize()}: {node[attr]}")
-        
-        selector = ""
-        if node.has_attr('id'):
-            selector = f"form#{node['id']}"
-        elif node.has_attr('name'):
-            selector = f"form[name='{node['name']}']"
-        elif node.has_attr('class'):
-            selector = f"form.{node['class'][0].replace(' ', '.')}" if isinstance(node['class'], list) else f"form.{node['class'].replace(' ', '.')}"
-        else:
-            selector = "form"
-        
-        form_info.append(f"- Selector: {selector}")
-        
-        form_info.append("\nFields:")
-        field_count = 0
-        
-        for field in node.select('input, select, textarea, button'):
-            field_count += 1
-            field_info = [f"{field_count}. {field.name.capitalize()}:"]
-            
-            for attr in ['type', 'name', 'id', 'placeholder', 'required']:
-                if field.has_attr(attr):
-                    field_info.append(f"   - {attr.capitalize()}: {field[attr]}")
-            
-            field_selector = ""
-            if field.has_attr('id'):
-                field_selector = f"#{field['id']}"
-            elif field.has_attr('name'):
-                field_selector = f"{field.name}[name='{field['name']}']"
-            else:
-                field_selector = f"{selector} {field.name}"
-                if field.has_attr('type'):
-                    field_selector += f"[type='{field['type']}']"
-            
-            field_info.append(f"   - Selector: {field_selector}")
-            
-            if field.has_attr('value'):
-                field_info.append(f"   - Value: \"{field['value']}\"")
-            
-            if field.name == 'select':
-                field_info.append("   - Options:")
-                for option in field.select('option'):
-                    value = option.get('value', '')
-                    text = option.get_text().strip()
-                    is_selected = option.has_attr('selected')
-                    field_info.append(f"     * Value: \"{value}\", Text: \"{text}\", Selected: {str(is_selected).lower()}")
-            
-            if field.name == 'button':
-                field_info.append(f"   - Text: \"{field.get_text().strip()}\"")
-            
-            form_info.append("\n".join(field_info))
-        
-        return "\n".join(form_info)
 
-    async def AsyncProcessIFrame(self, iframe_url):
-        try:
-            iframe_page = await self.context.new_page()
-            await iframe_page.goto(iframe_url, wait_until="domcontentloaded", timeout=10000)
-            await iframe_page.wait_for_timeout(1000)
-            iframe_content = await iframe_page.content()
+    async def AsyncProcessPageAndFrames(self, page_or_frame):
+        """Process a page or frame and all its child frames recursively"""
+        # Process the current page/frame content using JavaScript
+        result = await page_or_frame.evaluate("""() => {
+            // Helper function to clean text
+            function cleanText(text) {
+                return text ? text.replace(/\\s+/g, ' ').trim() : '';
+            }
             
-            iframe_soup = BeautifulSoup(iframe_content, 'html.parser')
-            iframe_body = iframe_soup.find('body')
-            if iframe_body:
-                iframe_result = await self.AsyncProcessNode(iframe_body, iframe_url)
-                return f"\n\n--- Iframe Content from {iframe_url} ---\n\n{iframe_result}\n\n--- End of Iframe Content ---\n\n"
-        except Exception as e:
-            print(f"Error loading iframe content: {str(e)}")
-        finally:
-            await iframe_page.close()
-        return f"\n\n[Iframe: {iframe_url}]\n\n"
-    
+            // Helper function to ensure element is visible
+            function isVisible(element) {
+                if (!element) return false;
+                
+                // Check computed style
+                const style = window.getComputedStyle(element);
+                if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+                    return false;
+                }
+                
+                // Check dimensions
+                const rect = element.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) {
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Process a form element
+            function processForm(form) {
+                let formInfo = ['\\n\\n```', 'Form:'];
+                
+                // Extract form attributes
+                ['action', 'method', 'name', 'id', 'class'].forEach(attr => {
+                    if (form[attr]) {
+                        formInfo.push(`- ${attr.charAt(0).toUpperCase() + attr.slice(1)}: ${form[attr]}`);
+                    }
+                });
+                
+                // Build selector
+                let selector = 'form';
+                if (form.id) selector = `form#${form.id}`;
+                else if (form.name) selector = `form[name='${form.name}']`;
+                else if (form.className) {
+                    const className = form.className.split(' ')[0];
+                    if (className) selector = `form.${className}`;
+                }
+                
+                formInfo.push(`- Selector: ${selector}`);
+                formInfo.push('\\nFields:');
+                
+                // Process form fields
+                const fields = form.querySelectorAll('input, select, textarea, button');
+                let fieldCount = 0;
+                
+                fields.forEach(field => {
+                    if (!isVisible(field)) return;
+                    
+                    fieldCount++;
+                    formInfo.push(`${fieldCount}. ${field.nodeName.charAt(0).toUpperCase() + field.nodeName.slice(1).toLowerCase()}:`);
+                    
+                    ['type', 'name', 'id', 'placeholder', 'required'].forEach(attr => {
+                        if (field[attr]) {
+                            formInfo.push(`   - ${attr.charAt(0).toUpperCase() + attr.slice(1)}: ${field[attr]}`);
+                        }
+                    });
+                    
+                    // Build field selector
+                    let fieldSelector = '';
+                    if (field.id) fieldSelector = `#${field.id}`;
+                    else if (field.name) fieldSelector = `${field.nodeName.toLowerCase()}[name='${field.name}']`;
+                    else fieldSelector = `${selector} ${field.nodeName.toLowerCase()}`;
+                    if (field.type && !field.id && !field.name) fieldSelector += `[type='${field.type}']`;
+                    
+                    formInfo.push(`   - Selector: ${fieldSelector}`);
+                    
+                    if (field.value) {
+                        formInfo.push(`   - Value: "${field.value}"`);
+                    }
+                    
+                    if (field.nodeName.toLowerCase() === 'select') {
+                        formInfo.push('   - Options:');
+                        for (const option of field.options) {
+                            formInfo.push(`     * Value: "${option.value}", Text: "${option.text}", Selected: ${option.selected}`);
+                        }
+                    }
+                    
+                    if (field.nodeName.toLowerCase() === 'button') {
+                        formInfo.push(`   - Text: "${cleanText(field.textContent)}"`);
+                    }
+                });
+                
+                formInfo.push('```\\n\\n');
+                return formInfo.join('\\n');
+            }
+            
+            // Generate a unique ID
+            function generateUniqueId(prefix) {
+                return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substring(2, 15);
+            }
+            
+            // Store for URL mappings and iframe positions
+            const urlMappings = {};
+            const iframePositions = [];
+            
+            // Process a node recursively
+            function processNode(node, strip = true, depth = 0) {
+                if (!node) return '';
+                
+                // Skip invisible elements
+                if (node.nodeType === Node.ELEMENT_NODE && !isVisible(node)) {
+                    return '';
+                }
+                
+                // Skip comments
+                if (node.nodeType === Node.COMMENT_NODE) {
+                    return '';
+                }
+                
+                // Skip script, style, etc.
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    const tagName = node.nodeName.toLowerCase();
+                    if (['script', 'style', 'noscript', 'svg', 'path', 'meta', 'link'].includes(tagName)) {
+                        return '';
+                    }
+                }
+                
+                // Text node
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const text = node.textContent || '';
+                    return strip ? cleanText(text) : text;
+                }
+                
+                // Element node
+                const tagName = node.nodeName.toLowerCase();
+                let result = '';
+                
+                // Process by tag type
+                switch (tagName) {
+                    case 'form':
+                        return processForm(node);
+                        
+                    case 'li':
+                        let liContent = '';
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, strip, depth + 1);
+                            if (childContent && childContent.trim()) {
+                                liContent += childContent;
+                            }
+                        }
+                        return `- ${liContent.trim()}\\n`;
+                        
+                    case 'p':
+                        let pContent = '';
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, strip, depth + 1);
+                            if (childContent && childContent.trim()) {
+                                pContent += childContent;
+                            }
+                        }
+                        return `\\n\\n${pContent}\\n\\n`;
+                        
+                    case 'pre':
+                        let preContent = '';
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, false, depth + 1);
+                            if (childContent) {
+                                preContent += childContent;
+                            }
+                        }
+                        return `\\n\\n\`\`\`\\n${preContent}\\n\`\`\`\\n\\n`;
+                        
+                    case 'code':
+                        let codeContent = '';
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, false, depth + 1);
+                            if (childContent) {
+                                codeContent += childContent;
+                            }
+                        }
+                        return `\`${codeContent}\``;
+                        
+                    case 'h1': case 'h2': case 'h3': case 'h4': case 'h5': case 'h6':
+                        const level = parseInt(tagName.charAt(1));
+                        let headingContent = '';
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, strip, depth + 1);
+                            if (childContent) {
+                                headingContent += childContent;
+                            }
+                        }
+                        return `\\n\\n${'#'.repeat(level)} ${headingContent.trim()}\\n`;
+                        
+                    case 'a':
+                        const href = node.getAttribute('href') || '';
+                        let linkContent = '';
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, strip, depth + 1);
+                            if (childContent) {
+                                linkContent += childContent;
+                            }
+                        }
+                        
+                        if (!linkContent) {
+                            linkContent = strip ? cleanText(node.textContent) : node.textContent;
+                        }
+                        
+                        if (linkContent && href) {
+                            // Create a unique ID for this link
+                            const linkId = generateUniqueId('link');
+                            urlMappings[linkId] = {
+                                url: href,
+                                text: linkContent
+                            };
+                            return `[${linkContent}](${linkId})`;
+                        }
+                        return linkContent;
+                        
+                    case 'img':
+                        const src = node.getAttribute('src') || '';
+                        const alt = strip ? cleanText(node.getAttribute('alt') || '') : (node.getAttribute('alt') || '');
+                        
+                        if (src) {
+                            if (src.startsWith('data:')) {
+                                return alt;
+                            }
+                            // Create a unique ID for this image
+                            const imgId = generateUniqueId('img');
+                            urlMappings[imgId] = {
+                                url: src,
+                                text: alt || 'Image'
+                            };
+                            return `\\n![${alt || 'Image'}](${imgId})\\n`;
+                        }
+                        return alt;
+                        
+                    case 'video':
+                        const videoSrc = node.getAttribute('src') || '';
+                        if (videoSrc) {
+                            // Create a unique ID for this video
+                            const videoId = generateUniqueId('video');
+                            urlMappings[videoId] = {
+                                url: videoSrc,
+                                text: 'Video'
+                            };
+                            return `\\n\\n[Video](${videoId})\\n\\n`;
+                        }
+                        
+                        const sourceElement = node.querySelector('source');
+                        if (sourceElement) {
+                            const sourceSrc = sourceElement.getAttribute('src') || '';
+                            if (sourceSrc) {
+                                // Create a unique ID for this video source
+                                const sourceId = generateUniqueId('video');
+                                urlMappings[sourceId] = {
+                                    url: sourceSrc,
+                                    text: 'Video'
+                                };
+                                return `\\n\\n[Video](${sourceId})\\n\\n`;
+                            }
+                        }
+                        return '';
+                        
+                    case 'iframe':
+                        const iframeSrc = node.getAttribute('src') || '';
+                        if (iframeSrc) {
+                            // Create a placeholder for this iframe
+                            const iframeId = generateUniqueId('iframe');
+                            const placeholder = `__IFRAME_PLACEHOLDER_${iframeId}__`;
+                            
+                            // Store iframe information for later processing
+                            iframePositions.push({
+                                id: iframeId,
+                                src: iframeSrc,
+                                placeholder: placeholder,
+                                name: node.getAttribute('name') || node.getAttribute('id') || 'Unnamed Frame'
+                            });
+                            
+                            return placeholder;
+                        }
+                        return '';
+                        
+                    case 'ul': case 'ol':
+                        let listContent = '\\n\\n';
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, strip, depth + 1);
+                            if (childContent) {
+                                listContent += childContent;
+                            }
+                        }
+                        return listContent + '\\n\\n';
+                        
+                    case 'div': case 'span': case 'section': case 'article': case 'main': case 'header': case 'footer':
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, strip, depth + 1);
+                            if (childContent) {
+                                result += childContent;
+                            }
+                        }
+                        break;
+                        
+                    default:
+                        for (const child of node.childNodes) {
+                            const childContent = processNode(child, strip, depth + 1);
+                            if (childContent) {
+                                result += childContent;
+                            }
+                        }
+                }
+                
+                return result;
+            }
+            
+            // Process the document body
+            const body = document.body;
+            const markdown = processNode(body, true, 0);
+            
+            return {
+                markdown: markdown,
+                urls: urlMappings,
+                iframes: iframePositions
+            };
+        }""")
+        
+        # Extract data from JavaScript result
+        markdown = result['markdown']
+        urls = result['urls']
+        iframes = result['iframes']
+        
+        # Store URLs in the instance variable
+        for id, url_info in urls.items():
+            url = url_info['url']
+            text = url_info['text']
+            
+            # Create a unique text for the URL mapping
+            unique_text = self.EnsureUnique(text)
+            self.urls[unique_text] = urljoin(self.page.url, url)
+            
+            # Replace the placeholder with the unique text
+            markdown = markdown.replace(f"[{text}]({id})", f"[{unique_text}]")
+            markdown = markdown.replace(f"![{text}]({id})", f"![{unique_text}]({urljoin(self.page.url, url)})")
+        
+        # Process iframes
+        for iframe in iframes:
+            iframe_src = iframe['src']
+            placeholder = iframe['placeholder']
+            
+            if not iframe_src:
+                continue
+                
+            # Find the frame in the page's frame tree
+            iframe_content = ""
+            iframe_url = urljoin(self.page.url, iframe_src)
+            
+            for frame in (page_or_frame.frames if hasattr(page_or_frame, "frames") else page_or_frame.child_frames):
+                if frame.url == iframe_src or frame.url == iframe_url:
+                    try:
+                        # Recursively process the frame
+                        iframe_content = await self.AsyncProcessPageAndFrames(frame)
+                        break
+                    except Exception as e:
+                        print(f"Error processing iframe: {str(e)}")
+            
+            if not iframe_content:
+                iframe_content = f"[Iframe: {iframe_src}]"
+            else:
+                iframe_name = iframe['name']
+                iframe_content = f"\n\n--- Frame: {iframe_name} ({iframe_src}) ---\n\n{iframe_content}\n\n--- End of Frame ---\n\n"
+            
+            # Replace the placeholder with the iframe content
+            markdown = markdown.replace(placeholder, iframe_content)
+        
+        return markdown
+
     async def AsyncDestroy(self):
         try:
             await self.exit_stack.aclose()
