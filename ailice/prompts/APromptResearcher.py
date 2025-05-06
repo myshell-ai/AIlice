@@ -48,6 +48,9 @@ class APromptResearcher():
         return "None."
 
     def GetPatterns(self):
+        linkedFunctions = FindRecords("",
+                                      lambda r: ((r['action'] in self.PATTERNS)),
+                                      -1, self.storage, self.collection + "_functions")
         self.functions = FindRecords("Internet operations, file operations.",
                                      lambda r: ((r['type']=='primary') and (r['action'] not in self.PATTERNS)),
                                      5, self.storage, self.collection + "_functions")
@@ -55,7 +58,7 @@ class APromptResearcher():
         self.functions += FindRecords(context,
                                       lambda r: ((r['type']=='primary') and (r['action'] not in self.PATTERNS) and (r not in self.functions)),
                                       5, self.storage, self.collection + "_functions")
-        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in self.functions])], [])
+        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in (self.functions + linkedFunctions)])], [])
         patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in allFunctions}
         patterns.update(self.PATTERNS)
         return patterns

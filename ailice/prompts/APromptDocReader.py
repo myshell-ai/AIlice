@@ -3,7 +3,7 @@ from datetime import datetime
 from importlib.resources import read_text
 from ailice.common.utils.ATextSpliter import paragraph_generator
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt
+from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
 class APromptDocReader():
     PROMPT_NAME = "doc-reader"
@@ -13,7 +13,8 @@ class APromptDocReader():
     def __init__(self, processor, storage, collection, conversations, formatter, config, outputCB = None):
         self.processor = processor
         self.storage = storage
-        self.collection = f"{collection}_{self.processor.name}_article"
+        self.collection = collection
+        self.collectionMem = f"{collection}_{self.processor.name}_article"
         self.conversations = conversations
         self.formatter = formatter
         self.config = config
@@ -43,17 +44,23 @@ class APromptDocReader():
         ret = self.processor.modules['browser']['module'].Browse(url, self.session)
         fulltxt = self.processor.modules['browser']['module'].GetFullText(self.session)
         for txt in paragraph_generator(fulltxt):
-            self.storage.Store(self.collection, txt)
+            self.storage.Store(self.collectionMem, txt)
         return ret
     
     def Recall(self, keywords: str) -> str:
-        results = self.storage.Recall(collection=self.collection, query=keywords, num_results=10)
+        results = self.storage.Recall(collection=self.collectionMem, query=keywords, num_results=10)
         ret = "------\n\n"
         ret += "\n\n".join([txt for txt, score in results])[:2000] + "\n\n------\n\nTo find more content of interest, search for the relevant text within the page, or use the RETRIEVE function for semantic search. Be sure to keep the keywords concise."
         return "None." if "" == ret else ret
     
     def GetPatterns(self):
-        return self.PATTERNS
+        linkedFunctions = FindRecords("",
+                                      lambda r: ((r['action'] in self.PATTERNS)),
+                                      -1, self.storage, self.collection + "_functions")
+        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in linkedFunctions])], [])
+        patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in allFunctions}
+        patterns.update(self.PATTERNS)
+        return patterns
     
     def GetActions(self):
         return self.ACTIONS

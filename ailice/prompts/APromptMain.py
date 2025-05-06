@@ -36,7 +36,13 @@ class APromptMain():
         return
     
     def GetPatterns(self):
-        return self.PATTERNS
+        linkedFunctions = FindRecords("",
+                                      lambda r: ((r['action'] in self.PATTERNS)),
+                                      -1, self.storage, self.collection + "_functions")
+        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in linkedFunctions])], [])
+        patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in allFunctions}
+        patterns.update(self.PATTERNS)
+        return patterns
     
     def GetActions(self):
         return self.ACTIONS

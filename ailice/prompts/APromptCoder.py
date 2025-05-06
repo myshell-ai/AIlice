@@ -1,7 +1,7 @@
 from datetime import datetime
 from importlib.resources import read_text
 from ailice.prompts.ARegex import GenerateRE4FunctionCalling
-from ailice.prompts.ATools import ConstructOptPrompt
+from ailice.prompts.ATools import ConstructOptPrompt, FindRecords
 
 class APromptCoder():
     PROMPT_NAME = "coder"
@@ -31,7 +31,13 @@ class APromptCoder():
         return
     
     def GetPatterns(self):
-        return self.PATTERNS
+        linkedFunctions = FindRecords("",
+                                      lambda r: ((r['action'] in self.PATTERNS)),
+                                      -1, self.storage, self.collection + "_functions")
+        allFunctions = sum([FindRecords("", lambda r: r['module']==m, -1, self.storage, self.collection + "_functions") for m in set([func['module'] for func in linkedFunctions])], [])
+        patterns = {f['action']: [{"re": GenerateRE4FunctionCalling(f['signature'], faultTolerance = True), "isEntry": True}] for f in allFunctions}
+        patterns.update(self.PATTERNS)
+        return patterns
     
     def GetActions(self):
         return self.ACTIONS
