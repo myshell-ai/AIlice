@@ -12,6 +12,7 @@ import threading
 import inspect
 import zmq
 import zmq.auth
+import uuid
 import json
 import secrets
 import traceback
@@ -21,8 +22,9 @@ from ailice.common.ADataType import *
 from ailice.common.AExceptions import ALightRPCException
 from ailice.common.ASerialization import AJSONEncoder, AJSONDecoder, SignatureFromString, AnnotationsFromSignature
 
-WORKERS_ADDR="inproc://workers"
 context=zmq.Context()
+auth = None
+authLock = threading.Lock()
 
 def SendMsg(conn,msg):
   try:
@@ -64,6 +66,8 @@ class GeneratorStorage:
 
 class GenesisRPCServer(object):
   def __init__(self, objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True):
+    global auth, authLock
+    
     self.objCls = validate_methods(objCls, APIList, validateReturn)
     self.objArgs = objArgs
     self.url = url
@@ -71,6 +75,8 @@ class GenesisRPCServer(object):
     self.objPoolLock=threading.Lock()
     self.APIList = APIList
     self.context = context
+    self.domain = str(uuid.uuid4())
+    self.WORKERS_ADDR=f"inproc://workers-{self.domain}"
     self.receiver = self.context.socket(zmq.ROUTER)
 
     if serverPrivateKeyPath is None:
@@ -82,19 +88,22 @@ class GenesisRPCServer(object):
     
     if self.enableSecurity:
       print("lightRPC server encryption ENABLED.")
-      self.auth = ThreadAuthenticator(self.context)
-      self.auth.start()
-      self.auth.configure_curve(domain='*', location=zmq.auth.CURVE_ALLOW_ANY if (clientPublicKeysDir is None) else clientPublicKeysDir)
+      with authLock:
+        if auth is None:
+          auth = ThreadAuthenticator(context)
+          auth.start()
+        auth.configure_curve(domain=self.domain, location=zmq.auth.CURVE_ALLOW_ANY if (clientPublicKeysDir is None) else clientPublicKeysDir)
       
       serverPublic, serverSecret = zmq.auth.load_certificate(serverPrivateKeyPath)
       
+      self.receiver.setsockopt_string(zmq.ZAP_DOMAIN, self.domain)
       self.receiver.setsockopt(zmq.CURVE_PUBLICKEY, serverPublic)
       self.receiver.setsockopt(zmq.CURVE_SECRETKEY, serverSecret)
       self.receiver.setsockopt(zmq.CURVE_SERVER, True)
     
     self.receiver.bind(url)
     self.dealer = self.context.socket(zmq.DEALER)
-    self.dealer.bind(WORKERS_ADDR)
+    self.dealer.bind(self.WORKERS_ADDR)
     return
   
   def Run(self):
@@ -107,20 +116,16 @@ class GenesisRPCServer(object):
       zmq.device(zmq.QUEUE, self.receiver, self.dealer)
     except Exception as e:
       print('GenesisRPCServer:Run() FATAL EXCEPTION. ',self.url,', ',str(e))
-      if self.enableSecurity:
-        self.auth.stop()
       sys.exit(1)
     finally:
       self.receiver.close()
       self.dealer.close()
-      if self.enableSecurity:
-        self.auth.stop()
   
   def Worker(self):
     socket = self.context.socket(zmq.REP)
     socket.setsockopt(zmq.HEARTBEAT_IVL, 2000)
     socket.setsockopt(zmq.HEARTBEAT_TIMEOUT, 10000)
-    socket.connect(WORKERS_ADDR)
+    socket.connect(self.WORKERS_ADDR)
 
     while True:
       msg=ReceiveMsg(socket)
