@@ -31,6 +31,7 @@ class AModelChatGPT():
             for chunk in self.client.chat.completions.create(model=self.modelName,
                                                             messages=prompt[0],
                                                             stream=True,
+                                                            timeout=60,
                                                             **extras):
                 text += (chunk.choices[0].delta.content or "")
 

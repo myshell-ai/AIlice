@@ -30,6 +30,7 @@ class AModelMistral():
             gasTank.Consume(resourceType="Mistral/InputTokens", amount=prompt[1])
             for chunk in self.client.chat.stream(model=self.modelName,
                                                  messages=prompt[0],
+                                                 timeout_ms=60000,
                                                  **extras):
                 text += (chunk.data.choices[0].delta.content or "")
 

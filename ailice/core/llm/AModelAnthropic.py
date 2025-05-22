@@ -32,6 +32,7 @@ class AModelAnthropic():
                                             max_tokens=4096,
                                             system=prompt[0][0]["content"],
                                             messages=prompt[0][1:],
+                                            timeout=60,
                                             **extras) as stream:
                 for delta in stream.text_stream:
                     text += delta
