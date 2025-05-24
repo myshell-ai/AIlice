@@ -69,7 +69,8 @@ use the provided Dockerfile to build an image and container, and modify the rele
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
     print("We now start the vector database. Note that this may include downloading the model weights, so it may take some time.")
     storage = clientPool.GetClient(config.services['storage']['addr'])
-    msg = storage.Open(storagePath)
+    with storage.Timeout(-1):
+        msg = storage.Open(storagePath)
     print(msg)
     print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
 
@@ -77,7 +78,8 @@ use the provided Dockerfile to build an image and container, and modify the rele
         speech = clientPool.GetClient(config.services['speech']['addr'])
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
         print("The speech module is preparing speech recognition and TTS models, which may include the work of downloading weight data, so it may take a long time.")
-        speech.PrepareModel()
+        with speech.Timeout(-1):
+            speech.PrepareModel()
         print("The speech module model preparation work is completed.")
         print(colored(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "green"))
         if any([re.fullmatch(r"(cuda|cpu)(:(\d+))?", s) == None for s in [config.ttsDevice, config.sttDevice]]):
