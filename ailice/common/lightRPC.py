@@ -146,7 +146,7 @@ class GenesisRPCServer(object):
           
           try:
             if ('clientID' in msg) and (msg['clientID'] not in self.objPool):
-              ret = {"exception": KeyError(f"clientID {msg['clientID']} not exist.")}
+              ret = {"exception": str(KeyError(f"clientID {msg['clientID']} not exist."))}
             elif "GET_META" in msg:
               methods = inspect.getmembers(self.objCls, predicate=lambda x: (inspect.isfunction(x) and x.__name__ in self.APIList))
               ret = {"META": {"methods": {methodName: {
