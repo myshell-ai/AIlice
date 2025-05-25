@@ -122,11 +122,15 @@ class GenesisRPCServer(object):
       self.receiver.close()
       self.dealer.close()
   
-  def Worker(self):
+  def CreateSocket(self):
     socket = self.context.socket(zmq.DEALER)
     socket.setsockopt(zmq.HEARTBEAT_IVL, 2000)
     socket.setsockopt(zmq.HEARTBEAT_TIMEOUT, 10000)
     socket.connect(self.WORKERS_ADDR)
+    return socket
+  
+  def Worker(self):
+    socket = self.CreateSocket()
 
     while True:
       try:
@@ -158,6 +162,7 @@ class GenesisRPCServer(object):
               with self.objPoolLock:
                 if msg['clientID'] in self.objPool:
                   del self.objPool[msg['clientID']]
+                ret = {}
             elif "NEXT" in msg:
               gen = self.objPool[msg['clientID']].GetGenerator(msg['generatorID'])
               try:
@@ -183,12 +188,12 @@ class GenesisRPCServer(object):
             socket.send_multipart([clientIdentity, delimiter, responseData])
         else:
           print(f"Warning: Received unexpected frame count: {len(frames)}")
-              
-      except zmq.Again:
-        continue
+      
       except Exception as e:
-        print('Worker fatal exception:', str(e))
+        print('Worker exception:', str(e))
         traceback.print_tb(e.__traceback__)
+        socket.close()
+        socket = self.CreateSocket()
         continue
 
 def makeServer(objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True):
