@@ -17,7 +17,7 @@ import json
 import secrets
 import traceback
 from zmq.auth.thread import ThreadAuthenticator
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from pydantic import validate_call
 from ailice.common.ADataType import *
 from ailice.common.AExceptions import ALightRPCException
@@ -52,9 +52,10 @@ def validate_methods(cls, methodList=None, validateReturn=True):
     return cls
 
 class GeneratorStorage:
-    def __init__(self, obj):
+    def __init__(self, obj, atomicAccess=True):
         self.obj = obj
         self.generators = {}
+        self.lock = threading.Lock() if atomicAccess else nullcontext()
         
     def SaveGenerator(self, generatorID, gen):
         self.generators[generatorID] = gen
@@ -66,7 +67,7 @@ class GeneratorStorage:
         return getattr(self.obj, name)
 
 class GenesisRPCServer(object):
-  def __init__(self, objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True):
+  def __init__(self, objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True, atomicCall=True):
     global auth, authLock
     
     self.objCls = validate_methods(objCls, APIList, validateReturn)
@@ -75,6 +76,7 @@ class GenesisRPCServer(object):
     self.objPool = dict()
     self.objPoolLock=threading.Lock()
     self.APIList = APIList
+    self.atomicCall = atomicCall
     self.context = context
     self.domain = str(uuid.uuid4())
     self.WORKERS_ADDR=f"inproc://workers-{self.domain}"
@@ -156,7 +158,7 @@ class GenesisRPCServer(object):
             elif "CREATE" in msg:
               with self.objPoolLock:
                 newID = str(secrets.token_hex(64))
-                self.objPool[newID] = GeneratorStorage(self.objCls(**self.objArgs))
+                self.objPool[newID] = GeneratorStorage(self.objCls(**self.objArgs), self.atomicCall)
               ret = {"clientID": newID}
             elif "DEL" in msg:
               with self.objPoolLock:
@@ -164,16 +166,22 @@ class GenesisRPCServer(object):
                   del self.objPool[msg['clientID']]
                 ret = {}
             elif "NEXT" in msg:
-              gen = self.objPool[msg['clientID']].GetGenerator(msg['generatorID'])
+              with self.objPoolLock:
+                storageObj = self.objPool[msg['clientID']]
               try:
-                ret = {'ret': next(gen), 'finished': False}
+                with storageObj.lock:
+                  ret = {'ret': next(storageObj.GetGenerator(msg['generatorID'])), 'finished': False}
               except StopIteration:
                 ret = {'ret': None, 'finished': True}
             else:
-              result = getattr(self.objPool[msg['clientID']], msg['function'])(*msg['args'], **msg['kwargs'])
+              with self.objPoolLock:
+                storageObj = self.objPool[msg['clientID']]
+              with storageObj.lock:
+                result = getattr(storageObj, msg['function'])(*msg['args'], **msg['kwargs'])
               if inspect.isgenerator(result):
                 generatorID = str(id(result))
-                self.objPool[msg['clientID']].SaveGenerator(generatorID, result)
+                with self.objPoolLock:
+                  self.objPool[msg['clientID']].SaveGenerator(generatorID, result)
                 ret = {'ret': {'generatorID': generatorID}}
               else:
                 ret = {'ret': result}
@@ -196,8 +204,8 @@ class GenesisRPCServer(object):
         socket = self.CreateSocket()
         continue
 
-def makeServer(objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True):
-  return GenesisRPCServer(objCls, objArgs, url, APIList, serverPrivateKeyPath, clientPublicKeysDir, validateReturn)
+def makeServer(objCls, objArgs, url, APIList, serverPrivateKeyPath=None, clientPublicKeysDir=None, validateReturn=True, atomicCall=True):
+  return GenesisRPCServer(objCls, objArgs, url, APIList, serverPrivateKeyPath, clientPublicKeysDir, validateReturn, atomicCall)
 
 def AddMethod(kls, methodName, methodMeta):
   signature = methodMeta['signature']

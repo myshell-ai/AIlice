@@ -7,6 +7,7 @@ import urllib.parse
 import datetime
 import mimetypes
 import requests
+import threading
 
 requirements = [x for x in ["pyautogui", "easyocr", "numpy"] if (None == importlib.util.find_spec(x))]
 if 0 == len(requirements):
@@ -20,6 +21,7 @@ from ailice.common.ADataType import AImage, AImageLocation
 
 class AComputer():
     def __init__(self):
+        self.lock = threading.Lock()
         if 0 == len(requirements):
             self.clicks = {"click": pyautogui.click, "double-click": pyautogui.doubleClick, "right-click": pyautogui.rightClick, "middle": pyautogui.middleClick}
             self.reader = easyocr.Reader(['en'])
@@ -45,45 +47,49 @@ class AComputer():
         return None
     
     def ScreenShot(self) -> AImage:
-        imageByte = io.BytesIO()
-        ImageGrab.grab().save(imageByte, format="JPEG")
-        return AImage(data=imageByte.getvalue())
+        with self.lock:
+            imageByte = io.BytesIO()
+            ImageGrab.grab().save(imageByte, format="JPEG")
+            return AImage(data=imageByte.getvalue())
     
     def LocateAndClick(self, txt: str, clickType: str) -> str:
-        if 0 != len(requirements):
-            return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
-        
-        if clickType not in self.clicks:
-            return f"LOCATEANDCLICK ERROR. clickType: {clickType} can only be one of 'click', 'double-click', 'right-click' or 'middle'."
-        
-        ret = self.Locate(txt)
-        if None != ret:
-            x, y, text = ret
-            pyautogui.moveTo(x, y, duration=0.5)
-            self.clicks[clickType]()
-            return f"'''{text}''' at {x},{y} is clicked."
-        else:
-            return f"'''{txt}''' not found. It may be because the text has been segmented into different boxes by the OCR software. Please try a shorter and distinctive substring."
+        with self.lock:
+            if 0 != len(requirements):
+                return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
+            
+            if clickType not in self.clicks:
+                return f"LOCATEANDCLICK ERROR. clickType: {clickType} can only be one of 'click', 'double-click', 'right-click' or 'middle'."
+            
+            ret = self.Locate(txt)
+            if None != ret:
+                x, y, text = ret
+                pyautogui.moveTo(x, y, duration=0.5)
+                self.clicks[clickType]()
+                return f"'''{text}''' at {x},{y} is clicked."
+            else:
+                return f"'''{txt}''' not found. It may be because the text has been segmented into different boxes by the OCR software. Please try a shorter and distinctive substring."
 
     def LocateAndScroll(self, txt: str, clicks: float) -> str:
-        if 0 != len(requirements):
-            return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
+        with self.lock:
+            if 0 != len(requirements):
+                return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
+            
+            ret = self.Locate(txt)
+            if None != ret:
+                x, y, text = ret
+                pyautogui.moveTo(x, y, duration=0.5)
+                pyautogui.scroll(clicks)
+                return f"The mouse wheel has scrolled {clicks} times."
+            else:
+                return f"'''{txt}''' not found. It may be because the text has been segmented into different boxes by the OCR software. Please try a shorter and distinctive substring."
         
-        ret = self.Locate(txt)
-        if None != ret:
-            x, y, text = ret
-            pyautogui.moveTo(x, y, duration=0.5)
-            pyautogui.scroll(clicks)
-            return f"The mouse wheel has scrolled {clicks} times."
-        else:
-            return f"'''{txt}''' not found. It may be because the text has been segmented into different boxes by the OCR software. Please try a shorter and distinctive substring."
-    
     def TypeWrite(self, txt: str) -> str:
-        if 0 != len(requirements):
-            return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
-        
-        pyautogui.typewrite(txt)
-        return f"'''{txt}''' the string has already been typed."
+        with self.lock:
+            if 0 != len(requirements):
+                return f"python package(s) {[x for x in requirements]} not found. Please install it before using this feature."
+            
+            pyautogui.typewrite(txt)
+            return f"'''{txt}''' the string has already been typed."
     
     def ReadImage(self, path: str) -> AImage:
         try:
@@ -206,7 +212,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AComputer, dict(), args.addr, ["ModuleInfo", "ScreenShot", "LocateAndClick", "LocateAndScroll", "TypeWrite", "ReadImage", "WriteImage", "WriteFile", "Proxy"]).Run()
+    makeServer(AComputer, dict(), args.addr, ["ModuleInfo", "ScreenShot", "LocateAndClick", "LocateAndScroll", "TypeWrite", "ReadImage", "WriteImage", "WriteFile", "Proxy"], atomicCall=False).Run()
 
 if __name__ == '__main__':
     main()
