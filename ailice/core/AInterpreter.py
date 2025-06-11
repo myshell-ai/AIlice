@@ -55,8 +55,11 @@ class AInterpreter():
             self.patterns.insert(loc, p)
         return
     
-    def CreateVar(self, content: Any, prefix: str) -> str:
-        varName = f"{prefix}_{type(content).__name__}_{str(random.randint(0,10000))}"
+    def CreateVar(self, content: Any, basename: str, dynamicSuffix: bool = True) -> str:
+        if dynamicSuffix and (basename not in self.env):
+            varName = basename
+        else:
+            varName = f"{basename}_{type(content).__name__}_{str(random.randint(0,999999))}"
         self.env[varName] = content
         return varName
     
@@ -194,7 +197,7 @@ class AInterpreter():
         if (type(r) == str) or (r is None):
             return r
         elif type(r) in typeInfo:
-            varName = self.CreateVar(content=r, prefix="ret")
+            varName = self.CreateVar(content=r, basename="ret")
             return f"![Returned data is stored to variable: {varName} := {str(r)}]({varName})<&>"
         elif type(r) == list:
             return f"{str([self.ConvertToText(item) for item in r])}"

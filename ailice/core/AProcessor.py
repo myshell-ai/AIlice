@@ -177,16 +177,20 @@ class AProcessor():
             self.subProcessors[agentName] = AProcessor(name=agentName, modelID=self.modelID, promptName=agentType, llmPool=self.llmPool, promptsManager=self.promptsManager, services=self.services, messenger=self.messenger, outputCB=self.outputCB, gasTank=self.gasTank, config=self.config, collection=self.collection)
             self.subProcessors[agentName].RegisterModules([self.modules[moduleName]['addr'] for moduleName in self.modules])
         
+        notifications = ""
         for varName in self.interpreter.env:
             if varName in msg:
-                self.subProcessors[agentName].interpreter.env[varName] = self.interpreter.env[varName]
+                newName = self.subProcessors[agentName].interpreter.CreateVar(self.interpreter.env[varName], varName, dynamicSuffix = True)
+                notifications += f"\n\nSystem notification: Variable `{varName}` detected in this msg. Content auto-retrieved from agent `{self.name}` and stored in {newName}."
         
-        resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg)}"
-
+        resp = f"Agent {agentName} returned: {self.subProcessors[agentName](msg + notifications)}"
+        
+        notifications = ""
         for varName in self.subProcessors[agentName].interpreter.env:
             if varName in resp:
-                self.interpreter.env[varName] = self.subProcessors[agentName].interpreter.env[varName]
-        return resp
+                newName = self.interpreter.CreateVar(self.subProcessors[agentName].interpreter.env[varName], varName, dynamicSuffix = True)
+                notifications += f"\n\nSystem notification: Variable `{varName}` detected in this msg. Content auto-retrieved from agent `{agentName}` and stored in {newName}."
+        return resp + notifications
     
     def EvalRespond(self, message: str) -> str:
         self.result = message
