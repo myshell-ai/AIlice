@@ -11,8 +11,6 @@ class AModelChatGPT():
         self.modelType = modelType
         self.modelName = modelName
         self.config = config
-        self.client = openai.OpenAI(api_key = self.config.models[modelType]["apikey"],
-                                    base_url = self.config.models[modelType]["baseURL"])
 
         self.modelCfg = self.config.models[modelType]["modelList"][modelName]
         self.formatter = CreateFormatter(self.modelCfg["formatter"], tokenizer = self.tokenizer, systemAsUser = self.modelCfg['systemAsUser'])
@@ -28,21 +26,23 @@ class AModelChatGPT():
         extras.update({"temperature": temperature} if None != temperature else {})
         try:
             gasTank.Consume(resourceType="ChatGPT/InputTokens", amount=prompt[1])
-            for chunk in self.client.chat.completions.create(model=self.modelName,
+            with openai.OpenAI(api_key = self.config.models[self.modelType]["apikey"],
+                               base_url = self.config.models[self.modelType]["baseURL"]) as client:
+                for chunk in client.chat.completions.create(model=self.modelName,
                                                             messages=prompt[0],
                                                             stream=True,
                                                             timeout=60,
                                                             **extras):
-                text += (chunk.choices[0].delta.content or "")
+                    text += (chunk.choices[0].delta.content or "")
 
-                if endchecker(text):
-                    break
-                
-                sentences = [x for x in sentences_split(text[currentPosition:])]
-                if (2 <= len(sentences)) and ("" != sentences[0].strip()):
-                    gasTank.Consume(resourceType="ChatGPT/OutputTokens", amount=len(sentences[0]) // 4)
-                    proc(txt=sentences[0])
-                    currentPosition += len(sentences[0])
+                    if endchecker(text):
+                        break
+                    
+                    sentences = [x for x in sentences_split(text[currentPosition:])]
+                    if (2 <= len(sentences)) and ("" != sentences[0].strip()):
+                        gasTank.Consume(resourceType="ChatGPT/OutputTokens", amount=len(sentences[0]) // 4)
+                        proc(txt=sentences[0])
+                        currentPosition += len(sentences[0])
         except openai.AuthenticationError as e:
             msg = colored("The program encountered an authorization error. Please check your API key:", "yellow") + \
                   colored(f"\n\n{self.modelType}: ", "green") + colored(f"'{self.config.models[self.modelType]['apikey']}'\n\n", "blue") + \
