@@ -19,6 +19,15 @@
   <a href="https://www.reddit.com/r/AIlice/">Reddit</a>
 </p>
 
+---
+
+## 🚀 Try Ailice Online
+
+**Experience Ailice instantly at [kragent.ai](https://kragent.ai/)** - A platform built on Ailice that lets you explore its capabilities without local setup. Perfect for testing and discovering what this AI assistant can do!
+
+Use **your own API key** to configure powerful commercial LLMs and unlock their full potential (it will be a completely different beast from the free default configuration!). For optimal cost-effectiveness, consider a hybrid setup combining commercial and open-source LLMs. Recommended models: **Claude 3.5/3.7, Gemini 2.5 Pro**.
+
+---
 
 **ATTENTION! We currently has no plans to create any related crypto tokens. Please be cautious and recognize scams to avoid being deceived. (Updated on January 6, 2025)**
 
