@@ -20,27 +20,28 @@ Available functions:
 ARXIV<!|query: str, options: str|!> -> str
 
 Search arXiv for academic papers.
-Examples:
-ARXIV<!|query="transformer architecture", options='{"max_results": 5, "sort_by": "submittedDate"}'|!>
-ARXIV<!|query="quantum computing", options='{}'|!>
-
 Parameters:
-- query (str): The search query.
+- query (str): The search query. Construct queries with:
+    - Logical combinations: AND/OR/ANDNOT operators
+    - Field restrictions: Limit searches to specific fields using these options:
+        - 'ti': Title
+        - 'au': Author
+        - 'abs': Abstract
+        - 'co': Comment
+        - 'jr': Journal Reference
+        - 'cat': Subject Category
+        - 'rn': Report Number
+        - 'id': Id
+        - 'all': All of the above
+
 - options (str): A JSON string with search parameters. Pass '{}' to use all default values.
-  - search_by (optional, str): Field to search in. Default: 'all'. Supported fields:
-    - 'ti': Title
-    - 'au': Author
-    - 'abs': Abstract
-    - 'co': Comment
-    - 'jr': Journal Reference
-    - 'cat': Subject Category
-    - 'rn': Report Number
-    - 'id': Id
-    - 'all': All of the above
   - sort_by (optional, str): Sort criterion. Default: 'relevance'. Options: 'relevance', 'lastUpdatedDate', 'submittedDate'.
   - sort_order (optional, str): Sort order. Default: 'descending'. Options: 'ascending', 'descending'.
   - max_results (optional, int): Number of results to return. Default: 10.
-  - start_index (optional, int): Start index for pagination. Default: 0.
+  
+Examples:
+ARXIV<!|query="transformer architecture", options='{"max_results": 5, "sort_by": "submittedDate"}'|!>
+ARXIV<!|query='cat:hep-ph ANDNOT ti:"quantum gravity"', options='{"sort_by": "submittedDate", "sort_order": "descending", "max_results": 5}'|!>
 
 GOOGLE<!|keywords: str|!> -> str #Use google to search internet content.
 DUCKDUCKGO<!|keywords: str|!> -> str #Use duckduckgo to search internet content.

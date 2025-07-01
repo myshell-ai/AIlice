@@ -28,28 +28,28 @@ class AArxiv():
                     "ARXIV": {
                         "func": "ArxivSearch",
                         "prompt": '''Search arXiv for academic papers.
-Examples:
-ARXIV<!|query="transformer architecture", options='{"max_results": 5, "sort_by": "submittedDate"}'|!>
-ARXIV<!|query="quantum computing", options='{}'|!>
-ARXIV<!|query="hep-ph", options='{"search_by": "cat", "sort_by": "submittedDate", "sort_order": "descending", "max_results": 5, "start_index": 0}'|!>
-
 Parameters:
-- query (str): The search query.
+- query (str): The search query. Construct queries with:
+    - Logical combinations: AND/OR/ANDNOT operators
+    - Field restrictions: Limit searches to specific fields using these options:
+        - 'ti': Title
+        - 'au': Author
+        - 'abs': Abstract
+        - 'co': Comment
+        - 'jr': Journal Reference
+        - 'cat': Subject Category
+        - 'rn': Report Number
+        - 'id': Id
+        - 'all': All of the above
+
 - options (str): A JSON string with search parameters. Pass '{}' to use all default values.
-  - search_by (optional, str): Field to search in. Default: 'all'. Supported fields:
-    - 'ti': Title
-    - 'au': Author
-    - 'abs': Abstract
-    - 'co': Comment
-    - 'jr': Journal Reference
-    - 'cat': Subject Category
-    - 'rn': Report Number
-    - 'id': Id
-    - 'all': All of the above
   - sort_by (optional, str): Sort criterion. Default: 'relevance'. Options: 'relevance', 'lastUpdatedDate', 'submittedDate'.
   - sort_order (optional, str): Sort order. Default: 'descending'. Options: 'ascending', 'descending'.
   - max_results (optional, int): Number of results to return. Default: 10.
-  - start_index (optional, int): Start index for pagination. Default: 0.''',
+  
+Examples:
+ARXIV<!|query="transformer architecture", options='{"max_results": 5, "sort_by": "submittedDate"}'|!>
+ARXIV<!|query='cat:hep-ph ANDNOT ti:"quantum gravity"', options='{"sort_by": "submittedDate", "sort_order": "descending", "max_results": 5}'|!>''',
                         "type": "primary"
                     },
                     "SCROLL-DOWN-ARXIV": {"func": "ScrollDown", "prompt": "Scroll down the results.", "type": "supportive"}
@@ -72,13 +72,13 @@ Parameters:
             'pdf_url': entry.pdf_url
         }
 
-    def FormatResults(self, results: list, start_index: int) -> str:
+    def FormatResults(self, results: list) -> str:
         if not results:
             return "No search results were found. Please check if you used overly complex keywords or unsupported search syntax. Note that relaxing your search terms is an effective strategy when no valid search results are returned."
         
         return "\n\n---\n\n".join(
             (
-                f"Result {start_index + i + 1}:\n"
+                f"Result {i + 1}:\n"
                 f"  ID: {r['arxiv_id']}\n"
                 f"  Title: {r['title']}\n"
                 f"  Authors: {', '.join(r['authors'])}\n"
@@ -91,21 +91,14 @@ Parameters:
 
     def ArxivSearch(self, query: str, options: str) -> str:
         try:
-            # Parse options from JSON string, with error handling
             try:
                 opts = json.loads(options) if options else {}
             except json.JSONDecodeError:
                 return "Error: Invalid JSON format in options parameter."
 
-            # Set parameters with natural defaults
-            search_by = opts.get('search_by', 'all')
             sort_by = opts.get('sort_by', 'relevance')
             sort_order = opts.get('sort_order', 'descending')
             max_results = opts.get('max_results', 10)
-            start_index = opts.get('start_index', 0)
-
-            full_query = f"{search_by}:{query}" if search_by not in ['all', ''] else query
-
             
             sort_criterion = {"relevance": arxiv.SortCriterion.Relevance,
                               "lastUpdatedDate": arxiv.SortCriterion.LastUpdatedDate,
@@ -113,22 +106,14 @@ Parameters:
             sort_order_enum = {"ascending": arxiv.SortOrder.Ascending,
                                "descending": arxiv.SortOrder.Descending}[sort_order]
 
-            # The arxiv library's search takes max_results as the total number of results to fetch.
-            # To implement pagination, we fetch all results up to the desired end point.
-            total_to_fetch = start_index + max_results
             search = arxiv.Search(
-                query=full_query,
-                max_results=total_to_fetch,
+                query=query,
+                max_results=max_results,
                 sort_by=sort_criterion,
                 sort_order=sort_order_enum
             )
             
-            # Slicing the generator to get the desired page of results.
-            all_results = list(search.results())
-            paginated_results = all_results[start_index:]
-
-            parsed_results = [self.ParseEntry(r) for r in paginated_results]
-            ret = self.FormatResults(parsed_results, start_index)
+            ret = self.FormatResults([self.ParseEntry(r) for r in list(search.results())[:max_results]])
 
         except Exception as e:
             #Regardless of whether the result is obtained or an error occurs, it is recommended to return the obtained information to the user in the form of a string so that the user can know the details.
