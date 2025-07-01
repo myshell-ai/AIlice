@@ -31,6 +31,7 @@ class AArxiv():
 Examples:
 ARXIV<!|query="transformer architecture", options='{"max_results": 5, "sort_by": "submittedDate"}'|!>
 ARXIV<!|query="quantum computing", options='{}'|!>
+ARXIV<!|query="hep-ph", options='{"search_by": "cat", "sort_by": "submittedDate", "sort_order": "descending", "max_results": 5, "start_index": 0}'|!>
 
 Parameters:
 - query (str): The search query.
