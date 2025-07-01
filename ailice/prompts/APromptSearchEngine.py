@@ -18,7 +18,7 @@ class APromptSearchEngine():
         self.outputCB = outputCB
         self.functions = []
         self.prompt0 = read_text("ailice.prompts", "prompt_searchengine.txt")
-        self.PATTERNS = {"ARXIV": [{"re": GenerateRE4FunctionCalling("ARXIV<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
+        self.PATTERNS = {"ARXIV": [{"re": GenerateRE4FunctionCalling("ARXIV<!|query: str, options: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLL-DOWN-ARXIV": [{"re": GenerateRE4FunctionCalling("SCROLL-DOWN-ARXIV<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "GOOGLE": [{"re": GenerateRE4FunctionCalling("GOOGLE<!|keywords: str|!> -> str", faultTolerance = True), "isEntry": True}],
                          "SCROLL-DOWN-GOOGLE": [{"re": GenerateRE4FunctionCalling("SCROLL-DOWN-GOOGLE<!|session: str|!> -> str", faultTolerance = True), "isEntry": True}],
