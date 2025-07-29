@@ -1,0 +1,43 @@
+
+.footer-minimal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 0;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    font-size: 12px;
+    color: var(--text-primary);
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.footer-links {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.footer-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.footer-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.footer-separator {
+    opacity: 0.5;
+}
+
+.copyright {
+    opacity: 0.8;
+}

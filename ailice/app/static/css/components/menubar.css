@@ -1,0 +1,107 @@
+
+.menubar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: var(--menubar-bg);
+    backdrop-filter: var(--blur-effect);
+    -webkit-backdrop-filter: var(--blur-effect);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    font-size: 15px;
+}
+
+.menubar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menubar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+.logo-link:hover {
+    opacity: 0.8;
+}
+.menu-logo {
+    height: 24px;
+    width: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.announcement-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    padding: 0 20px;
+}
+
+.announcement-text {
+    white-space: nowrap;
+    color: var(--menubar-text);
+    font-size: 14px;
+    animation: scrollAnnouncement 20s linear infinite;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+@keyframes scrollAnnouncement {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+[data-theme="dark"] .announcement-text {
+    color: #c0caf5;
+}
+
+.announcement-container:empty {
+    display: none;
+}
+
+.app-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--menubar-text);
+}
+.welcome-text {
+    margin-left: 20px;
+    color: var(--menubar-text);
+    font-size: 14px;
+}
+#username {
+    font-weight: bold;
+}
+.theme-toggle, #login-button, #register-button {
+    padding: 8px 15px;
+    border-radius: 10px;
+    background-color: var(--button-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+}
+
+.theme-toggle:hover, #login-button:hover, #register-button:hover {
+    background-color: var(--button-hover);
+}

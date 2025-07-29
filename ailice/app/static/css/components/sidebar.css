@@ -1,0 +1,191 @@
+.sidebar {
+    width: 0;
+    min-width: 0;
+    transition: all 0.3s ease;
+    background-color: var(--bg-tertiary);
+    backdrop-filter: var(--blur-effect);
+    -webkit-backdrop-filter: var(--blur-effect);
+    z-index: 100;
+    position: absolute;
+    height: 90vh;
+    left: 0;
+    border-radius: 20px 0 0 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    opacity: 0.95;
+    padding-left: 0;
+}
+
+.sidebar.expanded {
+    width: 20%;
+    min-width: 250px;
+    padding-left: 15px;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    z-index: 200;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-size: 20px;
+    color: var(--text-primary);
+    backdrop-filter: var(--blur-effect);
+    -webkit-backdrop-filter: var(--blur-effect);
+}
+
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+    background-color: var(--button-hover);
+}
+
+.sidebar-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin-left: 0;
+}
+.sidebar li {
+    font-size: 18px;
+    padding: 10px 10px 10px 0;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    color: var(--text-primary);
+}
+.sidebar li .history-span {
+    flex: 1;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 40px);
+}
+.sidebar li.selected {
+    padding: 8px 12px;
+    background-color: var(--button-active);
+    border-color: var(--border-hover);
+    color: #333;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+}
+.sidebar li:hover {
+    padding: 8px 12px;
+    background-color: var(--button-hover);
+    border-color: var(--border-hover);
+    color: #333;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+}
+.sidebar li .menu-button {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid transparent;
+    background-color: transparent;
+    border-radius: 6px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar li:hover .menu-button {
+    display: inline-block;
+}
+
+.menu-button:hover {
+    border-color: #e0e0e0;
+    background-color: #f7f9fc;
+}
+
+#search-input {
+    flex: 1;
+    height: 18px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-quaternary);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+#search-input:focus {
+    outline: none;
+    border-color: var(--border-hover);
+}
+#search-input::placeholder {
+    color: var(--text-primary);
+    opacity: 0.6;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 30px;
+    background-color: var(--dropdown-menu-bg);
+    border-color: var(--dropdown-menu-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    z-index: 1000;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: var(--dropdown-item-color);
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+    border-bottom-color: var(--dropdown-item-border);
+}
+.dropdown-menu a:hover {
+    background-color: var(--dropdown-item-hover-bg);
+}
+.dropdown-menu a:last-child {
+    border-bottom: none;
+}
+
+#new-chat-button {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--button-bg);
+    border-radius: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+#new-chat-button:hover {
+    background-color: #fff;
+    border-color: #ccc;
+    color: #333;
+}

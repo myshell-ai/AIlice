@@ -1,0 +1,106 @@
+.loading-spinner {
+    min-width: 20px;
+    width: 20px;
+    min-height: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #666;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    flex-shrink: 0;
+    border-color: var(--spinner-border);
+    border-top-color: var(--spinner-active-border);
+}
+
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 4px;
+    cursor: help;
+}
+
+.info-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+[data-theme="dark"] .info-tooltip .tooltip-text {
+    background-color: #2f354d;
+    border-color: #414868;
+    color: #c0caf5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Improve disabled sections/cards styling */
+.disabled-section,
+.disabled-card,
+.disabled-row,
+.disabled-table {
+    opacity: 0.75;
+    position: relative;
+}
+
+.disabled-section::after,
+.disabled-card::after,
+.disabled-row::after,
+.disabled-table::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-primary);
+    opacity: 0.2;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+[data-theme="dark"] .disabled-section::after,
+[data-theme="dark"] .disabled-card::after,
+[data-theme="dark"] .disabled-row::after,
+[data-theme="dark"] .disabled-table::after {
+    background-color: #000;
+    opacity: 0.3;
+}
+
+.form-control:disabled,
+button:disabled,
+select:disabled,
+input:disabled,
+textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--bg-tertiary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .form-control:disabled,
+[data-theme="dark"] button:disabled,
+[data-theme="dark"] select:disabled,
+[data-theme="dark"] input:disabled,
+[data-theme="dark"] textarea:disabled {
+    background-color: rgba(47, 53, 77, 0.5) !important;
+    color: rgba(192, 202, 245, 0.6) !important;
+    border-color: rgba(65, 72, 104, 0.5) !important;
+}

@@ -1,0 +1,210 @@
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    background-attachment: fixed;
+}
+
+.menubar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: var(--menubar-bg);
+    backdrop-filter: var(--blur-effect);
+    -webkit-backdrop-filter: var(--blur-effect);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    font-size: 15px;
+}
+
+.menubar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.logo-link:hover {
+    opacity: 0.8;
+}
+
+.menu-logo {
+    height: 24px;
+    width: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.app-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--menubar-text);
+}
+
+.theme-toggle {
+    padding: 8px 15px;
+    border-radius: 10px;
+    background-color: var(--button-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+}
+
+.theme-toggle:hover {
+    background-color: var(--button-hover);
+}
+
+.container {
+    width: 95%;
+    max-width: 1000px;
+    margin: 80px auto 40px;
+    background-color: var(--bg-secondary);
+    backdrop-filter: var(--blur-effect);
+    -webkit-backdrop-filter: var(--blur-effect);
+    border-radius: 20px;
+    box-shadow: var(--shadow-light);
+    padding: 40px;
+    border: 1px solid var(--border-color);
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h2 {
+    font-size: 22px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+ul, ol {
+    margin-bottom: 20px;
+    padding-left: 25px;
+}
+
+p, li {
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.last-updated {
+    margin-top: 40px;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--text-primary);
+    opacity: 0.7;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 8px 15px;
+    background-color: var(--button-bg);
+    color: var(--text-primary);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.back-link:hover {
+    background-color: var(--button-hover);
+    text-decoration: none;
+}
+
+.footer-minimal {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 12px;
+    color: var(--text-primary);
+    opacity: 0.7;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.footer-link {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}
+
+.footer-separator {
+    opacity: 0.5;
+}
+
+.home-button {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    background-color: #4a90e2;
+    color: white;
+    padding: 15px 30px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 10px;
+    margin: 40px auto;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    border: none;
+}
+
+.home-button:hover {
+    background-color: #3a7bc8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+}
+
+[data-theme="dark"] .home-button {
+    background-color: #7aa2f7;
+    box-shadow: 0 4px 12px rgba(122, 162, 247, 0.3);
+}
+
+[data-theme="dark"] .home-button:hover {
+    background-color: #5d8ef3;
+    box-shadow: 0 6px 16px rgba(122, 162, 247, 0.4);
+}
+

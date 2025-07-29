@@ -1,0 +1,138 @@
+.model-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: var(--bg-quaternary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+
+.model-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.model-card:hover .model-card-title,
+.model-card:hover .collapse-button,
+.model-card:hover .remove-button {
+    color: var(--text-primary);
+}
+
+.model-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.model-card-header:hover {
+    background-color: var(--button-hover);
+    border-radius: 6px;
+}
+
+[data-theme="light"] .model-card-header:hover .model-card-title,
+[data-theme="light"] .model-card-header:hover .collapse-button {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .model-card-header:hover {
+    background-color: rgba(65, 72, 104, 0.7);
+}
+
+[data-theme="dark"] .model-card-header:hover .model-card-title,
+[data-theme="dark"] .model-card-header:hover .collapse-button {
+    color: #c0caf5;
+}
+
+.model-card-title {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.model-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.collapse-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.model-card-body {
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease, border-top 0.3s ease;
+    border-top: 1px solid transparent;
+}
+
+.model-card-body:not(.collapsed) + .model-card-header .collapse-button {
+    transform: rotate(90deg);
+}
+
+.model-card-body:not(.collapsed) {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+.model-card-body.collapsed {
+    max-height: 0;
+    padding: 0;
+    border-top: none;
+}
+
+.model-card input,
+.model-card textarea {
+    cursor: text;
+}
+
+.model-card select {
+    cursor: default;
+}
+
+[data-theme="dark"] .model-card {
+    border-color: var(--model-card-border);
+    box-shadow: 0 0 5px rgba(122, 162, 247, 0.2);
+}
+
+[data-theme="dark"] .model-card:hover {
+    background-color: rgba(65, 72, 104, 0.7);
+    border-color: var(--button-active);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .model-card-header {
+    border-bottom-color: var(--model-card-header-border);
+}
+
+[data-theme="dark"] .model-card-body:not(.collapsed) {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-top-color: var(--model-card-body-border);
+    padding-top: 12px;
+}
+
+[data-theme="dark"] .collapse-button {
+    color: #7aa2f7;
+}
+
+[data-theme="dark"] .collapse-button:hover {
+    color: #c0caf5;
+}
+
+[data-theme="dark"] .model-card .model-card {
+    border-color: #7dcfff;
+    background-color: rgba(47, 53, 77, 0.7);
+}

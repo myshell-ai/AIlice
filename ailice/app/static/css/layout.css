@@ -1,0 +1,41 @@
+
+.container {
+    margin-top: 40px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.container {
+    width: 90%;
+    height: 90vh;
+    margin: 5vh auto;
+    background-color: var(--bg-secondary);
+    backdrop-filter: var(--blur-effect);
+    -webkit-backdrop-filter: var(--blur-effect);
+    border-radius: 20px;
+    box-shadow: var(--shadow-light);
+    border: none;
+    overflow: hidden;
+    display: flex;
+    transition: all 0.3s ease;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    transition: all 0.3s ease;
+    margin-left: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.sidebar.expanded + .main-content {
+    margin-left: 20%;
+}
+
+@keyframes modalFadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}

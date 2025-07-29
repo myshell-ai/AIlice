@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ailice - A fully autonomous, general-purpose AI agent.">
+    <meta name="author" content="Steven Lu">
+
+    <link rel="icon" type="image/png" href="/static/AIliceLogo.png">
+    <title>Ailice - A fully autonomous, general-purpose AI agent</title>
+    <link rel="stylesheet" href="/static/css/variables.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/themes.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/footer.css">
+    <link rel="stylesheet" href="/static/css/utilities.css">
+    <link rel="stylesheet" href="/static/css/components/media.css">
+    <link rel="stylesheet" href="/static/css/components/menubar.css">
+    <link rel="stylesheet" href="/static/css/components/sidebar.css">
+    <link rel="stylesheet" href="/static/css/components/chat.css">
+    <link rel="stylesheet" href="/static/css/components/input.css">
+    <link rel="stylesheet" href="/static/css/components/cards.css">
+    <link rel="stylesheet" href="/static/css/components/modals.css">
+    <link rel="stylesheet" href="/static/css/components/faq.css">
+
+    <!-- Load MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-highlight@2.1.3/lib/index.umd.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/default.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+
+    <style>
+    .welcome-hero {
+        text-align: center;
+        padding: 60px 40px;
+        max-width: 800px;
+        margin: 0 auto;
+        opacity: 0.95;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 32px;
+        color: var(--text-primary);
+        opacity: 0.7;
+        line-height: 1.6;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin: 40px 0;
+    }
+
+    .feature-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .feature-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+    }
+
+    .feature-desc {
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        opacity: 0.6;
+        line-height: 1.4;
+    }
+
+    .pricing-highlight {
+        background: var(--accent-color);
+        color: white;
+        padding: 16px 32px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        display: inline-block;
+        margin: 24px 0;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .start-prompt {
+        margin-top: 40px;
+        padding-top: 32px;
+        border-top: 1px solid var(--border-color);
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+        .welcome-hero {
+            padding: 40px 20px;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        
+        .feature-card {
+            padding: 20px;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <div class="menubar">
+        <div class="menubar-left">
+            <img src="/static/AIliceLogo.png" alt="Ailice Logo" class="menu-logo">
+            <span class="app-title">Ailice</span>
+        </div>
+        <div class="menubar-right">
+            <button id="settings-button" class="theme-toggle">
+                <span class="settings-icon">⚙️</span>
+                <span class="settings-text">Settings</span>
+            </button>
+            <button id="email-button" class="theme-toggle">
+                <span class="email-icon">📧</span>
+                <span class="email-text">Contact</span>
+            </button>
+            <button id="theme-toggle" class="theme-toggle">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-text">Dark Mode</span>
+            </button>
+            <button id="faq-button" class="theme-toggle">
+                <span class="faq-icon">❓</span>
+                <span class="faq-text">FAQ</span>
+            </button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="sidebar-toggle" id="sidebar-toggle">☰</div>
+        <div class="sidebar" id="history-bar">
+            <div class="sidebar-header">
+                <button id="new-chat-button">➕</button>
+                <input type="text" id="search-input" placeholder="Search chats...">
+            </div>
+            <ul id="history-list">
+                <!-- History records will be listed here -->
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="chat-area">
+                <div class="chat-window" id="chat-window">
+                    <div class="welcome-hero" id="welcome-section">
+                        <h1 class="hero-title">A fully autonomous, general-purpose AI agent</h1>
+                        <p class="hero-subtitle">Powerful AI agent with code execution, web browsing, and multimodal support.</p>
+                        
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <span class="feature-icon">⚡</span>
+                                <h3 class="feature-title">Code Execution</h3>
+                                <p class="feature-desc">Code execution for data analysis, visualization, and programming tasks</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <span class="feature-icon">🌐</span>
+                                <h3 class="feature-title">Web Browsing</h3>
+                                <p class="feature-desc">Real-time web access for research, data collection, and information gathering</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <span class="feature-icon">🎯</span>
+                                <h3 class="feature-title">Multimodal AI Support</h3>
+                                <p class="feature-desc">Process text, images, audio, video, code, and LaTeX formulas seamlessly</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <span class="feature-icon">📚</span>
+                                <h3 class="feature-title">Academic Research Tools</h3>
+                                <p class="feature-desc">Literature search, dataset collection, analysis, and automated report generation</p>
+                            </div>
+                        </div>
+            
+                        <div class="start-prompt">
+                            <p><strong>Ready to supercharge your research?</strong><br>
+                            Type your question below or upload files to get started!</p>
+                        </div>
+                    </div>
+                    <!-- Chat messages will be displayed here -->
+                </div>
+                <div class="resize-handle" id="resize-handle"></div>
+                <div class="history-panel" id="history-panel">
+                    <div class="history-content" id="history-content">
+                        <!-- History messages will be displayed here -->
+                    </div>
+                </div>
+            </div>            
+            <div class="input-section">
+                <div class="input-container">
+                    <textarea id="text-input"
+                        placeholder="Type a message... (Markdown/LaTeX/code highlighting Supported. Shift+Enter for new line)"></textarea>
+                    <div class="upload-preview" id="upload-preview">
+                        <div class="file-list" id="file-list"></div>
+                    </div>
+                </div>
+                <button id="interrupt-button" class="btn btn-icon" style="display: none;">⏹️</button>
+                <button id="stop-button" class="btn btn-icon" style="display: none;">🛑</button>
+                <button id="audio-button" class="btn btn-icon" disabled>🎤</button>
+                <div class="file-menu-container">
+                    <button id="file-button" class="btn btn-icon">📎</button>
+                    <div class="file-menu" id="file-menu">
+                        <div class="menu-item" data-action="file">📁 Choose Files</div>
+                        <div class="menu-item" data-action="camera">📷 Take Photo</div>
+                        <div class="menu-item" data-action="video">🎥 Record Video</div>
+                    </div>
+                </div>
+                <input type="file" id="file-input" style="display: none;" multiple>
+                <input type="file" id="camera-input" style="display: none;" accept="image/*" capture="environment">
+                <input type="file" id="video-input" style="display: none;" accept="video/*" capture="environment">
+            </div>
+        </div>
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <span class="close" data-modal-id="settings-modal">&times;</span>
+                </div>
+                <div class="modal-tabs">
+                    <button class="tab-button active" data-tab="agent-models">Agent Models</button>
+                    <button class="tab-button" data-tab="model-providers">Model Providers</button>
+                    <button class="tab-button" data-tab="inference">Inference</button>
+                </div>
+                <div class="modal-body">
+                    <div id="agent-models" class="tab-content active">
+                        <!-- Agent Models Settings -->
+                    </div>
+                    <div id="model-providers" class="tab-content">
+                        <!-- Model Providers Settings -->
+                    </div>
+                    <div id="inference" class="tab-content">
+                        <!-- Inference Settings -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-settings" class="save-button">Save Changes</button>
+                    <button id="cancel-settings" class="cancel-button" data-modal-id="settings-modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <!-- FAQ Modal -->
+        <div id="faq-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Frequently Asked Questions</h2>
+                    <span class="close" data-modal-id="faq-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                        </div>
+                        <div class="faq-answer">
+                        </div>
+                    </div>
+                </div>                
+                <div class="modal-footer">
+                    <button id="close-faq-modal" class="cancel-button" data-modal-id="faq-modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-minimal">
+        <div class="footer-links">
+            <span class="copyright">© 2025 Steven Lu</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { chatService, sessionService, streamManager } from '/static/js/api.js';
+        import { uiController } from '/static/js/state_machine.js';
+        import { fileManager } from '/static/js/file_manager.js';
+
+        chatService.setDependencies(fileManager, uiController);
+        sessionService.setDependencies(uiController);
+        window.chatService = chatService;
+        window.sessionService = sessionService;
+        window.streamManager = streamManager;
+        window.fileManager = fileManager;
+        window.uiController = uiController;
+    </script>
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/rendering.js"></script>
+    <script src="/static/js/settings.js"></script>
+    <script src="/static/js/history.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/faq.js"></script>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        const { Marked } = window.marked;
+        const { markedHighlight } = window.markedHighlight;
+        const marked = new Marked(
+            markedHighlight({
+                langPrefix: 'hljs language-',
+                highlight(code, lang, info) {
+                    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                    return hljs.highlight(code, { language }).value;
+                }
+            })
+        );
+
+        const renderer = new marked.Renderer();
+        const rendererCode = renderer.code;
+        const rendererCodespan = renderer.codespan;
+
+        renderer.image = function (href, title, text) {
+            return `<media-placeholder 
+                data-href="${href}" 
+                data-title="${title}" 
+                data-text="${text}">
+                Loading media...
+            </media-placeholder>`;
+        };
+
+        renderer.code = function (code, lang, escaped) {
+            if (!lang) {
+                const r = mathsExpression(code, false);
+                if (r[1] === true) {
+                    return r[0];
+                }
+            }
+            else if ("latex" === lang) {
+                return mathsExpression(code, true)[0];
+            }
+            return rendererCode({ text: code, lang: lang, escaped: escaped });
+        };
+
+        renderer.codespan = function (text) {
+            const math = mathsExpression(text, false);
+            if (math[1]) {
+                return math[0];
+            }
+            return rendererCodespan({ text: text });
+        }
+
+        renderer.link = function (href, title, text) {
+            return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        };
+
+        marked.use({ renderer });
+
+        function renderMarkdown(message) {
+            return marked.parse(message);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initFAQModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('history-bar');
+
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('expanded');
+                localStorage.setItem('sidebarExpanded', sidebar.classList.contains('expanded'));
+            });
+
+            sidebarToggle.addEventListener('mouseenter', function () {
+                sidebar.classList.add('expanded');
+            });
+
+            sidebar.addEventListener('mouseenter', function () {
+                sidebar.classList.add('expanded');
+            });
+
+            sidebar.addEventListener('mouseleave', function (e) {
+                if (!sidebarToggle.contains(e.relatedTarget)) {
+                    sidebar.classList.remove('expanded');
+                }
+            });
+
+            sidebarToggle.addEventListener('mouseleave', function (e) {
+                if (!sidebar.contains(e.relatedTarget)) {
+                    sidebar.classList.remove('expanded');
+                }
+            });
+
+            if (localStorage.getItem('sidebarExpanded') === 'true') {
+                sidebar.classList.add('expanded');
+            }
+        });
+
+        const chatArea = document.querySelector('.chat-area');
+        const chatWindow = document.getElementById('chat-window');
+        const resizeHandle = document.getElementById('resize-handle');
+        const historyPanel = document.getElementById('history-panel');
+
+        let isResizing = false;
+        let startX = 0;
+        let startChatWidth = 0;
+        let startHistoryWidth = 0;
+
+
+        resizeHandle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleHistoryPanel();
+        });
+
+        resizeHandle.addEventListener('mousedown', function (e) {
+            isResizing = true;
+            startX = e.clientX;
+            startChatWidth = chatWindow.offsetWidth;
+            startHistoryWidth = historyPanel.offsetWidth;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isResizing) return;
+
+            const deltaX = e.clientX - startX;
+            const chatAreaWidth = chatArea.offsetWidth - 8;
+            
+            const newChatWidth = startChatWidth + deltaX;
+            const newHistoryWidth = startHistoryWidth - deltaX;
+            
+            const minWidth = 200;
+            if (newChatWidth >= minWidth && newHistoryWidth >= minWidth) {
+                chatWindow.style.flexBasis = `${newChatWidth}px`;
+                historyPanel.style.flexBasis = `${newHistoryWidth}px`;
+                
+                if (newHistoryWidth > 100) {
+                    historyPanel.classList.add('expanded');
+                } else {
+                    historyPanel.classList.remove('expanded');
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            if (isResizing) {
+                isResizing = false;
+            }
+        });
+
+        document.getElementById('email-button').addEventListener('click', function () {
+            window.open('mailto:stevenlu1729@gmail.com', '_blank');
+        });
+
+        document.getElementById('interrupt-button').addEventListener('click', function () {
+            if (window.uiController.actor.getSnapshot().matches('interrupt')) {
+                const message = document.getElementById('text-input').value;
+                document.getElementById('text-input').value = '';
+                window.chatService.sendmsg(message);
+            } else {
+                window.chatService.interrupt();
+            }
+        });
+
+        document.getElementById('stop-button').addEventListener('click', async function () {
+            if (await window.chatService.interrupt() && await window.chatService.sendmsg("/stop")) {
+                window.uiController.actor.send({ type: 'STOP' });
+            }
+        });
+
+        document.getElementById('text-input').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const message = this.value.trim();
+                this.value = '';
+                this.style.height = 'auto';
+
+                if (message || window.fileManager.files.perception.length > 0 || window.fileManager.files.processing.length > 0) {
+                    if (window.uiController.actor.getSnapshot().matches('interrupt')) {
+                        window.chatService.sendmsg(message);
+                    } else {
+                        window.chatService.chat(message);
+                    }
+                }
+            }
+        });
+
+        document.getElementById('text-input').addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        document.getElementById('audio-button').addEventListener('click', function () {
+            console.log('Audio button clicked');
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                this.textContent = '🎤';
+            } else {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.start();
+                        this.textContent = '⏹️';
+
+                        mediaRecorder.addEventListener('dataavailable', event => {
+                            audioChunks.push(event.data);
+                        });
+
+                        mediaRecorder.addEventListener('stop', () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            
+                            const audioFile = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
+                            audioFile.source = 'recording';
+                            window.fileManager.addFile(audioFile);
+                            window.fileManager.updatePreview();
+
+                            audioChunks = [];
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error accessing microphone:', error);
+                    });
+            }
+        });
+
+        document.getElementById('new-chat-button').addEventListener('click', function () {
+            console.log('New chat button clicked');
+            window.sessionService.newchat()
+        });
+
+        document.getElementById('search-input').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const historyItems = document.querySelectorAll('#history-list li');
+
+            historyItems.forEach(item => {
+                const text = item.querySelector('.history-span').textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('search-input').addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                this.dispatchEvent(new Event('input'));
+            }
+        });
+
+        window.onload = async function () {
+            initThemeToggle();
+
+            try {
+                const historyResponse = await fetch('/list_histories');
+                const historyData = await historyResponse.json();
+                const historyList = document.getElementById('history-list');
+                historyData.forEach(history => {
+                    const historyItem = createHistoryItem(history[1], history[0]);
+                    historyList.appendChild(historyItem);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            try {
+                const sessionResponse = await fetch('/current_session');
+                if (!sessionResponse.ok) {
+                    throw new Error(`HTTP error! status: ${sessionResponse.status}`);
+                }
+                const sessionData = await sessionResponse.json();
+
+                if (sessionData.sessionName) {
+                    let historyItem = document.querySelector(`[data-session-name="${sessionData.sessionName}"]`);
+                    if (!historyItem) {
+                        const historyList = document.getElementById('history-list');
+                        historyItem = createHistoryItem(sessionData.title, sessionData.sessionName);
+                        historyList.insertBefore(historyItem, historyList.firstChild);
+                    }
+
+                    const allItems = document.querySelectorAll('#history-list li');
+                    allItems.forEach(item => item.classList.remove('selected'));
+                    if (historyItem) {
+                        historyItem.classList.add('selected');
+                    }
+
+                    const stateMap = new Map();
+                    stateMap.set("init", "ready");
+                    stateMap.set("ready", "ready");
+                    stateMap.set("generating", "update");
+                    stateMap.set("interrupted", "interrupt");
+                    stateMap.set("stopping", "stop");
+                    window.uiController.init(stateMap.get(sessionData.state));
+
+                    window.streamManager.initialize();
+                }
+                else {
+                    window.uiController.init("ready");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+    </script>
+</body>
+
+</html>

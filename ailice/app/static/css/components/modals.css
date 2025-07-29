@@ -1,0 +1,264 @@
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    position: relative;
+    background-color: var(--bg-secondary);
+    margin: 5% auto;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 70%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s;
+}
+
+.modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-tertiary);
+}
+
+.modal-body {
+    padding: 20px 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.close {
+    color: var(--text-primary);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: var(--button-active);
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+    background-color: var(--button-hover);
+}
+
+.tab-button.active {
+    border-bottom: 2px solid var(--button-active);
+    color: var(--button-active);
+    font-weight: 500;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.settings-section {
+    margin-bottom: 24px;
+}
+
+.settings-section h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-quaternary);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--button-active);
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.save-button, .cancel-button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-button {
+    background-color: var(--button-active);
+    color: white;
+    border: 1px solid var(--button-active);
+}
+
+.save-button:hover {
+    background-color: #3a7bc8;
+    border-color: #3a7bc8;
+}
+
+.cancel-button {
+    background-color: var(--button-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.cancel-button:hover {
+    background-color: var(--button-hover);
+}
+
+.add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: var(--button-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-button:hover {
+    background-color: var(--button-hover);
+    border-color: var(--border-hover);
+}
+
+.remove-button {
+    background-color: var(--interrupt-button-bg);
+    color: var(--interrupt-button-color);
+    border: 1px solid var(--interrupt-button-border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-button:hover {
+    background-color: #ffebee;
+    border-color: #ef5350;
+}
+
+.combobox-dropdown {
+    background: var(--bg-primary, white);
+    border: 1px solid var(--border-color, #ccc);
+}
+
+.combobox-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-light, #eee);
+    color: var(--text-primary, #333);
+}
+
+.combobox-option:last-child {
+    border-bottom: none;
+}
+
+.combobox-option-hover {
+    background-color: var(--hover-bg, #f5f5f5);
+}
+
+[data-theme="dark"] .combobox-dropdown {
+    background: var(--bg-primary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .combobox-option {
+    color: var(--text-primary);
+    border-bottom-color: var(--border-light);
+}
+
+[data-theme="dark"] .combobox-option-hover {
+    background-color: var(--hover-bg);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: rgba(192, 202, 245, 0.6);
+}
+
+[data-theme="dark"] .settings-table th,
+[data-theme="dark"] .settings-table td {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-section h3,
+[data-theme="dark"] .settings-section p,
+[data-theme="dark"] .form-group label,
+[data-theme="dark"] .model-card-title,
+[data-theme="dark"] .tab-button,
+[data-theme="dark"] select.form-control,
+[data-theme="dark"] input.form-control {
+    color: var(--text-primary);
+}
