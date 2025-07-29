@@ -21,14 +21,6 @@
 
 ---
 
-## 🚀 Try Ailice Online
-
-**Experience Ailice instantly at [kragent.ai](https://kragent.ai/)** - A platform built on Ailice that lets you explore its capabilities without local setup. Perfect for testing and discovering what this AI assistant can do!
-
-Use **your own API key** to configure powerful commercial LLMs and unlock their full potential (it will be a completely different beast from the free default configuration!). For optimal cost-effectiveness, consider a hybrid setup combining commercial and open-source LLMs. Recommended models: **Claude 3.5/3.7, Gemini 2.5 Pro**.
-
----
-
 **ATTENTION! We currently has no plans to create any related crypto tokens. Please be cautious and recognize scams to avoid being deceived. (Updated on January 6, 2025)**
 
 :fire: Mar 22, 2025: Ailice can now use MCP tools! Click [here](#configuring-extension-modules-and-mcp-servers).
@@ -36,6 +28,14 @@ Use **your own API key** to configure powerful commercial LLMs and unlock their 
 :fire: Jan 23, 2025: Updated the voice dialogue feature. Thanks to ChatTTS's excellent implementation, voice dialogue has finally moved beyond its experimental status and become practical.
 
 :fire: Jun 22, 2024: We have entered the era of locally running JARVIS-like AI assistants! The latest open-source LLMs enable us to perform complex tasks locally! Click [here](#guide-to-choosing-an-llm) to learn more.
+
+---
+
+## 🚀 Try Ailice Online
+
+**Experience Ailice instantly at [kragent.ai](https://kragent.ai/)** - A platform built on Ailice that lets you explore its capabilities without local setup. Perfect for testing and discovering what this AI assistant can do!
+
+Use **your own API key** to configure powerful commercial LLMs and unlock their full potential (it will be a completely different beast from the free default configuration!). For optimal cost-effectiveness, consider a hybrid setup combining commercial and open-source LLMs. Recommended models: **Claude 3.5/3.7, Gemini 2.5 Pro**.
 
 ----
 
@@ -112,7 +112,7 @@ Install and run Ailice with the following commands. Once Ailice is launched, use
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 pip install -e .
-ailice_web --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
+ailice --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
 ```
 
 - For a more detailed understanding of the installation and configuration methods, please visit the [Installation and Usage](#installation-and-usage) section and the [Selection and Configuration of LLM](#selection-and-configuration-of-LLM) section.
@@ -247,17 +247,17 @@ Then simply restart Ailice.
 You can directly copy a command from the typical use cases below to run Ailice.
 
 ```bash
-ailice_web   #Use models configured individually for different agents under the agentModelConfig field in config.json.
+ailice   #Use models configured individually for different agents under the agentModelConfig field in config.json.
 ailice_web --speechOn=1 --ttsDevice=cuda --sttDevice=cuda
-ailice_web --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
-ailice_web --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history --contextWindowRatio=0.2
-ailice_web --modelID=mistral:mistral-large-latest --prompt="researcher"
-ailice_web --modelID=deepseek:deepseek-chat
-ailice_web --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --contextWindowRatio=0.6
-ailice_web --modelID=groq:llama3-70b-8192
-ailice_web --modelID=openrouter:qwen/qwen-2.5-72b-instruct
-ailice_web --modelID=openrouter:anthropic/claude-3.5-sonnet
-ailice_web --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
+ailice --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
+ailice --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history --contextWindowRatio=0.2
+ailice --modelID=mistral:mistral-large-latest --prompt="researcher"
+ailice --modelID=deepseek:deepseek-chat
+ailice --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --contextWindowRatio=0.6
+ailice --modelID=groq:llama3-70b-8192
+ailice --modelID=openrouter:qwen/qwen-2.5-72b-instruct
+ailice --modelID=openrouter:anthropic/claude-3.5-sonnet
+ailice --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
 ```
 
 It should be noted that the last use case requires you to configure the LLM inference service first, please refer to [How to Add LLM Support](#how-to-add-llm-support). Using inference frameworks such as LM Studio can use limited hardware resources to support larger models, provide faster inference speed and faster Ailice startup speed, making it more suitable for ordinary users.
@@ -266,10 +266,10 @@ When you run it for the first time, you will be asked to enter the api-key. You 
 
 When you turn on the speechOn switch for the first time, you may need to wait for a long time at startup. This is because the weights of the speech recognition and TTS models are being downloaded in the background.
 
-As shown in the examples, you can use the Agent through ailice_web, it provides a web dialogue interface. You can view the default value of each parameter by using
+As shown in the examples, you can use the Agent through `ailice`, it provides a web dialogue interface. You can view the default value of each parameter by using
 
 ```bash
-ailice_web --help
+ailice --help
 ```
 
 The default values for all command line arguments can be customized by modifying the corresponding parameters in config.json.
@@ -342,7 +342,7 @@ For extension modules that are set up in the configuration file, Ailice automati
 <a name="useful-tips"></a>
 ### Useful Tips
 
-Interrupts. **Interrupts are the second interaction mode supported by Ailice, which allows you to interrupt and provide prompts to Ailice's agents at any time to correct errors or provide guidance**. In ailice_web, during Ailice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses Ailice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
+Interrupts. **Interrupts are the second interaction mode supported by Ailice, which allows you to interrupt and provide prompts to Ailice's agents at any time to correct errors or provide guidance**. In `ailice`, during Ailice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses Ailice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
 Proficient use of this feature requires a good understanding of Ailice's workings, especially the agent call tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during Ailice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
 
 In voice dialogue mode, you can **ask Ailice to switch between different voice tones** until you find the one you like (it will remember your preferred voice tone).
@@ -446,7 +446,7 @@ Then, add support for this service in the config.json file (the location of this
 Now we can run Ailice:
 
 ```bash
-ailice_web --modelID=ollama:mistral-openorca
+ailice --modelID=ollama:mistral-openorca
 ```
 
 <a name="example-2-lm-studio"></a>
@@ -492,7 +492,7 @@ Then, we open config.json and make the following modifications:
 Finally, run Ailice. You can adjust the 'contextWindowRatio' parameter based on your available VRAM or memory space. The larger the parameter, the more VRAM space is required.
 
 ```bash
-ailice_web --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
+ailice --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
 ```
 
 <a name="example-3-add-open-source-multimodal-model-support"></a>
@@ -597,7 +597,7 @@ First, ensure that the default value for modelID is set to an empty string, then
 Finally, you can achieve the second operating mode by not specifying a modelID:
 
 ```bash
-ailice_web
+ailice
 ```
 
 
