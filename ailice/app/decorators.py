@@ -18,7 +18,7 @@ def atomic_transition(action):
                         ret = func(self, *args, **kwargs)
                         getattr(self, action)()
                     except Exception as e:
-                        logger.error(f"Call method '{func.__name__}' FAILED, EXCEPTION: {str(e)}\n\nStack: {''.join(traceback.format_stack())}")
+                        #logger.error(f"Call method '{func.__name__}' FAILED, EXCEPTION: {str(e)}\n\nStack: {''.join(traceback.format_stack())}")
                         raise e
                     return ret
                 else:
