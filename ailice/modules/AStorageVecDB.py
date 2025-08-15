@@ -7,7 +7,7 @@ import numpy as np
 from typing import Union
 from huggingface_hub import hf_hub_download
 
-from threading import Thread, Lock
+from threading import Thread, Lock, Event
 
 from ailice.common.lightRPC import makeServer
 
@@ -28,16 +28,26 @@ modelLock = Lock()
 
 class AStorageVecDB():
     def __init__(self):
+        self.dataLock = Lock()
         self.data = {"model": MODEL, "file": FILE_NAME, "collections": {}}
         self.dir = None
         self.buffers = {}
         self.buffersLock = Lock()
+
+        self.stopEvent = Event()
+        
         self.hippocampus = Thread(target=self.Hippocampus, args=())
+        self.hippocampus.daemon = True
         self.hippocampus.start()
+        self.query_cache = {}
         return
 
     def ModuleInfo(self):
         return {"NAME": "storage", "ACTIONS": {}}
+
+    def CheckLength(self, content: Union[str,list[str]]):
+        texts = [content] if type(content) != list else content
+        return (not any([len(t) > 512000 for t in texts]))
 
     def CalcEmbeddings(self, txts: list[str]):
         global model, modelLock
@@ -45,7 +55,7 @@ class AStorageVecDB():
             return np.array(model.embed(txts))
     
     def Hippocampus(self):
-        while True:
+        while not self.stopEvent.is_set():
             with self.buffersLock:
                 for collection in self.buffers:
                     if len(self.buffers[collection]['texts']) == 0:
@@ -54,25 +64,37 @@ class AStorageVecDB():
                     with self.buffers[collection]['lock']:
                         try:
                             embeddings = self.CalcEmbeddings(self.buffers[collection]['texts'])
-                            for txt, emb in zip(self.buffers[collection]['texts'], embeddings):
-                                if txt not in self.data["collections"][collection]:
-                                    self.data["collections"][collection][txt] = emb
+                            with self.dataLock:
+                                if collection not in self.data["collections"]:
+                                    self.data["collections"][collection] = dict()
+                                
+                                for txt, emb in zip(self.buffers[collection]['texts'], embeddings):
+                                    if txt not in self.data["collections"][collection]:
+                                        self.data["collections"][collection][txt] = emb
                             self.Dump(self.dir)
-                            self.buffers[collection]['texts'] = []
                         except Exception as e:
+                            print(f"Hippocampus Exception: {str(e)}")
                             continue #TODO.
+                        finally:
+                            self.buffers[collection]['texts'] = []
             time.sleep(0.1)
     
     def Dump(self, dir):
-        if None != dir:
-            with open(dir+"/vecdb", 'wb') as f:
-                pickle.dump(self.data, f)
+        if dir is not None:
+            with self.dataLock:
+                with open(dir+"/vecdb", 'wb') as f:
+                    pickle.dump(self.data, f)
         return
         
     def Load(self, dir):
         if os.path.exists(dir+"/vecdb"):
-            with open(dir+"/vecdb", 'rb') as f:
-                self.data = pickle.load(f)
+            try:
+                with open(dir+"/vecdb", 'rb') as f:
+                    loadedData = pickle.load(f)
+                    with self.dataLock:
+                        self.data = loadedData
+            except Exception as e:
+                print(f"Error loading data: {str(e)}")
         return
 
     def PrepareModel(self) -> str:
@@ -122,16 +144,23 @@ class AStorageVecDB():
             raise e
     
     def Reset(self) -> str:
-        self.data["collections"].clear()
+        with self.dataLock:
+            self.data["collections"].clear()
+            if self.dir is not None:
+                self.Dump(self.dir)
         return "vector database reseted."
     
     def Store(self, collection: str, content: Union[str,list[str]]) -> bool:
         try:
             print("collection: ", collection,". store: ", content)
-            if collection not in self.data["collections"]:
-                self.data["collections"][collection] = dict()
-                with self.buffersLock:
-                    self.buffers[collection]={"texts": [], "lock": Lock()}
+            
+            if not self.CheckLength(content):
+                print("input text is too long. (>512k)")
+                return False
+            
+            with self.buffersLock:
+                if collection not in self.buffers:
+                    self.buffers[collection] = {"texts": [], "lock": Lock()}
             
             texts = [content] if type(content) != list else content
             with self.buffers[collection]['lock']:
@@ -143,23 +172,51 @@ class AStorageVecDB():
     
     def Query(self, collection: str, clue: str = "", keywords: list[str] = [], num_results:int=1) -> list[tuple[str,float]]:
         try:
-            if collection not in self.data["collections"]:
-                return []
+            if not self.CheckLength(clue):
+                print("input text is too long. (>512k)")
+                return False
+            
+            with self.dataLock:
+                if collection not in self.data["collections"]:
+                    return []
+            
+            timeoutOccurred = False
+            startTime = time.time()
             
             while (collection in self.buffers) and (len(self.buffers[collection]['texts']) > 0):
+                if time.time() - startTime > self.queryTimeout:
+                    print(f"Warning: Query timed out waiting for buffer to clear for collection {collection}")
+                    timeoutOccurred = True
+                    break
                 time.sleep(0.1)
             
-            results = [txt for txt,_ in self.data['collections'][collection].items()]
-            for keyword in keywords:
-                results = [txt for txt in results if keyword in txt]
-            
-            if clue in ["", None]:
-                results = [(r, -1.0) for r in results]
-                return results[:num_results] if num_results > 0 else results
+            with self.dataLock:
+                if collection not in self.data["collections"]:
+                    return []
+                
+                results = [txt for txt,_ in self.data['collections'][collection].items()]
+                
+                for keyword in keywords:
+                    results = [txt for txt in results if keyword in txt]
+                
+                if clue in ["", None]:
+                    results = [(r, -1.0) for r in results]
+                    return_results = results[:num_results] if num_results > 0 else results
+                    if timeoutOccurred and return_results:
+                        return_results.append(("__TIMEOUT_INCOMPLETE_RESULTS__", 0.0))
+                    return return_results
 
-            query = self.CalcEmbeddings([clue])[0]
-            temp = [(txt, np.sum((self.data["collections"][collection][txt]-query)**2,axis=0)[()]) for txt in results]
-            ret = sorted(temp, key=lambda x: x[1])[:num_results] if num_results > 0 else temp
+                if clue in self.query_cache:
+                    query = self.query_cache[clue]
+                else:
+                    query = self.CalcEmbeddings([clue])[0]
+                    self.query_cache[clue] = query
+                temp = [(txt, np.sum((self.data["collections"][collection][txt]-query)**2,axis=0)[()]) for txt in results]
+                ret = sorted(temp, key=lambda x: x[1])[:num_results] if num_results > 0 else temp
+                
+                if timeoutOccurred and ret:
+                    ret.append(("__TIMEOUT_INCOMPLETE_RESULTS__", 0.0))
+            
             print("query: ", collection, ".", clue, " -> ", ret)
             return ret
         except Exception as e:
@@ -169,12 +226,19 @@ class AStorageVecDB():
     def Recall(self, collection: str, query: str, num_results:int=1) -> list[tuple[str,float]]:
         return self.Query(collection=collection, clue=query, num_results=num_results)
     
+    def Release(self):
+        self.stopEvent.set()
+        self.hippocampus.join(timeout=2)
+        if self.dir is not None:
+            self.Dump(self.dir)
+        print("Vector database service released.")
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr',type=str, help="The address where the service runs on.")
     args = parser.parse_args()
-    makeServer(AStorageVecDB, dict(), args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query", "Recall"]).Run()
+    makeServer(AStorageVecDB, dict(), args.addr, ["ModuleInfo", "Open", "Reset", "Store", "Query", "Recall", "Release"]).Run()
 
 if __name__ == '__main__':
     main()
