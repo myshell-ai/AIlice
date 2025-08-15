@@ -9,9 +9,8 @@ class AConfig():
     def __init__(self):
         self.configFile = None
         self.modelID = ""
-        self.agentModelConfig = {"DEFAULT": "openrouter:qwen/qwen-2.5-72b-instruct",
-                                 "main": "openrouter:anthropic/claude-3.5-sonnet",
-                                 "coder": "openrouter:qwen/qwen-2.5-coder-32b-instruct"}
+        self.agentModelConfig = {"DEFAULT": "openrouter:z-ai/glm-4.5",
+                                 "search-engine": "openrouter:qwen/qwen-2.5-72b-instruct"}
         self.prompt = "main"
         self.chatHistoryPath = appdirs.user_data_dir("ailice", "Steven Lu")
         self.certificate = ""
@@ -131,7 +130,11 @@ class AConfig():
                         "claude-3-opus-20240229": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
                         "claude-3-5-sonnet-20240620": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
                         "claude-3-5-sonnet-20241022": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
-                        "claude-3-5-haiku-20241022": {"formatter": "AFormatterGPT", "contextWindow": 200000, "systemAsUser": True, "args": {}}
+                        "claude-3-5-haiku-20241022": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
+                        "claude-3-7-sonnet-20250219": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
+                        "claude-sonnet-4-20250514": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
+                        "claude-opus-4-20250514": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}},
+                        "claude-opus-4-1-20250805": {"formatter": "AFormatterClaudeVision", "contextWindow": 200000, "systemAsUser": True, "args": {}}
                     }
             }
         }
