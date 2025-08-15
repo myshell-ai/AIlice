@@ -39,9 +39,7 @@ Use **your own API key** to configure powerful commercial LLMs and unlock their 
 
 ----
 
-Ailice is a fully **autonomous, general-purpose AI agent**. This project aims to create a standalone artificial intelligence assistant, similar to JARVIS, based on the open-source LLM. Ailice achieves this goal by building a "text computer" that uses a Large Language Model (LLM) as its core processor. Currently, Ailice demonstrates proficiency in a range of tasks, including **thematic research, coding, system management, literature reviews, and complex hybrid tasks** that go beyond these basic capabilities.
-
-Ailice has reached near-perfect performance in everyday tasks using GPT-4 and is making strides towards practical application with the latest open-source models.
+Ailice is a fully **autonomous, general-purpose AI agent**. This project aims to create a standalone artificial intelligence assistant, similar to JARVIS, based on the open-source LLM. Using its unique IACT(Interactive Agents Call Tree) architecture, AIlice can decompose complex tasks into dynamically constructed agents and integrate results with high fault tolerance. Currently, Ailice demonstrates proficiency in a range of tasks, including **thematic research, coding, system management, literature reviews, and complex hybrid tasks** that go beyond these basic capabilities.
 
 We will ultimately achieve **self-evolution of AI agents**. That is, AI agents will autonomously build their own feature expansions and new types of agents, unleashing LLM's knowledge and reasoning capabilities into the real world seamlessly.
 
@@ -92,7 +90,7 @@ Key technical features of Ailice include:
 - **The ability to read and analyze articles and scholarly works.**
 - **Advanced automation in programming and script execution, functioning as a comprehensive coder and an efficient system management tool, similar to an AI-powered operating system.**
 - **Voice interaction support.**
-- **Compatibility with open-source models and seamless integration with commercial models like GPT-4.**
+- **Compatibility with open-source models and seamless integration with commercial models.**
 - **A more intuitive and flexible approach to user interaction, allowing for seamless conversation participation as an agent or the ability to intervene during task execution.**
 - **Support for multi-modal models.**
 - **A natural and highly fault-tolerant Interactive Agents Call Tree architecture.**
@@ -144,30 +142,48 @@ docker run -it -p 127.0.0.1:5000:5000 \
 <a name="cool-things-we-can-do"></a>
 ### COOL things we can do
 
-- **"Please list the contents of the current directory."**
+#### **File System Management**
+- **"List the contents of the current directory."**
 
-- **"Find David Tong's QFT lecture notes and download them to the "physics" folder in the current directory. You may need to create the folder first."**
+#### **Academic Research & Document Retrieval**
+- **"Find David Tong's QFT lecture notes and download them to the 'physics' folder. Create the folder if needed."**
+- **"Find a recent review paper on the black hole information paradox. Use it to collect URLs of important literature from the past five years, read them, and report on field progress."**
+- **"Search the internet for 100 physics tutorials across various branches and download the PDF files to a 'physics' folder."**
 
-- **"Generate a project homepage for the AIlice AI agent project on GitHub and run it on local port 59001. The interface should be professional and beautiful, with both images and text content."**
+#### **Web Development**
+- **"Generate a professional homepage for the AIlice AI agent project on GitHub. Run it on local port 59001 with beautiful interface including images and text content."**
 
-- **"Clone the GiraffeCV project from GitHub to local machine, analyze its project architecture, identify the interface definitions of main modules, and provide a report."**
+#### **Software Development & Analysis**
+- **"Clone the GiraffeCV project from GitHub, analyze its architecture, identify main module interfaces, and provide a detailed report."**
 
-- **"Design a frequency modulation (FM) radio receiver and perform simulation, provide the schematic diagram and simulation results."**
+#### **Engineering Design & Simulation**
+- **"Design a frequency modulation (FM) radio receiver with simulation. Provide schematic diagram and simulation results."**
+- **"Use CadQuery to generate a gear with custom parameters. Provide projection views from multiple angles after generation."**
 
-- **Find a recent review paper on the black hole information paradox, use it as an entry point to collect URLs of important literature in this field from the past five years, read them, and report on the progress in this field.**
+#### **Document Generation**
+- **"Generate a science-style PDF paper with proper formatting and self-determined content."**
 
-- **"Generate a science-style PDF paper with self-determined content and correct formatting."**
+#### **AI/ML & Computer Vision**
+- **"Use SDXL to generate an image of 'a fat orange cat'. Reference sample code from its Hugging Face page, save to current directory and display the result."**
+- **"Create a text-to-image website with professional interface running on local port 59102, based on SDXL model implementation."**
 
-- **"Use CadQuery to generate a gear with self-determined parameters. After generation, provide projection views from multiple angles."**
+#### **Multi-Step Complex Tasks**
 
-- **"Please search the internet for 100 tutorials in various branches of physics and download the PDF files you find to a folder named 'physics'. There is no need to verify the content of pdfs, we only need a rough collection for now."** 
+##### **Video Processing & AI Analysis Pipeline**
+**Task:** Process Feynman's physics lectures through a complete AI pipeline
+**Steps:**
+1. Find Feynman's lecture videos on YouTube, download to `Feynman/` subdirectory (create folder first)
+2. Extract audio from videos, save to `Feynman/audio/`
+3. Convert audio to text using whisper-large-v3 (reference Hugging Face example code), merge into single document
+4. Extract answer to: "Why do we need antiparticles?" from the transcribed text
 
-- **1. Find the video of Feynmann's lectures on youtube and download them to Feynmann/ subdir. you need to create the folder first. 2. Extract the audio from these videos and save them to Feynmann/audio. 3. Convert these audio files to text and merge them into a text document. You need to first go to Hugging Face and find the page for whisper-large-v3, locate the example code, and refer to the sample code to get this done. 4. Find the answer to this question from the text files you just extracted: Why do we need antiparticles?** This is a multi-step prompt-based task where you need to interact with Ailice step by step to complete the task. Naturally, there might be unexpected events along the way, so you'll need to maintain good communication with Ailice to resolve any issues you encounter(**Using the "Interrupt" button to interrupt Ailice at any time and give a prompt is a good option!**). Finally, based on the content of the downloaded video, you can ask Ailice a physics-related question. Once you receive the answer, you can look back and see how far you've come together.
+*This multi-step task requires interactive communication with the AI agent, using the "Interrupt" button when needed to guide the process.*
 
-- **1. Use SDXL to generate an image of "a fat orange cat". You need to find the sample code on its Huggingface page as a reference to complete the programming and image generation work. Save the image to the current directory and display it. 2. Now implement a text-to-image website based on the previous model, requiring a professional and beautiful page interface, running on local port 59102.**
+##### **Extensibility & Module Development**
+- **"Write an ext-module to obtain wiki page content through keywords."**
+- **"Load the newly implemented wiki module and use it to query the relativity entry."**
 
-- **"Please write an ext-module. The function of the module is to obtain the content of related pages on the wiki through keywords."** Ailice can construct external interaction modules (we call it ext-modules) on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Once the module is constructed, you can instruct Ailice by saying, **"Please load the newly implemented wiki module and utilize it to query the entry on relativity."**
-
+*The AI agent can construct external interaction modules (ext-modules) autonomously, providing unlimited extensibility through simple prompts.*
 
 <a name="installation-and-usage"></a>
 ## Installation and Usage
