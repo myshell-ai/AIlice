@@ -57,7 +57,6 @@ To understand Ailice's present abilities, watch the following videos:
 - [Installation and Usage](#installation-and-usage)
   - [System Requirements](#system-requirements)
   - [Environment Configuration and Installation](#environment-configuration-and-installation)
-  - [Run Ailice in Docker Containers](#run-ailice-in-docker-containers)
   - [If You Need to Frequently Use Google](#if-you-need-to-frequently-use-google)
   - [Usage](#usage)
   - [Configuring Extension Modules and MCP Servers](#configuring-extension-modules-and-mcp-servers)
@@ -108,11 +107,34 @@ Key technical features of Ailice include:
 
 Install and run Ailice with the following commands. Once Ailice is launched, use a browser to open the web page it provides, a dialogue interface will appear. Issue commands to Ailice through the conversation to accomplish various tasks. For your first use, you can try the commands provided in the [COOL things we can do](#cool-things-we-can-do) section to quickly get familiarized.
 
+**Local run:**
+
 ```bash
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 pip install -e .
-ailice --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
+ailice --contextWindowRatio=0.2
+```
+
+**Sandbox run:**
+
+```bash
+git clone https://github.com/myshell-ai/AIlice.git
+cd AIlice
+docker build -t ailice .
+docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --contextWindowRatio=0.2
+```
+
+**Sandbox run with GUI support**(Linux only, special configuration required for Windows and macOS):
+
+```bash
+git clone https://github.com/myshell-ai/AIlice.git
+cd AIlice
+docker build -t ailice .
+docker run -it -p 127.0.0.1:5000:5000 \
+    -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    ailice --expose=1 --contextWindowRatio=0.2
 ```
 
 - For a more detailed understanding of the installation and configuration methods, please visit the [Installation and Usage](#installation-and-usage) section and the [Selection and Configuration of LLM](#selection-and-configuration-of-LLM) section.
@@ -159,14 +181,12 @@ If users do not plan to run LLMs locally, then running Ailice has virtually no h
 - The usability in a **MacOS** environment is similar to that in an Ubuntu environment.
 - For **Windows** users, using **Docker** or installing **WSL** (Windows Subsystem for Linux) and running Ailice within WSL is a better choice, especially for users who need to execute programming tasks -- I haven't integrated Windows command execution tools yet (this will be considered in the future, but the flexibility of command-line tools is of great significance for AI agents, which makes Linux platforms more advantageous). Additionally, the lack of testing on Windows significantly increases the likelihood of bugs; if you encounter related issues, please submit issues for resolution. 
 
-Before installing Ailice, it is strongly recommended to install **Anaconda and create a virtual environment** first (you can also use other tools you prefer, such as venv). You will also need **Chrome**, as Ailice needs it for web browsing. For users who want to run Ailice in a fully controlled virtual machine, you will need **Docker** (or other virtual machines, such as VirtualBox), please refer to [Run Ailice in Docker Containers](#run-ailice-in-docker-containers).
+Before installing Ailice, it is strongly recommended to install **Anaconda and create a virtual environment** first (you can also use other tools you prefer, such as venv). You will also need **Chrome**, as Ailice needs it for web browsing. For users who want to run Ailice in a fully controlled container/virtual machine, you will need **Docker** (or other virtual machines, such as VirtualBox).
 
 If you want to run Ailice in a virtual machine, ensure **Hyper-V** is turned off(otherwise llama.cpp cannot be installed). In a VirtualBox environment, you can disable it by following these steps: disable PAE/NX and VT-X/AMD-V ( Hyper-V) on VirtualBox settings for the VM. Set paravirtualization Interface to Default, disable nested paging.
 
 <a name="environment-configuration-and-installation"></a>
 ### Environment Configuration and Installation
-Agents need to interact with various aspects of the surrounding environment, their operating environment is often more complex than typical software. It may take us a long time to install the dependencies, but fortunately, this is basically done automatically.
-
 You can use the following command to install Ailice:
 
 ```bash
@@ -191,20 +211,6 @@ pip install -e .[finetuning]
 ```
 
 You can run Ailice now! Use the commands in [Usage](#usage).
-
-<a name="run-ailice-in-docker-containers"></a>
-### Run Ailice in Docker Containers
-By default, code execution utilizes the local environment. To prevent potential AI errors leading to irreversible losses, it is recommended to run Ailice inside a Docker container.
-
-```bash
-git clone https://github.com/myshell-ai/AIlice.git
-cd AIlice
-docker build -t ailice .
-docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
-```
-
-Of course, you can choose any suitable command-line parameters based on your situation. The image build time may take a while, but fortunately, it's all automated. For the first run, remember to follow Ailice's prompt to input the API key (if required). Additionally, Ailice will take a few minutes to download the model weights for the first run, so please be patient. Once Ailice is running, you can enter the chat interface by opening the web link it provides.
-
 
 <a name="if-you-need-to-frequently-use-google"></a>
 ### If You Need to Frequently Use Google
