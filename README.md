@@ -121,38 +121,30 @@ ailice --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
 
 <a name="cool-things-we-can-do"></a>
 ### COOL things we can do
-Let's list some typical use cases. I frequently employ these examples to test Ailice during development, ensuring stable performance. However, even with these tests, the execution results are influenced by the chosen model, code version, and even the testing time. (GPT-4 may experience a decrease in performance under high loads. Some random factors can also lead to different results from running the model multiple times. Sometimes the LLM performs very intelligently, but other times it does not) Additionally, Ailice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when Ailice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success. Furthermore, if the task execution falls short, you can guide her in the right direction, and she will rectify her approach.
-
-The last point to note is that Ailice currently lacks a run time control mechanism, so she might get stuck in a loop or run for an extended period. When using a commercial LLM, you need to monitor her operation closely.
 
 - **"Please list the contents of the current directory."**
 
 - **"Find David Tong's QFT lecture notes and download them to the "physics" folder in the current directory. You may need to create the folder first."**
 
-- **"Deploy a straightforward website on this machine using the Flask framework. Ensure accessibility at 0.0.0.0:59001. The website should have a single page capable of displaying all images located in the 'images' directory."**
-This one is particularly interesting. We know that drawing cannot be done in the docker environment, and all the file output we generate needs to be copied using the "docker
-cp" command to see it. But you can let Ailice solve this problem by itself: deploy a website in the container according to the above prompt(It is recommended to use ports between 59001 and 59200 that has been port mapped), the images in the directory will be automatically displayed on the web page. In this way, you can dynamically see the generated image content on the host. You can also try to let her iterate to produce more complex functions. If you don't see any images on the page, please check whether the "images" folder of the website is different from the "images" folder here (for example, it might be under "static/images").
+- **"Generate a project homepage for the AIlice AI agent project on GitHub and run it on local port 59001. The interface should be professional and beautiful, with both images and text content."**
 
-- **"Please use python programming to solve the following tasks: obtain the price data of BTC-USDT for six months and draw it into a graph, and save it in the 'images' directory."**
-If you successfully deployed the above website, you can now see the BTC price curve directly on the page.
+- **"Clone the GiraffeCV project from GitHub to local machine, analyze its project architecture, identify the interface definitions of main modules, and provide a report."**
 
+- **"Design a frequency modulation (FM) radio receiver and perform simulation, provide the schematic diagram and simulation results."**
 
-- **"Find the process on port 59001 and terminate it."**
-This will terminate the website service program that was just established.
+- **Find a recent review paper on the black hole information paradox, use it as an entry point to collect URLs of important literature in this field from the past five years, read them, and report on the progress in this field.**
 
-- **"Please use cadquery to implement a cup."**
-This is also a very interesting attempt. Cadquery is a python package that uses python programming for cad modeling. We try to use Ailice to automatically build 3D models! This
-can give us a glimpse of how mature geometric intuition can be in LLM's world view. Of course, after implementing multimodal support, we can enable Ailice to see the models she creates, allowing for further adjustments and establishing a highly effective feedback loop. This way, it might be possible to achieve truly usable language-controlled 3D modeling.
+- **"Generate a science-style PDF paper with self-determined content and correct formatting."**
 
-- **"Please search the internet for 100 tutorials in various branches of physics and download the PDF files you find to a folder named 'physics'. There is no need to verify the content of pdfs, we only need a rough collection for now."** Utilizing Ailice to achieve automatic data set collection and construction is one of our ongoing objectives. Currently, the researcher employed for this functionality still has some deficiencies, but it is already capable of providing some intriguing results.
+- **"Use CadQuery to generate a gear with self-determined parameters. After generation, provide projection views from multiple angles."**
 
-- **"Please conduct an investigation on open-source PDF OCR tools, with a focus on those capable of recognizing mathematical formulas and converting them into LaTeX code. Consolidate the findings into a report."**
+- **"Please search the internet for 100 tutorials in various branches of physics and download the PDF files you find to a folder named 'physics'. There is no need to verify the content of pdfs, we only need a rough collection for now."** 
 
 - **1. Find the video of Feynmann's lectures on youtube and download them to Feynmann/ subdir. you need to create the folder first. 2. Extract the audio from these videos and save them to Feynmann/audio. 3. Convert these audio files to text and merge them into a text document. You need to first go to Hugging Face and find the page for whisper-large-v3, locate the example code, and refer to the sample code to get this done. 4. Find the answer to this question from the text files you just extracted: Why do we need antiparticles?** This is a multi-step prompt-based task where you need to interact with Ailice step by step to complete the task. Naturally, there might be unexpected events along the way, so you'll need to maintain good communication with Ailice to resolve any issues you encounter(**Using the "Interrupt" button to interrupt Ailice at any time and give a prompt is a good option!**). Finally, based on the content of the downloaded video, you can ask Ailice a physics-related question. Once you receive the answer, you can look back and see how far you've come together.
 
-- **1. Use SDXL to generate an image of "a fat orange cat". You need to find the sample code on its Huggingface page as a reference to complete the programming and image generation work. Save the image to the current directory and display it. 2. Now let's implement a single-page website. The function of the webpage is to convert the text description entered by the user into an image and display it. Refer to the text-to-image code from before. The website runs on 127.0.0.1:59102. Save the code to ./image_gen before you run it; you may need to create the folder first.**
+- **1. Use SDXL to generate an image of "a fat orange cat". You need to find the sample code on its Huggingface page as a reference to complete the programming and image generation work. Save the image to the current directory and display it. 2. Now implement a text-to-image website based on the previous model, requiring a professional and beautiful page interface, running on local port 59102.**
 
-- **"Please write an ext-module. The function of the module is to obtain the content of related pages on the wiki through keywords."** Ailice can construct external interaction modules (we call it ext-modules) on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Once the module is constructed, you can instruct Ailice by saying, "Please load the newly implemented wiki module and utilize it to query the entry on relativity."
+- **"Please write an ext-module. The function of the module is to obtain the content of related pages on the wiki through keywords."** Ailice can construct external interaction modules (we call it ext-modules) on her own, thereby endowing her with unlimited extensibility. All it takes is a few prompts from you. Once the module is constructed, you can instruct Ailice by saying, **"Please load the newly implemented wiki module and utilize it to query the entry on relativity."**
 
 
 <a name="installation-and-usage"></a>
@@ -342,6 +334,8 @@ For extension modules that are set up in the configuration file, Ailice automati
 <a name="useful-tips"></a>
 ### Useful Tips
 
+Ailice is an agent based on multi-agent cooperation, and as a user, you are also one of the "agents". Hence, when Ailice requires additional information, it will seek input from you, and the thoroughness of your details is crucial for her success.
+
 Interrupts. **Interrupts are the second interaction mode supported by Ailice, which allows you to interrupt and provide prompts to Ailice's agents at any time to correct errors or provide guidance**. In `ailice`, during Ailice's task execution, a interrupt button appears on the right side of the input box. Pressing it pauses Ailice's execution and waits for your prompt message. You can enter your prompt into the input box and press Enter to send the message to the agent currently executing the subtask.
 Proficient use of this feature requires a good understanding of Ailice's workings, especially the agent call tree architecture. It also involves focusing more on the command line window rather than the dialogue interface during Ailice's task execution. Overall, this is a highly useful feature, especially on less powerful language model setups.
 
@@ -353,35 +347,31 @@ In voice dialogue mode, you can **ask Ailice to switch between different voice t
 <a name="guide-to-choosing-an-llm"></a>
 ### Guide to Choosing an LLM
 
-Updated on Jan 23, 2025.
+Updated on Aug 15, 2025.
 
-Currently, Ailice can **handle more complex tasks using the locally run 72B open-source model (qwen-2.5-72b-instruct running on 4090x2)**, with performance approaching that of GPT-4 level models. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. Click [here](#example-2-lm-studio) to learn how to run LLM locally. For users whose GPU conditions are insufficient to run large models, this is not a problem. You can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). Although open-source models cannot yet fully rival commercial GPT-4 level models, you can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
+Currently, Ailice can **handle more complex tasks using the locally run 72B open-source model (qwen-2.5-72b-instruct running on 4090x2)**. Considering the low cost of open-source models, we highly recommend users to start using them. Moreover, localizing LLM operations ensures absolute privacy protection, a rare quality in AI applications in our time. Click [here](#example-2-lm-studio) to learn how to run LLM locally. For users whose GPU conditions are insufficient to run large models, you can use the online inference service (such as openrouter, this will be mentioned next) to access these open-source models (though this sacrifices privacy). You can make agents excel by leveraging different models according to their strengths and weaknesses. For details, please refer to [Using Different Models in Different Agents](#using-different-models-in-different-agents).
 
-**claude-3-5-sonnet** provides the best performance.
+**claude-3-5-sonnet/claude-3-7-sonnet/claude-sonnet-4/gemini-2.5-pro** provides the best performance.
+
+**z-ai/glm-4.5** is very close to top-tier performance.
+
+**qwen-2.5-72b-instruct** provides the best performance at the 70B level
 
 **gpt-4-turbo**/**gpt-3.5-turbo** is surprisingly lazy, and we have never been able to find a stable prompt expression.
 **gpt-4o** used to have top-tier performance, but currently (similar to the previous turbo models) they exhibit laziness issues in function calls. We no longer recommend using them.
 
-Among the open-source models, the ones that usually perform well include:
-
-- **qwen-2.5-72b-instruct**
-- **deepseek-ai/DeepSeek-V3**
-
 For users whose hardware capabilities are insufficient to run open-source models locally and who are unable to obtain API keys for commercial models, they can try the following options:
 
-- **openrouter** This service can route your inference requests to various open-source or commercial models without the need to deploy open-source models locally or apply for API keys for various commercial models. It's a fantastic choice. Ailice automatically supports all models in OpenRouter. You can choose autorouter:openrouter/auto to let the autorouter automatically route for you, or you can specify any specific model configured in the config.json file. Thank @babybirdprd for recommending OpenRouter to me.
-
-- **groq:llama3-70b-8192** Of course, Ailice also supports other models under Groq. One issue with running under Groq is that it's easy to exceed rate limits, so it can only be used for simple experiments.
-
+- **openrouter/apipie** These services can route your inference requests to various open-source or commercial models without the need to deploy open-source models locally or apply for API keys for various commercial models. They're fantastic choices. Ailice automatically supports all models in OpenRouter/Apipie. Thanks @babybirdprd for recommending OpenRouter to me.
 
 <a name="the-most-outstanding-open-source-model"></a>
 ### The Most Outstanding Open-source Model
 
 We will select the currently best-performing open-source model to provide a reference for users of open-source models. 
 
-- The best among all models: **qwen-2.5-72b-instruct**. qwen-2.0-72b-instruct was the first open-source model with practical value, and version 2.5 continues to improve. Its execution capability is approaching that of Claude-3.5-sonnet.
+- The best among all models: **z-ai/glm-4.5**. This model provides excellent performance, but exceeds the hardware capabilities of the vast majority of people, so it's not suitable for local running.
 
-- The second-best performing models: **deepseek-ai/DeepSeek-V3**. This model demonstrates excellent performance, but compared to Qwen 2.5, it exhibits more hallucinations in certain investigation and search tasks, thus ranking second.
+- **qwen-2.5-72b-instruct** qwen-2.0-72b-instruct was the first open-source model with practical value, and version 2.5 continues to improve. It provides inexpensive models for relatively simple tasks, and is also the best model that most people can run locally.
 
 If you find a better model, please let me know.
 
@@ -586,9 +576,9 @@ Ailice has two operating modes. One mode uses a single LLM to drive all agents, 
 ```json
   "modelID": "",
   "agentModelConfig": {
-    "DEFAULT": "openrouter:qwen/qwen-2.5-72b-instruct",
-    "main": "openrouter:anthropic/claude-3.5-sonnet",
-    "coder": "openrouter:deepseek/deepseek-chat"
+    "DEFAULT": "openrouter:z-ai/glm-4.5",
+    "main": "openrouter:anthropic/claude-sonnet-4",
+    "search-engine": "openrouter:qwen/qwen-2.5-72b-instruct"
   },
 ```
 
