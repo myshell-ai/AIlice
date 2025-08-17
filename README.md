@@ -137,15 +137,20 @@ docker run -it -p 127.0.0.1:5000:5000 \
 
 
 <a name="cool-things-we-can-do"></a>
-### COOL things we can do
+### COOL Things We Can Do
 
-#### File System Management
-- "List the contents of the current directory."
+#### System Administration
+- "Install Google Chrome browser on this system. Download the latest stable version, verify the installation, and confirm it's working properly."
 
-#### Academic Research & Document Retrieval
-- "Find David Tong's QFT lecture notes and download them to the 'physics' folder. Create the folder if needed."
+#### Academic Research & Literature Review
 - "Find a recent review paper on the black hole information paradox. Use it to collect URLs of important literature from the past five years, read them, and report on field progress."
-- "Search the internet for 100 physics tutorials across various branches and download the PDF files to a 'physics' folder."
+
+#### Theoretical Physics
+- "Derive wave equation and interference theory, create numerical simulations and visualizations, generate teaching materials."
+
+#### Engineering Design & Simulation
+- "Design a frequency modulation (FM) radio receiver with simulation. Provide schematic diagram and simulation results."
+- "Use CadQuery to generate a gear with custom parameters. Provide projection views from multiple angles after generation."
 
 #### Web Development
 - "Generate a professional homepage for the AIlice AI agent project on GitHub. Run it on local port 59001 with beautiful interface including images and text content."
@@ -153,20 +158,28 @@ docker run -it -p 127.0.0.1:5000:5000 \
 #### Software Development & Analysis
 - "Clone the GiraffeCV project from GitHub, analyze its architecture, identify main module interfaces, and provide a detailed report."
 
-#### Engineering Design & Simulation
-- "Design a frequency modulation (FM) radio receiver with simulation. Provide schematic diagram and simulation results."
-- "Use CadQuery to generate a gear with custom parameters. Provide projection views from multiple angles after generation."
+#### Artificial Intelligence
+- "Use SDXL to generate an image of 'a fat orange cat'. Reference sample code from its Hugging Face page, save to current directory and display the result."
+
+#### Cybersecurity
+- "Perform a comprehensive security scan of kragent.ai website. Check for common vulnerabilities and provide a detailed security assessment report with recommendations."
+
+#### Medical Research
+- "Investigate current therapeutic approaches for cardiac sarcoidosis. Search recent literature from 2022-2025, analyze clinical trial results, and compile a comprehensive report on emerging treatment modalities."
+
+#### Computational Biology
+- "Using molecular phylogenetic data and comparative genomics, calculate the most recent common ancestor (MRCA) time between humans and cats."
+
+#### Astronomy & Astrophysics
+- "Calculate the current position of Mars as viewed from California using horizontal coordinate system (altitude and azimuth)."
 
 #### Document Generation
 - "Generate a science-style PDF paper with proper formatting and self-determined content."
 
-#### AI/ML & Computer Vision
-- "Use SDXL to generate an image of 'a fat orange cat'. Reference sample code from its Hugging Face page, save to current directory and display the result."
-- "Create a text-to-image website with professional interface running on local port 59102, based on SDXL model implementation."
+#### Dataset Construction & Automated Collection
+- "Search the internet for 100 physics tutorials across various branches and download the PDF files to a 'physics' folder. Organize them by subdisciplines (mechanics, electromagnetism, quantum physics, etc.) and create an index with metadata."
 
-#### Multi-Step Complex Tasks
-
-##### Video Processing & AI Analysis Pipeline
+#### Video Processing & AI Analysis Pipeline
 **Task:** Process Feynman's physics lectures through a complete AI pipeline
 
 **Steps:**
@@ -178,7 +191,7 @@ docker run -it -p 127.0.0.1:5000:5000 \
 
 *This multi-step task requires interactive communication with the AI agent, using the "Interrupt" button when needed to guide the process.*
 
-##### Extensibility & Module Development
+#### Extensibility & Module Development
 
 1. "Write an ext-module to obtain wiki page content through keywords."
 2. "Load the newly implemented wiki module and use it to query the relativity entry."
