@@ -164,6 +164,10 @@ docker run -it -p 127.0.0.1:5000:5000 \
 #### Theoretical Physics
 - "Derive wave equation and interference theory, create numerical simulations and visualizations, generate LaTeX PDF slides."
 
+#### Mathematics
+- "Create 3D visualization of holonomy in differential geometry."
+- "Generate animated demonstration of Gibbs phenomenon in Fourier series approximation."
+
 #### Medical Research
 - "Investigate current therapeutic approaches for cardiac sarcoidosis. Search recent literature from 2022-2025, analyze clinical trial results, and compile a comprehensive report on emerging treatment modalities."
 
