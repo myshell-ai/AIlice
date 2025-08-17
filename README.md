@@ -29,6 +29,12 @@
 
 :fire: Jun 22, 2024: We have entered the era of locally running JARVIS-like AI assistants! The latest open-source LLMs enable us to perform complex tasks locally! Click [here](#guide-to-choosing-an-llm) to learn more.
 
+----
+
+Ailice is a fully **autonomous, general-purpose AI agent**. This project aims to create a standalone artificial intelligence assistant, similar to JARVIS, based on the open-source LLM. Using its unique IACT(Interactive Agents Call Tree) architecture, AIlice can decompose complex tasks into dynamically constructed agents and integrate results with high fault tolerance. Currently, Ailice demonstrates proficiency in a range of tasks, including **thematic research, coding, system management, literature reviews, and complex hybrid tasks** that go beyond these basic capabilities.
+
+We will ultimately achieve **self-evolution of AI agents**. That is, AI agents will autonomously build their own feature expansions and new types of agents, unleashing LLM's knowledge and reasoning capabilities into the real world seamlessly.
+
 ---
 
 ## 🚀 Try Ailice Online
@@ -37,16 +43,7 @@
 
 Use **your own API key** to configure powerful commercial LLMs and unlock their full potential (it will be a completely different beast from the free default configuration!). For optimal cost-effectiveness, consider a hybrid setup combining commercial and open-source LLMs. Recommended models: **Claude 3.5/3.7, Gemini 2.5 Pro**.
 
-----
-
-Ailice is a fully **autonomous, general-purpose AI agent**. This project aims to create a standalone artificial intelligence assistant, similar to JARVIS, based on the open-source LLM. Using its unique IACT(Interactive Agents Call Tree) architecture, AIlice can decompose complex tasks into dynamically constructed agents and integrate results with high fault tolerance. Currently, Ailice demonstrates proficiency in a range of tasks, including **thematic research, coding, system management, literature reviews, and complex hybrid tasks** that go beyond these basic capabilities.
-
-We will ultimately achieve **self-evolution of AI agents**. That is, AI agents will autonomously build their own feature expansions and new types of agents, unleashing LLM's knowledge and reasoning capabilities into the real world seamlessly.
-
-To understand Ailice's present abilities, watch the following videos:
-
-[![Document searching and downloading, financial data downloading and analysis with plotting, OpenGL texture rendering](https://img.youtube.com/vi/8OqBgJE6ETQ/0.jpg)](https://www.youtube.com/watch?v=8OqBgJE6ETQ)
-
+---
 
 - [Features](#features)
 - [Quick Start](#quick-start)
