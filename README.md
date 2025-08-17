@@ -142,12 +142,6 @@ docker run -it -p 127.0.0.1:5000:5000 \
 #### System Administration
 - "Install Google Chrome browser on this system. Download the latest stable version, verify the installation, and confirm it's working properly."
 
-#### Academic Research & Literature Review
-- "Find a recent review paper on the black hole information paradox. Use it to collect URLs of important literature from the past five years, read them, and report on field progress."
-
-#### Theoretical Physics
-- "Derive wave equation and interference theory, create numerical simulations and visualizations, generate teaching materials."
-
 #### Engineering Design & Simulation
 - "Design a frequency modulation (FM) radio receiver with simulation. Provide schematic diagram and simulation results."
 - "Use CadQuery to generate a gear with custom parameters. Provide projection views from multiple angles after generation."
@@ -163,6 +157,12 @@ docker run -it -p 127.0.0.1:5000:5000 \
 
 #### Cybersecurity
 - "Perform a comprehensive security scan of kragent.ai website. Check for common vulnerabilities and provide a detailed security assessment report with recommendations."
+
+#### Academic Research & Literature Review
+- "Find a recent review paper on the black hole information paradox. Use it to collect URLs of important literature from the past five years, read them, and report on field progress."
+
+#### Theoretical Physics
+- "Derive wave equation and interference theory, create numerical simulations and visualizations, generate LaTeX PDF slides."
 
 #### Medical Research
 - "Investigate current therapeutic approaches for cardiac sarcoidosis. Search recent literature from 2022-2025, analyze clinical trial results, and compile a comprehensive report on emerging treatment modalities."
