@@ -117,7 +117,7 @@ ailice --contextWindowRatio=0.2
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 docker build -t ailice .
-docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --contextWindowRatio=0.2
+docker run -it -p 127.0.0.1:5000:5000 --name ailice ailice --expose=1 --contextWindowRatio=0.2
 ```
 
 **Sandbox run with CUDA support**(Please install [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) first):
@@ -126,7 +126,7 @@ docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --contextWindowRatio=0.2
 git clone https://github.com/myshell-ai/AIlice.git
 cd AIlice
 docker build --build-arg BASE_IMAGE=nvidia/cuda:13.0.0-cudnn-devel-ubuntu24.04 -t ailice .
-docker run --gpus all -it -p 127.0.0.1:5000:5000 ailice --expose=1 --contextWindowRatio=0.2
+docker run --gpus all -it -p 127.0.0.1:5000:5000 --name ailice ailice --expose=1 --contextWindowRatio=0.2
 ```
 
 **Sandbox run with GUI support**(Linux only, special configuration required for Windows and macOS):
@@ -138,6 +138,7 @@ docker build -t ailice .
 docker run -it -p 127.0.0.1:5000:5000 \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
+    --name ailice \
     ailice --expose=1 --contextWindowRatio=0.2
 ```
 
@@ -295,14 +296,13 @@ You can directly copy a command from the typical use cases below to run Ailice.
 ```bash
 ailice   #Use models configured individually for different agents under the agentModelConfig field in config.json.
 ailice_web --speechOn=1 --ttsDevice=cuda --sttDevice=cuda
-ailice --modelID=anthropic:claude-3-5-sonnet-20241022 --contextWindowRatio=0.2
-ailice --modelID=oai:gpt-4-1106-preview --chatHistoryPath=./chat_history --contextWindowRatio=0.2
+ailice --modelID=anthropic:claude-sonnet-4-20250514 --contextWindowRatio=0.2
+ailice --modelID=openrouter:z-ai/glm-4.5 --chatHistoryPath=./chat_history --contextWindowRatio=0.2
 ailice --modelID=mistral:mistral-large-latest --prompt="researcher"
 ailice --modelID=deepseek:deepseek-chat
 ailice --modelID=hf:Open-Orca/Mistral-7B-OpenOrca --quantization=8bit --contextWindowRatio=0.6
 ailice --modelID=groq:llama3-70b-8192
-ailice --modelID=openrouter:qwen/qwen-2.5-72b-instruct
-ailice --modelID=openrouter:anthropic/claude-3.5-sonnet
+ailice --modelID=openrouter:google/gemini-2.5-pro
 ailice --modelID=lm-studio:qwen2-72b --contextWindowRatio=0.5
 ```
 
