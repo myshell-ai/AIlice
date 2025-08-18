@@ -88,8 +88,8 @@ Key technical features of Ailice include:
 - **Advanced automation in programming and script execution, functioning as a comprehensive coder and an efficient system management tool, similar to an AI-powered operating system.**
 - **Voice interaction support.**
 - **Compatibility with open-source models and seamless integration with commercial models.**
-- **A more intuitive and flexible approach to user interaction, allowing for seamless conversation participation as an agent or the ability to intervene during task execution.**
-- **Support for multi-modal models.**
+- **Native multi-modal support across all agents.**
+- **Rich media UI with image/video/audio, LaTeX formulas, code highlighting, and file upload/download support.**
 - **A natural and highly fault-tolerant Interactive Agents Call Tree architecture.**
 - **Flexible parsing of LLM outputs, enabling a broader range of function call mechanisms.**
 - **The capability to self-construct and dynamically load modules for interacting with the environment, providing endless possibilities for expanding features.**
@@ -120,6 +120,15 @@ docker build -t ailice .
 docker run -it -p 127.0.0.1:5000:5000 ailice --expose=1 --contextWindowRatio=0.2
 ```
 
+**Sandbox run with CUDA support**(Please install [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) first):
+
+```bash
+git clone https://github.com/myshell-ai/AIlice.git
+cd AIlice
+docker build --build-arg BASE_IMAGE=nvidia/cuda:13.0.0-cudnn-devel-ubuntu24.04 -t ailice .
+docker run --gpus all -it -p 127.0.0.1:5000:5000 ailice --expose=1 --contextWindowRatio=0.2
+```
+
 **Sandbox run with GUI support**(Linux only, special configuration required for Windows and macOS):
 
 ```bash
@@ -139,21 +148,27 @@ docker run -it -p 127.0.0.1:5000:5000 \
 <a name="cool-things-we-can-do"></a>
 ### COOL Things We Can Do
 
+#### Quick Start Examples
+- "List the contents of the current directory."
+- "Check the weather in San Francisco today."
+- "Calculate the integral of e^(-x^2) from negative infinity to positive infinity with detailed derivation steps."
+- "Generate fractal visualization using any algorithm of choice."
+
 #### System Administration
 - "Install Google Chrome browser on this system. Download the latest stable version, verify the installation, and confirm it's working properly."
-
-#### Engineering Design & Simulation
-- "Design a frequency modulation (FM) radio receiver with simulation. Provide schematic diagram and simulation results."
-- "Use CadQuery to generate a gear with custom parameters. Provide projection views from multiple angles after generation."
-
-#### Web Development
-- "Generate a professional homepage for the AIlice AI agent project on GitHub. Run it on local port 59001 with beautiful interface including images and text content."
 
 #### Software Development & Analysis
 - "Clone the GiraffeCV project from GitHub, analyze its architecture, identify main module interfaces, and provide a detailed report."
 
 #### Artificial Intelligence
 - "Use SDXL to generate an image of 'a fat orange cat'. Reference sample code from its Hugging Face page, save to current directory and display the result."
+
+#### Web Development
+- "Generate a professional homepage for the AIlice AI agent project on GitHub. Run it on local port 59001 with beautiful interface including images and text content."
+
+#### Engineering Design & Simulation
+- "Design a frequency modulation (FM) radio receiver with simulation. Provide schematic diagram and simulation results."
+- "Use CadQuery to generate a gear with custom parameters. Provide projection views from multiple angles after generation."
 
 #### Cybersecurity
 - "Perform a comprehensive security scan of kragent.ai website. Check for common vulnerabilities and provide a detailed security assessment report with recommendations."

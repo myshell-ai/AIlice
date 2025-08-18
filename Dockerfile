@@ -1,4 +1,5 @@
-FROM ubuntu:latest
+ARG BASE_IMAGE=ubuntu:latest
+FROM ${BASE_IMAGE}
 
 RUN apt-get update && apt-get install -y python3 python3-pip python3-venv git cmake ninja-build
 RUN apt-get install -y wget \
