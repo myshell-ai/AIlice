@@ -36,7 +36,7 @@ scikit-learn = "^1"
 arxiv = "^2"
 einops = "^0"
 librosa = "^0"
-mcp = "*"
+mcp = ">=1.26,<2"
 transitions = "*"
 torch = {version = "^2", optional = true}
 transformers = {version = "^4", optional = true}
