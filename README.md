@@ -382,6 +382,19 @@ For an MCP server in SSE mode, assuming its service address is: `http://example:
   }
 ```
 
+For free web search and page fetching with [Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp), add this optional entry to `services` in config.json:
+
+```json
+"parallel": {
+  "cmd": "ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 parallel",
+  "addr": "tcp://127.0.0.1:59200"
+}
+```
+
+Restart Ailice to load the `web_search` and `web_fetch` tools. Search uses Fast mode, with no account or API key required. Anonymous usage has rate limits. Existing search services stay available; remove the entry to disable Parallel. The optional `--timeout 60` sets the total discovery/tool timeout in seconds.
+
+The wrapper also supports other Streamable HTTP MCP servers with `http --server_url URL` in place of `parallel`. Each HTTP operation opens its own MCP connection. Tool arguments are forwarded unchanged, including an optional `session_id`; if supplied, use one opaque identifier per conversation and reuse it for related search/fetch calls.
+
 For extension modules that are set up in the configuration file, Ailice automatically loads them after startup and selects the appropriate tools for the current task. In addition to using config.json, you can also provide Ailice with the address and port of the extension module process during runtime, and it can dynamically load and use the module.
 
 

@@ -7,6 +7,8 @@ import asyncio
 import mcp
 import traceback
 from contextlib import AsyncExitStack
+from datetime import timedelta
+from concurrent.futures import CancelledError
 from mcp import ClientSession, StdioServerParameters
 from mcp.server.fastmcp import Image
 from mcp.client.stdio import stdio_client
@@ -29,7 +31,24 @@ loop_thread.start()
 while loop is None:
     time.sleep(0.01)
 
-async def LoadMeta(serverParams=None, serverUrl=None):
+PARALLEL_URL = "https://search.parallel.ai/mcp"
+USER_AGENT = "AIlice/0.4.0 (+https://github.com/myshell-ai/AIlice)"
+
+async def HTTPRequest(serverUrl, toolName=None, arguments=None, timeout=60):
+    from mcp.client.streamable_http import streamablehttp_client
+
+    async with streamablehttp_client(serverUrl, headers={"User-Agent": USER_AGENT},
+                                     timeout=timedelta(seconds=timeout),
+                                     sse_read_timeout=timedelta(seconds=timeout)) as (read, write, _):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            if toolName is None:
+                return await session.list_tools()
+            return await session.call_tool(toolName, arguments=arguments)
+
+async def LoadMeta(serverParams=None, serverUrl=None, transport="sse", timeout=60):
+    if serverParams is None and transport == "http":
+        return await asyncio.wait_for(HTTPRequest(serverUrl, timeout=timeout), timeout)
     if serverParams is not None:
         async with stdio_client(serverParams) as (read, write):
             async with ClientSession(read, write) as session:
@@ -46,22 +65,37 @@ async def LoadMeta(serverParams=None, serverUrl=None):
         print("The MCP server parameters you provided are insufficient, unable to connect to the MCP server.")
         sys.exit(-1)
 
+def ErrorText(error):
+    errors = getattr(error, "exceptions", None)
+    return "; ".join(ErrorText(item) for item in errors) if errors else str(error)
+
 def ConstructPrompt(name: str, tool) -> str:
     return f"{name} is a tool called through stringified json. Its description is: {tool.description}. Its schema is: {str(tool.inputSchema)}. You need to put json in triple quotes as a string type parameter."
 
 def AddActionMethod(kls, name: str, tool):
     async def async_action_method(self, jsonParam: str) -> str:
-        try:
-            return await self.session.call_tool(name, arguments=json.loads(jsonParam))
-        except Exception as e:
-            return json.dumps({"error": str(e)})
+        arguments = json.loads(jsonParam)
+        if self.transport == "http":
+            return await asyncio.wait_for(HTTPRequest(self.serverUrl, name, arguments, self.timeout), self.timeout)
+        return await self.session.call_tool(name, arguments=arguments)
             
     def action_method(self, jsonParam: str) -> list:
-        ret = asyncio.run_coroutine_threadsafe(async_action_method(self, jsonParam), loop).result()
+        future = asyncio.run_coroutine_threadsafe(async_action_method(self, jsonParam), loop)
+        try:
+            ret = future.result()
+        except KeyboardInterrupt:
+            future.cancel()
+            raise
+        except (TimeoutError, asyncio.TimeoutError):
+            return [json.dumps({"error": "MCP tool call timed out."})]
+        except CancelledError:
+            return [json.dumps({"error": "MCP tool call cancelled."})]
+        except Exception as e:
+            return [json.dumps({"error": ErrorText(e)})]
         result = []
         for item in ret.content:
             if type(item) == mcp.types.TextContent:
-                result.append(str(item))
+                result.append(item.text)
             elif type(item) == mcp.types.ImageContent:
                 result.append(AImage.FromJson({"data": item.data}))
             elif type(item) == mcp.types.EmbeddedResource:
@@ -76,19 +110,22 @@ def AddActionMethod(kls, name: str, tool):
     return
 
 
-def MakeWrapper(serverParams=None, serverUrl=None):
+def MakeWrapper(serverParams=None, serverUrl=None, transport="sse", timeout=60):
     class AMCPWrapper():
         #TODO. How to get the module name?
         MODULE_INFO = {"NAME": serverParams.args[0] if serverParams is not None else serverUrl, "ACTIONS": {}}
         
-        def __init__(self, serverParams=None, serverUrl=None):
+        def __init__(self, serverParams=serverParams, serverUrl=serverUrl):
             self.serverParams = serverParams
             self.serverUrl = serverUrl
+            self.transport = transport
+            self.timeout = timeout
             self.exit_stack = None
             self.stdio = None
             self.write = None
             self.session = None
-            asyncio.run_coroutine_threadsafe(self.initialize(), loop).result()
+            if self.transport != "http":
+                asyncio.run_coroutine_threadsafe(self.initialize(), loop).result()
             return
 
         def __del__(self):
@@ -119,10 +156,10 @@ def MakeWrapper(serverParams=None, serverUrl=None):
         def ModuleInfo(self):
             return self.MODULE_INFO
     
-    maxRetries = 3
+    maxRetries = 1 if transport == "http" else 3
     for attempt in range(maxRetries):
         try:
-            toolsInfo = asyncio.run_coroutine_threadsafe(LoadMeta(serverParams=serverParams, serverUrl=serverUrl), loop).result()
+            toolsInfo = asyncio.run_coroutine_threadsafe(LoadMeta(serverParams=serverParams, serverUrl=serverUrl, transport=transport, timeout=timeout), loop).result()
             break
         except Exception as e:
             if attempt == maxRetries - 1:
@@ -148,6 +185,12 @@ Examples:
   # SSE mode example
   ailice_mcp_wrapper --addr localhost:59200 sse --server_url http://example:8000/sse
   
+  # Free Parallel search and page fetching
+  ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 parallel
+
+  # Streamable HTTP mode
+  ailice_mcp_wrapper --addr tcp://127.0.0.1:59200 http --server_url https://search.parallel.ai/mcp
+
   # Stdio mode example
   ailice_mcp_wrapper --addr localhost:59200 stdio python3 mcp_demo_echo.py
   
@@ -166,6 +209,12 @@ Examples:
                                       epilog='Example: ailice_mcp_wrapper --addr localhost:59200 sse --server_url http://example:8000/sse')
     sse_parser.add_argument('--server_url', type=str, required=True, help="The url of MCP server.")
     
+    http_parser = subparsers.add_parser('http', help='Streamable HTTP mode')
+    http_parser.add_argument('--server_url', type=str, required=True, help="The URL of the MCP server.")
+    parallel_parser = subparsers.add_parser('parallel', help='Free Parallel Search MCP, no API key required')
+    for remote_parser in (http_parser, parallel_parser):
+        remote_parser.add_argument('--timeout', type=float, default=60, help="Discovery/tool timeout in seconds (default: 60).")
+
     stdio_parser = subparsers.add_parser('stdio', help='Stdio mode',
                                         description='Run in stdio mode, executing a local command',
                                         epilog='Example: ailice_mcp_wrapper --addr localhost:59200 stdio python3 mcp_demo_echo.py')
@@ -175,6 +224,9 @@ Examples:
     
     args = parser.parse_args()
     
+    if args.mode in ('http', 'parallel') and not (0 < args.timeout < float('inf')):
+        parser.error('--timeout must be a positive finite number')
+
     if args.mode is None:
         parser.print_help()
         sys.exit(1)
@@ -193,6 +245,10 @@ Examples:
             serverParams = StdioServerParameters(command=args.cmd, args=args.cmd_args, env=env)
             kls, actions = MakeWrapper(serverParams=serverParams)
             server = makeServer(kls, {"serverParams": serverParams}, args.addr, ["ModuleInfo"] + actions)
+        elif args.mode in ('http', 'parallel'):
+            serverUrl = PARALLEL_URL if args.mode == 'parallel' else args.server_url
+            kls, actions = MakeWrapper(serverUrl=serverUrl, transport="http", timeout=args.timeout)
+            server = makeServer(kls, {}, args.addr, ["ModuleInfo"] + actions)
         else:  # args.mode == 'sse'
             kls, actions = MakeWrapper(serverUrl=args.server_url)
             server = makeServer(kls, {"serverUrl": args.server_url}, args.addr, ["ModuleInfo"] + actions)
@@ -200,6 +256,7 @@ Examples:
         server.Run()
     except Exception as e:
         print(f"Error in main: {e}", traceback.print_tb(e.__traceback__))
+        sys.exit(1)
     finally:
         if loop is not None:
             loop.call_soon_threadsafe(loop.stop)
